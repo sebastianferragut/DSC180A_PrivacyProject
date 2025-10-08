@@ -1,6 +1,8 @@
 # Install dependencies:
 # pip install playwright sentence-transformers scikit-learn
 # playwright install chromium
+# conda install -c conda-forge numpy 
+# (or pip install numpy depending on your setup)
 
 # Generic, semantic “Privacy finder” for arbitrary web apps.
 # - Playwright navigates and clicks
@@ -8,14 +10,15 @@
 # - Light planning loop with reflection/verification
 #
 # Usage:
-#   python privacy_agent_generic.py https://app.slack.com/client --profile ./profiles/chrome
-#   python privacy_agent_generic.py https://zoom.us/profile --profile ./profiles/chrome
-#   python privacy_agent_generic.py https://meet.google.com/ --profile ./profiles/chrome
+#   python sebastian_privacy_agent.py https://app.slack.com/client --profile ./profiles/chrome
+#   python sebastian_privacy_agent.py https://zoom.us --profile ./profiles/chrome
+#   python sebastian_privacy_agent.py https://meet.google.com/ --profile ./profiles/chrome
 
 
 
 import argparse, time, json, re, math
 from contextlib import nullcontext
+from urllib.parse import urlparse
 from typing import List, Dict, Any, Tuple, Optional, Set
 
 from playwright.sync_api import sync_playwright, TimeoutError as PWTimeout
@@ -39,11 +42,42 @@ GOAL_SYNONYMS_MULTI = GOAL_SYNONYMS + [
 
 CLICKABLE_CSS = "a, button, [role=button], [role=link], [role=menuitem], [role=tab]"
 
-# Basic success check: URL or visible heading mentions privacy-ish keywords
-SUCCESS_PATTERNS = [
-    r"privacy", r"data[-\s]?and[-\s]?privacy", r"dataprivacy", r"permissions",
-    r"privacy[-\s]?and[-\s]?visibility", r"security[-\s]?and[-\s]?privacy"
+
+# Only URLs that are actually privacy settings pages
+SUCCESS_URL_PATTERNS = [
+    r"/privacy($|[/?#])",
+    r"data[-_]?and[-_]?privacy",
+    r"/account/privacy",
+    r"/settings/privacy",
+    r"/dataprivacy"
 ]
+
+# Headings that indicate settings, not policies or cookies
+SUCCESS_HEADING_ALLOW = [
+    r"^data\s*&\s*privacy$",
+    r"^privacy\s*&\s*visibility$",
+    r"^privacy\s*settings$",
+    r"^account\s*privacy$",
+    r"^security\s*&\s*privacy$",
+    r"^privacy$"
+]
+
+# Words that should NOT count as success (policy/legal/banners)
+SUCCESS_HEADING_DENY = [
+    r"privacy\s*policy",
+    r"cookie",
+    r"terms"
+]
+
+GOAL_TERMS = [
+    # direct goals
+    "Privacy settings", "Data & privacy", "Privacy & visibility",
+    # intermediate hubs commonly used to reach privacy
+    "Settings", "Preferences", "Manage your Google Account", "Account settings",
+    "Security & privacy", "Profile", "Account"
+    # (plus your Spanish terms if needed)
+]
+
 
 HEADINGS_CSS = "h1, h2, [role=heading]"
 
@@ -67,28 +101,44 @@ def score_candidates(model, query_emb, labels: List[str]) -> List[Tuple[int, flo
     ranked = sorted(list(enumerate(sims)), key=lambda x: x[1], reverse=True)
     return ranked
 
-def verify_success(page) -> bool:
-    url = page.url.lower()
-    if any(re.search(pat, url) for pat in SUCCESS_PATTERNS):
+def verify_success(page, clicks_so_far: int) -> bool:
+    url = (page.url or "").lower()
+
+    # If zero clicks so far, only accept if URL itself is a privacy URL
+    # (prevents landing pages from being "success")
+    if clicks_so_far == 0:
+        if any(re.search(pat, url) for pat in SUCCESS_URL_PATTERNS):
+            return True
+        return False  # must click at least once unless already at privacy URL
+
+    # After at least one click, allow URL or strong heading match
+    if any(re.search(pat, url) for pat in SUCCESS_URL_PATTERNS):
         return True
-    # Try headings
+
     try:
         heads = page.locator(HEADINGS_CSS)
-        n = heads.count()
-        for i in range(min(n, 20)):
-            txt = norm_text(heads.nth(i).inner_text())
-            if any(re.search(pat, txt.lower()) for pat in SUCCESS_PATTERNS):
-                return True
-    except Exception:
-        pass
-    # Try presence of target strings anywhere
-    try:
-        for term in ["Privacy", "Data & privacy", "Privacy & visibility"]:
-            if page.get_by_text(term, exact=False).count() > 0:
+        n = min(heads.count(), 20)
+        for i in range(n):
+            txt = norm_text(heads.nth(i).inner_text()).lower()
+            if any(re.search(p, txt) for p in SUCCESS_HEADING_DENY):
+                continue
+            if any(re.search(p, txt) for p in SUCCESS_HEADING_ALLOW):
                 return True
     except Exception:
         pass
     return False
+
+def grant_site_permissions(ctx, start_url):
+    origin = f"{urlparse(start_url).scheme}://{urlparse(start_url).hostname}"
+    # Grant only what’s relevant for each site:
+    if "meet.google.com" in origin:
+        ctx.grant_permissions(["microphone", "camera"], origin=origin)
+    elif "zoom.us" in origin:
+        ctx.grant_permissions(["microphone", "camera"], origin=origin)
+    elif "slack.com" in origin:
+        # Usually not needed, but you can pre-approve notifications if desired:
+        ctx.grant_permissions(["notifications"], origin=origin)
+
 
 def extract_clickables(page) -> List[Tuple[str, Any]]:
     """Return list of (label, locator) for visible clickables."""
@@ -145,8 +195,11 @@ def run_agent(start_url: str, profile: Optional[str], max_steps: int = 12,
     query_terms = query_terms or GOAL_SYNONYMS_MULTI
     with sync_playwright() as p:
         # Persistent context keeps logins
-        ctx = (p.chromium.launch_persistent_context(user_data_dir=profile, headless=False)
+        ctx = (p.chromium.launch_persistent_context(user_data_dir=profile, headless=False, args=[
+                "--use-fake-device-for-media-stream",
+                "--use-fake-ui-for-media-stream"])
                if profile else p.chromium.launch(headless=False))
+        grant_site_permissions(ctx, start_url)
         page = ctx.new_page() if not profile else ctx.pages[0] if ctx.pages else ctx.new_page()
         page.set_default_timeout(8000)
         page.goto(start_url)
@@ -159,11 +212,14 @@ def run_agent(start_url: str, profile: Optional[str], max_steps: int = 12,
         visited: Set[str] = set()
 
         # Quick wins: if we landed on privacy already
-        if verify_success(page):
-            result = {"success": True, "clicks": clicks, "path": path, "final_url": page.url}
-            if profile: ctx.close()
-            else: page.context.close()
-            return result
+        # before starting the loop
+        if verify_success(page, clicks):
+            return {"success": True, "clicks": clicks, "path": [], "final_url": page.url}
+
+        # after each click
+        if verify_success(page, clicks):
+            return {"success": True, "clicks": clicks, "path": path, "final_url": page.url}
+
 
         for step in range(max_steps):
             sig = elem_signature(page)
@@ -200,11 +256,14 @@ def run_agent(start_url: str, profile: Optional[str], max_steps: int = 12,
                     if hasattr(page.context, "pages") and len(page.context.pages) > 1:
                         page = page.context.pages[-1]
 
-                    if verify_success(page):
-                        result = {"success": True, "clicks": clicks, "path": path, "final_url": page.url}
-                        if profile: ctx.close()
-                        else: page.context.close()
-                        return result
+                    # before starting the loop
+                    if verify_success(page, clicks):
+                        return {"success": True, "clicks": clicks, "path": [], "final_url": page.url}
+
+                    # after each click
+                    if verify_success(page, clicks):
+                        return {"success": True, "clicks": clicks, "path": path, "final_url": page.url}
+
 
                     # Small heuristic: after clicking a generic “Settings/Preferences”, re-focus the query
                     # (already done by using broad GOAL_SYNONYMS_MULTI)
