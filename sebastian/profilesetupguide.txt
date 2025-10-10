@@ -1,0 +1,37 @@
+ Make sure to setup a .gitignore and include your profiles folder to avoid merge conflicts with this info. This guide assumes MacOS as the OS and VSC as the IDE, with all dependencies installed. I setup dependencies by creating a Conda environment with miniforge3 and the packages installed. Ensure the packages are setup before you run the file so the terminal runs correctly. With the new folder setup, also ensure you navigate to the correct folder before attempting to run the commands below. 
+
+Once local environment is setup with Playwright and dependencies, follow these steps (assuming IDE is VSC):
+
+If it doesn’t exist, create a profiles folder using 
+
+mkdir -p profiles/chrome
+
+
+In the file terminal, run:
+
+python
+
+Then run:
+
+from playwright.sync_api import sync_playwright
+with sync_playwright() as p:
+    ctx = p.chromium.launch_persistent_context(
+        user_data_dir="./profiles/chrome",  # <-- same path you pass with --profile
+        headless=False
+    )
+    page = ctx.new_page()
+    page.goto("https://zoom.us/profile")
+    input("Complete login (Google SSO if needed). When you're logged in on all sites, press Enter here...")
+    ctx.close()
+
+
+Then sign in with a Google account 
+Open each desired site and make sure you login to each
+Don’t sign out, just close the window and press Enter in the terminal 
+Exit the terminal by running exit()
+
+exit() 
+
+To run the script use the comments at the top of the file, ensuring you change the filename to whatever you have it as 
+
+
