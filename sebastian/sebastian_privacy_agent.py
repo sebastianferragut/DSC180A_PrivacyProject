@@ -229,14 +229,12 @@ def count_privacy_controls(page) -> Tuple[int, int]:
                 try:
                     txt = nd.locator("xpath=ancestor::*[self::div or self::section][1]").inner_text()[:400]
                 except Exception: pass
-            if txt and PRVACY_CONTROL_HINTS.search(txt):  # typo fix below
+            if txt and PRIVACY_CONTROL_HINTS.search(txt):  
                 labeled += 1
     except Exception:
         pass
     return total, labeled
 
-# Fix the small typo introduced above
-PRVACY_CONTROL_HINTS = PRIVACY_CONTROL_HINTS
 
 def verify_success(page, clicks_so_far: int) -> bool:
     url = (page.url or "").lower()
@@ -488,7 +486,7 @@ def find_revealed_menu_scope(frame, trigger_node):
 
 def open_avatar_then_settings(page) -> Tuple[bool, int, List[str], Optional[object]]:
     """
-    WORKING version: click avatar trigger once, keep the menu open,
+    Click avatar trigger once, keep the menu open,
     then click a menu item (My Profile preferred; otherwise Settings/Preferences/Data & Privacy).
     Returns (did_anything, clicks_added, labels_added, new_page_or_none).
     """
@@ -723,13 +721,34 @@ def run_agent(start_url: str, profile: Optional[str], max_steps: int = 12,
 # ==============================
 # CLI
 # ==============================
-
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser()
-    ap.add_argument("start_url", help="Where to start (e.g., https://zoom.us)")
+    import sys
+
+    ap = argparse.ArgumentParser(
+        prog="sebastian_privacy_agent.py",
+        description="Agentic navigator to reach Data & Privacy or Settings surfaces."
+    )
+    # Make start_url optional; we'll show a welcome message if missing.
+    ap.add_argument("start_url", nargs="?", help="Where to start (e.g., https://zoom.us)")
     ap.add_argument("--profile", help="Playwright persistent profile dir (keeps sign-in)", default=None)
     ap.add_argument("--max_steps", type=int, default=12)
     ap.add_argument("--query", nargs="*", help="Override goal terms (e.g., Privacy, Data & privacy)")
     args = ap.parse_args()
-    r = run_agent(args.start_url, args.profile, max_steps=args.max_steps, query_terms=args.query)
-    print(json.dumps(r, indent=2))
+
+    if not args.start_url:
+        print(
+            "\n👋 Welcome to the Privacy Data Agent!\n"
+            "This tool auto-navigates to a site's Data & Privacy / Settings pages.\n\n"
+            "Examples:\n"
+            "  python sebastian_privacy_agent.py https://zoom.us/profile --profile ./profiles/chrome\n"
+            "  python sebastian_privacy_agent.py https://app.zoom.us --profile ./profiles/chrome\n"
+            "  python sebastian_privacy_agent.py https://zoom.us/profile/setting --profile ./profiles/chrome\n\n"
+            "Options:\n"
+            "  --profile ./profiles/chrome   Use a persistent profile (keeps you signed in)\n"
+            "  --max_steps 12                Limit the number of navigation steps\n"
+        )
+        sys.exit(0)
+
+    result = run_agent(args.start_url, args.profile, max_steps=args.max_steps, query_terms=args.query)
+    print(json.dumps(result, indent=2))
+
