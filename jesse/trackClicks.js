@@ -100,5 +100,3 @@ const cheerio = require('cheerio');
     await browser.close();
   }
 })();
-
-// huangjesse1@gmail.com
