@@ -29,7 +29,7 @@ const cheerio = require('cheerio');
     // Example: verify you're on the sign-in page
     console.log('Now on sign-in page.');
 
-    // Step 2: Pause and let the user sign in manually
+    // Pause and let the user sign in manually
     url = page.url();
     
     while (url.includes('/signin') || url.includes('/login') || url.includes('/signup')) {
@@ -38,7 +38,7 @@ const cheerio = require('cheerio');
     };
     console.log('Signed in!')
 
-    // Step 3: Continue to profile page (now the hard part)
+    // Continue to profile page (now the hard part)
     console.log('Navigated to profile page.');
 
     
@@ -56,7 +56,7 @@ const cheerio = require('cheerio');
 
         // only include this node in the path if it has both id and some visible text
         let newPath = [...path];
-        if (nodeId && nodeText && clickableTags.includes(node.name)) { // && node.name !== 'div'
+        if (nodeId && nodeText && clickableTags.includes(node.name)) { // && node.name !== 'div' alternative
           newPath.push(nodeId);
         }
 
@@ -89,8 +89,7 @@ const cheerio = require('cheerio');
       console.log("Text not found");
     }
 
-
-    // End of search //
+    // *** End of search *** //
 
     await browser.close();
 
