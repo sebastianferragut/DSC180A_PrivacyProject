@@ -19,7 +19,7 @@ import argparse, time, json, re
 from contextlib import nullcontext
 from urllib.parse import urlparse, urlsplit, urlunsplit, parse_qsl
 from typing import List, Dict, Any, Tuple, Optional, Set
-from collections import defaultdict
+from collections import defaultdict 
 from playwright.sync_api import sync_playwright
 from playwright._impl._errors import TimeoutError as PWTimeout
 
