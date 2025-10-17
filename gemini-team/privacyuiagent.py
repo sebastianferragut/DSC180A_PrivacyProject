@@ -8,14 +8,17 @@
 # ----- IMPORTANT EXPORTS BEFORE RUNNING SCRIPT -----
 # Ensure you have the Gemini API key set in your environment (use this command in the terminal):
 # export GEMINI_API_KEY="your_api_key_here"
-# Required (replace with actual test email account details)
-# export SIGNUP_EMAIL_ADDRESS="your_test_account@gmail.com"
-# export SIGNUP_EMAIL_PASSWORD="your_app_password_or_password"
-# export SIGNUP_EMAIL_PASSWORD_WEB="$SIGNUP_EMAIL_PASSWORD"
-# export SIGNUP_IMAP_SERVER="imap.gmail.com"
-# export SIGNUP_IMAP_PORT=993
-# export SIGNUP_IMAP_FOLDER=INBOX
-# export SIGNUP_IMAP_SSL=true
+
+
+# Paste the below into the terminal before running the script
+# export SIGNUP_EMAIL_ADDRESS="zoomaitester10@gmail.com" \
+# SIGNUP_EMAIL_PASSWORD="ZoomTestPass" \
+# SIGNUP_EMAIL_PASSWORD_WEB="$SIGNUP_EMAIL_PASSWORD" \
+# SIGNUP_IMAP_SERVER="imap.gmail.com" \
+# SIGNUP_IMAP_PORT=993 \
+# SIGNUP_IMAP_FOLDER=INBOX \
+# SIGNUP_IMAP_SSL=true
+# ----------------------------------------------------
 
 # Run the script using python privacyuiagent.py, and minimize the terminal window
 # so the agent can see the desktop.
@@ -277,32 +280,56 @@ def call_model_with_retries(client, model, contents, config, max_retries=4):
             delay *= 2
 
 def execute_function_calls(candidate) -> List[Tuple[str, Dict, FunctionCall]]:
-    """Parses Gemini response and executes actions."""
     results = []
     function_calls: List[FunctionCall] = [p.function_call for p in candidate.content.parts if p.function_call]
-    
+
+    # Detect which calls are safety-gated
+    safety_flags = {}
+    for fc in function_calls:
+        args = fc.args or {}
+        sd = args.get("safety_decision") or getattr(fc, "safety_decision", None)
+        safety_flags[fc.id] = (isinstance(sd, dict) and sd.get("decision") == "require_confirmation", sd)
+
+    # If ANY safety-gated present this turn, DO NOT execute anything.
+    # Instead, return FunctionResponses for ALL calls:
+    if any(flag for flag, _ in safety_flags.values()):
+        for fc in function_calls:
+            fname = fc.name
+            flag, sd = safety_flags[fc.id]
+            if flag:
+                # ACK this call
+                results.append((
+                    fname,
+                    {
+                        "ack_only": True,
+                        "safety_ack_payload": {
+                            "id": fc.id,
+                            "name": fname,
+                            "response": {
+                                "safety_decision": {
+                                    "decision": "proceed",
+                                    "user_confirmation": "approved",
+                                    "explanation": (sd or {}).get("explanation", "")
+                                }
+                            }
+                        }
+                    },
+                    fc
+                ))
+            else:
+                # Defer non-gated calls in the same turn
+                results.append((
+                    fname,
+                    {"deferred": True},  # marker for response building
+                    fc
+                ))
+        return results
+
+    # No safety ACKs → normal execution path
     for fc in function_calls:
         fname = fc.name
         args = fc.args or {}
         action_result = {}
-
-        # -------- SAFETY DECISION HANDSHAKE --------
-        safety_decision = args.get("safety_decision")
-        if safety_decision and isinstance(safety_decision, dict) and safety_decision.get("decision") == "require_confirmation":
-            print(f"  Safety confirmation requested for {fname}: {safety_decision.get('explanation','')}")
-            # ACK only; do NOT execute anything on this turn.
-            results.append((
-                fname,
-                {
-                    "ack_only": True,
-                    "safety_decision": safety_decision,
-                    "user_confirmation": "approved"
-                },
-                fc
-            ))
-            continue
-        # -------------------------------------------
-
         print(f"  Executing > {fname}({args})")
         try:
             if fname == "click_at":
@@ -384,17 +411,32 @@ def execute_function_calls(candidate) -> List[Tuple[str, Dict, FunctionCall]]:
             elif fname == "provide_signup_password":
                 action_result = provide_signup_password()
 
+            elif fname == "scroll_document":
+                # Scroll the main document content area (center of window by default)
+                # Model may pass direction ('down'|'up') and magnitude (pixels/lines).
+                direction = (args.get("direction") or "down").lower()
+                magnitude = int(args.get("magnitude", 300))
+
+                # Aim to place the cursor in the main content region; center of screen is a decent default.
+                x = denormalize(args.get("x", 500), SCREEN_WIDTH)
+                y = denormalize(args.get("y", 600), SCREEN_HEIGHT)  # slightly below center
+
+                pyautogui.moveTo(x, y, duration=0.2)
+                pyautogui.scroll(-abs(magnitude) if direction == "down" else abs(magnitude))
+                action_result = {"status": "success", "scrolled": direction, "magnitude": magnitude, "x": x, "y": y}
+
+
             else:
                 print(f"Warning: Skipping unimplemented function {fname}")
                 action_result = {"error": f"Function {fname} not implemented locally."}
 
         except Exception as e:
-            print(f"Error executing {fname}: {e}")
             action_result = {"error": str(e)}
-
         results.append((fname, action_result, fc))
     return results
 
+
+        
 # --- Planning (unchanged) ---
 def generate_plan(client, user_prompt: str, screenshot_bytes: bytes, config) -> str:
     planning_prompt = f"""
@@ -512,20 +554,20 @@ def run_agent():
             system_instruction=f"""You are an agent operating a {DEVICE_TYPE} computer with a web browser.
                                 1. Your first action MUST be to call `open_browser_and_navigate` to launch the browser.
                                 2. Rely entirely on visual feedback. Use your built-in Computer Use actions (mouse move, click, type, mouse wheel, trackpad scroll, PgDown/PgUp). Do NOT call any custom scroll helpers.
-                                3. During signup, use the Google sign-in flow via the provided tools (provide_signup_email / provide_signup_password).
-                                4. If the UI asks for a Zoom verification code, call `wait_for_zoom_code` and enter the code or open the link.
-
-                                Left-nav termination flow (MANDATORY):
+                                3. During signup, use the Google sign-in flow via the provided tools (provide_signup_email / provide_signup_password, always use these on a gmail or google account tab).
+                                4. If the UI asks for a Zoom verification code, open a Gmail tab and fetch the code from the latest mail.
+                                5. To delete the Zoom account, follow this exact procedure:
                                 - Expand **Admin** (if present).
                                 - Click **Account Management**.
                                 - Then REPEATEDLY SCROLL the **left navigation** with small wheel strokes within the nav pane until **Account Profile** is visible. KEEP SCROLLING until it is visible. Re-scan after each small scroll.
                                 - Click **Account Profile**.
-                                - In the main content, perform small incremental scrolls to find **Terminate my account**, then click it.
+                                - In the main content, perform small incremental scrolls to find a Terminate button, then click it.
                                 - If a confirmation flow requires **Send Code**, click it, open Gmail, fetch the code, return, paste, and confirm.
 
-                                Rules:
+                                Rules (MANDATORY):
                                 - Prefer small, repeated scrolls to large jumps; if not visible, keep scrolling a bit more and re-scan the left nav.
                                 - Do NOT use “My Account → Profile” unless “Admin” is missing entirely.
+                                - Do NOT use "Meetings" or other irrelevant sections.
                                 - After every click or scroll, re-check the visible text to decide the next action.
             """
         )
@@ -551,7 +593,7 @@ I will now execute the following plan. I will perform all actions within the bro
         ]
 
         # 3. Interaction Loop
-        MAX_TURNS = 30
+        MAX_TURNS = 40
         for turn in range(1, MAX_TURNS + 1):
             print(f"--- Turn {turn} ---")
             time.sleep(2)
@@ -594,46 +636,52 @@ I will now execute the following plan. I will perform all actions within the bro
 
             # Build function responses
             function_response_parts = []
+            has_ack = any(isinstance(r, dict) and r.get("ack_only") for _, r, _ in action_results)
+
             for fname, result, fcall in action_results:
-                # ACK-only branch (safety handshake)
                 if isinstance(result, dict) and result.get("ack_only"):
+                    ack = result["safety_ack_payload"]
                     fr = types.FunctionResponse(
-                        name=fname,
-                        response={
-                            "acknowledged": True,
-                            "user_confirmation": result.get("user_confirmation", "approved"),
-                            "safety_decision": result.get("safety_decision", {})
-                        },
+                        id=ack["id"],              # MUST match the request call id
+                        name=ack["name"],          # MUST match the request call name
+                        response=ack["response"],  # includes safety_decision.decision="proceed"
                     )
                     function_response_parts.append(fr)
-                    continue
-
-                # Normal tool response branch
-                url = current_page_url()
-                base_ack = {
-                    "function_name": fname,
-                    "acknowledged": True,
-                    "url": url,
-                    "page_url": url,
-                    "result": result if isinstance(result, dict) else {"result": str(result)}
-                }
-
-                new_screenshot = get_screenshot_bytes()
-                fr = types.FunctionResponse(
-                    name=fname,
-                    response=base_ack,
-                    parts=[
-                        types.FunctionResponsePart(
+                elif isinstance(result, dict) and result.get("deferred"):
+                    # Non-gated call in a safety turn: return a stub response (no execution)
+                    fr = types.FunctionResponse(
+                        id=fcall.id,
+                        name=fname,
+                        response={"status": "deferred_due_to_safety_ack"},
+                    )
+                    function_response_parts.append(fr)
+                else:
+                    # Normal executed call
+                    url = current_page_url()
+                    base_ack = {
+                        "function_name": fname,
+                        "acknowledged": True,
+                        "url": url,
+                        "page_url": url,
+                        "result": result if isinstance(result, dict) else {"result": str(result)}
+                    }
+                    new_screenshot = get_screenshot_bytes()
+                    fr = types.FunctionResponse(
+                        id=fcall.id,               # tie response to the exact call
+                        name=fname,                # MUST equal the original function call name
+                        response=base_ack,
+                        parts=[types.FunctionResponsePart(
                             inline_data=types.FunctionResponseBlob(
                                 mime_type="image/png",
                                 data=new_screenshot
                             )
-                        )
-                    ],
-                )
-                function_response_parts.append(fr)
+                        )],
+                    )
+                    function_response_parts.append(fr)
 
             chat_history.append(Content(role="user", parts=[Part(function_response=fr) for fr in function_response_parts]))
+
+
 
         print("--- Agent session finished ---")
         if playwright_context.get("context"):
