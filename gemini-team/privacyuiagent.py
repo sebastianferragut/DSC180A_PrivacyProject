@@ -9,25 +9,20 @@
 # Ensure you have the Gemini API key set in your environment (use this command in the terminal):
 # export GEMINI_API_KEY="your_api_key_here"
 
-
 # Paste the below into the terminal before running the script
 # export SIGNUP_EMAIL_ADDRESS="zoomaitester10@gmail.com" \
 # SIGNUP_EMAIL_PASSWORD="ZoomTestPass" \
-# SIGNUP_EMAIL_PASSWORD_WEB="$SIGNUP_EMAIL_PASSWORD" \
-# SIGNUP_IMAP_SERVER="imap.gmail.com" \
-# SIGNUP_IMAP_PORT=993 \
-# SIGNUP_IMAP_FOLDER=INBOX \
-# SIGNUP_IMAP_SSL=true
+# SIGNUP_EMAIL_PASSWORD_WEB="$SIGNUP_EMAIL_PASSWORD"
 # ----------------------------------------------------
 
 # Run the script using python privacyuiagent.py, and minimize the terminal window
 # so the agent can see the desktop.
 
 # Be sure to set "DEVICE_TYPE" variable below to your actual device type.
+
 import sys 
 import time
-import os, imaplib, email, re, random
-from email.header import decode_header
+import os, re, random
 import io
 from typing import Any, Dict, List, Tuple
 from datetime import datetime
@@ -76,6 +71,48 @@ def current_page_url() -> str:
         pass
     return ""
 
+def _extract_safety_decision(fc):
+    try:
+        sd = getattr(fc, "safety_decision", None)
+        if isinstance(sd, dict) and sd.get("decision"):
+            return sd
+        args = getattr(fc, "args", None) or {}
+        sd = args.get("safety_decision")
+        if isinstance(sd, dict) and sd.get("decision"):
+            return sd
+        if isinstance(sd, dict) and isinstance(sd.get("safety_decision"), dict):
+            inner = sd["safety_decision"]
+            if inner.get("decision"):
+                return inner
+    except Exception:
+        pass
+    return None
+
+def _get_function_call_id(part) -> str:
+    try:
+        fc = getattr(part, "function_call", None)
+        cid = getattr(fc, "id", None)
+        if cid:
+            return cid
+        cid = getattr(part, "id", None)
+        if cid:
+            return cid
+        cid = getattr(part, "function_call_id", None)
+        if cid:
+            return cid
+        if hasattr(part, "to_dict"):
+            d = part.to_dict()
+            cid = (
+                d.get("functionCall", {}, {}).get("id")
+                or d.get("function_call", {}, {}).get("id")
+                or d.get("id")
+            )
+            if cid:
+                return cid
+    except Exception:
+        pass
+    return None
+
 def get_screenshot_bytes() -> bytes:
     screenshot = pyautogui.screenshot()
     img_byte_arr = io.BytesIO()
@@ -84,6 +121,36 @@ def get_screenshot_bytes() -> bytes:
 
 def denormalize(value: int, max_value: int) -> int:
     return int((value * max_value) / cuse_grid)
+
+# --- Playwright semantic click helper (dialog-aware; avoids coord clicks) ---
+def pw_click_button_by_text(text: str, timeout_ms: int = 15000) -> dict:
+    try:
+        pg: Page = playwright_context.get("page")
+        if not pg:
+            return {"status": "error", "message": "No active page"}
+
+        # 1) Prefer modal/dialog scope if present (prevents overlay intercepts)
+        try:
+            dialog = pg.get_by_role("dialog").filter(has_text=re.compile(r".*", re.S)).first
+            dialog.wait_for(state="visible", timeout=1500)
+            btn = dialog.get_by_role("button", name=text, exact=True)
+            if btn.count():
+                btn.first.click(timeout=timeout_ms)
+                return {"status": "success", "clicked": text, "scope": "dialog"}
+        except Exception:
+            pass
+
+        # 2) Fallback: page buttons/links/text locators
+        loc = pg.get_by_role("button", name=text, exact=True)
+        if not loc or not loc.count():
+            loc = pg.get_by_role("link", name=text, exact=True)
+        if not loc or not loc.count():
+            loc = pg.locator(f"text={text}")
+        loc.first.wait_for(state="visible", timeout=timeout_ms)
+        loc.first.click(timeout=timeout_ms)
+        return {"status": "success", "clicked": text, "scope": "page"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 def open_browser_and_navigate(url: str) -> Dict[str, str]:
     try:
@@ -153,9 +220,7 @@ def save_consent_screenshot() -> Dict[str, Any]:
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-# --- Email / IMAP Helpers 
-ZOOM_CODE_RE = re.compile(r"\b(\d{6})\b")
-
+# --- Minimal email helpers (web UI only) ---
 def provide_signup_email() -> Dict[str, str]:
     addr = os.environ.get("SIGNUP_EMAIL_ADDRESS", "").strip()
     if not addr:
@@ -170,101 +235,7 @@ def provide_signup_password() -> Dict[str, str]:
         return {"status": "error", "message": "No SIGNUP_EMAIL_PASSWORD_WEB or SIGNUP_EMAIL_PASSWORD found"}
     return {"status": "success", "password": pwd_web}
 
-def _connect_imap():
-    host = os.environ.get("SIGNUP_IMAP_SERVER", "").strip()
-    port = int(os.environ.get("SIGNUP_IMAP_PORT", "993"))
-    user = os.environ.get("SIGNUP_EMAIL_ADDRESS", "").strip()
-    pwd  = os.environ.get("SIGNUP_EMAIL_PASSWORD", "").strip()
-    if not (host and user and pwd):
-        raise RuntimeError("Missing IMAP env vars SIGNUP_IMAP_SERVER / SIGNUP_EMAIL_ADDRESS / SIGNUP_EMAIL_PASSWORD")
-    M = imaplib.IMAP4_SSL(host, port)
-    M.login(user, pwd)
-    return M
-
-def _decode_hdr(val):
-    if not val: return ""
-    parts = decode_header(val)
-    out = []
-    for s, enc in parts:
-        out.append(s.decode(enc or "utf-8", errors="ignore") if isinstance(s, bytes) else s)
-    return "".join(out)
-
-def _parse_message_for_code(msg) -> Dict[str, str]:
-    text = ""
-    if msg.is_multipart():
-        for part in msg.walk():
-            ctype = part.get_content_type()
-            if ctype in ("text/plain", "text/html"):
-                try:
-                    text += part.get_payload(decode=True).decode(part.get_content_charset() or "utf-8", errors="ignore")
-                except Exception:
-                    pass
-    else:
-        try:
-            text = msg.get_payload(decode=True).decode(msg.get_content_charset() or "utf-8", errors="ignore")
-        except Exception:
-            text = str(msg.get_payload())
-
-    m = ZOOM_CODE_RE.search(text)
-    if m:
-        return {"code": m.group(1)}
-
-    m2 = re.search(r"https://\S+", text)
-    if m2:
-        return {"link": m2.group(0).rstrip(").,>")}
-    return {}
-
-def wait_for_zoom_code(max_wait_seconds: int = 180, poll_interval: int = 5) -> Dict[str, str]:
-    folder = os.environ.get("SIGNUP_IMAP_FOLDER", "INBOX")
-    start = time.time()
-    last_uid_seen = None
-    try:
-        M = _connect_imap()
-        M.select(folder)
-        typ, data = M.uid('search', None, 'ALL')
-        if typ == 'OK' and data and data[0]:
-            uids = data[0].split()
-            last_uid_seen = uids[-1] if uids else None
-
-        while time.time() - start < max_wait_seconds:
-            time.sleep(poll_interval)
-            M.select(folder)
-            search_crit = f'(UID {int(last_uid_seen)+1}:*)' if last_uid_seen else 'ALL'
-            typ, data = M.uid('search', None, search_crit)
-            if typ != 'OK':
-                continue
-            new_uids = [u for u in (data[0].split() if data and data[0] else [])]
-            if not new_uids:
-                continue
-
-            for uid in new_uids:
-                typ, msg_data = M.uid('fetch', uid, '(RFC822)')
-                if typ != 'OK' or not msg_data or not msg_data[0]:
-                    continue
-                raw = msg_data[0][1]
-                msg = email.message_from_bytes(raw)
-
-                subj = _decode_hdr(msg.get('Subject', ''))
-                from_ = _decode_hdr(msg.get('From', ''))
-                if not re.search(r"zoom", f"{subj} {from_}", re.I):
-                    continue
-
-                parsed = _parse_message_for_code(msg)
-                if "code" in parsed or "link" in parsed:
-                    try: M.logout()
-                    except Exception: pass
-                    return {"status": "success", **parsed}
-
-            last_uid_seen = new_uids[-1]
-
-        try: M.logout()
-        except Exception: pass
-        return {"status": "error", "message": "Timed out waiting for Zoom code"}
-    except Exception as e:
-        return {"status": "error", "message": f"IMAP error: {e}"}
-
 # --- Action Execution Loop ---
-
 def call_model_with_retries(client, model, contents, config, max_retries=4):
     delay = 1.0
     for attempt in range(1, max_retries + 1):
@@ -281,30 +252,44 @@ def call_model_with_retries(client, model, contents, config, max_retries=4):
 
 def execute_function_calls(candidate) -> List[Tuple[str, Dict, FunctionCall]]:
     results = []
-    function_calls: List[FunctionCall] = [p.function_call for p in candidate.content.parts if p.function_call]
+    wrapped_calls = []
+    for p in candidate.content.parts:
+        fc = getattr(p, "function_call", None)
+        if not fc:
+            continue
+        call_id = _get_function_call_id(p)
+        wrapped_calls.append({"part": p, "fc": fc, "id": call_id})
 
-    # Detect which calls are safety-gated
-    safety_flags = {}
-    for fc in function_calls:
-        args = fc.args or {}
-        sd = args.get("safety_decision") or getattr(fc, "safety_decision", None)
-        safety_flags[fc.id] = (isinstance(sd, dict) and sd.get("decision") == "require_confirmation", sd)
+    # Detect gating
+    any_gated = False
+    missing_id_for_gated = False
+    call_meta = []
+    for wc in wrapped_calls:
+        fc = wc["fc"]
+        sd = _extract_safety_decision(fc)
+        gated = bool(sd and sd.get("decision") in ("require_confirmation", "block"))
+        call_meta.append({"wc": wc, "sd": sd, "gated": gated})
+        if gated:
+            any_gated = True
+            if not wc["id"]:
+                missing_id_for_gated = True
 
-    # If ANY safety-gated present this turn, DO NOT execute anything.
-    # Instead, return FunctionResponses for ALL calls:
-    if any(flag for flag, _ in safety_flags.values()):
-        for fc in function_calls:
-            fname = fc.name
-            flag, sd = safety_flags[fc.id]
-            if flag:
-                # ACK this call
+    if any_gated and missing_id_for_gated:
+        print("[Safety] Gated call(s) missing id; requesting re-emit without coordinate clicks.")
+        return [("__RETRY_WITH_TEXT__", {"reason": "gated_missing_id"}, None)]
+
+    if any_gated:
+        for meta in call_meta:
+            wc, sd, gated = meta["wc"], meta["sd"], meta["gated"]
+            fc, call_id, name = wc["fc"], wc["id"], wc["fc"].name
+            if gated:
                 results.append((
-                    fname,
+                    name,
                     {
                         "ack_only": True,
                         "safety_ack_payload": {
-                            "id": fc.id,
-                            "name": fname,
+                            "id": call_id,
+                            "name": name,
                             "response": {
                                 "safety_decision": {
                                     "decision": "proceed",
@@ -317,18 +302,14 @@ def execute_function_calls(candidate) -> List[Tuple[str, Dict, FunctionCall]]:
                     fc
                 ))
             else:
-                # Defer non-gated calls in the same turn
-                results.append((
-                    fname,
-                    {"deferred": True},  # marker for response building
-                    fc
-                ))
+                results.append((name, {"deferred": True}, fc))
         return results
 
     # No safety ACKs → normal execution path
-    for fc in function_calls:
+    for wc in wrapped_calls:
+        fc = wc["fc"]
         fname = fc.name
-        args = fc.args or {}
+        args = getattr(fc, "args", {}) or {}
         action_result = {}
         print(f"  Executing > {fname}({args})")
         try:
@@ -337,6 +318,7 @@ def execute_function_calls(candidate) -> List[Tuple[str, Dict, FunctionCall]]:
                 y = denormalize(args["y"], SCREEN_HEIGHT)
                 pyautogui.moveTo(x, y, duration=0.3)
                 pyautogui.click()
+                action_result = {"status": "success", "x": x, "y": y}
 
             elif fname == "type_text_at":
                 x = denormalize(args["x"], SCREEN_WIDTH)
@@ -352,31 +334,28 @@ def execute_function_calls(candidate) -> List[Tuple[str, Dict, FunctionCall]]:
                 pyautogui.write(text, interval=0.05)
                 if press_enter:
                     pyautogui.press('enter')
+                action_result = {"status": "success", "typed_len": len(text), "press_enter": press_enter}
 
             elif fname == "key_combination":
                 keys = args["keys"].lower().split('+')
                 key_map = {"control": "ctrl", "command": "cmd", "windows": "win"}
                 mapped_keys = [key_map.get(k, k) for k in keys]
                 pyautogui.hotkey(*mapped_keys)
+                action_result = {"status": "success", "keys": mapped_keys}
 
             elif fname == "wait_5_seconds":
-                pass
+                time.sleep(5)
+                action_result = {"status": "success"}
 
-            # ==== NEW: implement built-in Computer Use scroll ====
             elif fname == "scroll_at":
-                # Model provides normalized x,y, direction ('down'|'up'), and magnitude
                 x = denormalize(args.get("x", 500), SCREEN_WIDTH)
                 y = denormalize(args.get("y", 500), SCREEN_HEIGHT)
                 direction = (args.get("direction") or "down").lower()
                 magnitude = int(args.get("magnitude", 200))
-                # Focus the intended pane by moving mouse there, then wheel
                 pyautogui.moveTo(x, y, duration=0.2)
-                # pyautogui.scroll: positive scrolls up, negative scrolls down
-                scroll_amount = -magnitude if direction == "down" else magnitude
-                pyautogui.scroll(scroll_amount)
+                pyautogui.scroll(-magnitude if direction == "down" else magnitude)
                 action_result = {"status": "success", "scrolled": direction, "magnitude": magnitude, "x": x, "y": y}
 
-            # Some model variants may emit 'wheel' or 'page_scroll'
             elif fname in ("wheel", "page_scroll"):
                 dy = int(args.get("dy", args.get("magnitude", 200)))
                 direction = "down" if dy > 0 else "up"
@@ -396,35 +375,29 @@ def execute_function_calls(candidate) -> List[Tuple[str, Dict, FunctionCall]]:
             elif fname == "provide_signup_email":
                 action_result = provide_signup_email()
 
-            elif fname == "pw_navigate" or fname == "navigate":  # alias 'navigate' to pw_navigate
+            elif fname in ("pw_navigate", "navigate"):
                 action_result = pw_navigate(args["url"])
 
             elif fname == "pw_go_back":
                 steps = int(args.get("steps", 1))
                 action_result = pw_go_back(steps)
 
-            elif fname == "wait_for_zoom_code":
-                max_wait = int(args.get("max_wait_seconds", 180))
-                poll = int(args.get("poll_interval", 5))
-                action_result = wait_for_zoom_code(max_wait, poll)
-
             elif fname == "provide_signup_password":
                 action_result = provide_signup_password()
 
             elif fname == "scroll_document":
-                # Scroll the main document content area (center of window by default)
-                # Model may pass direction ('down'|'up') and magnitude (pixels/lines).
                 direction = (args.get("direction") or "down").lower()
                 magnitude = int(args.get("magnitude", 300))
-
-                # Aim to place the cursor in the main content region; center of screen is a decent default.
                 x = denormalize(args.get("x", 500), SCREEN_WIDTH)
-                y = denormalize(args.get("y", 600), SCREEN_HEIGHT)  # slightly below center
-
+                y = denormalize(args.get("y", 600), SCREEN_HEIGHT)
                 pyautogui.moveTo(x, y, duration=0.2)
                 pyautogui.scroll(-abs(magnitude) if direction == "down" else abs(magnitude))
                 action_result = {"status": "success", "scrolled": direction, "magnitude": magnitude, "x": x, "y": y}
 
+            elif fname == "click_button_by_text":
+                txt = args["text"]
+                to = int(args.get("timeout_ms", 15000))
+                action_result = pw_click_button_by_text(txt, to)
 
             else:
                 print(f"Warning: Skipping unimplemented function {fname}")
@@ -432,11 +405,12 @@ def execute_function_calls(candidate) -> List[Tuple[str, Dict, FunctionCall]]:
 
         except Exception as e:
             action_result = {"error": str(e)}
-        results.append((fname, action_result, fc))
+
+        # Keep returning the original fc so your FunctionResponse builder can tie screenshots, etc.
+        results.append((fname, action_result, fc, wc["id"]))
+
     return results
 
-
-        
 # --- Planning (unchanged) ---
 def generate_plan(client, user_prompt: str, screenshot_bytes: bytes, config) -> str:
     planning_prompt = f"""
@@ -455,7 +429,7 @@ PLAN:
 2. [Second step with specific details]
 ...
 
-Be specific about what buttons to click, what text to type, and what to look for in the UI.
+Be specific about what buttons to click, what text to type, and what to look for in the UI. Refer to the system_instruction for context on operating the computer and browser.
 """
     try:
         planning_config = types.GenerateContentConfig(
@@ -490,20 +464,14 @@ def run_agent():
         print("Starting agent... The browser window will appear shortly.")
         print("Please do not interact with the mouse or keyboard during operation.")
         
-        # 1. Define Tools (no scroll helpers declared—Computer Use will decide calls;
-        # we just implement them when they arrive, like scroll_at.)
+        # 1. Define Tools (IMAP removed; manual Gmail fallback only)
         custom_tools = [
             types.FunctionDeclaration(
                 name="open_browser_and_navigate",
                 description="Launches a new Chromium browser window and navigates to the specified URL. Call this first.",
                 parameters={
                     "type": "object",
-                    "properties": {
-                        "url": {
-                            "type": "string",
-                            "description": "The URL to navigate to (e.g., 'https://zoom.us/signup')."
-                        }
-                    },
+                    "properties": {"url": {"type": "string", "description": "e.g., 'https://zoom.us/signup'"}},
                     "required": ["url"]
                 }
             ),
@@ -516,17 +484,6 @@ def run_agent():
                 name="provide_signup_email",
                 description="Returns the email address to use for signup.",
                 parameters={"type": "object", "properties": {}}
-            ),
-            types.FunctionDeclaration(
-                name="wait_for_zoom_code",
-                description="Polls the test inbox for a Zoom verification email and returns a 6-digit code or a verification link.",
-                parameters={
-                    "type": "object",
-                    "properties": {
-                        "max_wait_seconds": {"type": "integer", "default": 180},
-                        "poll_interval": {"type": "integer", "default": 5}
-                    }
-                }
             ),
             types.FunctionDeclaration(
                 name="pw_navigate",
@@ -543,33 +500,60 @@ def run_agent():
                 description="Returns the web password for the Gmail account used to sign in at accounts.google.com.",
                 parameters={"type": "object", "properties": {}}
             ),
-            # NOTE: We do NOT declare scroll_at here; it comes from Computer Use tool.
+            types.FunctionDeclaration(
+                name="click_button_by_text",
+                description="Clicks a visible button/link by exact text using Playwright (avoids coordinate clicks).",
+                parameters={
+                    "type": "object",
+                    "properties": {
+                        "text": {"type": "string", "description": "Exact label, e.g., 'Create Account', 'Send Code', 'Delete'"},
+                        "timeout_ms": {"type": "integer", "default": 15000}
+                    },
+                    "required": ["text"]
+                }
+            )
         ]
 
         config = types.GenerateContentConfig(
             tools=[
                 types.Tool(computer_use=types.ComputerUse()),
                 types.Tool(function_declarations=custom_tools)
-            ],
-            system_instruction=f"""You are an agent operating a {DEVICE_TYPE} computer with a web browser.
-                                1. Your first action MUST be to call `open_browser_and_navigate` to launch the browser.
-                                2. Rely entirely on visual feedback. Use your built-in Computer Use actions (mouse move, click, type, mouse wheel, trackpad scroll, PgDown/PgUp). Do NOT call any custom scroll helpers.
-                                3. During signup, use the Google sign-in flow via the provided tools (provide_signup_email / provide_signup_password, always use these on a gmail or google account tab).
-                                4. If the UI asks for a Zoom verification code, open a Gmail tab and fetch the code from the latest mail.
-                                5. To delete the Zoom account, follow this exact procedure:
-                                - Expand **Admin** (if present).
-                                - Click **Account Management**.
-                                - Then REPEATEDLY SCROLL the **left navigation** with small wheel strokes within the nav pane until **Account Profile** is visible. KEEP SCROLLING until it is visible. Re-scan after each small scroll.
-                                - Click **Account Profile**.
-                                - In the main content, perform small incremental scrolls to find a Terminate button, then click it.
-                                - If a confirmation flow requires **Send Code**, click it, open Gmail, fetch the code, return, paste, and confirm.
+            ],  system_instruction=f"""You are an agent operating a {DEVICE_TYPE} computer with a web browser.
+Rules (You must follow these exactly):
+- Rely entirely on visual feedback. Use your built-in Computer Use actions (mouse move, click, type, mouse wheel, trackpad scroll, PgDown/PgUp). Do NOT call any custom scroll helpers. Only use small scrolls.
+- Avoid coordinate clicks when creating or terminating the account; prefer `click_button_by_text`.
+SCROLLING POLICY (MANDATORY):
 
-                                Rules (MANDATORY):
-                                - Prefer small, repeated scrolls to large jumps; if not visible, keep scrolling a bit more and re-scan the left nav.
-                                - Do NOT use “My Account → Profile” unless “Admin” is missing entirely.
-                                - Do NOT use "Meetings" or other irrelevant sections.
-                                - After every click or scroll, re-check the visible text to decide the next action.
-            """
+
+• Treat every scroll as a micro-step. After ONE small scroll, STOP and re-scan the viewport for target text before scrolling again.
+• Use only small increments. When emitting built-in scroll calls (scroll_at / wheel / page_scroll), set magnitude/dy to a small value (≈ 80–120 px).
+• Do not alternate rapidly up/down. If two consecutive scans don’t reveal progress toward the target, pause and try: collapse/expand sections, click “Admin” to expand, or use the left-nav scrollbar track precisely rather than large page scrolls.
+• When aiming for "Admin" → "Account Management" → "Account Profile":
+ - First try clicking visible items.
+ - If not visible, perform at most THREE small scrolls in the left nav, re-checking after each.
+ - If still not visible, slightly adjust the scroll anchor (hover the nav area and scroll again).
+• Never perform large continuous scrolling. Avoid sending repeated scrolls without a scan in between.
+• As soon as the target text is visible, CLICK it and stop scrolling (unless the next option requires a small scroll down).
+
+
+- If any action is safety-gated and the function call lacks an id, re-issue with a function_call.id and avoid coordinate-based clicks.
+1) Your first action MUST be to call `open_browser_and_navigate` to launch the browser with the url https://zoom.us/signup.
+2) Use Google sign-in for account creation:
+  - Call `provide_signup_email` and `provide_signup_password` to fill fields on accounts.google.com.
+  - Click "Next" (do not click "Forgot password").
+  - Click the "Create Account" button on Zoom, try using 'click_button_by_text' with label "Create Account" first.
+3) STRICTLY FOLLOW THESE STEPS to delete the Zoom account:
+  - Expand "Admin" (if present) → "Account Management".
+  - Scroll the **left nav** in small increments until **"Account Profile"** is visible. Re-scan after each small scroll. CRITICAL STEP: Do NOT make large scroll jumps. You may get stuck in a loop
+  if you skip over the desired item. Scroll slowly and check frequently.
+  - Click **"Account Profile"**.
+  - In the main content, click **"Terminate my account"**.
+4) A modal dialog will open:
+  - Click **"Send Code"** (inside the dialog).
+  - Without closing the Zoom tab, open Gmail in a **new tab** (navigate to https://mail.google.com), sign in if needed (use the same tools), find the Zoom message and copy the 6-digit code manually from the email content.
+  - Switch back to the Zoom tab, paste the code into the dialog field, and click the confirmation button (e.g., **"Delete"**, **"Confirm"**).
+"""
+
         )
 
         # 2. Initialize Chat
@@ -616,7 +600,7 @@ I will now execute the following plan. I will perform all actions within the bro
             if model_response.parts and getattr(model_response.parts[0], "text", None):
                 print(f"🤖 Agent: {model_response.parts[0].text.strip()}")
 
-            # If no function calls, possibly nudge when on Account Management
+            # Nudge on Account Management if the model paused
             if not any(p.function_call for p in model_response.parts):
                 url_now = current_page_url() or ""
                 if ("account" in url_now.lower() and "management" in url_now.lower()) or "zoom.us/account" in url_now.lower():
@@ -625,7 +609,7 @@ I will now execute the following plan. I will perform all actions within the bro
                         parts=[Part(text=(
                             "If Account Profile is not visible in the left navigation, use your built-in mouse wheel "
                             "to perform small repeated scrolls within the left nav until you can see and click "
-                            "“Account Profile”. Do not stop scrolling early; re-scan the left nav after each small scroll."
+                            "“Account Profile”. Re-scan the left nav after each small scroll."
                         ))]
                     ))
                     continue
@@ -634,54 +618,120 @@ I will now execute the following plan. I will perform all actions within the bro
                 
             action_results = execute_function_calls(response.candidates[0])
 
-            # Build function responses
+            # If execute_function_calls asked for a retry via text, don't send FunctionResponses
+            if len(action_results) == 1 and action_results[0][0] == "__RETRY_WITH_TEXT__":
+                chat_history.append(Content(
+                    role="user",
+                    parts=[Part(text=(
+                        "Safety requirement: I could not acknowledge your last tool call because it lacked a function_call.id. "
+                        "Please re-issue the action without using coordinate-based clicks.\n\n"
+                        "Specifically: do NOT use click_at. Instead, call the tool `click_button_by_text` "
+                        "with the exact visible label (e.g., 'Create Account', 'Send Code', 'Delete'). "
+                        "If you must use a tool call, ensure it includes a function_call.id."
+                    ))]
+                ))
+                # Optional shims
+                try:
+                    pg = playwright_context.get("page")
+                    url_now = (pg.url or "") if pg else ""
+                    if pg and "zoom.us/account" in url_now:
+                        for label in ["Send Code", "Terminate my account", "Delete", "Confirm"]:
+                            shim = pw_click_button_by_text(label, 8000)
+                            print(f"[Shim] {label}:", shim)
+                            if shim.get("status") == "success":
+                                break
+                except Exception as e:
+                    print("[Shim error]", e)
+                continue
+
+            # Build FunctionResponses
             function_response_parts = []
-            has_ack = any(isinstance(r, dict) and r.get("ack_only") for _, r, _ in action_results)
+            names_emitted = []
 
-            for fname, result, fcall in action_results:
-                if isinstance(result, dict) and result.get("ack_only"):
-                    ack = result["safety_ack_payload"]
-                    fr = types.FunctionResponse(
-                        id=ack["id"],              # MUST match the request call id
-                        name=ack["name"],          # MUST match the request call name
-                        response=ack["response"],  # includes safety_decision.decision="proceed"
-                    )
-                    function_response_parts.append(fr)
-                elif isinstance(result, dict) and result.get("deferred"):
-                    # Non-gated call in a safety turn: return a stub response (no execution)
-                    fr = types.FunctionResponse(
-                        id=fcall.id,
-                        name=fname,
-                        response={"status": "deferred_due_to_safety_ack"},
-                    )
-                    function_response_parts.append(fr)
+            for item in action_results:
+                if len(item) == 4:
+                    fname, result, fcall, call_id = item
                 else:
-                    # Normal executed call
-                    url = current_page_url()
-                    base_ack = {
-                        "function_name": fname,
-                        "acknowledged": True,
-                        "url": url,
-                        "page_url": url,
-                        "result": result if isinstance(result, dict) else {"result": str(result)}
-                    }
-                    new_screenshot = get_screenshot_bytes()
+                    fname, result, fcall = item
+                    call_id = getattr(fcall, "id", None)
+
+                names_emitted.append(fname)
+
+                try:
+                    # Normalize response name: respond as pw_navigate if model used 'navigate'
+                    response_name = fname
+
+                    if isinstance(result, dict) and result.get("ack_only"):
+                        ack = result["safety_ack_payload"]
+                        rn = ack["name"]
+                        fr = types.FunctionResponse(
+                            id=ack["id"],
+                            name=rn,
+                            response=ack["response"],
+                        )
+                        function_response_parts.append(fr)
+
+                    elif isinstance(result, dict) and result.get("deferred"):
+                        exec_id = call_id or getattr(fcall, "id", None) or f"deferred-{fname}-{int(time.time()*1000)}"
+                        fr = types.FunctionResponse(
+                            id=exec_id,
+                            name=response_name,
+                            response={"status": "deferred_due_to_safety_ack"},
+                        )
+                        function_response_parts.append(fr)
+
+                    else:
+                        url = current_page_url()
+                        base_ack = {
+                            "function_name": fname,
+                            "acknowledged": True,
+                            "url": url,
+                            "page_url": url,
+                            "result": result if isinstance(result, dict) else {"result": str(result)}
+                        }
+                        new_screenshot = get_screenshot_bytes()
+                        exec_id = call_id or getattr(fcall, "id", None) or f"exec-{fname}-{int(time.time()*1000)}"
+
+                        fr = types.FunctionResponse(
+                            id=exec_id,
+                            name=response_name,
+                            response=base_ack,
+                            parts=[types.FunctionResponsePart(
+                                inline_data=types.FunctionResponseBlob(
+                                    mime_type="image/png",
+                                    data=new_screenshot
+                                )
+                            )],
+                        )
+                        function_response_parts.append(fr)
+
+                except Exception as e:
                     fr = types.FunctionResponse(
-                        id=fcall.id,               # tie response to the exact call
-                        name=fname,                # MUST equal the original function call name
-                        response=base_ack,
-                        parts=[types.FunctionResponsePart(
-                            inline_data=types.FunctionResponseBlob(
-                                mime_type="image/png",
-                                data=new_screenshot
-                            )
-                        )],
+                        id=call_id or getattr(fcall, "id", None) or f"error-{fname}-{int(time.time()*1000)}",
+                        name=fname,
+                        response={"status": "error", "message": f"builder_exception: {str(e)}"},
                     )
                     function_response_parts.append(fr)
 
+            if len(function_response_parts) != len(action_results):
+                print("[WARN] FR count mismatch; synthesizing missing responses.")
+                while len(function_response_parts) < len(action_results):
+                    idx = len(function_response_parts)
+                    item = action_results[idx]
+                    if len(item) == 4:
+                        fname, _, fcall, call_id = item
+                    else:
+                        fname, _, fcall = item
+                        call_id = getattr(fcall, "id", None)
+                    response_name = fname
+                    function_response_parts.append(types.FunctionResponse(
+                        id=call_id or getattr(fcall, "id", None) or f"synth-{fname}-{int(time.time()*1000)}",
+                        name=response_name,
+                        response={"status": "synthesized_missing_response"},
+                    ))
+
+            print(f"[Debug] Emitted {len(names_emitted)} FunctionResponses for: {names_emitted}")
             chat_history.append(Content(role="user", parts=[Part(function_response=fr) for fr in function_response_parts]))
-
-
 
         print("--- Agent session finished ---")
         if playwright_context.get("context"):
