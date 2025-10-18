@@ -123,7 +123,7 @@ def denormalize(value: int, max_value: int) -> int:
     return int((value * max_value) / cuse_grid)
 
 # --- Playwright semantic click helper (dialog-aware; avoids coord clicks) ---
-def pw_click_button_by_text(text: str, timeout_ms: int = 15000) -> dict:
+def pw_click_button_by_text(text: str, timeout_ms: int = 5000) -> dict:
     try:
         pg: Page = playwright_context.get("page")
         if not pg:
@@ -208,6 +208,38 @@ def pw_go_back(steps: int = 1) -> Dict[str, str]:
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
+def tabs_open_new(url: str) -> Dict[str, str]:
+    try:
+        ctx = playwright_context.get("context")
+        if not ctx:
+            return {"status": "error", "message": "No active context"}
+        p = ctx.new_page()
+        p.goto(url, wait_until="load", timeout=60_000)
+        p.bring_to_front()
+        playwright_context["page"] = p
+        return {"status": "success", "url": p.url}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+def tabs_switch_to(substr: str, timeout_ms: int = 10000) -> Dict[str, str]:
+    """Bring to front the first tab whose URL contains `substr` (host or path fragment)."""
+    try:
+        ctx = playwright_context.get("context")
+        if not ctx:
+            return {"status": "error", "message": "No active context"}
+        deadline = time.time() + (timeout_ms/1000.0)
+        while time.time() < deadline:
+            for p in ctx.pages:
+                if substr.lower() in (p.url or "").lower():
+                    p.bring_to_front()
+                    playwright_context["page"] = p
+                    return {"status": "success", "url": p.url}
+            time.sleep(0.2)
+        return {"status": "error", "message": f"No tab containing '{substr}'"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
 def save_consent_screenshot() -> Dict[str, Any]:
     try:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -219,6 +251,51 @@ def save_consent_screenshot() -> Dict[str, Any]:
         return {"status": "success", "filename": filename, "path": full_path}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+def ui_click_any_label(labels: List[str], timeout_ms: int = 5000) -> dict:
+    for lbl in labels:
+        r = ui_click_label(lbl, timeout_ms)
+        if r.get("status") == "success":
+            return r
+    return {"status": "error", "message": f"No label matched from {labels}"}
+
+def ui_click_label(label: str, timeout_ms: int = 5000) -> dict:
+    """Click a visible control by label, preferring dialog scope. Works for buttons/links/text."""
+    try:
+        pg: Page = playwright_context.get("page")
+        if not pg:
+            return {"status": "error", "message": "No active page"}
+
+        # 1) Try dialog-scope first
+        try:
+            dialog = pg.get_by_role("dialog").first
+            dialog.wait_for(state="visible", timeout=1200)
+            for locator in [
+                dialog.get_by_role("button", name=label, exact=True),
+                dialog.get_by_role("link", name=label, exact=True),
+                dialog.locator(f"text={label}")
+            ]:
+                if locator.count():
+                    locator.first.click(timeout=timeout_ms)
+                    return {"status": "success", "scope": "dialog", "clicked": label}
+        except Exception:
+            pass
+
+        # 2) Fallback to page scope
+        for locator in [
+            pg.get_by_role("button", name=label, exact=True),
+            pg.get_by_role("link", name=label, exact=True),
+            pg.locator(f"text={label}")
+        ]:
+            if locator.count():
+                locator.first.wait_for(state="visible", timeout=timeout_ms)
+                locator.first.click(timeout=timeout_ms)
+                return {"status": "success", "scope": "page", "clicked": label}
+
+        return {"status": "error", "message": f"Label not found: {label}"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 
 # --- Minimal email helpers (web UI only) ---
 def provide_signup_email() -> Dict[str, str]:
@@ -396,8 +473,17 @@ def execute_function_calls(candidate) -> List[Tuple[str, Dict, FunctionCall]]:
 
             elif fname == "click_button_by_text":
                 txt = args["text"]
-                to = int(args.get("timeout_ms", 15000))
+                to = int(args.get("timeout_ms", 5000))
                 action_result = pw_click_button_by_text(txt, to)
+            elif fname == "ui_click_label": 
+                action_result = ui_click_label(args["label"], int(args.get("timeout_ms", 5000)))
+            elif fname == "ui_click_any_label": 
+                action_result = ui_click_any_label(args["labels"], int(args.get("timeout_ms", 5000)))
+            elif fname == "tabs_open_new": 
+                action_result = tabs_open_new(args["url"])
+            elif fname == "tabs_switch_to": 
+                action_result = tabs_switch_to(args["substr"], int(args.get("timeout_ms", 10000)))
+
 
             else:
                 print(f"Warning: Skipping unimplemented function {fname}")
@@ -507,10 +593,29 @@ def run_agent():
                     "type": "object",
                     "properties": {
                         "text": {"type": "string", "description": "Exact label, e.g., 'Create Account', 'Send Code', 'Delete'"},
-                        "timeout_ms": {"type": "integer", "default": 15000}
+                        "timeout_ms": {"type": "integer", "default": 5000}
                     },
                     "required": ["text"]
                 }
+            ),
+            types.FunctionDeclaration(name="ui_click_label",
+                description="Click a visible control by label, preferring dialog scope.",
+                parameters={"type":"object","properties":{"label":{"type":"string"},"timeout_ms":{"type":"integer","default":5000}},
+                        "required":["label"]}
+            ),
+            types.FunctionDeclaration(name="ui_click_any_label",
+                description="Click the first matching label from a list (dialog preferred).",
+                parameters={"type":"object","properties":{"labels":{"type":"array","items":{"type":"string"}},"timeout_ms":{"type":"integer","default":5000}},
+                        "required":["labels"]}
+            ),
+            types.FunctionDeclaration(name="tabs_open_new",
+                description="Open URL in a NEW tab (preserves current tab).",
+                parameters={"type":"object","properties":{"url":{"type":"string"}},"required":["url"]}
+            ),
+            types.FunctionDeclaration(name="tabs_switch_to",
+                description="Switch to a tab whose URL contains the given substring.",
+                parameters={"type":"object","properties":{"substr":{"type":"string"},"timeout_ms":{"type":"integer","default":10000}},
+                        "required":["substr"]}
             )
         ]
 
@@ -615,7 +720,18 @@ I will now execute the following plan. I will perform all actions within the bro
                     continue
                 print("Agent finished or is waiting for input.")
                 break
-                
+
+            if not any(p.function_call for p in model_response.parts):
+                url_now = (current_page_url() or "").lower()
+                if any(k in url_now for k in ["account", "settings", "terminate", "delete"]):
+                    chat_history.append(Content(role="user", parts=[Part(text=(
+                        "A modal may be present. Use ui_click_any_label on 'Send Code'"
+                        "then tabs_open_new to open the inbox, find the code from inside the latest email and copy it."
+                        "tabs_switch_to back to the site, paste the code, and ui_click_any_label "
+                        "on the deletion confirmation button."
+                    ))]))
+                    continue
+
             action_results = execute_function_calls(response.candidates[0])
 
             # If execute_function_calls asked for a retry via text, don't send FunctionResponses
