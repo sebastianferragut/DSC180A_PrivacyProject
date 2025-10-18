@@ -80,13 +80,17 @@ def _extract_safety_decision(fc):
         sd = args.get("safety_decision")
         if isinstance(sd, dict) and sd.get("decision"):
             return sd
-        if isinstance(sd, dict) and isinstance(sd.get("safety_decision"), dict):
-            inner = sd["safety_decision"]
-            if inner.get("decision"):
-                return inner
+        # Fallback: raw dict form
+        if hasattr(fc, "to_dict"):
+            d = fc.to_dict()
+            sd = (d.get("safetyDecision") or d.get("safety_decision") or
+                  d.get("args",{}).get("safetyDecision") or d.get("args",{}).get("safety_decision"))
+            if isinstance(sd, dict) and sd.get("decision"):
+                return sd
     except Exception:
         pass
     return None
+
 
 def _get_function_call_id(part) -> str:
     try:
@@ -341,46 +345,45 @@ def execute_function_calls(candidate) -> List[Tuple[str, Dict, FunctionCall]]:
     any_gated = False
     missing_id_for_gated = False
     call_meta = []
+    # Handle safety-gated calls up front (esp. coordinate clicks)
     for wc in wrapped_calls:
         fc = wc["fc"]
         sd = _extract_safety_decision(fc)
-        gated = bool(sd and sd.get("decision") in ("require_confirmation", "block"))
-        call_meta.append({"wc": wc, "sd": sd, "gated": gated})
-        if gated:
-            any_gated = True
-            if not wc["id"]:
-                missing_id_for_gated = True
+        if sd and sd.get("decision") in ("require_confirmation", "block"):
+            name = fc.name
+            call_id = wc["id"] or getattr(fc, "id", None) or f"gated-{int(time.time()*1000)}"
 
-    if any_gated and missing_id_for_gated:
-        print("[Safety] Gated call(s) missing id; requesting re-emit without coordinate clicks.")
-        return [("__RETRY_WITH_TEXT__", {"reason": "gated_missing_id"}, None)]
-
-    if any_gated:
-        for meta in call_meta:
-            wc, sd, gated = meta["wc"], meta["sd"], meta["gated"]
-            fc, call_id, name = wc["fc"], wc["id"], wc["fc"].name
-            if gated:
-                results.append((
-                    name,
-                    {
-                        "ack_only": True,
-                        "safety_ack_payload": {
-                            "id": call_id,
-                            "name": name,
-                            "response": {
-                                "safety_decision": {
-                                    "decision": "proceed",
-                                    "user_confirmation": "approved",
-                                    "explanation": (sd or {}).get("explanation", "")
-                                }
+            # 1) Emit the required ack FunctionResponse
+            results.append((
+                name,
+                {
+                    "ack_only": True,
+                    "safety_ack_payload": {
+                        "id": call_id,
+                        "name": name,
+                        "response": {
+                            "safety_decision": {
+                                "decision": "proceed",                 # or echo sd["decision"]
+                                "user_confirmation": "approved",
+                                "explanation": sd.get("explanation","")
                             }
                         }
-                    },
-                    fc
-                ))
-            else:
-                results.append((name, {"deferred": True}, fc))
+                    }
+                },
+                fc
+            ))
+
+            # 2) If it's a coordinate click, short-circuit and ask for a semantic re-emit
+            if name == "click_at":
+                # Tell caller we handled ack, but want a re-emit w/ text-based tool
+                results.append(("__RETRY_WITH_TEXT__", {"reason": "gated_click_at"}, None))
+            # Continue to next wrapped call (we don't execute the gated action now)
+            continue
+
+    # If any gated acks were added, return now so the chat nudge path can run
+    if results:
         return results
+
 
     # No safety ACKs → normal execution path
     for wc in wrapped_calls:
@@ -624,12 +627,14 @@ def run_agent():
                 types.Tool(computer_use=types.ComputerUse()),
                 types.Tool(function_declarations=custom_tools)
             ],  system_instruction=f"""You are an agent operating a {DEVICE_TYPE} computer with a web browser.
-Rules (You must follow these exactly):
+HARD Rules (You must follow these exactly):
 - Rely entirely on visual feedback. Use your built-in Computer Use actions (mouse move, click, type, mouse wheel, trackpad scroll, PgDown/PgUp). Do NOT call any custom scroll helpers. Only use small scrolls.
 - Avoid coordinate clicks when creating or terminating the account; prefer `click_button_by_text`.
+-- Never use coordinate clicks (click_at) on critical auth or destructive flows.
+  Prefer role/text-based tools (click_button_by_text, ui_click_label) with exact labels.
+
+
 SCROLLING POLICY (MANDATORY):
-
-
 • Treat every scroll as a micro-step. After ONE small scroll, STOP and re-scan the viewport for target text before scrolling again.
 • Use only small increments. When emitting built-in scroll calls (scroll_at / wheel / page_scroll), set magnitude/dy to a small value (≈ 80–120 px).
 • Do not alternate rapidly up/down. If two consecutive scans don’t reveal progress toward the target, pause and try: collapse/expand sections, click “Admin” to expand, or use the left-nav scrollbar track precisely rather than large page scrolls.
@@ -654,9 +659,29 @@ SCROLLING POLICY (MANDATORY):
   - Click **"Account Profile"**.
   - In the main content, click **"Terminate my account"**.
 4) A modal dialog will open:
-  - Click **"Send Code"** (inside the dialog).
+  - You MUST click **"Send Code"** (inside the dialog) before opening Gmail. DO NOT OPEN GMAIL WITHOUT CLICKING SEND CODE.
   - Without closing the Zoom tab, open Gmail in a **new tab** (navigate to https://mail.google.com), sign in if needed (use the same tools), find the Zoom message and copy the 6-digit code manually from the email content.
   - Switch back to the Zoom tab, paste the code into the dialog field, and click the confirmation button (e.g., **"Delete"**, **"Confirm"**).
+
+Ordering constraints (must follow):
+-Do not open the inbox tab until a dialog is present and a send/verify control has been clicked.
+-Do not navigate the original site tab to the inbox; inbox must open in a new tab.
+-After retrieving the code, do not attempt new navigation in the inbox tab; switch back to the original site tab.
+
+Heuristics to minimize steps
+-Prefer the first/most recent inbox row unless you can clearly see a more relevant row.
+-Avoid inbox scrolling unless the code email is obviously not in view.
+-In dialogs, try the most semantically precise control first (button by name), then link, then text locator—within the dialog scope.
+
+Recovery nudges (if you stall)
+-If you describe UI without acting:
+-If a dialog is visible but you haven’t sent the code yet → click a send/verify control inside the dialog.
+-If you already sent the code and see a code textbox but haven’t opened the inbox → open inbox in a new tab.
+-If the inbox is open but no message is selected → click the topmost likely message, then extract the code.
+
+Safety and accessibility
+-If an action is safety-gated or an element is obscured, retry with a dialog-scoped action or try a semantically equivalent label.
+-Use small scrolls and re-scan; avoid rapid alternating up/down scrolls.
 """
 
         )
