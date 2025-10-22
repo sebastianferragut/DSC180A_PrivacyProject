@@ -1,0 +1,9 @@
+name: DSC180A
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.11.1
+  - numpy[version='<2']
+  - pytorch[version='>=2.4']
+prefix: /Users/sebastianferragut/miniforge3/envs/DSC180A
