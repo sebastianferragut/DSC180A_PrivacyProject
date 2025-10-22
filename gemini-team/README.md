@@ -127,9 +127,13 @@ Moving the mouse to the top-left corner triggers pyautogui fail-safe. The script
 ## 6) Folder structure
 
 gemini-team/
+
 ├── screenshotuiagent.py
+
 ├── environment.yml
+
 ├── screenshots/                # auto-created, output images live here
+
 └── README.md
 
 
@@ -140,3 +144,5 @@ Device type: set DEVICE_TYPE = "MacBook" or "Windows 11 PC".
 Labels & subfolders: keep them semantic (e.g., settings/meeting, meeting/security_menu).
 
 VIDEO_PLATFORM: set export of VIDEO_PLATFORM to desired url. 
+
+system_instruction: Large prompt to guide the creation of the plan and execution of actions. 
