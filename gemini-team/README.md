@@ -1,6 +1,7 @@
+# Overview
 Agentic UI automation that signs into a video platform using Google sign-in (e.g., Zoom web), captures full-page screenshots of privacy/data/security/recording settings, then launches a browser-based meeting and captures in-meeting privacy/permission UIs. Screenshots are saved to ./screenshots.
 
-1) Prerequisites
+# Prerequisites
 
 Python 3.11.1
 
@@ -18,18 +19,17 @@ Screen Recording
 
 2) Install (in the terminal)
 
-# Environment
+Environment
 conda env create -f environment.yml
 
-# Install dependencies
+Install dependencies
 pip install google-genai pyautogui pillow playwright
 
-# one-time Playwright browser install
 playwright install
 
 3) Environment variables
 
-You need a Gemini API key and optionally credentials for Google sign-in (used by the agent if the site asks for it). Also provide the entry URL for the video platform’s settings.
+You need a Gemini API key. Also provide the entry URL for the video platform’s settings.
 
 Get an API key: https://aistudio.google.com/app/api-keys
 
