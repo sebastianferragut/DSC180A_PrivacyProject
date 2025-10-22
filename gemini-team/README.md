@@ -3,6 +3,8 @@ Agentic UI automation that signs into a video platform using Google sign-in (e.g
 
 # Prerequisites
 
+## 1) General permissions
+
 Python 3.11.1
 
 Playwright browsers installed
@@ -17,7 +19,7 @@ Accessibility
 
 Screen Recording
 
-2) Install (in the terminal)
+## 2) Install (in the terminal)
 
 Environment
 conda env create -f environment.yml
@@ -27,7 +29,7 @@ pip install google-genai pyautogui pillow playwright
 
 playwright install
 
-3) Environment variables
+## 3) Environment variables
 
 You need a Gemini API key. Also provide the entry URL for the video platform’s settings.
 
@@ -35,7 +37,7 @@ Get an API key: https://aistudio.google.com/app/api-keys
 
 Set exports (Linux/macOS):
 
-export GEMINI_API_KEY="your_api_key_here" \
+export GEMINI_API_KEY="AIzaSyAb01DpgvIVtK_rg_bNK6q1jAw6ltmi7G4" \
 SIGNUP_EMAIL_ADDRESS="zoomaitester10@gmail.com" \
 SIGNUP_EMAIL_PASSWORD="ZoomTestPass" \
 SIGNUP_EMAIL_PASSWORD_WEB="$SIGNUP_EMAIL_PASSWORD" \
@@ -51,10 +53,10 @@ $env:SIGNUP_EMAIL_PASSWORD_WEB=$env:SIGNUP_EMAIL_PASSWORD
 $env:VIDEO_PLATFORM="https://zoom.us/profile/setting?tab=general"
 
 
-⚠️ Keep the multi-line export exactly as shown (no stray spaces before backslashes).
+Keep the multi-line export exactly as shown (no stray spaces before backslashes).
 VIDEO_PLATFORM can be any target site entry (we use Zoom Settings → General as an example).
 
-4) Run
+## 4) Run
 python screenshotuiagent.py
 
 
@@ -80,7 +82,7 @@ End the meeting and finish.
 
 All images save to ./screenshots (e.g., settings/general_YYYYMMDD_HHMMSS.png, meeting/share_advanced_options_*.png).
 
-5) Important behaviors & knobs
+## 5) Important behaviors & knobs
 Viewport / “Zoomed UI” fix
 
 The script sets:
@@ -122,15 +124,16 @@ Fail-safe
 
 Moving the mouse to the top-left corner triggers pyautogui fail-safe. The script will close the browser context and exit.
 
-6) Folder structure
-project/
+## 6) Folder structure
+
+gemini-team/
 ├── screenshotuiagent.py
 ├── environment.yml
 ├── screenshots/                # auto-created, output images live here
 └── README.md
 
 
-7) Customization
+## 7) Customization
 
 Device type: set DEVICE_TYPE = "MacBook" or "Windows 11 PC".
 
