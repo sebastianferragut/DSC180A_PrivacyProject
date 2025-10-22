@@ -37,7 +37,7 @@ Get an API key: https://aistudio.google.com/app/api-keys
 
 Set exports (Linux/macOS):
 
-export GEMINI_API_KEY="AIzaSyAb01DpgvIVtK_rg_bNK6q1jAw6ltmi7G4" \
+export GEMINI_API_KEY="your_key_here" \
 SIGNUP_EMAIL_ADDRESS="zoomaitester10@gmail.com" \
 SIGNUP_EMAIL_PASSWORD="ZoomTestPass" \
 SIGNUP_EMAIL_PASSWORD_WEB="$SIGNUP_EMAIL_PASSWORD" \
