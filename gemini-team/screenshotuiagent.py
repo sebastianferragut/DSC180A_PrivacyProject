@@ -1,5 +1,3 @@
-# run pip install -r requirements.txt
-# can also install dependencies using 
 # pip install google-genai pyautogui pillow playwright
 
 # You can get a Gemini API key at https://aistudio.google.com/app/api-keys 
