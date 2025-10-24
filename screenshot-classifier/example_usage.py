@@ -1,44 +1,42 @@
+#!/usr/bin/env python3
 """
-Example Usage of Privacy Screenshot Classifier
+Example usage of the Screenshot Summarizer
 
-This script demonstrates how to use the PrivacyScreenshotClassifier
-to analyze privacy settings screenshots.
-
-Not used.
+This script shows how to use the ScreenshotSummarizer class
+to analyze individual screenshots or batch process multiple images.
 """
 
 import os
-import json
-from screenshot_classification import PrivacyScreenshotClassifier
+from screenshot_summarizer import ScreenshotSummarizer
 
 
 def example_single_screenshot():
-    """Example: Analyze a single screenshot."""
-    print("🔍 Example: Single Screenshot Analysis")
+    """Example: Summarize a single screenshot."""
+    print("🔍 Example: Single Screenshot Summary")
     print("=" * 50)
     
-    # Initialize classifier
-    classifier = PrivacyScreenshotClassifier()
+    # Initialize summarizer
+    summarizer = ScreenshotSummarizer()
     
     # Example screenshot path (replace with your actual screenshot)
-    screenshot_path = "zoom_privacy_settings.png"
+    screenshot_path = "screenshots/general_20251022_102721.png"
     
     if os.path.exists(screenshot_path):
         print(f"Analyzing: {screenshot_path}")
         
-        # Get detailed analysis
-        analysis = classifier.analyze_screenshot(screenshot_path)
-        print("\n📊 Detailed Analysis:")
-        print(json.dumps(analysis, indent=2))
+        # Get summary
+        result = summarizer.summarize_screenshot(screenshot_path)
         
-        # Get classification
-        classification = classifier.classify_screenshot(screenshot_path)
-        print("\n🏷️  Classification:")
-        print(json.dumps(classification, indent=2))
+        if result["status"] == "success":
+            print("\n📊 Summary:")
+            print("-" * 30)
+            print(result["summary"])
+        else:
+            print(f"❌ Error: {result['message']}")
         
     else:
         print(f"⚠️  Screenshot not found: {screenshot_path}")
-        print("Please add a privacy settings screenshot to test with")
+        print("Please add a screenshot to test with")
 
 
 def example_batch_processing():
@@ -46,156 +44,94 @@ def example_batch_processing():
     print("\n🔍 Example: Batch Processing")
     print("=" * 50)
     
-    classifier = PrivacyScreenshotClassifier()
+    summarizer = ScreenshotSummarizer()
     
     # Directory containing screenshots
-    screenshots_dir = "privacy_screenshots"
+    screenshots_dir = "screenshots"
     
     if os.path.exists(screenshots_dir):
         print(f"Processing screenshots in: {screenshots_dir}")
         
-        # Batch classify with output file
-        results = classifier.batch_classify(
+        # Batch summarize with output file
+        results = summarizer.batch_summarize(
             screenshots_dir, 
-            "batch_results.json"
+            "batch_summaries.json"
         )
         
-        print("\n📊 Batch Results Summary:")
-        print(f"Total images: {results['total_images']}")
-        print(f"Successful: {results['summary']['successful_classifications']}")
-        print(f"Failed: {results['summary']['failed_classifications']}")
-        
-        print("\n📈 Category Distribution:")
-        for category, count in results['summary']['category_distribution'].items():
-            print(f"  {category}: {count}")
+        if results["status"] == "success":
+            print(f"\n📊 Batch Results Summary:")
+            print(f"Total images: {results['total_images']}")
+            
+            # Show first few summaries
+            for i, summary in enumerate(results["summaries"][:3]):  # Show first 3
+                if summary["status"] == "success":
+                    filename = os.path.basename(summary["image_path"])
+                    print(f"\n📸 {filename}:")
+                    print("-" * 30)
+                    # Show first 150 characters of summary
+                    short_summary = summary["summary"][:150] + "..." if len(summary["summary"]) > 150 else summary["summary"]
+                    print(short_summary)
+            
+            if len(results["summaries"]) > 3:
+                print(f"\n... and {len(results['summaries']) - 3} more summaries")
+                
+        else:
+            print(f"❌ Batch processing error: {results['message']}")
             
     else:
         print(f"⚠️  Directory not found: {screenshots_dir}")
-        print("Please create a directory with your privacy screenshots")
+        print("Please create a directory with your screenshots")
 
 
-def example_custom_categories():
-    """Example: Using custom privacy categories."""
-    print("\n🔍 Example: Custom Categories")
+def example_custom_usage():
+    """Example: Custom usage patterns."""
+    print("\n🔍 Example: Custom Usage")
     print("=" * 50)
     
-    classifier = PrivacyScreenshotClassifier()
+    summarizer = ScreenshotSummarizer()
     
-    # Add custom categories
-    classifier.privacy_categories.update({
-        "zoom_specific": {
-            "keywords": ["zoom", "meeting", "webinar", "recording", "cloud recording"],
-            "description": "Zoom-specific privacy settings"
-        },
-        "social_media": {
-            "keywords": ["social", "facebook", "twitter", "instagram", "linkedin", "post"],
-            "description": "Social media privacy settings"
-        }
-    })
-    
-    print("Added custom categories:")
-    for cat, info in classifier.privacy_categories.items():
-        if cat in ["zoom_specific", "social_media"]:
-            print(f"  {cat}: {info['description']}")
-
-
-def example_privacy_audit():
-    """Example: Conduct a privacy audit of screenshots."""
-    print("\n🔍 Example: Privacy Audit")
-    print("=" * 50)
-    
-    classifier = PrivacyScreenshotClassifier()
-    
-    # Simulate audit results
-    audit_results = {
-        "total_screenshots": 5,
-        "privacy_levels": [7, 4, 8, 6, 3],  # 1-10 scale
-        "common_concerns": [
-            "Data collection enabled by default",
-            "Location tracking not clearly disclosed",
-            "Third-party sharing options unclear"
-        ],
-        "recommendations": [
-            "Disable analytics and tracking",
-            "Review data retention settings",
-            "Limit third-party integrations"
-        ]
-    }
-    
-    print("🔒 Privacy Audit Results:")
-    print(f"Average privacy level: {sum(audit_results['privacy_levels'])/len(audit_results['privacy_levels']):.1f}/10")
-    print(f"Total screenshots analyzed: {audit_results['total_screenshots']}")
-    
-    print("\n⚠️  Common Privacy Concerns:")
-    for concern in audit_results['common_concerns']:
-        print(f"  • {concern}")
-    
-    print("\n💡 Recommendations:")
-    for rec in audit_results['recommendations']:
-        print(f"  • {rec}")
-
-
-def create_sample_directory():
-    """Create a sample directory structure for testing."""
-    print("\n📁 Creating Sample Directory Structure")
-    print("=" * 50)
-    
-    # Create directories
-    os.makedirs("privacy_screenshots", exist_ok=True)
-    os.makedirs("results", exist_ok=True)
-    
-    # Create sample files
-    sample_files = [
-        "privacy_screenshots/zoom_settings.png",
-        "privacy_screenshots/facebook_privacy.png", 
-        "privacy_screenshots/google_account.png",
-        "privacy_screenshots/instagram_settings.png"
+    # You can also use it in a loop for specific files
+    specific_files = [
+        "screenshots/audio_conferencing_20251022_110156.png",
+        "screenshots/security_menu_fullpage_20251022_110816.png"
     ]
     
-    for file_path in sample_files:
-        if not os.path.exists(file_path):
-            # Create empty placeholder files
-            with open(file_path, 'w') as f:
-                f.write("# Placeholder for screenshot file")
-            print(f"Created placeholder: {file_path}")
-    
-    print("\n📂 Directory structure created:")
-    print("privacy_screenshots/")
-    print("├── zoom_settings.png")
-    print("├── facebook_privacy.png")
-    print("├── google_account.png")
-    print("└── instagram_settings.png")
-    print("results/")
-    print("└── (for output files)")
+    for file_path in specific_files:
+        if os.path.exists(file_path):
+            print(f"\n📸 Processing: {os.path.basename(file_path)}")
+            result = summarizer.summarize_screenshot(file_path)
+            
+            if result["status"] == "success":
+                print("✅ Summary generated successfully")
+                # You could save individual results, process them, etc.
+            else:
+                print(f"❌ Failed: {result['message']}")
+        else:
+            print(f"⚠️  File not found: {file_path}")
 
 
 def main():
     """Run all examples."""
-    print("🚀 Privacy Screenshot Classifier - Example Usage")
+    print("🚀 Screenshot Summarizer - Example Usage")
     print("=" * 60)
     
     # Check for API key
     if not os.environ.get("GEMINI_API_KEY"):
         print("❌ GEMINI_API_KEY environment variable not set")
-        print("Please set your Google Gemini API key:")
-        print("export GEMINI_API_KEY='your_api_key_here'")
+        print("Please run: source setup_env.sh")
         return
     
     try:
-        # Create sample directory structure
-        create_sample_directory()
-        
         # Run examples
         example_single_screenshot()
         example_batch_processing()
-        example_custom_categories()
-        example_privacy_audit()
+        example_custom_usage()
         
         print("\n✅ All examples completed!")
         print("\n📚 Next steps:")
-        print("1. Add your actual privacy screenshots to the 'privacy_screenshots/' directory")
-        print("2. Run the classifier on your screenshots")
-        print("3. Review the results in the generated JSON files")
+        print("1. Try running the main summarizer: python screenshot_summarizer.py")
+        print("2. Modify the code to suit your specific needs")
+        print("3. Add your own screenshots to test with")
         
     except Exception as e:
         print(f"❌ Error running examples: {e}")
