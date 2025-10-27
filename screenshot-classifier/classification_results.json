@@ -3,10 +3,12 @@
   "total_images": 8,
   "classifications": [
     {
+      "status": "success",
       "image_path": "screenshots\\audio_conferencing_20251022_110156.png",
       "detected_categories": [
         "personal_information",
-        "communication_privacy"
+        "communication_privacy",
+        "sharing_settings"
       ],
       "category_scores": {
         "data_collection": 0.0,
@@ -21,9 +23,10 @@
         "third_party_sharing": 0.0
       },
       "primary_category": "communication_privacy",
-      "confidence": 9.5
+      "confidence": 1.0
     },
     {
+      "status": "success",
       "image_path": "screenshots\\general_20251022_102721.png",
       "detected_categories": [],
       "category_scores": {
@@ -42,6 +45,7 @@
       "confidence": 0.5
     },
     {
+      "status": "success",
       "image_path": "screenshots\\general_20251022_110016.png",
       "detected_categories": [],
       "category_scores": {
@@ -60,32 +64,26 @@
       "confidence": 0.5
     },
     {
+      "status": "success",
       "image_path": "screenshots\\mail_calendar_20251022_110154.png",
-      "detected_categories": [
-        "data_collection",
-        "personal_information",
-        "communication_privacy", #
-        "account_security",
-        "sharing_settings",
-        "third_party_sharing" #
-      ],
+      "detected_categories": [],
       "category_scores": {
         "data_collection": 0.0,
         "camera_microphone": 0.0,
         "location_privacy": 0.0,
         "personal_information": 0.0,
-        "communication_privacy": 0.16666666666666666,
-        "account_security": 0.16666666666666666,
+        "communication_privacy": 0.0,
+        "account_security": 0.0,
         "sharing_settings": 0.0,
         "notification_privacy": 0.0,
         "data_retention": 0.0,
         "third_party_sharing": 0.0
       },
-      // 
-      "primary_category": "communication_privacy",
-      "confidence": 9.5
+      "primary_category": null,
+      "confidence": 0.5
     },
     {
+      "status": "success",
       "image_path": "screenshots\\meeting_20251022_102801.png",
       "detected_categories": [],
       "category_scores": {
@@ -104,6 +102,7 @@
       "confidence": 0.5
     },
     {
+      "status": "success",
       "image_path": "screenshots\\recording_20251022_110130.png",
       "detected_categories": [],
       "category_scores": {
@@ -122,13 +121,14 @@
       "confidence": 0.5
     },
     {
+      "status": "success",
       "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png",
       "detected_categories": [
         "account_security",
-        "camera_microphone",
+        "sharing_settings",
         "communication_privacy",
         "personal_information",
-        "sharing_settings"
+        "camera_microphone"
       ],
       "category_scores": {
         "data_collection": 0.0,
@@ -143,13 +143,15 @@
         "third_party_sharing": 0.0
       },
       "primary_category": "camera_microphone",
-      "confidence": 9.5
+      "confidence": 1.0
     },
     {
+      "status": "success",
       "image_path": "screenshots\\whiteboard_20251022_110201.png",
       "detected_categories": [
         "third_party_sharing",
-        "data_collection"
+        "data_collection",
+        "account_security"
       ],
       "category_scores": {
         "data_collection": 0.0,
@@ -157,23 +159,24 @@
         "location_privacy": 0.0,
         "personal_information": 0.0,
         "communication_privacy": 0.0,
-        "account_security": 0.0,
+        "account_security": 0.16666666666666666,
         "sharing_settings": 0.0,
         "notification_privacy": 0.0,
         "data_retention": 0.0,
         "third_party_sharing": 0.0
       },
-      "primary_category": null,
-      "confidence": 9.5
+      "primary_category": "account_security",
+      "confidence": 1.0
     }
   ],
   "summary": {
     "category_distribution": {
-      "communication_privacy": 2,
-      "camera_microphone": 1
+      "communication_privacy": 1,
+      "camera_microphone": 1,
+      "account_security": 1
     },
-    "successful_classifications": 0,
-    "failed_classifications": 8
+    "successful_classifications": 8,
+    "failed_classifications": 0
   },
-  "timestamp": "2025-10-22T12:52:44.900635"
+  "timestamp": "2025-10-26T21:45:15.025719"
 }

@@ -31,6 +31,7 @@ class PrivacyScreenshotClassifier:
         Args:
             api_key: Google Gemini API key. If None, will try to get from environment.
         """
+        # checks for an API key
         self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
         if not self.api_key:
             raise ValueError("GEMINI_API_KEY environment variable not set or api_key not provided")
@@ -38,7 +39,7 @@ class PrivacyScreenshotClassifier:
         self.client = genai.Client(api_key=self.api_key)
         self.model_id = 'gemini-2.5-pro'
         
-        # Privacy categories for classification
+        # Privacy categories for classification (add to this as domain knowledge expands)
         self.privacy_categories = {
             "data_collection": {
                 "keywords": ["data collection", "collect data", "analytics", "tracking", "telemetry"],
@@ -98,17 +99,17 @@ class PrivacyScreenshotClassifier:
                 image_data = f.read()
             
             # Create analysis prompt
-            analysis_prompt = self._create_analysis_prompt()
+            analysis_prompt = self._create_analysis_prompt() # what does this do?
             
             # Call Gemini API
             response = self.client.models.generate_content(
                 model=self.model_id,
                 contents=[
                     Content(
-                        role="user",
-                        parts=[
-                            Part(text=analysis_prompt),
-                            Part.from_bytes(data=image_data, mime_type='image/png')
+                        role="user", # creates a user message
+                        parts=[ # multimodal message
+                            Part(text=analysis_prompt), # text instructions
+                            Part.from_bytes(data=image_data, mime_type='image/png') # image data
                         ]
                     )
                 ],
@@ -130,45 +131,44 @@ class PrivacyScreenshotClassifier:
                 "timestamp": datetime.now().isoformat()
             }
     
+
     def _create_analysis_prompt(self) -> str:
         """Create the analysis prompt for Gemini."""
-        categories_text = "\n".join([
-            f"- {cat}: {info['description']}" 
-            for cat, info in self.privacy_categories.items()
-        ])
+        categories_text = "\n".join([f"- {cat}: {info['description']}" for cat, info in self.privacy_categories.items()])
         
         return f"""
-You are a privacy settings expert analyzing a screenshot of a privacy settings page. 
+                You are a privacy settings expert analyzing a screenshot of a privacy settings page. 
 
-Analyze the screenshot and provide detailed information about:
+                Analyze the screenshot and provide detailed information about:
 
-1. **Application/Service**: What application or service is this privacy settings page for?
-2. **Page Type**: What type of privacy settings page is this (e.g., main settings, specific category, etc.)?
-3. **Privacy Categories Present**: Which of the following privacy categories are visible or relevant in this screenshot?
+                1. **Application/Service**: What application or service is this privacy settings page for?
+                2. **Page Type**: What type of privacy settings page is this (e.g., main settings, specific category, etc.)?
+                3. **Privacy Categories Present**: Which of the following privacy categories, if any, are visible or relevant in this screenshot?
 
-{categories_text}
+                {categories_text}
 
-4. **Specific Settings**: List any specific privacy settings, toggles, or options visible in the screenshot.
-5. **User Actions Available**: What privacy-related actions can a user take on this page?
-6. **Privacy Level**: Rate the overall privacy-friendliness of the visible settings (1-10, where 10 is most privacy-friendly).
-7. **Key Concerns**: Identify any potential privacy concerns or red flags visible in the settings.
-8. **Recommendations**: Provide brief recommendations for privacy-conscious users.
+                4. **Specific Settings**: List any specific privacy settings, toggles, or options visible in the screenshot.
+                5. **User Actions Available**: What privacy-related actions can a user take on this page?
+                6. **Privacy Level**: Rate the overall privacy-friendliness of the visible settings (1-10, where 10 is most privacy-friendly).
+                7. **Key Concerns**: Identify any potential privacy concerns or red flags visible in the settings.
+                8. **Recommendations**: Provide brief recommendations for privacy-conscious users.
+                9. **Confidence**: Rate your confidence in the privacy categories identified (0-1, inclusive), where 1.0 indicates absolute certainty, and lower values indicate less certainty.
 
-Please respond in JSON format with the following structure:
-{{
-    "application": "string",
-    "page_type": "string", 
-    "privacy_categories": ["list", "of", "categories"],
-    "specific_settings": ["list", "of", "visible", "settings"],
-    "user_actions": ["list", "of", "available", "actions"],
-    "privacy_level": number,
-    "key_concerns": ["list", "of", "concerns"],
-    "recommendations": ["list", "of", "recommendations"],
-    "confidence": number
-}}
+                Please respond in JSON format with the following structure:
+                {{
+                    "application": "string",
+                    "page_type": "string", 
+                    "privacy_categories": ["list", "of", "categories"],
+                    "specific_settings": ["list", "of", "visible", "settings"],
+                    "user_actions": ["list", "of", "available", "actions"],
+                    "privacy_level": number,
+                    "key_concerns": ["list", "of", "concerns"],
+                    "recommendations": ["list", "of", "recommendations"],
+                    "confidence": number
+                }}
 
-Be thorough and accurate in your analysis. Focus on privacy-related content and settings.
-"""
+                Be thorough and accurate in your analysis. Focus on privacy-related content and settings.
+            """
     
     def _parse_analysis_response(self, response_text: str, image_path: str) -> Dict:
         """Parse the Gemini response and structure the data."""
@@ -204,6 +204,7 @@ Be thorough and accurate in your analysis. Focus on privacy-related content and 
                 "message": "Could not parse JSON response, returning raw text"
             }
     
+
     def classify_screenshot(self, image_path: str) -> Dict:
         """
         Classify a screenshot into privacy categories.
@@ -214,25 +215,32 @@ Be thorough and accurate in your analysis. Focus on privacy-related content and 
         Returns:
             Classification results
         """
-        analysis = self.analyze_screenshot(image_path)
+        analysis = self.analyze_screenshot(image_path) # calls the analyze_screenshot function and two helpers above
         
         if analysis.get("status") != "success":
             return analysis
         
         # Extract categories from analysis
-        detected_categories = analysis.get("privacy_categories", [])
+        detected_categories = analysis.get("privacy_categories", []) # gets detected privacy categories from analyze_screenshot function
         
         # Map to our predefined categories
         classification = {
+            "status": "success",
             "image_path": image_path,
             "detected_categories": detected_categories,
             "category_scores": {},
             "primary_category": None,
-            "confidence": analysis.get("confidence", 0.5) # TODO: fix confidence
+            "confidence": analysis.get("confidence", 0.5)
         }
         
         # Calculate category scores based on detected categories
-        for category, info in self.privacy_categories.items():
+
+        #  "data_collection": {
+        #         "keywords": ["data collection", "collect data", "analytics", "tracking", "telemetry"],
+        #         "description": "Settings related to data collection and analytics"
+        #     },
+
+        for category, info in self.privacy_categories.items(): # score: the number of keywords detected for each category (important for explaining score)
             score = 0
             for detected in detected_categories:
                 if any(keyword in detected.lower() for keyword in info["keywords"]):
@@ -241,13 +249,13 @@ Be thorough and accurate in your analysis. Focus on privacy-related content and 
         
         # Determine primary category
         if classification["category_scores"]:
-            primary = max(classification["category_scores"], 
-                         key=classification["category_scores"].get)
+            primary = max(classification["category_scores"], key=classification["category_scores"].get) # iterates through scores using get method, returning max
             if classification["category_scores"][primary] > 0:
                 classification["primary_category"] = primary
         
         return classification
     
+
     def batch_classify(self, image_directory: str, output_file: Optional[str] = None) -> Dict:
         """
         Classify multiple screenshots in a directory.
@@ -263,12 +271,9 @@ Be thorough and accurate in your analysis. Focus on privacy-related content and 
         if not image_dir.exists():
             return {"status": "error", "message": f"Directory {image_directory} does not exist"}
         
-        # Find image files
-        image_extensions = {'.png', '.jpg', '.jpeg', '.bmp', '.tiff', '.webp'}
-        image_files = [
-            f for f in image_dir.iterdir() 
-            if f.suffix.lower() in image_extensions
-        ]
+        # Find image files (all supported image formats)
+        image_extensions = {'.png', '.jpg', '.jpeg', '.bmp', '.tiff', '.webp'} # smart! haha
+        image_files = [f for f in image_dir.iterdir() if f.suffix.lower() in image_extensions]
         
         if not image_files:
             return {"status": "error", "message": "No image files found in directory"}
@@ -276,7 +281,7 @@ Be thorough and accurate in your analysis. Focus on privacy-related content and 
         results = {
             "status": "success",
             "total_images": len(image_files),
-            "classifications": [],
+            "classifications": [], # should have the path to image
             "summary": {},
             "timestamp": datetime.now().isoformat()
         }
@@ -284,22 +289,20 @@ Be thorough and accurate in your analysis. Focus on privacy-related content and 
         # Process each image
         for image_file in image_files:
             print(f"Processing {image_file.name}...")
-            classification = self.classify_screenshot(str(image_file))
-            results["classifications"].append(classification)
+            classification = self.classify_screenshot(str(image_file)) # batch_classify depends on classify_screenshot
+            results["classifications"].append(classification) # appends dict
         
         # Generate summary
-        category_counts = {}
-        for classification in results["classifications"]:
+        category_counts = {} # is this really important?
+        for classification in results["classifications"]: 
             if classification.get("primary_category"):
                 cat = classification["primary_category"]
                 category_counts[cat] = category_counts.get(cat, 0) + 1
         
         results["summary"] = {
             "category_distribution": category_counts,
-            "successful_classifications": len([c for c in results["classifications"] 
-                                              if c.get("status") == "success"]),
-            "failed_classifications": len([c for c in results["classifications"] 
-                                         if c.get("status") != "success"])
+            "successful_classifications": len([c for c in results["classifications"] if c.get("status") == "success"]),
+            "failed_classifications": len([c for c in results["classifications"] if c.get("status") != "success"])
         }
         
         # Save results if output file specified
@@ -313,6 +316,7 @@ Be thorough and accurate in your analysis. Focus on privacy-related content and 
 
 def main():
     """Example usage of the PrivacyScreenshotClassifier."""
+
     # Initialize classifier
     try:
         classifier = PrivacyScreenshotClassifier()
@@ -322,8 +326,7 @@ def main():
         print("Please set your GEMINI_API_KEY environment variable")
         return
     
-    # Example: Classify a single screenshot
-    # Replace with your actual screenshot path
+    # Classify a single screenshot
     # screenshot_path = "screenshots\general_20251022_102721.png"
     
     # if os.path.exists(screenshot_path):
@@ -335,8 +338,7 @@ def main():
     #     print(f"⚠️  Screenshot file not found: {screenshot_path}")
     #     print("Please provide a valid screenshot path")
     
-    # Example: Batch classification
-    # Replace with your directory containing screenshots
+    # Batch classification
     screenshots_dir = "screenshots"
     
     if os.path.exists(screenshots_dir):
@@ -344,8 +346,9 @@ def main():
         batch_results = classifier.batch_classify(screenshots_dir, "classification_results.json")
         print(f"📊 Batch Results:")
         print(json.dumps(batch_results["classifications"], indent=2))
+        print(json.dumps(batch_results["summary"], indent=2))
     else:
-        print(f"⚠️  Screenshots directory not found: {screenshots_dir}")
+        print(f"⚠️ Screenshots directory not found: {screenshots_dir}")
         print("Please create a directory with your screenshot files")
 
 

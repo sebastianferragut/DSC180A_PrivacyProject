@@ -163,16 +163,57 @@ python example_usage.py
 ## File Structure
 
 ```
-privacy-project/
-├── screenshot-classification.py    # Main classifier
-├── example_usage.py              # Usage examples
-├── privacyuiagent.py            # UI automation agent
-├── requirements.txt              # Python dependencies
-├── environment.yml              # Conda environment
-├── README.md                    # This file
-├── privacy_screenshots/         # Directory for screenshots
-└── results/                     # Output directory
+screenshot-classifier/
+│
+├── screenshot_classification.py    # ⭐ Main classifier module
+│   ├── PrivacyScreenshotClassifier class
+│   ├── analyze_screenshot()        # Analyze individual screenshots
+│   ├── classify_screenshot()       # Classify into categories
+│   └── batch_classify()            # Process multiple screenshots
+│
+├── requirements_simple.txt         # Essential dependencies
+│   ├── google-genai>=1.44.0        # Gemini API client
+│   ├── pillow>=11.0.0              # Image processing
+│   └── requests>=2.31.0            # HTTP requests
+│
+├── screenshots/                    # Input directory
+│   ├── *.png, *.jpg, etc.          # Screenshot images
+│
+└── Environment:
+    └── GEMINI_API_KEY              # API key environment variable
 ```
+
+### Supporting Files (Optional/Additional Tools)
+
+```
+screenshot-classifier/
+│
+├── 📚 Documentation
+│   ├── README.md                  # Main documentation file
+│   ├── README_SETUP.md            # Setup instructions
+│   ├── QUICK_START.md             # Quick start guide
+│   └── File-Tree.png              # Visual file tree
+│
+├── 🧪 Testing & Examples
+│   ├── test_classifier.py         # Unit tests for classifier
+│   └── example_usage.py           # Usage examples
+│
+├── 🔧 Configuration & Setup
+│   ├── requirements_clean.txt     # Full dependency list
+│   ├── environment.yml            # Conda environment config
+│   ├── setup.py                   # Package installation script
+│   └── setup_env.sh               # Environment setup script
+│
+├── 📊 Alternative Tools
+│   ├── screenshot_summarizer.py   # Separate summarization tool
+│   ├── view_summaries.py          # View summary results
+│   └── config.py                  # Configuration file (unused)
+│
+└── 📁 Generated Outputs
+    ├── classification_results.json # Batch results
+    └── summaries.json              # Summary data
+```
+
 
 ## API Reference
 
