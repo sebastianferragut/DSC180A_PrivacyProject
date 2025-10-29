@@ -34,7 +34,9 @@ import os, re, random, json
 import io
 from typing import Any, Dict, List, Tuple, Optional, Set
 from datetime import datetime
+from bs4 import BeautifulSoup
 from pathlib import Path
+import hashlib
 from hashlib import sha1
 from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode
 import pyautogui
@@ -222,9 +224,110 @@ def _safe_name(s: str) -> str:
 
 # --- URL Canonicalization ---
 CANON_QUERY_WHITELIST = {"tab"}  # Keep only whitelisted keys that truly change content; adjust as needed.
-SCRAPE_CACHE: Dict[str, str] = {}  # canon_url -> fingerprint
 CRAWL_DONE = False
 
+# Tunables (override via env if you want)
+NAV_MIN_DWELL_SEC = float(os.environ.get("CRAWL_NAV_DWELL_SEC", "1.25"))
+EMPTY_PAGE_MAX_RETRIES = int(os.environ.get("CRAWL_RETRY_EMPTY", "2"))
+SCROLL_STEPS = int(os.environ.get("CRAWL_SCROLL_STEPS", "6"))
+SCROLL_STEP_PX = int(os.environ.get("CRAWL_SCROLL_STEP_PX", "900"))
+SCROLL_PAUSE_SEC = float(os.environ.get("CRAWL_SCROLL_PAUSE_SEC", "0.25"))
+QUIESCENCE_IDLE_MS = int(os.environ.get("CRAWL_IDLE_MS", "800"))
+QUIESCENCE_TOTAL_MS = int(os.environ.get("CRAWL_IDLE_TOTAL_MS", "4500"))
+
+SCRAPE_CACHE = {}  # url -> fingerprint
+
+def _controls_fingerprint(controls):
+    if not controls:
+        return ""
+    labels = sorted([c.get("label","") for c in controls if c.get("label")])
+    return hashlib.sha1(json.dumps(labels).encode()).hexdigest()
+
+def wait_for_quiescence(pg, min_idle_ms=QUIESCENCE_IDLE_MS, max_total_ms=QUIESCENCE_TOTAL_MS):
+    """
+    Wait until both:
+      - Playwright network idle
+      - No DOM mutations for min_idle_ms (via MutationObserver)
+    """
+    try:
+        pg.wait_for_load_state("networkidle", timeout=max_total_ms)
+    except Exception:
+        pass
+
+    script = f"""
+(() => {{
+  return new Promise(resolve => {{
+    let idleTimer;
+    let totalTimer;
+    const minIdle = {min_idle_ms};
+    const maxTotal = {max_total_ms};
+
+    const finish = () => {{
+      try {{ observer.disconnect(); }} catch(_) {{}}
+      resolve(true);
+    }};
+
+    totalTimer = setTimeout(finish, maxTotal);
+
+    const resetIdle = () => {{
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {{
+        clearTimeout(totalTimer);
+        finish();
+      }}, minIdle);
+    }};
+
+    const observer = new MutationObserver(resetIdle);
+    observer.observe(document, {{subtree:true, childList:true, attributes:true, characterData:true}});
+    resetIdle(); // start the idle countdown now
+  }});
+}})();
+"""
+    try:
+        pg.evaluate(script)
+    except Exception:
+        # If the page blocks eval or has CSP, we still proceed
+        time.sleep(min_idle_ms/1000.0)
+
+def progressive_scroll(pg, steps=SCROLL_STEPS, step_px=SCROLL_STEP_PX, pause=SCROLL_PAUSE_SEC):
+    try:
+        for _ in range(max(0, steps)):
+            pg.mouse.wheel(0, step_px)
+            time.sleep(pause)
+        # return to top in case controls re-render above
+        pg.evaluate("window.scrollTo(0,0)")
+    except Exception:
+        pass
+
+def expand_sections(pg, max_clicks=10):
+    """
+    Generically expand likely accordions/tabs to reveal controls.
+    """
+    try:
+        selectors = [
+            "button,[role='button'],summary,[role='tab']",
+            "*[aria-expanded]"
+        ]
+        pg.evaluate(f"""
+(() => {{
+  const qs = "{','.join(selectors)}";
+  const els = Array.from(document.querySelectorAll(qs));
+  const wants = /expand|show|manage|settings|options|advanced|more/i;
+  let clicks = 0;
+  for (const el of els) {{
+    if (clicks >= {max_clicks}) break;
+    const label = (el.innerText||el.getAttribute('aria-label')||'').trim();
+    const expandable = el.tagName.toLowerCase()==='summary' ||
+                       el.getAttribute('aria-expanded') !== null ||
+                       (label && wants.test(label));
+    if (!expandable) continue;
+    try {{ el.click(); clicks++; }} catch(_) {{}}
+  }}
+}})();
+""")
+        time.sleep(0.2)
+    except Exception:
+        pass
 
 
 def canonicalize_url(u: str) -> str:
@@ -801,24 +904,108 @@ def resolve_href_and_click(href: str, timeout_ms: int = 5000) -> Dict[str, Any]:
         return {"status":"error","message":str(e)}
 
 def extract_privacy_controls() -> Dict[str, Any]:
-    pg: Page = playwright_context.get("page")
-    if not pg:
-        return {"status": "error", "message": "No active page"}
+    """Generic control scraper for modern SPAs (React/Vue/Angular/custom widgets)."""
+    try:
+        pg: Page = playwright_context.get("page")
+        if not pg:
+            return {"status": "error", "message": "No active page"}
 
-    controls = []
-    elements = pg.locator("input, select, button, textarea, label").all()
+        controls = []
 
-    for el in elements:
-        tag = el.evaluate("el.tagName.toLowerCase()")
-        label = el.evaluate("el.innerText || el.getAttribute('aria-label') || ''").strip()
-        ctype = el.get_attribute("type") or tag
-        state = (
-            "checked" if (ctype in ("checkbox", "radio") and el.is_checked()) else
-            "selected" if el.get_attribute("aria-checked") == "true" else
-            "disabled" if el.is_disabled() else "on" if el.is_enabled() else "unknown"
-        )
-        controls.append({"label": label, "type": ctype, "state": state})
-    return {"status": "success", "controls": controls}
+        # Standard inputs
+        inputs = pg.locator("input, select, textarea, button").all()
+        for el in inputs:
+            try:
+                tag = el.evaluate("el.tagName.toLowerCase()")
+                ctype = (el.get_attribute("type") or tag or "").lower()
+                label = el.evaluate("""
+(() => {
+  const lab = el.labels?.[0]?.innerText?.trim();
+  if (lab) return lab;
+  const near = el.closest('label')?.innerText?.trim();
+  if (near) return near;
+  return (el.getAttribute('aria-label') || el.getAttribute('name') || el.id || '').trim();
+})()
+                """)
+                if not label:
+                    continue
+
+                state = None
+                if ctype in ("checkbox","radio"):
+                    state = "checked" if el.is_checked() else "unchecked"
+                elif el.is_disabled():
+                    state = "disabled"
+                else:
+                    # some inputs reflect state in aria-checked
+                    ac = el.get_attribute("aria-checked")
+                    if ac == "true":
+                        state = "on"
+                    elif ac == "false":
+                        state = "off"
+                    else:
+                        state = "enabled"
+
+                selector = el.evaluate("el.tagName + (el.id ? '#' + el.id : '')")
+                controls.append({"label": label, "type": ctype, "state": state, "selector": selector})
+            except Exception:
+                continue
+
+        # Custom toggles (role=switch, aria-checked)
+        custom = pg.locator("[role='switch'], [aria-checked], .toggle, .switch, .form-switch").all()
+        for el in custom:
+            try:
+                aria = el.get_attribute("aria-checked")
+                state = "on" if aria == "true" else "off" if aria == "false" else "enabled"
+                label = el.evaluate("""
+(() => {
+  const fromLabel = el.closest('label')?.innerText?.trim();
+  if (fromLabel) return fromLabel;
+  const al = el.getAttribute('aria-label');
+  if (al) return al.trim();
+  const it = el.innerText?.trim();
+  if (it) return it;
+  return '';
+})()
+                """)
+                if not label:
+                    continue
+                selector = el.evaluate("el.tagName + (el.id ? '#' + el.id : '')")
+                controls.append({"label": label, "type": "toggle", "state": state, "selector": selector})
+            except Exception:
+                continue
+
+        # Radios grouped with context
+        groups = pg.locator("fieldset, [role='radiogroup'], .radio-group, .form-group").all()
+        for g in groups:
+            try:
+                legend = ""
+                try:
+                    lg = g.locator("legend, [role='heading']").first
+                    if lg.count():
+                        legend = lg.inner_text(timeout=800).strip()
+                except Exception:
+                    pass
+                radios = g.locator("input[type='radio']").all()
+                for r in radios:
+                    try:
+                        r_label = r.evaluate("(el) => (el.nextElementSibling?.innerText || '').trim()")
+                        if not r_label:
+                            continue
+                        controls.append({
+                            "label": f"{legend}: {r_label}" if legend else r_label,
+                            "type": "radio",
+                            "state": "checked" if r.is_checked() else "unchecked"
+                        })
+                    except Exception:
+                        continue
+            except Exception:
+                continue
+
+        # Dedup by label
+        unique = {c["label"]: c for c in controls if c.get("label")}
+        return {"status": "success", "controls": list(unique.values()), "count": len(unique)}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 
 def write_json_report(data: dict, basename: Optional[str] = None) -> Dict[str, Any]:
@@ -836,192 +1023,141 @@ def write_json_report(data: dict, basename: Optional[str] = None) -> Dict[str, A
     except Exception as e:
         return {"status":"error","message":str(e)}
 
-def crawl_privacy_map(max_depth: int = 3, max_pages: int = 25, same_origin_only: bool = True) -> Dict[str, Any]:
+def crawl_privacy_map(
+    max_depth: int = 3,
+    max_pages: int = 25,
+    same_origin_only: bool = True,
+    autosave_basename: str = "privacy_map.json",
+) -> dict:
     """
-    Lightweight BFS from current page:
-      - Canonicalizes URLs to avoid duplicate revisits
-      - Fingerprints extracted controls to skip re-adding identical pages
-      - Prioritizes settings-like links; honors denylist and same-origin
-      - Records path (sequence of link clicks) and per-page controls
-
-    Depends on helpers already present in your script:
-      _host_of, _same_origin, _normalize_label, _rank_link_score, _is_denied_link,
-      canonicalize_url, _controls_fingerprint, dom_snapshot, expand_privacy_sections,
-      extract_privacy_controls, playwright_context
-
-    Uses global cache:
-      SCRAPE_CACHE : Dict[str, str]   # canon_url -> fingerprint
+    Generalized crawler that:
+      • Clicks visible tab/sub-tab controls (role=tab, [data-tab], anchors with ?tab=…)
+      • Waits for DOM to load
+      • Extracts privacy/data/security-related controls (inputs, toggles, radios, selects)
+      • Saves a timestamped JSON report
     """
-    try:
-        from urllib.parse import urljoin
-        pg: Page = playwright_context.get("page")
-        if not pg:
-            return {"status": "error", "message": "No active page"}
+    page: Page = playwright_context.get("page")
+    if not page:
+        return {"status": "error", "message": "No active Playwright page"}
 
-        # Initialize BFS state
-        start_url = pg.url
-        start_host = _host_of(start_url)
-        visited: Set[str] = set()  # canonical URLs we've processed
-        queue: List[Tuple[str, List[Dict[str, str]]]] = [(start_url, [])]  # (url, path_of_clicks)
-        discoveries: List[Dict[str, Any]] = []
-        nodes: List[Dict[str, str]] = []
-        page_count = 0
+    start_url = page.url
+    start_host = urlparse(start_url).netloc
 
-        def push_node(u: str, t: str):
-            nodes.append({"url": u, "title": t})
+    visited = set()
+    discoveries = []
 
-        # Crawl caps (can be tuned via env)
-        cap_prio = int(os.environ.get("CRAWL_CAP_PRIO", "8"))
-        cap_other = int(os.environ.get("CRAWL_CAP_OTHER", "2"))
-        expand_clicks = int(os.environ.get("CRAWL_EXPAND_CLICKS", "8"))
-        click_delay_sec = max(0, int(os.environ.get("CRAWL_CLICK_DELAY_MS", "200")) / 1000.0)
+    def same_origin(u: str) -> bool:
+        return urlparse(u).netloc == start_host
 
-        while queue and page_count < max_pages:
-            url, path = queue.pop(0)
-            canon_url = canonicalize_url(url)
+    def normalize(u: str) -> str:
+        parsed = urlparse(u)
+        base = f"{parsed.scheme}://{parsed.netloc}{parsed.path}"
+        if parsed.query:
+            base += f"?{parsed.query}"
+        return base.rstrip("/")
 
-            # Skip already-visited canonical URL
-            if canon_url in visited:
+    def extract_controls(html: str) -> list:
+        soup = BeautifulSoup(html, "html.parser")
+        controls = []
+        for el in soup.find_all(["input", "button", "select", "label"]):
+            label = (el.get("aria-label") or el.get("title") or el.text or "").strip()
+            if not label:
                 continue
-            visited.add(canon_url)
+            label_lower = label.lower()
+            if any(k in label_lower for k in [
+                "privacy", "permission", "record", "data", "share", "security",
+                "analytics", "crash", "note", "cloud", "consent", "cookie"
+            ]):
+                ctrl_type = el.get("type", "button").lower()
+                selector = el.get("id") or el.get("name") or el.get("class") or ""
+                if isinstance(selector, list):
+                    selector = " ".join(selector)
+                controls.append({
+                    "label": label,
+                    "type": ctrl_type or "unknown",
+                    "selector": selector.strip()
+                })
+        return controls
 
-            # Navigate (only if not already there)
-            if url != pg.url:
-                try:
-                    pg.goto(url, wait_until="load", timeout=60_000)
-                except Exception:
-                    # Try a lighter wait condition if full load fails
+    def expand_and_collect(pg: Page, depth: int):
+        """Clicks through tab controls and collects privacy toggles per view."""
+        try:
+            url = normalize(pg.url)
+            if url in visited or depth > max_depth:
+                return
+            visited.add(url)
+
+            # Wait for DOM settle
+            time.sleep(0.8)
+            html = pg.content()
+            controls = extract_controls(html)
+            discoveries.append({"path": [url], "controls": controls})
+            print(f"[crawl] {url} → {len(controls)} controls")
+
+            # Find tab-like elements (role=tab, [data-tab], a[href*='tab='])
+            tab_locators = pg.locator("a[href*='tab='], [role='tab'], [data-tab]")
+            tab_count = tab_locators.count()
+            if tab_count and depth + 1 <= max_depth:
+                for i in range(tab_count):
                     try:
-                        pg.goto(url, wait_until="domcontentloaded", timeout=60_000)
-                    except Exception:
-                        # Give up on this URL
+                        tab = tab_locators.nth(i)
+                        label = tab.inner_text(timeout=2000).strip()
+                        if not label:
+                            continue
+                        print(f"[crawl] Clicking tab: {label}")
+                        tab.click(timeout=5000)
+                        pg.wait_for_load_state("networkidle", timeout=10000)
+                        time.sleep(1.0)
+                        expand_and_collect(pg, depth + 1)
+                    except Exception as e:
+                        print(f"[crawl] Tab click failed: {e}")
                         continue
 
-            page_count += 1
-            title = pg.title() or ""
-            current_url = pg.url  # may differ (redirects)
-            push_node(current_url, title)
-
-            # 1) Expand in-page sections (tabs/accordions) before scraping
-            try:
-                expand_privacy_sections(max_clicks=expand_clicks)
-                if click_delay_sec:
-                    time.sleep(min(click_delay_sec, 0.5))
-            except Exception:
-                pass
-
-            # 2) Extract controls on the fully expanded page
-            controls_resp = extract_privacy_controls()
-            page_controls = controls_resp.get("controls", []) if controls_resp.get("status") == "success" else []
-
-            # 2a) Always add to discoveries with rich page metadata
-            page_data = {
-                "url": current_url,
-                "title": title,
-                "path": path,
-                "controls": []
-            }
-
-            if page_controls:
-                for c in page_controls:
-                    control_entry = {
-                        "label": c.get("label", ""),
-                        "type": c.get("type", ""),
-                        "state": c.get("state", ""),
-                        "selector": c.get("selector", ""),
-                        "options": c.get("options", []),
-                        "context": c.get("context", "")
-                    }
-                    page_data["controls"].append(control_entry)
-
-                # Add fingerprinting only to reduce duplicates, not to skip entirely
-                fp = _controls_fingerprint(page_controls)
-                prev_fp = SCRAPE_CACHE.get(canon_url)
-                if prev_fp != fp:
-                    SCRAPE_CACHE[canon_url] = fp
-
-            discoveries.append(page_data)
-
-            # 3) Collect candidate links from the DOM snapshot and rank
-            snap = dom_snapshot()
-            if snap.get("status") != "success":
-                continue
-
-            anchors = snap["dom"].get("anchors", [])
-            prio_scored: List[Dict[str, Any]] = []
-            other_scored: List[Dict[str, Any]] = []
-            seen_links: Set[str] = set()
-
+            # Discover in-page links that look like sections
+            anchors = pg.locator("a[href*='section='], a[href*='settings=']").all()
             for a in anchors:
-                href = (a.get("href") or "").strip()
-                text = _normalize_label(a.get("text", ""))
-
-                if not href:
+                try:
+                    href = a.get_attribute("href")
+                    if not href:
+                        continue
+                    abs_url = urljoin(pg.url, href)
+                    if same_origin_only and not same_origin(abs_url):
+                        continue
+                    nurl = normalize(abs_url)
+                    if nurl not in visited and len(visited) < max_pages:
+                        pg.goto(abs_url, wait_until="load", timeout=60000)
+                        expand_and_collect(pg, depth + 1)
+                except Exception:
                     continue
+        except Exception as e:
+            print(f"[crawl] expand_and_collect error: {e}")
 
-                abs_url = urljoin(current_url, href)
+    # Start crawl
+    expand_and_collect(page, 0)
 
-                # Same-origin gate
-                if same_origin_only and not _same_origin(abs_url, start_host):
-                    continue
+    # --- save ---
+    out_dir = os.path.join(BASE_DIR, "outputs")
+    os.makedirs(out_dir, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    outfile = os.path.join(out_dir, f"{autosave_basename.replace('.json','')}_{timestamp}.json")
 
-                # Skip denylisted routes (accessibility, legal, protocol handlers, etc.)
-                if _is_denied_link(href, text):
-                    continue
+    report = {
+        "start_url": start_url,
+        "host": start_host,
+        "discoveries": discoveries,
+        "summary": {
+            "pages_visited": len(visited),
+            "controls_found": sum(len(d["controls"]) for d in discoveries),
+            "pages_with_controls": sum(1 for d in discoveries if d["controls"]),
+        },
+    }
 
-                # Avoid duplicate per page
-                if abs_url in seen_links:
-                    continue
-                seen_links.add(abs_url)
+    with open(outfile, "w", encoding="utf-8") as f:
+        json.dump(report, f, indent=2)
+    print(f"[crawl] Saved report → {outfile}")
 
-                score = _rank_link_score(abs_url, href, text, start_url)
-                entry = {"text": text, "href": href, "abs": abs_url, "score": score}
+    return {"status": "success", "report": report}
 
-                if score >= 4:
-                    prio_scored.append(entry)
-                else:
-                    other_scored.append(entry)
-
-            # Sort by score descending
-            prio_scored.sort(key=lambda x: x["score"], reverse=True)
-            other_scored.sort(key=lambda x: x["score"], reverse=True)
-
-            def take(candidates: List[Dict[str, Any]], cap: int) -> List[Dict[str, Any]]:
-                return candidates[:max(0, cap)]
-
-            # 4) Enqueue next steps: prefer high-priority settings-like links; add a small sample of others
-            for cand in take(prio_scored, cap_prio) + take(other_scored, cap_other):
-                nxt = cand["abs"]
-                nxt_canon = canonicalize_url(nxt)
-                if nxt_canon in visited:
-                    continue
-                if len(path) >= max_depth:
-                    continue
-                new_path = path + [{"action": "link", "label": cand["text"], "href": cand["abs"]}]
-                queue.append((nxt, new_path))
-
-        report = {
-            "version": "1.0",
-            "generated_at": datetime.utcnow().isoformat() + "Z",
-            "start_url": start_url,
-            "host": start_host,
-            "crawler": {
-                "max_depth": max_depth,
-                "max_pages": max_pages,
-                "same_origin_only": bool(same_origin_only)
-            },
-            "summary": {
-                "unique_pages": len(visited),
-                "discoveries": len(discoveries)
-            },
-            "visited": nodes,         # [{url, title}]
-            "discoveries": discoveries # [{url, title, path, controls}]
-        }
-
-        return {"status": "success", "report": report}
-
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
 
 # ==========================
 # Action Execution (includes safety ACK gating/handling)
@@ -1225,10 +1361,7 @@ def execute_function_calls(candidate) -> List[Tuple[str, Dict, FunctionCall]]:
                     mp = int(args.get("max_pages", int(os.environ.get("CRAWL_MAX_PAGES","25"))))
                     so = bool(int(args.get("same_origin_only", int(os.environ.get("CRAWL_SAME_ORIGIN","1")))))
                     action_result = crawl_privacy_map(md, mp, so)
-                    # Mark done if we visited at least one page
-                    if action_result.get("status") == "success":
-                        CRAWL_DONE = True
-
+                    
             elif fname == "write_json_report":
                 action_result = write_json_report(args["data"], args.get("basename"))
                 if action_result.get("status") == "success":
@@ -1268,7 +1401,7 @@ PLAN:
 1. [Open URL]
 2. [Sign in (through Google sign-on, pick zoomaitester10@gmail.com)]
 3. [Run crawl_privacy_map]
-4. [Save JSON report]
+4. [Save JSON report using write_json_report]
 """
     try:
         planning_config = types.GenerateContentConfig(
@@ -1443,6 +1576,7 @@ Primary Objective (HTML-scrape mode)
   • Use click_link_with_text/resolve_href_and_click only when needed to move within settings.
 - Do not use click_link_with_text or resolve_href_and_click for navigation unless crawl_privacy_map explicitly failed to discover links; always fully expand and scrape the current page first (expand_privacy_sections → extract_privacy_controls).
 - Discover *privacy/data/security/recording/consent* settings across the product.
+--IMPORTANT: DO NOT START MEETINGS/ CALLS/ SESSIONS/ RECORDINGS/ STREAMS/ BROADCASTS. Avoid any action that initiates live communication or data sharing.
    
 Behavioral Rules
 - Use crawl_privacy_map(max_depth 3-4, same_origin_only=1) to discover pages efficiently.
@@ -1457,7 +1591,7 @@ Output Discipline
 - Maintain safety ACK gating and use semantic tools after gating when needed.
 
 Closure Protocol
--- Produce a JSON report with:
+-- BEFORE CLOSING OUT THE LAST TURN, YOU MUST: Produce a JSON report by calling write_json_report with this structure:
    - start_url, host
    - visited pages (url, descriptive_title with subtitle if available)
    - discoveries: for each page with relevant title or controls, include `path` (sequence of clicks with labels/hrefs) and `controls` (label, type, selector)
@@ -1658,6 +1792,22 @@ I will execute the plan with DOM-first scraping to minimize tokens. I will only 
                 ))
                 continue  # proceed to next turn
 
+        # # ---- GUARANTEED FINALIZATION (runs even if model never calls the tool) ----
+        # try:
+        #     # Only run if we still have a live page/context
+        #     if playwright_context.get("page"):
+        #         crawl_result = crawl_privacy_map(
+        #             max_depth=int(os.environ.get("CRAWL_MAX_DEPTH", "3")),
+        #             max_pages=int(os.environ.get("CRAWL_MAX_PAGES", "25")),
+        #             same_origin_only=bool(int(os.environ.get("CRAWL_SAME_ORIGIN", "1"))),
+        #             autosave_basename="{}privacy_map.json"  # ensures a file is written
+        #         )
+        #         print("[finalize] crawl_privacy_map completed and autosaved to ./outputs/privacy_map.json")
+        #         # Optional: also persist with timestamped name
+        #         if isinstance(crawl_result, dict) and crawl_result.get("status") == "success":
+        #             write_json_report(crawl_result["report"])  # another file like ./outputs/privacy_map_<host>_<ts>.json
+        # except Exception as e:
+        #     print(f"[finalize] crawl_privacy_map failed: {e}")
 
         print("--- Agent session finished ---")
         if playwright_context.get("context"):

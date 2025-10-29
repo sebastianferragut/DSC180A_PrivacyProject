@@ -1,8 +1,9 @@
-2025/10/29-12:18:19.630 24aa14 Reusing MANIFEST /Users/sebastianferragut/Desktop/DSC180A/shared repo/DSC180A_PrivacyProject/gemini-team/profiles/chrome/Default/Local Storage/leveldb/MANIFEST-000001
-2025/10/29-12:18:19.632 24aa14 Recovering log #63
-2025/10/29-12:18:19.632 24aa14 Level-0 table #66: started
-2025/10/29-12:18:19.636 24aa14 Level-0 table #66: 27465 bytes OK
-2025/10/29-12:18:19.636 24aa14 Recovering log #66
-2025/10/29-12:18:19.636 24aa14 Reusing old log /Users/sebastianferragut/Desktop/DSC180A/shared repo/DSC180A_PrivacyProject/gemini-team/profiles/chrome/Default/Local Storage/leveldb/000066.log 
-2025/10/29-12:18:19.642 24aa14 Delete type=2 #67
-2025/10/29-12:18:19.643 24aa14 Delete type=0 #63
+2025/10/29-13:08:42.949 257aba Reusing MANIFEST /Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/profiles/chrome/Default/Local Storage/leveldb/MANIFEST-000001
+2025/10/29-13:08:42.952 257aba Recovering log #73
+2025/10/29-13:08:42.952 257aba Level-0 table #76: started
+2025/10/29-13:08:42.962 257aba Level-0 table #76: 27825 bytes OK
+2025/10/29-13:08:42.963 257aba Recovering log #75
+2025/10/29-13:08:42.963 257aba Reusing old log /Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/profiles/chrome/Default/Local Storage/leveldb/000075.log 
+2025/10/29-13:08:42.965 257aba Delete type=0 #73
+2025/10/29-13:10:22.196 257aba Level-0 table #78: started
+2025/10/29-13:10:22.200 257aba Level-0 table #78: 24277 bytes OK
