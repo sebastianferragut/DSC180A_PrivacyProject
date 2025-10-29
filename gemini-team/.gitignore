@@ -1,0 +1,18 @@
+# ---- Chrome profile hygiene ----
+# Ignore only unsafe or volatile subdirectories inside profiles/chrome
+profiles/chrome/Default/Code Cache/
+profiles/chrome/Default/Cache/
+profiles/chrome/Default/GPUCache/
+profiles/chrome/Default/Service Worker/
+profiles/chrome/Default/ShaderCache/
+profiles/chrome/Default/GrShaderCache/
+profiles/chrome/Default/Media Cache/
+profiles/chrome/Default/Network/Cache/
+profiles/chrome/Default/OptimizationGuide/
+profiles/chrome/Default/Safe Browsing/
+profiles/chrome/Default/TransportSecurity/
+profiles/chrome/Default/Reporting and NEL/
+profiles/chrome/Default/Visited Links
+profiles/chrome/Default/Top Sites*
+profiles/chrome/Default/Shortcuts
+profiles/chrome/Default/History*
