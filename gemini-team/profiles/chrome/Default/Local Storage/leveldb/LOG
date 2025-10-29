@@ -1,0 +1,24 @@
+2025/10/29-10:59:51.666 2361cb Reusing MANIFEST /Users/sebastianferragut/Desktop/DSC180A/shared repo/DSC180A_PrivacyProject/gemini-team/profiles/chrome/Default/Local Storage/leveldb/MANIFEST-000001
+2025/10/29-10:59:51.668 2361cb Recovering log #26
+2025/10/29-10:59:51.669 2361cb Reusing old log /Users/sebastianferragut/Desktop/DSC180A/shared repo/DSC180A_PrivacyProject/gemini-team/profiles/chrome/Default/Local Storage/leveldb/000026.log 
+2025/10/29-11:00:04.635 2361cb Level-0 table #29: started
+2025/10/29-11:00:04.637 2361cb Level-0 table #29: 26996 bytes OK
+2025/10/29-11:00:04.639 2361cb Delete type=0 #26
+2025/10/29-11:00:04.640 2361cb Compacting 4@0 + 1@1 files
+2025/10/29-11:00:04.642 2361cb Generated table #30@0: 159 keys, 176958 bytes
+2025/10/29-11:00:04.642 2361cb Compacted 4@0 + 1@1 files => 176958 bytes
+2025/10/29-11:00:04.643 2361cb compacted to: files[ 0 1 1 0 0 0 0 ]
+2025/10/29-11:00:04.643 2361cb Delete type=2 #29
+2025/10/29-11:00:04.643 2361cb Delete type=2 #21
+2025/10/29-11:00:04.643 2361cb Delete type=2 #23
+2025/10/29-11:00:04.643 2361cb Delete type=2 #25
+2025/10/29-11:00:04.643 2361cb Delete type=2 #18
+2025/10/29-11:02:23.604 2361cb Level-0 table #32: started
+2025/10/29-11:02:23.606 2361cb Level-0 table #32: 31159 bytes OK
+2025/10/29-11:02:23.608 2361cb Delete type=0 #28
+2025/10/29-11:03:53.063 2361ce Level-0 table #34: started
+2025/10/29-11:03:53.067 2361ce Level-0 table #34: 25634 bytes OK
+2025/10/29-11:03:53.073 2361ce Delete type=0 #31
+2025/10/29-11:06:03.480 2361cb Level-0 table #36: started
+2025/10/29-11:06:03.485 2361cb Level-0 table #36: 51524 bytes OK
+2025/10/29-11:06:03.490 2361cb Delete type=0 #33
