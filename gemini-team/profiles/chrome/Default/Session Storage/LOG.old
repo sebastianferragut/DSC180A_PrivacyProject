@@ -1,3 +1,8 @@
-2025/10/29-13:08:43.106 257aba Reusing MANIFEST /Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/profiles/chrome/Default/Session Storage/MANIFEST-000001
-2025/10/29-13:08:43.106 257aba Recovering log #10
-2025/10/29-13:08:43.108 257aba Reusing old log /Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/profiles/chrome/Default/Session Storage/000010.log 
+2025/10/29-13:58:54.368 2674b1 Reusing MANIFEST /Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/profiles/chrome/Default/Session Storage/MANIFEST-000001
+2025/10/29-13:58:54.368 2674b1 Recovering log #3
+2025/10/29-13:58:54.368 2674b1 Level-0 table #3: started
+2025/10/29-13:58:54.370 2674b1 Level-0 table #3: 21527 bytes OK
+2025/10/29-13:58:54.370 2674b1 Recovering log #4
+2025/10/29-13:58:54.370 2674b1 Reusing old log /Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/profiles/chrome/Default/Session Storage/000004.log 
+2025/10/29-13:58:54.371 2674b1 Delete type=0 #3
+2025/10/29-13:58:54.371 2674b1 Delete type=2 #5
