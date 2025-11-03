@@ -1,0 +1,10 @@
+2025/10/29-13:58:54.176 2674b1 Reusing MANIFEST /Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/profiles/chrome/Default/Local Storage/leveldb/MANIFEST-000001
+2025/10/29-13:58:54.178 2674b1 Recovering log #90
+2025/10/29-13:58:54.178 2674b1 Level-0 table #94: started
+2025/10/29-13:58:54.183 2674b1 Level-0 table #94: 21848 bytes OK
+2025/10/29-13:58:54.183 2674b1 Recovering log #93
+2025/10/29-13:58:54.183 2674b1 Reusing old log /Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/profiles/chrome/Default/Local Storage/leveldb/000093.log 
+2025/10/29-13:58:54.186 2674b1 Delete type=0 #90
+2025/10/29-14:00:54.894 267768 Level-0 table #96: started
+2025/10/29-14:00:54.897 267768 Level-0 table #96: 33050 bytes OK
+2025/10/29-14:00:54.900 267768 Delete type=0 #93
