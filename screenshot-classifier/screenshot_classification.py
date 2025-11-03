@@ -41,96 +41,62 @@ class PrivacyScreenshotClassifier:
         
         # Privacy categories for classification (add to this as domain knowledge expands)
         self.privacy_categories = {
+            # Device and Sensor Access
+            "access_to_device_sensors": {
+                "keywords": ["camera", "microphone", "video", "audio", "record", "recording", "permission", "device", "sensor"],
+                "description": "Camera and microphone access settings"
+            },
+
+            # Profile and Personal Information
+            "personal_information": {
+                "keywords": ["personal", "profile", "name", "email", "phone number", "address", "contact"],
+                "description": "Personal information and profile settings"
+            },
+            "sharing_settings": {
+                "keywords": ["public", "private", "visibility", "audience", "organization-wide"],
+                "description": "Content sharing and visibility settings"
+            },
+
+            # Location
+            "location_privacy": {
+                "keywords": ["location", "gps", "geolocation", "IP address", "position"],
+                "description": "Location and geolocation privacy settings"
+            },
+
+            # Communication
+            "communication_privacy": {
+                "keywords": ["messages", "chat", "communication", "calls", "meeting", "conversation", "end-to-end encryption", "party access control"], # qiyu and haojian mentioned e2ee
+                "description": "Communication and messaging privacy settings"
+            },
+            "notification_privacy": {
+                "keywords": ["notifications", "alerts", "reminders", "email notifications", "participant consent/notification"], # qiyu and haojian also mentioned participant consent
+                "description": "Notification and alert privacy settings"
+            },
+
+            # Third-party and connected services
+            "third_party_sharing": {
+                "keywords": ["third party", "partners", "integrations", "external", "api", "cookies", "advertising", "opt in/out"],
+                "description": "Third-party data sharing and integration settings"
+            },
+
+            # Data Collection and Analytics
             "data_collection": {
                 "keywords": ["data collection", "collect data", "analytics", "tracking", "telemetry"],
                 "description": "Settings related to data collection and analytics"
             },
-            "camera_microphone": {
-                "keywords": ["camera", "microphone", "video", "audio", "recording", "permissions"],
-                "description": "Camera and microphone access settings"
-            },
-            "location_privacy": {
-                "keywords": ["location", "gps", "geolocation", "where you are", "position"],
-                "description": "Location and geolocation privacy settings"
-            },
-            "personal_information": {
-                "keywords": ["personal info", "profile", "name", "email", "phone", "address", "contact"],
-                "description": "Personal information and profile settings"
-            },
-            "communication_privacy": {
-                "keywords": ["messages", "chat", "communication", "calls", "meeting", "conversation"],
-                "description": "Communication and messaging privacy settings"
-            },
-            "account_security": {
-                "keywords": ["security", "password", "authentication", "login", "account", "access"],
-                "description": "Account security and authentication settings"
-            },
-            "sharing_settings": {
-                "keywords": ["share", "public", "private", "visibility", "who can see", "audience"],
-                "description": "Content sharing and visibility settings"
-            },
-            "notification_privacy": {
-                "keywords": ["notifications", "alerts", "reminders", "email notifications"],
-                "description": "Notification and alert privacy settings"
-            },
+
+            # Data Management
             "data_retention": {
-                "keywords": ["retention", "delete", "remove", "expire", "storage", "history"],
+                "keywords": ["retention", "delete", "remove", "expire", "storage", "history", "logs", "archive"],
                 "description": "Data retention and deletion settings"
             },
-            "third_party_sharing": {
-                "keywords": ["third party", "partners", "integrations", "external", "api"],
-                "description": "Third-party data sharing and integration settings"
+
+            # Security and Authentication
+            "account_security": {
+                "keywords": ["security", "password/passcode", "authentication", "login", "encryption", "two-factor authentication", "biometrics"],
+                "description": "Account security and authentication settings"
             }
         }
-    
-    def analyze_screenshot(self, image_path: str) -> Dict:
-        """
-        Analyze a screenshot and return privacy-related information.
-        
-        Args:
-            image_path: Path to the screenshot image file
-            
-        Returns:
-            Dictionary containing analysis results
-        """
-        try:
-            # Load and prepare image
-            with open(image_path, 'rb') as f:
-                image_data = f.read()
-            
-            # Create analysis prompt
-            analysis_prompt = self._create_analysis_prompt() # what does this do?
-            
-            # Call Gemini API
-            response = self.client.models.generate_content(
-                model=self.model_id,
-                contents=[
-                    Content(
-                        role="user", # creates a user message
-                        parts=[ # multimodal message
-                            Part(text=analysis_prompt), # text instructions
-                            Part.from_bytes(data=image_data, mime_type='image/png') # image data
-                        ]
-                    )
-                ],
-                config=types.GenerateContentConfig(
-                    temperature=0.1,
-                    max_output_tokens=2048
-                )
-            )
-            
-            # Parse response
-            analysis_text = response.candidates[0].content.parts[0].text
-            return self._parse_analysis_response(analysis_text, image_path)
-            
-        except Exception as e:
-            return {
-                "status": "error",
-                "message": f"Failed to analyze screenshot: {str(e)}",
-                "image_path": image_path,
-                "timestamp": datetime.now().isoformat()
-            }
-    
 
     def _create_analysis_prompt(self) -> str:
         """Create the analysis prompt for Gemini."""
@@ -204,6 +170,55 @@ class PrivacyScreenshotClassifier:
                 "message": "Could not parse JSON response, returning raw text"
             }
     
+    
+    def analyze_screenshot(self, image_path: str) -> Dict: # this function is the workhorse
+        """
+        Analyze a screenshot and return privacy-related information.
+        
+        Args:
+            image_path: Path to the screenshot image file
+            
+        Returns:
+            Dictionary containing analysis results
+        """
+        try:
+            # Load and prepare image
+            with open(image_path, 'rb') as f:
+                image_data = f.read()
+            
+            # Create analysis prompt
+            analysis_prompt = self._create_analysis_prompt()
+            
+            # Call Gemini API
+            response = self.client.models.generate_content(
+                model=self.model_id,
+                contents=[
+                    Content(
+                        role="user", # creates a user message
+                        parts=[ # multimodal message
+                            Part(text=analysis_prompt), # text instructions
+                            Part.from_bytes(data=image_data, mime_type='image/png') # image data
+                        ]
+                    )
+                ],
+                config=types.GenerateContentConfig(
+                    temperature=0.1,
+                    max_output_tokens=2048
+                )
+            )
+            
+            # Parse response
+            analysis_text = response.candidates[0].content.parts[0].text # would like to return this
+            return self._parse_analysis_response(analysis_text, image_path)
+            
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": f"Failed to analyze screenshot: {str(e)}",
+                "image_path": image_path,
+                "timestamp": datetime.now().isoformat()
+            }
+    
 
     def classify_screenshot(self, image_path: str) -> Dict:
         """
@@ -215,6 +230,7 @@ class PrivacyScreenshotClassifier:
         Returns:
             Classification results
         """
+        # response from gemini api
         analysis = self.analyze_screenshot(image_path) # calls the analyze_screenshot function and two helpers above
         
         if analysis.get("status") != "success":
@@ -230,17 +246,19 @@ class PrivacyScreenshotClassifier:
             "detected_categories": detected_categories,
             "category_scores": {},
             "primary_category": None,
-            "confidence": analysis.get("confidence", 0.5)
+            "confidence": analysis.get("confidence", 0.0),
+            "page_type": analysis.get("page_type", ""),
+            "detected_settings": analysis.get("specific_settings", []) # list of specific settings visible in the screenshot (support confidence score)
         }
         
         # Calculate category scores based on detected categories
 
-        #  "data_collection": {
+        #  "data_collection": { # from above ^
         #         "keywords": ["data collection", "collect data", "analytics", "tracking", "telemetry"],
         #         "description": "Settings related to data collection and analytics"
         #     },
 
-        for category, info in self.privacy_categories.items(): # score: the number of keywords detected for each category (important for explaining score)
+        for category, info in self.privacy_categories.items(): # score: the number of keywords detected for each category
             score = 0
             for detected in detected_categories:
                 if any(keyword in detected.lower() for keyword in info["keywords"]):
@@ -325,18 +343,6 @@ def main():
         print(f"❌ Error: {e}")
         print("Please set your GEMINI_API_KEY environment variable")
         return
-    
-    # Classify a single screenshot
-    # screenshot_path = "screenshots\general_20251022_102721.png"
-    
-    # if os.path.exists(screenshot_path):
-    #     print(f"\n🔍 Analyzing screenshot: {screenshot_path}")
-    #     result = classifier.classify_screenshot(screenshot_path)
-    #     print(f"📊 Classification Result:")
-    #     print(json.dumps(result, indent=2))
-    # else:
-    #     print(f"⚠️  Screenshot file not found: {screenshot_path}")
-    #     print("Please provide a valid screenshot path")
     
     # Batch classification
     screenshots_dir = "screenshots"

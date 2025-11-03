@@ -108,7 +108,7 @@ print(f"Processed {results['total_images']} images")
 
 ```bash
 # Run the main script
-python screenshot-classification.py
+python screenshot_classification.py
 
 # Run example usage
 python example_usage.py
@@ -308,31 +308,3 @@ def _create_analysis_prompt(self):
 - Use batch processing for multiple screenshots
 - Compress images before analysis to reduce API costs
 - Cache results to avoid re-analyzing the same screenshots
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Support
-
-For issues and questions:
-- Create an issue on GitHub
-- Check the troubleshooting section
-- Review the example usage scripts
-
-## Changelog
-
-### v1.0.0
-- Initial release
-- Basic screenshot analysis
-- Privacy category classification
-- Batch processing support
-- Example usage scripts

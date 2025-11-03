@@ -1,149 +1,69 @@
 {
   "status": "success",
-  "total_images": 8,
+  "total_images": 4,
   "classifications": [
     {
       "status": "success",
       "image_path": "screenshots\\audio_conferencing_20251022_110156.png",
       "detected_categories": [
         "personal_information",
-        "communication_privacy",
-        "sharing_settings"
+        "sharing_settings",
+        "communication_privacy"
       ],
       "category_scores": {
-        "data_collection": 0.0,
-        "camera_microphone": 0.0,
-        "location_privacy": 0.0,
-        "personal_information": 0.0,
-        "communication_privacy": 0.16666666666666666,
-        "account_security": 0.0,
+        "access_to_device_sensors": 0.0,
+        "personal_information": 0.14285714285714285,
         "sharing_settings": 0.0,
-        "notification_privacy": 0.0,
-        "data_retention": 0.0,
-        "third_party_sharing": 0.0
-      },
-      "primary_category": "communication_privacy",
-      "confidence": 1.0
-    },
-    {
-      "status": "success",
-      "image_path": "screenshots\\general_20251022_102721.png",
-      "detected_categories": [],
-      "category_scores": {
-        "data_collection": 0.0,
-        "camera_microphone": 0.0,
         "location_privacy": 0.0,
-        "personal_information": 0.0,
-        "communication_privacy": 0.0,
-        "account_security": 0.0,
-        "sharing_settings": 0.0,
+        "communication_privacy": 0.125,
         "notification_privacy": 0.0,
+        "third_party_sharing": 0.0,
+        "data_collection": 0.0,
         "data_retention": 0.0,
-        "third_party_sharing": 0.0
+        "account_security": 0.0
       },
-      "primary_category": null,
-      "confidence": 0.5
+      "primary_category": "personal_information",
+      "confidence": 1.0,
+      "page_type": "Specific category settings page (Audio Conferencing)",
+      "detected_settings": [
+        {
+          "setting": "Show international numbers link on the invitation email",
+          "description": "Show the link for Zoom International Dial-in Numbers on email invitations",
+          "current_state": "Enabled"
+        },
+        {
+          "setting": "Mask phone number in the participant list",
+          "description": "Phone numbers of users dialing into a meeting will be masked in the participant list.",
+          "current_state": "Disabled"
+        }
+      ]
     },
     {
       "status": "success",
       "image_path": "screenshots\\general_20251022_110016.png",
       "detected_categories": [],
       "category_scores": {
-        "data_collection": 0.0,
-        "camera_microphone": 0.0,
-        "location_privacy": 0.0,
+        "access_to_device_sensors": 0.0,
         "personal_information": 0.0,
-        "communication_privacy": 0.0,
-        "account_security": 0.0,
         "sharing_settings": 0.0,
+        "location_privacy": 0.0,
+        "communication_privacy": 0.0,
         "notification_privacy": 0.0,
+        "third_party_sharing": 0.0,
+        "data_collection": 0.0,
         "data_retention": 0.0,
-        "third_party_sharing": 0.0
+        "account_security": 0.0
       },
       "primary_category": null,
-      "confidence": 0.5
+      "confidence": 0.0,
+      "page_type": "",
+      "detected_settings": []
     },
     {
-      "status": "success",
-      "image_path": "screenshots\\mail_calendar_20251022_110154.png",
-      "detected_categories": [],
-      "category_scores": {
-        "data_collection": 0.0,
-        "camera_microphone": 0.0,
-        "location_privacy": 0.0,
-        "personal_information": 0.0,
-        "communication_privacy": 0.0,
-        "account_security": 0.0,
-        "sharing_settings": 0.0,
-        "notification_privacy": 0.0,
-        "data_retention": 0.0,
-        "third_party_sharing": 0.0
-      },
-      "primary_category": null,
-      "confidence": 0.5
-    },
-    {
-      "status": "success",
-      "image_path": "screenshots\\meeting_20251022_102801.png",
-      "detected_categories": [],
-      "category_scores": {
-        "data_collection": 0.0,
-        "camera_microphone": 0.0,
-        "location_privacy": 0.0,
-        "personal_information": 0.0,
-        "communication_privacy": 0.0,
-        "account_security": 0.0,
-        "sharing_settings": 0.0,
-        "notification_privacy": 0.0,
-        "data_retention": 0.0,
-        "third_party_sharing": 0.0
-      },
-      "primary_category": null,
-      "confidence": 0.5
-    },
-    {
-      "status": "success",
-      "image_path": "screenshots\\recording_20251022_110130.png",
-      "detected_categories": [],
-      "category_scores": {
-        "data_collection": 0.0,
-        "camera_microphone": 0.0,
-        "location_privacy": 0.0,
-        "personal_information": 0.0,
-        "communication_privacy": 0.0,
-        "account_security": 0.0,
-        "sharing_settings": 0.0,
-        "notification_privacy": 0.0,
-        "data_retention": 0.0,
-        "third_party_sharing": 0.0
-      },
-      "primary_category": null,
-      "confidence": 0.5
-    },
-    {
-      "status": "success",
+      "status": "error",
+      "message": "Failed to analyze screenshot: 'NoneType' object has no attribute 'parts'",
       "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png",
-      "detected_categories": [
-        "account_security",
-        "sharing_settings",
-        "communication_privacy",
-        "personal_information",
-        "camera_microphone"
-      ],
-      "category_scores": {
-        "data_collection": 0.0,
-        "camera_microphone": 0.16666666666666666,
-        "location_privacy": 0.0,
-        "personal_information": 0.14285714285714285,
-        "communication_privacy": 0.16666666666666666,
-        "account_security": 0.16666666666666666,
-        "sharing_settings": 0.0,
-        "notification_privacy": 0.0,
-        "data_retention": 0.0,
-        "third_party_sharing": 0.0
-      },
-      "primary_category": "camera_microphone",
-      "confidence": 1.0
+      "timestamp": "2025-11-02T22:27:20.464192"
     },
     {
       "status": "success",
@@ -154,29 +74,41 @@
         "account_security"
       ],
       "category_scores": {
-        "data_collection": 0.0,
-        "camera_microphone": 0.0,
-        "location_privacy": 0.0,
+        "access_to_device_sensors": 0.0,
         "personal_information": 0.0,
-        "communication_privacy": 0.0,
-        "account_security": 0.16666666666666666,
         "sharing_settings": 0.0,
+        "location_privacy": 0.0,
+        "communication_privacy": 0.0,
         "notification_privacy": 0.0,
+        "third_party_sharing": 0.0,
+        "data_collection": 0.0,
         "data_retention": 0.0,
-        "third_party_sharing": 0.0
+        "account_security": 0.14285714285714285
       },
       "primary_category": "account_security",
-      "confidence": 1.0
+      "confidence": 1.0,
+      "page_type": "Specific settings page for 'Zoom Apps' within the main account settings.",
+      "detected_settings": [
+        {
+          "setting": "Zoom Apps Quick Launch Button",
+          "description": "Show 'Zoom Apps' button in the Zoom interface for quick access to productivity tools before, during, or after meetings.",
+          "current_state": "Enabled"
+        },
+        {
+          "setting": "Enable Developer Mode on mobile clients",
+          "description": "Developer Mode allows users to debug Zoom Apps using web inspector tools. Activates web inspection for new Zoom App instances.",
+          "current_state": "Disabled"
+        }
+      ]
     }
   ],
   "summary": {
     "category_distribution": {
-      "communication_privacy": 1,
-      "camera_microphone": 1,
+      "personal_information": 1,
       "account_security": 1
     },
-    "successful_classifications": 8,
-    "failed_classifications": 0
+    "successful_classifications": 3,
+    "failed_classifications": 1
   },
-  "timestamp": "2025-10-26T21:45:15.025719"
+  "timestamp": "2025-11-02T22:26:30.536490"
 }
