@@ -42,7 +42,7 @@ class PrivacyScreenshotClassifier:
         # Privacy categories for classification (add to this as domain knowledge expands)
         self.privacy_categories = {
             # Device and Sensor Access
-            "access_to_device_sensors": {
+            "access_to_device": {
                 "keywords": ["camera", "microphone", "video", "audio", "record", "recording", "permission", "device", "sensor"],
                 "description": "Camera and microphone access settings"
             },
@@ -65,7 +65,7 @@ class PrivacyScreenshotClassifier:
 
             # Communication
             "communication_privacy": {
-                "keywords": ["messages", "chat", "communication", "calls", "meeting", "conversation", "end-to-end encryption", "party access control"], # qiyu and haojian mentioned e2ee
+                "keywords": ["messages", "chat", "communication", "calls", "meeting", "conversation", "end-to-end encryption", "access controls"], # qiyu and haojian mentioned e2ee
                 "description": "Communication and messaging privacy settings"
             },
             "notification_privacy": {
