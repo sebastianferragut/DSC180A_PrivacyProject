@@ -11,7 +11,7 @@
         "communication_privacy"
       ],
       "category_scores": {
-        "access_to_device_sensors": 0.0,
+        "access_to_device": 0.0,
         "personal_information": 0.14285714285714285,
         "sharing_settings": 0.0,
         "location_privacy": 0.0,
@@ -24,7 +24,7 @@
       },
       "primary_category": "personal_information",
       "confidence": 1.0,
-      "page_type": "Specific category settings page (Audio Conferencing)",
+      "page_type": "Specific category page ('Audio Conferencing') within the main account settings.",
       "detected_settings": [
         {
           "setting": "Show international numbers link on the invitation email",
@@ -41,40 +41,54 @@
     {
       "status": "success",
       "image_path": "screenshots\\general_20251022_110016.png",
-      "detected_categories": [],
+      "detected_categories": [
+        "data_collection",
+        "sharing_settings",
+        "communication_privacy",
+        "personal_information"
+      ],
       "category_scores": {
-        "access_to_device_sensors": 0.0,
-        "personal_information": 0.0,
+        "access_to_device": 0.0,
+        "personal_information": 0.14285714285714285,
         "sharing_settings": 0.0,
         "location_privacy": 0.0,
-        "communication_privacy": 0.0,
+        "communication_privacy": 0.125,
         "notification_privacy": 0.0,
         "third_party_sharing": 0.0,
         "data_collection": 0.0,
         "data_retention": 0.0,
         "account_security": 0.0
       },
-      "primary_category": null,
-      "confidence": 0.0,
-      "page_type": "",
-      "detected_settings": []
+      "primary_category": "personal_information",
+      "confidence": 1.0,
+      "page_type": "General Account Settings",
+      "detected_settings": [
+        "Detailed crash dumps (Windows)",
+        "Feedback to Zoom",
+        "Allow users to send text feedback",
+        "Show 'Join from a room' feature on Zoom meetings in the Zoom client meeting list",
+        "Allow automatic direct sharing and pairing to Zoom Rooms using ultrasonic proximity signal",
+        "Hide potentially sensitive information on mobile task switcher",
+        "Change my status to away when screen saver begins",
+        "Track billable hours",
+        "Show educational onboarding assistant for new features"
+      ]
     },
     {
       "status": "error",
       "message": "Failed to analyze screenshot: 'NoneType' object has no attribute 'parts'",
       "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png",
-      "timestamp": "2025-11-02T22:27:20.464192"
+      "timestamp": "2025-11-03T15:04:02.379901"
     },
     {
       "status": "success",
       "image_path": "screenshots\\whiteboard_20251022_110201.png",
       "detected_categories": [
         "third_party_sharing",
-        "data_collection",
         "account_security"
       ],
       "category_scores": {
-        "access_to_device_sensors": 0.0,
+        "access_to_device": 0.0,
         "personal_information": 0.0,
         "sharing_settings": 0.0,
         "location_privacy": 0.0,
@@ -87,15 +101,15 @@
       },
       "primary_category": "account_security",
       "confidence": 1.0,
-      "page_type": "Specific settings page for 'Zoom Apps' within the main account settings.",
+      "page_type": "Specific Category Settings (Zoom Apps)",
       "detected_settings": [
         {
-          "setting": "Zoom Apps Quick Launch Button",
+          "name": "Zoom Apps Quick Launch Button",
           "description": "Show 'Zoom Apps' button in the Zoom interface for quick access to productivity tools before, during, or after meetings.",
           "current_state": "Enabled"
         },
         {
-          "setting": "Enable Developer Mode on mobile clients",
+          "name": "Enable Developer Mode on mobile clients",
           "description": "Developer Mode allows users to debug Zoom Apps using web inspector tools. Activates web inspection for new Zoom App instances.",
           "current_state": "Disabled"
         }
@@ -104,11 +118,11 @@
   ],
   "summary": {
     "category_distribution": {
-      "personal_information": 1,
+      "personal_information": 2,
       "account_security": 1
     },
     "successful_classifications": 3,
     "failed_classifications": 1
   },
-  "timestamp": "2025-11-02T22:26:30.536490"
+  "timestamp": "2025-11-03T15:02:49.831208"
 }

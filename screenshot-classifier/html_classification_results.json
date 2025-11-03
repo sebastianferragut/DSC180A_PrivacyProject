@@ -1,0 +1,77 @@
+{
+  "status": "success",
+  "total_html_files": 3,
+  "classifications": [
+    {
+      "status": "success",
+      "html_path": "scraped_html\\audio_conference_setting.html",
+      "detected_categories": [],
+      "category_scores": {
+        "access_to_device": 0.0,
+        "personal_information": 0.0,
+        "sharing_settings": 0.0,
+        "location_privacy": 0.0,
+        "communication_privacy": 0.0,
+        "notification_privacy": 0.0,
+        "third_party_sharing": 0.0,
+        "data_collection": 0.0,
+        "data_retention": 0.0,
+        "account_security": 0.0
+      },
+      "primary_category": null,
+      "confidence": 0.1,
+      "page_type": "Generic settings page",
+      "detected_settings": [
+        "No specific privacy settings, toggles, or options are visible in the provided text."
+      ]
+    },
+    {
+      "status": "success",
+      "html_path": "scraped_html\\mail_and_calendar_setting.html",
+      "detected_categories": [],
+      "category_scores": {
+        "access_to_device": 0.0,
+        "personal_information": 0.0,
+        "sharing_settings": 0.0,
+        "location_privacy": 0.0,
+        "communication_privacy": 0.0,
+        "notification_privacy": 0.0,
+        "third_party_sharing": 0.0,
+        "data_collection": 0.0,
+        "data_retention": 0.0,
+        "account_security": 0.0
+      },
+      "primary_category": null,
+      "confidence": 0.0,
+      "page_type": "General settings page (unspecified)",
+      "detected_settings": []
+    },
+    {
+      "status": "success",
+      "html_path": "scraped_html\\zoom_apps_setting.html",
+      "detected_categories": [],
+      "category_scores": {
+        "access_to_device": 0.0,
+        "personal_information": 0.0,
+        "sharing_settings": 0.0,
+        "location_privacy": 0.0,
+        "communication_privacy": 0.0,
+        "notification_privacy": 0.0,
+        "third_party_sharing": 0.0,
+        "data_collection": 0.0,
+        "data_retention": 0.0,
+        "account_security": 0.0
+      },
+      "primary_category": null,
+      "confidence": 1.0,
+      "page_type": "Generic settings page",
+      "detected_settings": []
+    }
+  ],
+  "summary": {
+    "category_distribution": {},
+    "successful_classifications": 3,
+    "failed_classifications": 0
+  },
+  "timestamp": "2025-11-03T15:15:11.197271"
+}
