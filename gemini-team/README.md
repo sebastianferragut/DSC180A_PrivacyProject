@@ -115,7 +115,8 @@ Save JSONs to ./outputs.
 
 ## 5. Behavior 
 
-Move the mouse to the top-left corner to abort safely, close the Chromium tab, then exit out of the terminal that was running the script.
+To prematurely exit: Move the mouse to the top-left corner to abort safely, close the Chromium tab, then exit out of the terminal that was running the script.
+Otherwise, the script will run and auto-close when done.
 
 ## 6. Folder Structure
 gemini-team/
