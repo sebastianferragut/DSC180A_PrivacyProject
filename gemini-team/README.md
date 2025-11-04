@@ -1,148 +1,132 @@
-# Overview
-Agentic UI automation that signs into a video platform using Google sign-in (e.g., Zoom web), captures full-page screenshots of privacy/data/security/recording settings, then launches a browser-based meeting and captures in-meeting privacy/permission UIs. Screenshots are saved to ./screenshots.
+# Agentic AI: Browser-Based UI Scraping & Privacy Data Capture
+## Overview
 
-# Prerequisites
+The code in this repo uses an agentic AI with Gemini API and Playwright to interact with a web platform and gather data on privacy design (so far, Zoom).
+The code and outputs are located in the gemini-team folder.
 
-## 1) General permissions
+The agent:
 
-Python 3.11.1
+Signs in using Google OAuth (email/password provided via environment variables).
 
-Playwright browsers installed
+Crawls/navigates privacy, data, and security settings tabs.
 
-macOS or Windows (set DEVICE_TYPE in code)
+Writes JSON outputs of relevant settings.
 
-For macOS (because we use pyautogui):
+## 1. Accessing and Storing Data
+### Output Data
 
-System Settings → Privacy & Security → grant your terminal/IDE:
+All output is in JSON format.
 
-Accessibility
+Location: ./outputs/
 
-Screen Recording
+Example file:
 
-## 2) Install (in the terminal)
+outputs/privacy_map_20251104_100756.json
 
-Environment
+
+These files are auto-generated when running the script and will be analyzed or uploaded to a data-collection repository.
+
+### Input Data / Credentials
+
+You must provide environment variables (see below in section 3) for:
+
+Gemini API key 
+
+Video platform URL (DO NOT CHANGE default : Zoom settings)
+
+Email and password (test credentials only, provided)
+
+## 2. Software Dependencies
+Open a terminal window, ensure you are navigated to the gemini-team folder.
+
+### Option A — Using Conda (recommended)
+
+Activate provided Conda environment:
+#### one-time setup
 conda env create -f environment.yml
 
-Install dependencies
-pip install google-genai pyautogui pillow playwright
+#### then for each new shell
+conda activate agentic-ui
 
+#### playwright runtime (once per machine / environment)
 playwright install
 
-## 3) Environment variables
+### Option B — Manual Installation
+pip install google-genai pyautogui pillow playwright beautifulsoup4 lxml
+playwright install
 
-You need a Gemini API key. Also provide the entry URL for the video platform’s settings.
+### System Requirements
 
-Get an API key: https://aistudio.google.com/app/api-keys
+Python: 3.11+
 
-Set exports (Linux/macOS):
+OS: macOS or Windows 11
 
-export GEMINI_API_KEY="your_key_here" \
+Browser: Chromium (installed by Playwright)
+
+macOS Permissions
+
+If using macOS, grant your terminal/IDE:
+
+Accessibility → control the mouse
+
+Screen Recording → allow pyautogui screenshots
+(System Settings → Privacy & Security)
+
+## 3. Environment Variables
+
+You must export the following environment variables before running (be sure to change GEMINI_API_KEY to the one you get from https://aistudio.google.com/app/api-keys):
+Open a terminal window, ensure you are navigated to the gemini-team folder, and execute:
+
+macOS/Linux
+export GEMINI_API_KEY="your_api_key_here" \
 SIGNUP_EMAIL_ADDRESS="zoomaitester10@gmail.com" \
 SIGNUP_EMAIL_PASSWORD="ZoomTestPass" \
 SIGNUP_EMAIL_PASSWORD_WEB="$SIGNUP_EMAIL_PASSWORD" \
-VIDEO_PLATFORM="https://zoom.us/profile/setting?tab=general"
+PROFILE_NAME="chrome" \
+PLATFORM="https://zoom.us/profile/setting?tab=general"
 
-
-On Windows (PowerShell):
-
+Windows PowerShell
 $env:GEMINI_API_KEY="your_api_key_here"
 $env:SIGNUP_EMAIL_ADDRESS="zoomaitester10@gmail.com"
 $env:SIGNUP_EMAIL_PASSWORD="ZoomTestPass"
 $env:SIGNUP_EMAIL_PASSWORD_WEB=$env:SIGNUP_EMAIL_PASSWORD
-$env:VIDEO_PLATFORM="https://zoom.us/profile/setting?tab=general"
+$env:PLATFORM="https://zoom.us/profile/setting?tab=general"
 
 
-Keep the multi-line export exactly as shown (no stray spaces before backslashes).
-VIDEO_PLATFORM can be any target site entry (we use Zoom Settings → General as an example).
+Keep multi-line exports exactly as shown (no stray spaces).
+Do not change the PLATFORM link (agent has been tested on Zoom, generalized support coming.)
+Do not modify anything except for GEMINI_API_KEY. Free keys are provided at the link above. 
 
-## 4) Run
-python screenshotuiagent.py
+## 4. Running the Agent
 
+In the terminal, ensure you are navigated to the gemini-team folder, and execute:
+
+python uiagenthtml.py
 
 The agent will:
 
-Open {VIDEO_PLATFORM} in Chromium (Playwright).
+Launch Chromium with Playwright and open the PLATFORM.
 
-Sign in if required (using provide_signup_email / provide_signup_password).
+Sign in (using provided test credentials).
 
-Settings phase: Click each horizontal settings tab (General, Meeting, Recording) and take one full-page screenshot per tab (no vertical-nav scrolling).
+Crawl the site and write JSONs on relevant privacy design.
 
-Meeting phase: Start a browser-based meeting (stay in web client), capture:
+Save JSONs to ./outputs.
 
-Permissions prompts (mic/camera/notifications/screenshare)
+## 5. Behavior 
 
-Recording consent banners/dialogs
+Move the mouse to the top-left corner to abort safely, close the Chromium tab, then exit out of the terminal that was running the script.
 
-Security menu
-
-Share Screen up-arrow → Advanced sharing options
-
-End the meeting and finish.
-
-All images save to ./screenshots (e.g., settings/general_YYYYMMDD_HHMMSS.png, meeting/share_advanced_options_*.png).
-
-## 5) Important behaviors & knobs
-Viewport / “Zoomed UI” fix
-
-The script sets:
-
-Browser window: --window-size=1280,720
-
-Context viewport: 1280×720, device_scale_factor=1.0
-
-This normalizes Zoom’s web client so toolbars fit on screen. If UI is still too large/small, tweak in open_browser_and_navigate:
-
-viewport={"width": 1280, "height": 720}, device_scale_factor=1.0
-
-
-Optionally inject page zoom post-load:
-
-page.evaluate("document.body.style.zoom='80%'")
-
-Screenshots
-
-Full page (settings tabs): page_full_screenshot(label="general", subfolder="settings")
-
-Element/Popover (in meeting menus): page_element_screenshot(selector, label="security_menu", subfolder="meeting")
-
-Desktop/OS prompts: save_desktop_screenshot(label="os_prompt")
-
-Scrolling policy
-
-No scrolling for settings tab captures (one full-page shot per tab).
-
-Minimal scrolling only to reveal the horizontal tab bar or in-meeting popovers; use a single small scroll (~80–120px), then stop.
-
-Coordinate clicks
-
-The agent prefers semantic/role-based actions (e.g., click_button_by_text, ui_click_label).
-
-If the model attempts a click_at (coordinates), the runtime acknowledges safety and nudges it to retry with semantic tools.
-
-Fail-safe
-
-Moving the mouse to the top-left corner triggers pyautogui fail-safe. The script will close the browser context and exit.
-
-## 6) Folder structure
-
+## 6. Folder Structure
 gemini-team/
 
-├── screenshotuiagent.py
+├── uiagenthtml.py        # Main script
 
-├── environment.yml
+├── environment.yml             # Conda environment definition
 
-├── screenshots/                # auto-created, output images live here
+├── outputs/                # Output folder (auto-created)
 
 └── README.md
 
-
-## 7) Customization
-
-Device type: set DEVICE_TYPE = "MacBook" or "Windows 11 PC".
-
-Labels & subfolders: keep them semantic (e.g., settings/meeting, meeting/security_menu).
-
-VIDEO_PLATFORM: set export of VIDEO_PLATFORM to desired url. 
-
-system_instruction: Large prompt to guide the creation of the plan and execution of actions. 
+## 7. Runtime Error Notes
+If you get a 400 error, this happens with the API key at times due to a bug in the Gemini API. Simply re-run the script, ensuring all enviroment variables have been exported. 

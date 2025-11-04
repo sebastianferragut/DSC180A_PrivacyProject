@@ -1,0 +1,752 @@
+{
+  "start_url": "https://zoom.us/profile/setting?tab=general",
+  "host": "zoom.us",
+  "discoveries": [
+    {
+      "path": [
+        "https://zoom.us/profile/setting?tab=general"
+      ],
+      "controls": [
+        {
+          "label": "Detailed crash dumps (Windows)",
+          "type": "checkbox",
+          "selector": "zoom-toggle__original"
+        },
+        {
+          "label": "Accept All Cookies",
+          "type": "button",
+          "selector": "accept-recommended-btn-handler"
+        },
+        {
+          "label": "Targeting Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Functional Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Performance Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        }
+      ]
+    },
+    {
+      "path": [
+        "https://zoom.us/profile/setting?tab=aicompanion"
+      ],
+      "controls": [
+        {
+          "label": "Accept All Cookies",
+          "type": "button",
+          "selector": "accept-recommended-btn-handler"
+        },
+        {
+          "label": "Targeting Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Functional Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Performance Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        }
+      ]
+    },
+    {
+      "path": [
+        "https://zoom.us/profile/setting?tab=meeting"
+      ],
+      "controls": [
+        {
+          "label": "Require that all meetings are secured with one security option",
+          "type": "checkbox",
+          "selector": "zoom-toggle__original"
+        },
+        {
+          "label": "Show Zoom windows during screen share",
+          "type": "checkbox",
+          "selector": "zoom-toggle__original"
+        },
+        {
+          "label": "Learn more about How many participants can share at the same time?",
+          "type": "button",
+          "selector": "zoom-button zoom-button--sm zoom-button--tertiary zoom-button__icon zoom-button--tertiary-icon zoom-tooltip__trigger"
+        },
+        {
+          "label": "Request permission to unmute",
+          "type": "checkbox",
+          "selector": "zoom-toggle__original"
+        },
+        {
+          "label": "Accept All Cookies",
+          "type": "button",
+          "selector": "accept-recommended-btn-handler"
+        },
+        {
+          "label": "Targeting Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Functional Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Performance Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        }
+      ]
+    },
+    {
+      "path": [
+        "https://zoom.us/profile/setting?tab=recording"
+      ],
+      "controls": [
+        {
+          "label": "Record to computer files",
+          "type": "checkbox",
+          "selector": "zoom-toggle__original"
+        },
+        {
+          "label": "Support Version for Who can request host permission to record?",
+          "type": "button",
+          "selector": "zoom-button zoom-button--sm zoom-button--tertiary zoom-button__icon zoom-button--tertiary-icon zoom-tooltip__trigger"
+        },
+        {
+          "label": "Automatic recording",
+          "type": "checkbox",
+          "selector": "zoom-toggle__original"
+        },
+        {
+          "label": "Learn more about Recording notifications - Zoom clients",
+          "type": "button",
+          "selector": "zoom-button zoom-button--sm zoom-button--tertiary zoom-button__icon zoom-button--tertiary-icon tooltips-icon-button-lg mgl-sm zoom-tooltip__trigger"
+        },
+        {
+          "label": "Learn more about Recording notifications - Zoom clients",
+          "type": "button",
+          "selector": "zoom-button zoom-button--sm zoom-button--tertiary zoom-button__icon zoom-button--tertiary-icon zoom-tooltip__trigger"
+        },
+        {
+          "label": "Ask host to confirm before starting a recording",
+          "type": "checkbox",
+          "selector": "zoom-checkbox__original"
+        },
+        {
+          "label": "Accept All Cookies",
+          "type": "button",
+          "selector": "accept-recommended-btn-handler"
+        },
+        {
+          "label": "Targeting Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Functional Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Performance Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        }
+      ]
+    },
+    {
+      "path": [
+        "https://zoom.us/profile/setting?tab=zoomMailCalendar"
+      ],
+      "controls": [
+        {
+          "label": "Bidirectional sync for Zoom meeting data between Zoom web portal and calendars",
+          "type": "checkbox",
+          "selector": "zoom-toggle__original"
+        },
+        {
+          "label": "Accept All Cookies",
+          "type": "button",
+          "selector": "accept-recommended-btn-handler"
+        },
+        {
+          "label": "Targeting Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Functional Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Performance Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        }
+      ]
+    },
+    {
+      "path": [
+        "https://zoom.us/profile/setting?tab=telephony"
+      ],
+      "controls": [
+        {
+          "label": "Accept All Cookies",
+          "type": "button",
+          "selector": "accept-recommended-btn-handler"
+        },
+        {
+          "label": "Targeting Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Functional Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Performance Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        }
+      ]
+    },
+    {
+      "path": [
+        "https://zoom.us/profile/setting?tab=zoomapps"
+      ],
+      "controls": [
+        {
+          "label": "Accept All Cookies",
+          "type": "button",
+          "selector": "accept-recommended-btn-handler"
+        },
+        {
+          "label": "Targeting Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Functional Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Performance Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        }
+      ]
+    },
+    {
+      "path": [
+        "https://zoom.us/profile/setting?tab=whiteboard"
+      ],
+      "controls": [
+        {
+          "label": "Allow whiteboards to be saved to cloud",
+          "type": "checkbox",
+          "selector": "zoom-toggle__original"
+        },
+        {
+          "label": "Allow participants to share whiteboard",
+          "type": "checkbox",
+          "selector": "zoom-toggle__original"
+        },
+        {
+          "label": "Allow whiteboards to be saved to cloud",
+          "type": "checkbox",
+          "selector": "zoom-toggle__original"
+        },
+        {
+          "label": "Require passcode to access shared whiteboards",
+          "type": "checkbox",
+          "selector": "zoom-toggle__original"
+        },
+        {
+          "label": "Accept All Cookies",
+          "type": "button",
+          "selector": "accept-recommended-btn-handler"
+        },
+        {
+          "label": "Targeting Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Functional Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Performance Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        }
+      ]
+    },
+    {
+      "path": [
+        "https://zoom.us/profile/setting?tab=notes"
+      ],
+      "controls": [
+        {
+          "label": "Support version for Enable In-Meeting Notes",
+          "type": "button",
+          "selector": "zoom-button zoom-button--sm zoom-button--tertiary zoom-button__icon zoom-button--tertiary-icon zoom-tooltip__trigger"
+        },
+        {
+          "label": "Enable In-Meeting Notes",
+          "type": "checkbox",
+          "selector": "zoom-toggle__original"
+        },
+        {
+          "label": "Allow notes to be saved to cloud",
+          "type": "checkbox",
+          "selector": "zoom-toggle__original"
+        },
+        {
+          "label": "Allow participants to share note",
+          "type": "checkbox",
+          "selector": "zoom-toggle__original"
+        },
+        {
+          "label": "Enable Out-of-Meeting Notes",
+          "type": "checkbox",
+          "selector": "zoom-toggle__original"
+        },
+        {
+          "label": "Allow notes to be saved to cloud",
+          "type": "checkbox",
+          "selector": "zoom-toggle__original"
+        },
+        {
+          "label": "Auto-delete specified notes",
+          "type": "checkbox",
+          "selector": "zoom-toggle__original"
+        },
+        {
+          "label": "Accept All Cookies",
+          "type": "button",
+          "selector": "accept-recommended-btn-handler"
+        },
+        {
+          "label": "Targeting Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Functional Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Performance Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        }
+      ]
+    },
+    {
+      "path": [
+        "https://zoom.us/profile/setting?tab=zmDoc"
+      ],
+      "controls": [
+        {
+          "label": "Allow participants to share docs in meetings",
+          "type": "checkbox",
+          "selector": "zoom-toggle__original"
+        },
+        {
+          "label": "Accept All Cookies",
+          "type": "button",
+          "selector": "accept-recommended-btn-handler"
+        },
+        {
+          "label": "Targeting Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Functional Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Performance Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        }
+      ]
+    },
+    {
+      "path": [
+        "https://zoom.us/profile/setting?tab=zoomTasks"
+      ],
+      "controls": [
+        {
+          "label": "Accept All Cookies",
+          "type": "button",
+          "selector": "accept-recommended-btn-handler"
+        },
+        {
+          "label": "Targeting Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Functional Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Performance Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        }
+      ]
+    },
+    {
+      "path": [
+        "https://zoom.us/profile/setting?tab=zmHub"
+      ],
+      "controls": [
+        {
+          "label": "Accept All Cookies",
+          "type": "button",
+          "selector": "accept-recommended-btn-handler"
+        },
+        {
+          "label": "Targeting Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Functional Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Performance Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        }
+      ]
+    },
+    {
+      "path": [
+        "https://zoom.us/profile/setting?tab=zoomclips"
+      ],
+      "controls": [
+        {
+          "label": "Require passcode to access shared clips",
+          "type": "checkbox",
+          "selector": "zoom-toggle__original"
+        },
+        {
+          "label": "Display the shared clip's and playlist's thumbnail, title, and description",
+          "type": "checkbox",
+          "selector": "zoom-toggle__original"
+        },
+        {
+          "label": "Accept All Cookies",
+          "type": "button",
+          "selector": "accept-recommended-btn-handler"
+        },
+        {
+          "label": "Targeting Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Functional Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Performance Cookies",
+          "type": "button",
+          "selector": "ot-switch"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        },
+        {
+          "label": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "selector": "ot-link-btn category-host-list-handler"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "pages_visited": 13,
+    "controls_found": 130,
+    "pages_with_controls": 13
+  }
+}
