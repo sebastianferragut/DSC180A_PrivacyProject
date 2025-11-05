@@ -1,0 +1,152 @@
+================================================================================
+PRIVACY MAP SUMMARY REPORT
+================================================================================
+Generated: 2025-11-05T10:22:11.723813
+Files Analyzed: 3
+
+COMBINED STATISTICS
+--------------------------------------------------------------------------------
+Total Pages Analyzed: 38
+Pages with Privacy Controls: 38
+Total Privacy Controls Found: 364
+Unique Privacy Settings: 24
+
+PRIVACY CATEGORIES
+--------------------------------------------------------------------------------
+  data_collection: 304 controls (high priority)
+    Data collection and analytics settings
+  cookie_consent: 304 controls (high priority)
+    Cookie consent and management settings
+  sharing_settings: 24 controls (medium priority)
+    Content sharing and visibility settings
+  camera_microphone: 24 controls (high priority)
+    Camera and microphone access settings
+  communication_privacy: 18 controls (medium priority)
+    Communication and messaging privacy settings
+  account_security: 9 controls (high priority)
+    Account security and authentication settings
+  notification_privacy: 6 controls (low priority)
+    Notification and alert privacy settings
+  data_retention: 3 controls (high priority)
+    Data retention and deletion settings
+
+MOST COMMON PRIVACY SETTINGS
+--------------------------------------------------------------------------------
+  • allow participants to share docs in meetings (found in 3 file(s))
+  • support version for who can request host permission to record? (found in 3 file(s))
+  • functional cookies (found in 3 file(s))
+  • automatic recording (found in 3 file(s))
+  • support version for enable in-meeting notes (found in 3 file(s))
+  • enable in-meeting notes (found in 3 file(s))
+  • require passcode to access shared clips (found in 3 file(s))
+  • display the shared clip's and playlist's thumbnail, title, and description (found in 3 file(s))
+  • require passcode to access shared whiteboards (found in 3 file(s))
+  • allow participants to share whiteboard (found in 3 file(s))
+  • targeting cookies (found in 3 file(s))
+  • show zoom windows during screen share (found in 3 file(s))
+  • require that all meetings are secured with one security option (found in 3 file(s))
+  • allow participants to share note (found in 3 file(s))
+  • auto-delete specified notes (found in 3 file(s))
+
+FILE-BY-FILE BREAKDOWN
+--------------------------------------------------------------------------------
+
+File: privacy_map_20251029_131608.json
+  Host: zoom.us
+  Pages: 14
+  Privacy Controls: 132
+  Categories Found: data_collection, cookie_consent, communication_privacy, account_security, sharing_settings, camera_microphone, notification_privacy, data_retention
+
+File: privacy_map_20251029_131753.json
+  Host: zoom.us
+  Pages: 11
+  Privacy Controls: 108
+  Categories Found: camera_microphone, account_security, sharing_settings, data_collection, cookie_consent, communication_privacy, notification_privacy, data_retention
+
+File: privacy_map_20251104_100756.json
+  Host: zoom.us
+  Pages: 13
+  Privacy Controls: 124
+  Categories Found: data_collection, cookie_consent, communication_privacy, account_security, sharing_settings, camera_microphone, notification_privacy, data_retention
+
+
+DETAILED PRIVACY CONTROLS BY CATEGORY
+--------------------------------------------------------------------------------
+
+ACCOUNT SECURITY
+  Account security and authentication settings
+  Total Controls: 9
+  Unique Settings: 3
+    • Require passcode to access shared clips
+    • Require passcode to access shared whiteboards
+    • Require that all meetings are secured with one security option
+
+CAMERA MICROPHONE
+  Camera and microphone access settings
+  Total Controls: 24
+  Unique Settings: 7
+    • Ask host to confirm before starting a recording
+    • Automatic recording
+    • Learn more about Recording notifications - Zoom clients
+    • Record to computer files
+    • Require passcode to access shared clips
+    • Require passcode to access shared whiteboards
+    • Support Version for Who can request host permission to record?
+
+COMMUNICATION PRIVACY
+  Communication and messaging privacy settings
+  Total Controls: 18
+  Unique Settings: 6
+    • Allow participants to share docs in meetings
+    • Bidirectional sync for Zoom meeting data between Zoom web portal and calendars
+    • Enable In-Meeting Notes
+    • Enable Out-of-Meeting Notes
+    • Require that all meetings are secured with one security option
+    • Support version for Enable In-Meeting Notes
+
+COOKIE CONSENT
+  Cookie consent and management settings
+  Total Controls: 304
+  Unique Settings: 5
+    • Accept All Cookies
+    • Cookies Details Cookie Details button opens Cookie List menu
+    • Functional Cookies
+    • Performance Cookies
+    • Targeting Cookies
+
+DATA COLLECTION
+  Data collection and analytics settings
+  Total Controls: 304
+  Unique Settings: 5
+    • Accept All Cookies
+    • Cookies Details Cookie Details button opens Cookie List menu
+    • Functional Cookies
+    • Performance Cookies
+    • Targeting Cookies
+
+DATA RETENTION
+  Data retention and deletion settings
+  Total Controls: 3
+  Unique Settings: 1
+    • Auto-delete specified notes
+
+NOTIFICATION PRIVACY
+  Notification and alert privacy settings
+  Total Controls: 6
+  Unique Settings: 1
+    • Learn more about Recording notifications - Zoom clients
+
+SHARING SETTINGS
+  Content sharing and visibility settings
+  Total Controls: 24
+  Unique Settings: 8
+    • Allow participants to share docs in meetings
+    • Allow participants to share note
+    • Allow participants to share whiteboard
+    • Display the shared clip's and playlist's thumbnail, title, and description
+    • Learn more about How many participants can share at the same time?
+    • Require passcode to access shared clips
+    • Require passcode to access shared whiteboards
+    • Show Zoom windows during screen share
+
+================================================================================

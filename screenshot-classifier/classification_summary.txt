@@ -1,0 +1,198 @@
+================================================================================
+SCREENSHOT CLASSIFICATION SUMMARY REPORT
+================================================================================
+Generated: 2025-11-05T11:15:56.024097
+Files Analyzed: 2
+
+COMBINED STATISTICS
+--------------------------------------------------------------------------------
+Total Screenshots Analyzed: 8
+Successful Classifications: 6
+Failed Classifications: 2
+Screenshots with Privacy Settings: 4
+Unique Settings Detected: 15
+High Confidence Classifications (≥0.8): 4
+
+CONFIDENCE STATISTICS
+--------------------------------------------------------------------------------
+Average Confidence: 1.00
+Min Confidence: 1.00
+Max Confidence: 1.00
+Total Classifications with Confidence: 4
+
+PRIVACY CATEGORIES
+--------------------------------------------------------------------------------
+  personal_information: 4 screenshots (medium priority)
+    Personal information and profile settings
+  sharing_settings: 4 screenshots (medium priority)
+    Content sharing and visibility settings
+  communication_privacy: 4 screenshots (medium priority)
+    Communication and messaging privacy settings
+  access_to_device: 2 screenshots (high priority)
+    Camera and microphone access settings
+  account_security: 2 screenshots (high priority)
+    Account security and authentication settings
+
+PAGE TYPES DETECTED
+--------------------------------------------------------------------------------
+  • In-Meeting Security Settings Menu
+  • Specific category settings page (Audio Conferencing)
+
+FILE-BY-FILE BREAKDOWN
+--------------------------------------------------------------------------------
+
+File: classification_results.json
+  Screenshots: 4
+  Successful: 3
+  Failed: 1
+  With Privacy Settings: 2
+  Categories Found: access_to_device, personal_information, sharing_settings, communication_privacy, account_security
+
+File: classification_results.json
+  Screenshots: 4
+  Successful: 3
+  Failed: 1
+  With Privacy Settings: 2
+  Categories Found: access_to_device, personal_information, sharing_settings, communication_privacy, account_security
+
+
+DETAILED CLASSIFICATIONS BY CATEGORY
+--------------------------------------------------------------------------------
+
+ACCESS TO DEVICE
+  Camera and microphone access settings
+  Total Screenshots: 2
+    • security_menu_fullpage_20251022_110816.png
+      Page Type: In-Meeting Security Settings Menu
+      Confidence: 1.00
+      Settings Found: 13
+        - Banner prompt: 'Please enable access to your microphone and ...
+        - Lock Meeting
+    • security_menu_fullpage_20251022_110816.png
+      Page Type: In-Meeting Security Settings Menu
+      Confidence: 1.00
+      Settings Found: 13
+        - Banner prompt: 'Please enable access to your microphone and ...
+        - Lock Meeting
+
+ACCOUNT SECURITY
+  Account security and authentication settings
+  Total Screenshots: 2
+    • security_menu_fullpage_20251022_110816.png
+      Page Type: In-Meeting Security Settings Menu
+      Confidence: 1.00
+      Settings Found: 13
+        - Banner prompt: 'Please enable access to your microphone and ...
+        - Lock Meeting
+    • security_menu_fullpage_20251022_110816.png
+      Page Type: In-Meeting Security Settings Menu
+      Confidence: 1.00
+      Settings Found: 13
+        - Banner prompt: 'Please enable access to your microphone and ...
+        - Lock Meeting
+
+COMMUNICATION PRIVACY
+  Communication and messaging privacy settings
+  Total Screenshots: 4
+    • security_menu_fullpage_20251022_110816.png
+      Page Type: In-Meeting Security Settings Menu
+      Confidence: 1.00
+      Settings Found: 13
+        - Banner prompt: 'Please enable access to your microphone and ...
+        - Lock Meeting
+    • audio_conferencing_20251022_110156.png
+      Page Type: Specific category settings page (Audio Conferencing)
+      Confidence: 1.00
+      Settings Found: 2
+        - Show international numbers link on the invitation email: A t...
+        - Mask phone number in the participant list: A toggle switch, ...
+    • security_menu_fullpage_20251022_110816.png
+      Page Type: In-Meeting Security Settings Menu
+      Confidence: 1.00
+      Settings Found: 13
+        - Banner prompt: 'Please enable access to your microphone and ...
+        - Lock Meeting
+    • audio_conferencing_20251022_110156.png
+      Page Type: Specific category settings page (Audio Conferencing)
+      Confidence: 1.00
+      Settings Found: 2
+        - Show international numbers link on the invitation email: A t...
+        - Mask phone number in the participant list: A toggle switch, ...
+
+PERSONAL INFORMATION
+  Personal information and profile settings
+  Total Screenshots: 4
+    • security_menu_fullpage_20251022_110816.png
+      Page Type: In-Meeting Security Settings Menu
+      Confidence: 1.00
+      Settings Found: 13
+        - Banner prompt: 'Please enable access to your microphone and ...
+        - Lock Meeting
+    • audio_conferencing_20251022_110156.png
+      Page Type: Specific category settings page (Audio Conferencing)
+      Confidence: 1.00
+      Settings Found: 2
+        - Show international numbers link on the invitation email: A t...
+        - Mask phone number in the participant list: A toggle switch, ...
+    • security_menu_fullpage_20251022_110816.png
+      Page Type: In-Meeting Security Settings Menu
+      Confidence: 1.00
+      Settings Found: 13
+        - Banner prompt: 'Please enable access to your microphone and ...
+        - Lock Meeting
+    • audio_conferencing_20251022_110156.png
+      Page Type: Specific category settings page (Audio Conferencing)
+      Confidence: 1.00
+      Settings Found: 2
+        - Show international numbers link on the invitation email: A t...
+        - Mask phone number in the participant list: A toggle switch, ...
+
+SHARING SETTINGS
+  Content sharing and visibility settings
+  Total Screenshots: 4
+    • security_menu_fullpage_20251022_110816.png
+      Page Type: In-Meeting Security Settings Menu
+      Confidence: 1.00
+      Settings Found: 13
+        - Banner prompt: 'Please enable access to your microphone and ...
+        - Lock Meeting
+    • audio_conferencing_20251022_110156.png
+      Page Type: Specific category settings page (Audio Conferencing)
+      Confidence: 1.00
+      Settings Found: 2
+        - Show international numbers link on the invitation email: A t...
+        - Mask phone number in the participant list: A toggle switch, ...
+    • security_menu_fullpage_20251022_110816.png
+      Page Type: In-Meeting Security Settings Menu
+      Confidence: 1.00
+      Settings Found: 13
+        - Banner prompt: 'Please enable access to your microphone and ...
+        - Lock Meeting
+    • audio_conferencing_20251022_110156.png
+      Page Type: Specific category settings page (Audio Conferencing)
+      Confidence: 1.00
+      Settings Found: 2
+        - Show international numbers link on the invitation email: A t...
+        - Mask phone number in the participant list: A toggle switch, ...
+
+
+HIGH CONFIDENCE CLASSIFICATIONS
+--------------------------------------------------------------------------------
+  • security_menu_fullpage_20251022_110816.png
+    Confidence: 1.00
+    Categories: access_to_device, personal_information, sharing_settings, communication_privacy, account_security
+    Page Type: In-Meeting Security Settings Menu
+  • audio_conferencing_20251022_110156.png
+    Confidence: 1.00
+    Categories: personal_information, sharing_settings, communication_privacy
+    Page Type: Specific category settings page (Audio Conferencing)
+  • security_menu_fullpage_20251022_110816.png
+    Confidence: 1.00
+    Categories: access_to_device, personal_information, sharing_settings, communication_privacy, account_security
+    Page Type: In-Meeting Security Settings Menu
+  • audio_conferencing_20251022_110156.png
+    Confidence: 1.00
+    Categories: personal_information, sharing_settings, communication_privacy
+    Page Type: Specific category settings page (Audio Conferencing)
+
+================================================================================
