@@ -144,16 +144,13 @@ To prematurely exit: Move the mouse to the top-left corner to abort safely, clos
 Otherwise, the script will run and auto-close when done.
 
 ## 6. Folder Structure
-gemini-team/
-
-├── uiagenthtml.py              # Main script
-
-├── environment.yml             # Conda environment definition
-
-├── outputs/                    # Output folder (auto-created)
-
-└── README.md
-
+```
+DSC180A_PrivacyProject/
+├── gemini-team/
+│   ├── uiagenthtml.py           # Main script
+│   ├── environment.yml          # Conda environment definition
+│   ├── outputs/                 # Output folder (auto-created)
+│   └── README.md
 ├── previous-work/               # Archived of prior hard-coded experimentations
 │   ├── jesse/
 │   ├── nian-nian/
@@ -161,13 +158,13 @@ gemini-team/
 │   └── sebastian/
 │       ├── profilesetupguide.txt
 │       └── sebastian_privacy_agent.py
-
 └── screenshot-classifier/       # Classifier submodule
     ├── classification_results.json
     ├── config.py
     ├── environment.yml
     ├── screenshots/             # Screenshot samples
     └── screenshot_classification.py
+```
 
 ## 7. Runtime Error Notes
 If you get a 400 error, this happens with the API key at times due to a bug in the Gemini API. Simply re-run the script, ensuring all enviroment variables have been exported. 
