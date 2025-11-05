@@ -4,7 +4,76 @@
   "classifications": [
     {
       "status": "success",
-      "image_path": "screenshots\\audio_conferencing_20251022_110156.png",
+      "image_path": "screenshots/security_menu_fullpage_20251022_110816.png",
+      "detected_categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "account_security"
+      ],
+      "category_scores": {
+        "access_to_device": 0.1111111111111111,
+        "personal_information": 0.14285714285714285,
+        "sharing_settings": 0.0,
+        "location_privacy": 0.0,
+        "communication_privacy": 0.125,
+        "notification_privacy": 0.0,
+        "third_party_sharing": 0.0,
+        "data_collection": 0.0,
+        "data_retention": 0.0,
+        "account_security": 0.14285714285714285
+      },
+      "primary_category": "personal_information",
+      "confidence": 1.0,
+      "page_type": "In-Meeting Security Settings Menu",
+      "detected_settings": [
+        "Banner prompt: 'Please enable access to your microphone and camera for the best experience.'",
+        "Lock Meeting",
+        "Enable Waiting Room",
+        "Hide Profile Pictures",
+        "Allow participants to: Share Screen (enabled)",
+        "Allow participants to: Chat (enabled)",
+        "Allow participants to: Rename Themselves (enabled)",
+        "Allow participants to: Unmute Themselves (enabled)",
+        "Allow participants to: Start Video (enabled)",
+        "Allow participants to: Share Whiteboards (enabled)",
+        "Suspend Participant Activities",
+        "Audio (Muted)",
+        "Video (Off)"
+      ]
+    },
+    {
+      "status": "partial_success",
+      "raw_response": "```json\n{\n    \"application\": \"Zoom\",\n    \"page_type\": \"Specific category settings page for 'Zoom Apps' within the main account settings.\",\n    \"privacy_categories\": [\n        \"third_party_sharing\",\n        \"data_collection\",\n        \"account_security\"\n    ],\n    \"specific_settings\": [\n        {\n            \"setting\": \"Zoom Apps Quick Launch Button\",\n            \"description\": \"Show 'Zoom Apps' button in the Zoom interface for quick access to productivity tools before, during, or after meetings.\",\n            \"state\": \"Enabled\"\n        },\n        {\n            \"setting\": \"Enable Developer Mode on mobile clients\",\n            \"description\": \"Developer Mode allows users to debug Zoom Apps using web inspector tools. Activates web inspection for new Zoom App instances.\",\n            \"state\": \"Disabled\"\n        }\n    ],\n    \"user_actions\": [\n        \"Enable/disable the 'Zoom Apps Quick Launch Button'.\",\n        \"Enable/disable 'Developer Mode on mobile clients'.\",\n        \"Navigate to other settings categories such as General, Meeting, Recording, etc.\",\n        \"Search for specific settings.\"\n    ],\n    \"privacy_level\": 7,\n    \"key_concerns\": [\n        \"The primary concern is the use of 'Zoom Apps', which are third-party applications. These apps may have access to sensitive meeting data and personal information, and their privacy practices are not controlled by Zoom.\",\n        \"Enabling the 'Zoom Apps Quick Launch Button' by default may encourage users to install and use third-party apps without fully considering the privacy implications.\",\n        \"Enabling 'Developer Mode' could pose a security risk if a user is tricked into activating it, as it allows for deeper inspection and potential manipulation of the app's behavior.\"\n    ],\n    \"recommendations\": [\n        \"If you do not use Zoom Apps, disable the 'Zoom Apps Quick Launch Button' to reduce clutter and minimize the attack surface.\",\n        \"Keep 'Developer Mode' disabled unless you are an app developer and actively need it for debugging purposes. Never enable it at the request of an untrusted source.\",\n        \"Before installing and using any Zoom App, carefully review its permissions and privacy policy to understand what data it collects and how it is used.\"\n    ],\n    ",
+      "image_path": "screenshots/whiteboard_20251022_110201.png",
+      "timestamp": "2025-11-04T16:15:26.532291",
+      "message": "Could not parse JSON response, returning raw text"
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots/general_20251022_110016.png",
+      "detected_categories": [],
+      "category_scores": {
+        "access_to_device": 0.0,
+        "personal_information": 0.0,
+        "sharing_settings": 0.0,
+        "location_privacy": 0.0,
+        "communication_privacy": 0.0,
+        "notification_privacy": 0.0,
+        "third_party_sharing": 0.0,
+        "data_collection": 0.0,
+        "data_retention": 0.0,
+        "account_security": 0.0
+      },
+      "primary_category": null,
+      "confidence": 0.0,
+      "page_type": "",
+      "detected_settings": []
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots/audio_conferencing_20251022_110156.png",
       "detected_categories": [
         "personal_information",
         "sharing_settings",
@@ -24,105 +93,19 @@
       },
       "primary_category": "personal_information",
       "confidence": 1.0,
-      "page_type": "Specific category page ('Audio Conferencing') within the main account settings.",
+      "page_type": "Specific category settings page (Audio Conferencing)",
       "detected_settings": [
-        {
-          "setting": "Show international numbers link on the invitation email",
-          "description": "Show the link for Zoom International Dial-in Numbers on email invitations",
-          "current_state": "Enabled"
-        },
-        {
-          "setting": "Mask phone number in the participant list",
-          "description": "Phone numbers of users dialing into a meeting will be masked in the participant list.",
-          "current_state": "Disabled"
-        }
-      ]
-    },
-    {
-      "status": "success",
-      "image_path": "screenshots\\general_20251022_110016.png",
-      "detected_categories": [
-        "data_collection",
-        "sharing_settings",
-        "communication_privacy",
-        "personal_information"
-      ],
-      "category_scores": {
-        "access_to_device": 0.0,
-        "personal_information": 0.14285714285714285,
-        "sharing_settings": 0.0,
-        "location_privacy": 0.0,
-        "communication_privacy": 0.125,
-        "notification_privacy": 0.0,
-        "third_party_sharing": 0.0,
-        "data_collection": 0.0,
-        "data_retention": 0.0,
-        "account_security": 0.0
-      },
-      "primary_category": "personal_information",
-      "confidence": 1.0,
-      "page_type": "General Account Settings",
-      "detected_settings": [
-        "Detailed crash dumps (Windows)",
-        "Feedback to Zoom",
-        "Allow users to send text feedback",
-        "Show 'Join from a room' feature on Zoom meetings in the Zoom client meeting list",
-        "Allow automatic direct sharing and pairing to Zoom Rooms using ultrasonic proximity signal",
-        "Hide potentially sensitive information on mobile task switcher",
-        "Change my status to away when screen saver begins",
-        "Track billable hours",
-        "Show educational onboarding assistant for new features"
-      ]
-    },
-    {
-      "status": "error",
-      "message": "Failed to analyze screenshot: 'NoneType' object has no attribute 'parts'",
-      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png",
-      "timestamp": "2025-11-03T15:04:02.379901"
-    },
-    {
-      "status": "success",
-      "image_path": "screenshots\\whiteboard_20251022_110201.png",
-      "detected_categories": [
-        "third_party_sharing",
-        "account_security"
-      ],
-      "category_scores": {
-        "access_to_device": 0.0,
-        "personal_information": 0.0,
-        "sharing_settings": 0.0,
-        "location_privacy": 0.0,
-        "communication_privacy": 0.0,
-        "notification_privacy": 0.0,
-        "third_party_sharing": 0.0,
-        "data_collection": 0.0,
-        "data_retention": 0.0,
-        "account_security": 0.14285714285714285
-      },
-      "primary_category": "account_security",
-      "confidence": 1.0,
-      "page_type": "Specific Category Settings (Zoom Apps)",
-      "detected_settings": [
-        {
-          "name": "Zoom Apps Quick Launch Button",
-          "description": "Show 'Zoom Apps' button in the Zoom interface for quick access to productivity tools before, during, or after meetings.",
-          "current_state": "Enabled"
-        },
-        {
-          "name": "Enable Developer Mode on mobile clients",
-          "description": "Developer Mode allows users to debug Zoom Apps using web inspector tools. Activates web inspection for new Zoom App instances.",
-          "current_state": "Disabled"
-        }
+        "Show international numbers link on the invitation email: A toggle switch, currently enabled, to include a link for international dial-in numbers in email invitations.",
+        "Mask phone number in the participant list: A toggle switch, currently disabled, to mask the phone numbers of users who dial into a meeting."
       ]
     }
   ],
   "summary": {
     "category_distribution": {
-      "personal_information": 2,
-      "account_security": 1
+      "personal_information": 2
     },
     "successful_classifications": 3,
     "failed_classifications": 1
   },
-  "timestamp": "2025-11-03T15:02:49.831208"
+  "timestamp": "2025-11-04T16:14:50.903333"
 }
