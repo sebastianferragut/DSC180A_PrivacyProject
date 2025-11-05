@@ -4,7 +4,7 @@
 ## Overview
 
 The code in this repo uses an agentic AI with Gemini API and Playwright to interact with a web platform and gather data on privacy design (so far, Zoom).
-The code and outputs are located in the gemini-team folder.
+The code and outputs are located in the gemini-team folder. Another subagent is handling the classification of the outputs collected by the web crawling agent, located inside screenshot-classifier folder.
 
 The agent:
 
@@ -14,19 +14,28 @@ Crawls/navigates privacy, data, and security settings tabs.
 
 Writes JSON outputs of relevant settings.
 
+The subagent:
+
+Utilizes the outputs collected by the main agent.
+
+Classifies them into respective categories to make meaningful use of the collected data.
+
 ## 1. Accessing and Storing Data
 ### Output Data
 
 All output is in JSON format.
 
-Location: ./outputs/
+
+Location: gemini-team/outputs/ AND screenshot-classifier
 
 Example file:
 
-outputs/privacy_map_20251104_100756.json
+gemini-team/outputs/privacy_map_20251104_100756.json
+
+screenshot-classifier/classification_results.json
 
 
-These files are auto-generated when running the script and will be analyzed or uploaded to a data-collection repository.
+These files are auto-generated when running the scripts and will be analyzed or uploaded to a data-collection repository.
 
 ### Input Data / Credentials
 
@@ -101,6 +110,7 @@ Do not modify anything except for GEMINI_API_KEY. Free keys are provided at the 
 
 ## 4. Running the Agent
 
+### 4.1 Web Crawling Agent
 In the terminal, ensure you are navigated to the gemini-team folder, and execute:
 
 python uiagenthtml.py
@@ -115,6 +125,19 @@ Crawl the site and write JSONs on relevant privacy design.
 
 Save JSONs to ./outputs.
 
+### 4.2 Screenshot Classifier
+In the terminal, ensure you are navigated to the screenshot-classifier folder, and execute:
+
+python screenshot_classification.py
+
+The agent will:
+
+Take in a batch of screenshots saved in the folder named screenshots.
+
+Utilize the privacy categories and relevant keywords to classify the type of privacy setting.
+
+Save results to classification_results.json.
+
 ## 5. Behavior 
 
 To prematurely exit: Move the mouse to the top-left corner to abort safely, close the Chromium tab, then exit out of the terminal that was running the script.
@@ -123,13 +146,28 @@ Otherwise, the script will run and auto-close when done.
 ## 6. Folder Structure
 gemini-team/
 
-├── uiagenthtml.py        # Main script
+├── uiagenthtml.py              # Main script
 
 ├── environment.yml             # Conda environment definition
 
-├── outputs/                # Output folder (auto-created)
+├── outputs/                    # Output folder (auto-created)
 
 └── README.md
+
+├── previous-work/               # Archived of prior hard-coded experimentations
+│   ├── jesse/
+│   ├── nian-nian/
+│   ├── privacy_agent_jimmy/
+│   └── sebastian/
+│       ├── profilesetupguide.txt
+│       └── sebastian_privacy_agent.py
+
+└── screenshot-classifier/       # Classifier submodule
+    ├── classification_results.json
+    ├── config.py
+    ├── environment.yml
+    ├── screenshots/             # Screenshot samples
+    └── screenshot_classification.py
 
 ## 7. Runtime Error Notes
 If you get a 400 error, this happens with the API key at times due to a bug in the Gemini API. Simply re-run the script, ensuring all enviroment variables have been exported. 
