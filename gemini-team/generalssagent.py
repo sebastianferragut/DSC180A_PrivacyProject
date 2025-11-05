@@ -13,6 +13,11 @@
 #   START_URL="https://zoom.us/profile/setting?tab=general" \
 #   PLATFORM_NAME="zoom" 
 
+
+# Example START_URLs:
+# https://zoom.us/profile/setting?tab=general
+# https://www.linkedin.com/mypreferences/d/categories/account 
+
 # Optional:
 #   export DEVICE_TYPE="MacBook"
 #   export MAX_MODEL_CALLS="5"
