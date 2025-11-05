@@ -16,3 +16,5 @@ profiles/chrome/Default/Visited Links
 profiles/chrome/Default/Top Sites*
 profiles/chrome/Default/Shortcuts
 profiles/chrome/Default/History*
+
+.DS_Store

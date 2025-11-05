@@ -2,3 +2,4 @@ sebastian/profiles/
 # Ignore profile data for browsers to avoid committing sensitive information
 .DS_Store
 .vscode
+.DS_Store
