@@ -1,5 +1,3 @@
-** this is also located in gemini-team folder. 
-
 # Agentic AI: Browser-Based UI Scraping & Privacy Data Capture
 ## Overview
 
