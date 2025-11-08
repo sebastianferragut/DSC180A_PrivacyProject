@@ -13,16 +13,16 @@ def extract_controls(discovery: dict) -> dict:
     """Extract all controls from a discovery (page)."""
     controls = discovery.get("controls", [])
     return {key: [d[key] for d in controls] for key in controls[0]}
-def extract_all_controls(discoveries: str) -> dict:
+def extract_file_controls(discoveries: str) -> dict:
     discoveries = load_discoveries(discoveries)
-    all_controls = {
+    file_controls = {
         "label": [],
         "type": [],
         "selector": []
     }
     for discovery in discoveries:
         controls = extract_controls(discovery)
-        all_controls["label"] += controls["label"]
-        all_controls["type"] += controls["type"]
-        all_controls["selector"] += controls["selector"]
-    return all_controls
+        file_controls["label"] += controls["label"]
+        file_controls["type"] += controls["type"]
+        file_controls["selector"] += controls["selector"]
+    return file_controls

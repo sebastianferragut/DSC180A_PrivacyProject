@@ -1,14 +1,13 @@
 # AGGREGATE ALL CONTROLS FROM ALL PRIVACY MAPS
-import json
 from pathlib import Path
-from extract_from_page import extract_all_controls
+from extract_from_page import extract_file_controls
 
-def aggregate_pages(filepath: Path):
+def aggregate_pages(filepath: Path) -> dict:
     # Get all privacy map files
     privacy_maps = [file for file in filepath.glob("privacy_map_*.json")] 
 
     # Extract all controls from all privacy maps
-    map_controls = {pmap: extract_all_controls(pmap) for pmap in privacy_maps}
+    map_controls = {pmap: extract_file_controls(pmap) for pmap in privacy_maps}
     all_controls = {
         "label": [],
         "type": [],
