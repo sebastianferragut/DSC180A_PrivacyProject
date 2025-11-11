@@ -1,16 +1,26 @@
 {
   "site": "zoom.us",
-  "ts_iso": "2025-11-05T21:41:22.077566Z",
+  "ts_iso": "2025-11-11T17:26:59.981846Z",
   "actions": [
     {
-      "ts": "20251105T214125Z",
+      "ts": "20251111T172703Z",
       "kind": "auto_fullpage",
       "url": "https://zoom.us/profile/setting?tab=general",
-      "path": "/Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/generaloutput/zoom/screenshots/sections/initial_load_20251105T214125Z.png",
+      "path": "/generaloutput/zoom/screenshots/sections/initial_load_20251111T172703Z.png",
       "label": "initial_load"
     },
     {
-      "ts": "20251105T214137Z",
+      "ts": "20251111T172721Z",
+      "kind": "planner_usage",
+      "turn": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "latency_sec": 0.0,
+      "cost_usd": 0.0,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251111T172721Z",
       "kind": "planner_plan",
       "turn": 1,
       "plan": {
@@ -22,11 +32,27 @@
           "section_name": null,
           "elements": []
         },
-        "notes": "empty_text"
+        "notes": "planner_call_failed: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'The model is overloaded. Please try again later.', 'status': 'UNAVAILABLE'}}",
+        "_usage": {
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "source": "estimate",
+          "latency_sec": 0.0
+        }
       }
     },
     {
-      "ts": "20251105T214148Z",
+      "ts": "20251111T172738Z",
+      "kind": "planner_usage",
+      "turn": 2,
+      "input_tokens": 455,
+      "output_tokens": 25,
+      "latency_sec": 15.400757074356079,
+      "cost_usd": 0.000819,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251111T172738Z",
       "kind": "planner_plan",
       "turn": 2,
       "plan": {
@@ -47,20 +73,30 @@
             {
               "type": "text",
               "selector": "Recording"
+            },
+            {
+              "type": "text",
+              "selector": "Data & Privacy"
             }
           ],
           "screenshots": [
             {
               "fullpage": true,
-              "section_name": "General Settings"
+              "section_name": "General"
             }
           ]
         },
-        "notes": "parsed_from_script"
+        "notes": "parsed_from_script",
+        "_usage": {
+          "input_tokens": 455,
+          "output_tokens": 25,
+          "source": "estimate",
+          "latency_sec": 15.400757074356079
+        }
       }
     },
     {
-      "ts": "20251105T214148Z",
+      "ts": "20251111T172738Z",
       "kind": "batch_click",
       "ok": true,
       "selector": {
@@ -70,14 +106,14 @@
       "url": "https://zoom.us/profile/setting?tab=meeting"
     },
     {
-      "ts": "20251105T214150Z",
+      "ts": "20251111T172739Z",
       "kind": "auto_fullpage",
       "url": "https://zoom.us/profile/setting?tab=meeting",
-      "path": "/Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/generaloutput/zoom/screenshots/sections/after_click__Meeting_20251105T214149Z.png",
+      "path": "/generaloutput/zoom/screenshots/sections/after_click__Meeting_20251111T172739Z.png",
       "label": "after_click__Meeting"
     },
     {
-      "ts": "20251105T214150Z",
+      "ts": "20251111T172740Z",
       "kind": "batch_click",
       "ok": true,
       "selector": {
@@ -87,14 +123,41 @@
       "url": "https://zoom.us/profile/setting?tab=recording"
     },
     {
-      "ts": "20251105T214151Z",
+      "ts": "20251111T172741Z",
       "kind": "auto_fullpage",
       "url": "https://zoom.us/profile/setting?tab=recording",
-      "path": "/Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/generaloutput/zoom/screenshots/sections/after_click__Recording_20251105T214151Z.png",
+      "path": "/generaloutput/zoom/screenshots/sections/after_click__Recording_20251111T172741Z.png",
       "label": "after_click__Recording"
     },
     {
-      "ts": "20251105T214204Z",
+      "ts": "20251111T172742Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Data & Privacy"
+      },
+      "url": "https://zoom.us/profile/privacy"
+    },
+    {
+      "ts": "20251111T172742Z",
+      "kind": "auto_fullpage",
+      "url": "https://zoom.us/profile/privacy",
+      "path": "/generaloutput/zoom/screenshots/sections/after_click__Data_Privacy_20251111T172742Z.png",
+      "label": "after_click__Data_Privacy"
+    },
+    {
+      "ts": "20251111T172808Z",
+      "kind": "planner_usage",
+      "turn": 3,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "latency_sec": 0.0,
+      "cost_usd": 0.0,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251111T172808Z",
       "kind": "planner_plan",
       "turn": 3,
       "plan": {
@@ -106,100 +169,59 @@
           "section_name": null,
           "elements": []
         },
-        "notes": "empty_text"
+        "notes": "planner_call_failed: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'The model is overloaded. Please try again later.', 'status': 'UNAVAILABLE'}}",
+        "_usage": {
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "source": "estimate",
+          "latency_sec": 0.0
+        }
       }
     },
     {
-      "ts": "20251105T214216Z",
+      "ts": "20251111T172839Z",
+      "kind": "planner_usage",
+      "turn": 4,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "latency_sec": 0.0,
+      "cost_usd": 0.0,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251111T172839Z",
       "kind": "planner_plan",
       "turn": 4,
       "plan": {
-        "authenticated": null,
-        "on_settings_page": null,
+        "authenticated": false,
+        "on_settings_page": false,
         "selectors": [],
         "capture": {
           "fullpage": false,
           "section_name": null,
           "elements": []
         },
-        "batch": {
-          "clicks": [
-            {
-              "type": "text",
-              "selector": "Data & Privacy"
-            },
-            {
-              "type": "text",
-              "selector": "AI Companion"
-            },
-            {
-              "type": "text",
-              "selector": "General"
-            },
-            {
-              "type": "text",
-              "selector": "Meeting"
-            }
-          ],
-          "screenshots": [
-            {
-              "fullpage": true,
-              "section_name": "Recording"
-            }
-          ]
-        },
-        "notes": "parsed_from_script"
+        "notes": "planner_call_failed: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'The model is overloaded. Please try again later.', 'status': 'UNAVAILABLE'}}",
+        "_usage": {
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "source": "estimate",
+          "latency_sec": 0.0
+        }
       }
     },
     {
-      "ts": "20251105T214217Z",
-      "kind": "batch_click",
-      "ok": true,
-      "selector": {
-        "type": "text",
-        "selector": "Data & Privacy"
-      },
-      "url": "https://zoom.us/profile/privacy"
+      "ts": "20251111T172902Z",
+      "kind": "planner_usage",
+      "turn": 5,
+      "input_tokens": 534,
+      "output_tokens": 12,
+      "latency_sec": 19.673277854919434,
+      "cost_usd": 0.000788,
+      "source": "estimate"
     },
     {
-      "ts": "20251105T214218Z",
-      "kind": "auto_fullpage",
-      "url": "https://zoom.us/profile/privacy",
-      "path": "/Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/generaloutput/zoom/screenshots/sections/after_click__Data_Privacy_20251105T214218Z.png",
-      "label": "after_click__Data_Privacy"
-    },
-    {
-      "ts": "20251105T214218Z",
-      "kind": "batch_click",
-      "ok": false,
-      "selector": {
-        "type": "text",
-        "selector": "AI Companion"
-      },
-      "url": "https://zoom.us/profile/privacy#/settings"
-    },
-    {
-      "ts": "20251105T214218Z",
-      "kind": "batch_click",
-      "ok": false,
-      "selector": {
-        "type": "text",
-        "selector": "General"
-      },
-      "url": "https://zoom.us/profile/privacy#/settings"
-    },
-    {
-      "ts": "20251105T214219Z",
-      "kind": "batch_click",
-      "ok": false,
-      "selector": {
-        "type": "text",
-        "selector": "Meeting"
-      },
-      "url": "https://zoom.us/profile/privacy#/settings"
-    },
-    {
-      "ts": "20251105T214230Z",
+      "ts": "20251111T172902Z",
       "kind": "planner_plan",
       "turn": 5,
       "plan": {
@@ -225,11 +247,17 @@
             }
           ]
         },
-        "notes": "parsed_from_script"
+        "notes": "parsed_from_script",
+        "_usage": {
+          "input_tokens": 534,
+          "output_tokens": 12,
+          "source": "estimate",
+          "latency_sec": 19.673277854919434
+        }
       }
     },
     {
-      "ts": "20251105T214231Z",
+      "ts": "20251111T172903Z",
       "kind": "batch_click",
       "ok": true,
       "selector": {
@@ -239,17 +267,17 @@
       "url": "https://zoom.us/profile/setting"
     },
     {
-      "ts": "20251105T214232Z",
+      "ts": "20251111T172904Z",
       "kind": "auto_fullpage",
       "url": "https://zoom.us/profile/setting",
-      "path": "/Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/generaloutput/zoom/screenshots/sections/after_click__Settings_20251105T214232Z.png",
+      "path": "/generaloutput/zoom/screenshots/sections/after_click__Settings_20251111T172904Z.png",
       "label": "after_click__Settings"
     },
     {
-      "ts": "20251105T214232Z",
+      "ts": "20251111T172904Z",
       "kind": "capture_fullpage",
       "url": "https://zoom.us/profile/setting",
-      "path": "/Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/generaloutput/zoom/screenshots/sections/safety_capture_20251105T214232Z.png",
+      "path": "/generaloutput/zoom/screenshots/sections/safety_capture_20251111T172904Z.png",
       "section": "Safety Capture"
     }
   ],
@@ -260,7 +288,7 @@
         "Safety"
       ],
       "url": "https://zoom.us/profile/setting",
-      "evidence_fullpage": "/Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/generaloutput/zoom/screenshots/sections/safety_capture_20251105T214232Z.png",
+      "evidence_fullpage": "/generaloutput/zoom/screenshots/sections/safety_capture_20251111T172904Z.png",
       "items": []
     }
   ],
@@ -277,5 +305,66 @@
     ],
     "captured_sections": [],
     "last_capture_url": null
+  },
+  "metrics": {
+    "run_start_ts": "2025-11-11T17:26:59.981952Z",
+    "run_end_ts": "2025-11-11T17:29:04.458159Z",
+    "total_runtime_sec": 124.476207,
+    "turns": 5,
+    "steps": {
+      "batch_clicks": 4,
+      "selectors_applied": 0,
+      "fullpage_screens": 0,
+      "element_screens": 0,
+      "auto_screens": 9
+    },
+    "api": {
+      "calls": 5,
+      "input_tokens": 989,
+      "output_tokens": 37,
+      "cost_usd": 0.001606,
+      "per_call": [
+        {
+          "turn": 1,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "latency_sec": 0.0,
+          "cost_usd": 0.0,
+          "source": "estimate"
+        },
+        {
+          "turn": 2,
+          "input_tokens": 455,
+          "output_tokens": 25,
+          "latency_sec": 15.400757074356079,
+          "cost_usd": 0.000819,
+          "source": "estimate"
+        },
+        {
+          "turn": 3,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "latency_sec": 0.0,
+          "cost_usd": 0.0,
+          "source": "estimate"
+        },
+        {
+          "turn": 4,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "latency_sec": 0.0,
+          "cost_usd": 0.0,
+          "source": "estimate"
+        },
+        {
+          "turn": 5,
+          "input_tokens": 534,
+          "output_tokens": 12,
+          "latency_sec": 19.673277854919434,
+          "cost_usd": 0.000788,
+          "source": "estimate"
+        }
+      ]
+    }
   }
 }

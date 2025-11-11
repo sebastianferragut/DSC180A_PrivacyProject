@@ -103,6 +103,23 @@ def hostname(u: str) -> str:
 def ensure_dir(path: str):
     os.makedirs(path, exist_ok=True)
 
+def _public_path(p: str) -> str:
+    """
+    Convert an absolute filesystem path into a repo-relative, URL-style path
+    prefixed with a leading slash. Examples:
+      /Users/you/repo/.../generaloutput/zoom/...  ->  /generaloutput/zoom/...
+    """
+    try:
+        rel = os.path.relpath(p, BASE_DIR)  # from repo root
+        rel = rel.replace(os.sep, "/")      # normalize slashes for JSON/portability
+        if not rel.startswith("/"):
+            rel = "/" + rel
+        return rel
+    except Exception:
+        # Fallback: at least return something readable
+        return p
+
+
 def fullpage_screenshot(page: Page, label: str, subdir: str) -> str:
     folder = os.path.join(OUT_DIR, safe_name(subdir))
     ensure_dir(folder)
@@ -110,7 +127,8 @@ def fullpage_screenshot(page: Page, label: str, subdir: str) -> str:
     out = os.path.join(folder, fname)
     page.screenshot(path=out, full_page=True)
     print(f"[saved] {out}")
-    return out
+    return _public_path(out)
+
 
 def element_screenshot(page: Page, locator_query: str, label: str, subdir: str) -> Optional[str]:
     folder = os.path.join(OUT_DIR, safe_name(subdir))
@@ -123,7 +141,7 @@ def element_screenshot(page: Page, locator_query: str, label: str, subdir: str) 
         out = os.path.join(folder, fname)
         loc.screenshot(path=out)
         print(f"[saved] {out}")
-        return out
+        return _public_path(out)
     except PwTimeout:
         return None
     except Exception:
@@ -190,6 +208,30 @@ def dom_outline(page: Page, max_nodes: int = 300) -> str:
         return "[]"
 
 # =========================
+# Metrics / Cost Config
+# =========================
+
+# Pricing
+# Input:  $1.25 per 1M tokens
+# Output: $10.00 per 1M tokens
+# You can override via env; keep values PER 1M tokens.
+COST_IN_PER_1M  = float(os.environ.get("GEM_COST_IN_PER_1M",  "1.25"))
+COST_OUT_PER_1M = float(os.environ.get("GEM_COST_OUT_PER_1M", "10.0"))
+
+def _rough_token_estimate(text: str) -> int:
+    # 1 token ≈ 4 chars heuristic; used ONLY if API doesn't return usage.
+    try:
+        return max(1, int(len(text) / 4))
+    except Exception:
+        return 0
+
+def _usd(input_tokens: int, output_tokens: int) -> float:
+    # Price per ONE token
+    in_per_token  = COST_IN_PER_1M  / 1_000_000.0
+    out_per_token = COST_OUT_PER_1M / 1_000_000.0
+    return round(input_tokens * in_per_token + output_tokens * out_per_token, 8)
+
+# =========================
 # Report and State
 # =========================
 
@@ -205,8 +247,31 @@ def new_report(h: str) -> Dict[str, Any]:
             "visited_urls": [],
             "captured_sections": [],
             "last_capture_url": None
+        },
+        "metrics": {
+            # Efficiency
+            "run_start_ts": None,
+            "run_end_ts": None,
+            "total_runtime_sec": None,
+            "turns": 0,
+            "steps": {  # executor actions
+                "batch_clicks": 0,
+                "selectors_applied": 0,
+                "fullpage_screens": 0,
+                "element_screens": 0,
+                "auto_screens": 0
+            },
+            # API usage/costs
+            "api": {
+                "calls": 0,
+                "input_tokens": 0,
+                "output_tokens": 0,
+                "cost_usd": 0.0,
+                "per_call": []  # list of {turn, input_tokens, output_tokens, cost_usd, source:"usage|estimate"}
+            }
         }
     }
+
 
 def log_action(report: Dict[str, Any], kind: str, detail: Dict[str, Any]):
     report["actions"].append({"ts": ts(), "kind": kind, **detail})
@@ -358,7 +423,15 @@ def planner(page: Page, budget: Budget, mode: str, executor_state: Dict[str, Any
     )
 
     last_err, resp = None, None
+
+    # METRICS defaults so early returns can reference them safely
+    usage_in = 0
+    usage_out = 0
+    src = "estimate"
+    plan_gen_time = 0.0
+
     for attempt in range(3):
+        t0 = time.time()
         try:
             resp = client.models.generate_content(
                 model=MODEL_PLAN,
@@ -370,25 +443,74 @@ def planner(page: Page, budget: Budget, mode: str, executor_state: Dict[str, Any
                 ])],
                 config=config
             )
+            dt = time.time() - t0
+
+            # --- METRICS: try to extract usage from response
+            usage_in, usage_out, src = 0, 0, "estimate"
+            try:
+                md = getattr(resp, "usage_metadata", None) or getattr(resp, "usage", None)
+                if md:
+                    usage_in  = int(getattr(md, "input_tokens",  0) or 0)
+                    usage_out = int(getattr(md, "output_tokens", 0) or 0)
+                    if (usage_in + usage_out) > 0:
+                        src = "usage"
+                if (usage_in + usage_out) == 0:
+                    c0 = (getattr(resp, "candidates", None) or [None])[0]
+                    if c0:
+                        md2 = getattr(c0, "usage_metadata", None)
+                        if md2:
+                            usage_in  = int(getattr(md2, "input_tokens",  0) or 0)
+                            usage_out = int(getattr(md2, "output_tokens", 0) or 0)
+                            if (usage_in + usage_out) > 0:
+                                src = "usage"
+            except Exception:
+                pass
+
+            if (usage_in + usage_out) == 0:
+                est_in = _rough_token_estimate(prompt) + _rough_token_estimate(textmap) + _rough_token_estimate(outline)
+                usage_in = est_in
+
+            plan_gen_time = dt
             break
+
         except Exception as e:
             last_err = str(e)
             time.sleep(0.6 + attempt * 0.6)
 
     if resp is None:
+        plan_usage = {
+            "input_tokens": int(usage_in),
+            "output_tokens": 0,            # no text yet
+            "source": src,
+            "latency_sec": float(plan_gen_time)
+        }
         return {
             "authenticated": False,
             "on_settings_page": False,
             "selectors": [],
             "capture": {"fullpage": False, "section_name": None, "elements": []},
-            "notes": f"planner_call_failed: {last_err or 'unknown'}"
+            "notes": f"planner_call_failed: {last_err or 'unknown'}",
+            "_usage": plan_usage
         }
 
     text = ""
     try:
         cands = getattr(resp, "candidates", None) or []
         if not cands:
-            return {"authenticated": False, "on_settings_page": False, "selectors": [], "capture": {"fullpage": False, "section_name": None, "elements": []}, "notes": "no_candidates"}
+            plan_usage = {
+                "input_tokens": int(usage_in),
+                "output_tokens": 0,
+                "source": src,
+                "latency_sec": float(plan_gen_time)
+            }
+            return {
+                "authenticated": False,
+                "on_settings_page": False,
+                "selectors": [],
+                "capture": {"fullpage": False, "section_name": None, "elements": []},
+                "notes": "no_candidates",
+                "_usage": plan_usage
+            }
         first = cands[0]
         content = getattr(first, "content", None)
         parts = getattr(content, "parts", None) if content is not None else None
@@ -401,15 +523,49 @@ def planner(page: Page, budget: Budget, mode: str, executor_state: Dict[str, Any
             if isinstance(cand_text, str):
                 text = cand_text
         if not text or not isinstance(text, str):
-            return {"authenticated": False, "on_settings_page": False, "selectors": [], "capture": {"fullpage": False, "section_name": None, "elements": []}, "notes": "empty_text"}
+            plan_usage = {
+                "input_tokens": int(usage_in),
+                "output_tokens": 0,
+                "source": src,
+                "latency_sec": float(plan_gen_time)
+            }
+            return {
+                "authenticated": False,
+                "on_settings_page": False,
+                "selectors": [],
+                "capture": {"fullpage": False, "section_name": None, "elements": []},
+                "notes": "empty_text",
+                "_usage": plan_usage
+            }
     except Exception as e:
-        return {"authenticated": False, "on_settings_page": False, "selectors": [], "capture": {"fullpage": False, "section_name": None, "elements": []}, "notes": f"extract_error: {e}"}
+        plan_usage = {
+            "input_tokens": int(usage_in),
+            "output_tokens": 0,
+            "source": src,
+            "latency_sec": float(plan_gen_time)
+        }
+        return {
+            "authenticated": False,
+            "on_settings_page": False,
+            "selectors": [],
+            "capture": {"fullpage": False, "section_name": None, "elements": []},
+            "notes": f"extract_error: {e}",
+            "_usage": plan_usage
+        }
 
     # ---- Robust parse: JSON first, else try micro-script ----
+    out_tokens_est = _rough_token_estimate(text or "")
+    plan_usage = {
+        "input_tokens": int(locals().get("usage_in", 0)),
+        "output_tokens": int(locals().get("usage_out", 0) or (out_tokens_est if locals().get("src","estimate")=="estimate" else 0)),
+        "source": locals().get("src", "estimate"),
+        "latency_sec": float(locals().get("plan_gen_time", 0.0))
+    }
     # 1) JSON path
     try:
         data = json.loads(text)
         if isinstance(data, dict):
+            data["_usage"] = plan_usage
             return data
     except Exception:
         pass
@@ -446,6 +602,7 @@ def planner(page: Page, budget: Budget, mode: str, executor_state: Dict[str, Any
 
     # If actionable items exist, return them
     if parsed["batch"]["clicks"] or parsed["batch"]["screenshots"] or parsed["capture"]["elements"]:
+        parsed["_usage"] = plan_usage
         return parsed
 
     # Fallback if nothing parsed
@@ -454,7 +611,8 @@ def planner(page: Page, budget: Budget, mode: str, executor_state: Dict[str, Any
         "on_settings_page": False,
         "selectors": [],
         "capture": {"fullpage": False, "section_name": None, "elements": []},
-        "notes": "no_parse"
+        "notes": "no_parse",
+        "_usage": plan_usage
     }
 
 # =========================
@@ -499,14 +657,17 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
     return False
 
 def apply_clicks_batch(page: Page, clicks: List[Dict[str, str]], report: Dict[str, Any], delay: float = 0.5):
-    for c in clicks[:5]:  # safety cap per turn
+    for c in clicks[:5]:
         ok = apply_selector(page, c)
         log_action(report, "batch_click", {"ok": ok, "selector": c, "url": page.url})
+        if ok:
+            report["metrics"]["steps"]["batch_clicks"] += 1
         time.sleep(delay)
         if ok:
-            # NEW: per-step full-page capture
             sec = c.get("selector") or "step"
-            autosnap(page, report, label=f"after_click__{safe_name(sec)[:50]}", subdir="sections")
+            path = autosnap(page, report, label=f"after_click__{safe_name(sec)[:50]}", subdir="sections")
+            if path:
+                report["metrics"]["steps"]["auto_screens"] += 1
         if page.url not in report["state"]["visited_urls"]:
             report["state"]["visited_urls"].append(page.url)
 
@@ -518,6 +679,7 @@ def apply_screenshots_batch(page: Page, shots: List[Dict[str, Any]], report: Dic
             fp = fullpage_screenshot(page, label=sec.lower().replace(" ","_"), subdir="sections")
             add_section(report, sec, [sec], page.url, fullpage_path=fp)
             log_action(report, "capture_fullpage", {"url": page.url, "path": fp, "section": sec})
+            report["metrics"]["steps"]["fullpage_screens"] += 1
             norm = sec.lower()
             if norm and norm not in report["state"]["captured_sections"]:
                 report["state"]["captured_sections"].append(norm)
@@ -533,6 +695,7 @@ def capture_block(page: Page, capture: Dict[str, Any], report: Dict[str, Any]):
         fp = fullpage_screenshot(page, label=section_name.lower().replace(" ", "_"), subdir="sections")
         add_section(report, section_name, [section_name], page.url, fullpage_path=fp)
         log_action(report, "capture_fullpage", {"url": page.url, "path": fp, "section": section_name})
+        report["metrics"]["steps"]["fullpage_screens"] += 1
         norm = section_name.strip().lower()
         if norm and norm not in report["state"]["captured_sections"]:
             report["state"]["captured_sections"].append(norm)
@@ -552,6 +715,7 @@ def capture_block(page: Page, capture: Dict[str, Any], report: Dict[str, Any]):
             path = None
         if path:
             log_action(report, "capture_element", {"url": page.url, "path": path, "label": label})
+            report["metrics"]["steps"]["element_screens"] += 1
 
 # --- Auto screenshot throttle to avoid spam on same URL frame-to-frame ---
 _last_shot = {"url": None, "t": 0.0}
@@ -564,6 +728,7 @@ def autosnap(page: Page, report: Dict[str, Any], label: str, subdir: str = "sect
             return None
         path = fullpage_screenshot(page, label=label, subdir=subdir)
         log_action(report, "auto_fullpage", {"url": url, "path": path, "label": label})
+        report["metrics"]["steps"]["auto_screens"] += 1
         _last_shot["url"] = url
         _last_shot["t"] = now
         if url not in report["state"]["visited_urls"]:
@@ -593,6 +758,7 @@ def page_change_signature(page: Page) -> Tuple[str, str]:
 def harvest():
     site = hostname(START_URL)
     report = new_report(site)
+    report["metrics"]["run_start_ts"] = datetime.utcnow().isoformat() + "Z"
     budget = Budget(MAX_MODEL_CALLS)
 
     # StorageState-first launch (Chromium), else persistent profile
@@ -645,9 +811,10 @@ def harvest():
         last_auth_hash = None
         auth_stuck_turns = 0
 
-        MAX_TURNS = 30
+        MAX_TURNS = 10
         for turn in range(1, MAX_TURNS + 1):
             print(f"--- Planner Turn {turn} ---")
+            report["metrics"]["turns"] = turn
             mode = "bootstrap" if turn == 1 else "iterate"
 
             plan = planner(
@@ -656,7 +823,35 @@ def harvest():
                 extra_note="Return JSON or micro-script only; the executor will follow your selectors and perform captures as instructed."
             )
             report["model_calls"] = budget.used
+            # metrics: api usage per call
+            u = (plan or {}).get("_usage") or {}
+            if u:
+                report["metrics"]["api"]["calls"] += 1
+                report["metrics"]["api"]["input_tokens"] += int(u.get("input_tokens", 0))
+                report["metrics"]["api"]["output_tokens"] += int(u.get("output_tokens", 0))
+                cost = _usd(int(u.get("input_tokens", 0)), int(u.get("output_tokens", 0)))
+                report["metrics"]["api"]["cost_usd"] = round(report["metrics"]["api"]["cost_usd"] + cost, 6)
+                report["metrics"]["api"]["per_call"].append({
+                    "turn": report["metrics"]["turns"],
+                    "input_tokens": int(u.get("input_tokens", 0)),
+                    "output_tokens": int(u.get("output_tokens", 0)),
+                    "latency_sec": float(u.get("latency_sec", 0.0)),
+                    "cost_usd": round(cost, 6),
+                    "source": u.get("source", "estimate")
+                })
+                log_action(report, "planner_usage", {
+                    "turn": report["metrics"]["turns"],
+                    "input_tokens": u.get("input_tokens", 0),
+                    "output_tokens": u.get("output_tokens", 0),
+                    "latency_sec": u.get("latency_sec", 0.0),
+                    "cost_usd": round(cost, 6),
+                    "source": u.get("source", "estimate")
+                })
 
+                # Optional live console line
+                print(f"[metrics] turn={report['metrics']['turns']} calls={report['metrics']['api']['calls']} "
+                      f"in={report['metrics']['api']['input_tokens']} out={report['metrics']['api']['output_tokens']} "
+                      f"cost=${report['metrics']['api']['cost_usd']:.4f}")
             if not plan:
                 log_action(report, "planner_empty", {"turn": turn})
                 if not budget.allow(1):
@@ -691,6 +886,7 @@ def harvest():
                 ok = apply_selector(page, sel)
                 log_action(report, "apply_selector", {"ok": ok, "selector": sel, "url": page.url})
                 if ok:
+                    report["metrics"]["steps"]["selectors_applied"] += 1
                     applied_any = True
                     time.sleep(0.7)
                     sec = sel.get("selector") or "selector_step"
@@ -773,6 +969,13 @@ def harvest():
         
         try:
             autosnap(page, report, label="end_of_run", subdir="sections")
+        except Exception:
+            pass
+        report["metrics"]["run_end_ts"] = datetime.utcnow().isoformat() + "Z"
+        try:
+            t0 = datetime.fromisoformat(report["metrics"]["run_start_ts"].replace("Z",""))
+            t1 = datetime.fromisoformat(report["metrics"]["run_end_ts"].replace("Z",""))
+            report["metrics"]["total_runtime_sec"] = (t1 - t0).total_seconds()
         except Exception:
             pass
         save_report(report)

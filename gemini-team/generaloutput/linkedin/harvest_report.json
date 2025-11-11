@@ -1,16 +1,26 @@
 {
   "site": "www.linkedin.com",
-  "ts_iso": "2025-11-07T18:14:59.272686Z",
+  "ts_iso": "2025-11-11T17:32:20.949916Z",
   "actions": [
     {
-      "ts": "20251107T181501Z",
+      "ts": "20251111T173223Z",
       "kind": "auto_fullpage",
       "url": "https://www.linkedin.com/mypreferences/d/categories/account",
-      "path": "/Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/generaloutput/linkedin/screenshots/sections/initial_load_20251107T181501Z.png",
+      "path": "/generaloutput/linkedin/screenshots/sections/initial_load_20251111T173223Z.png",
       "label": "initial_load"
     },
     {
-      "ts": "20251107T181515Z",
+      "ts": "20251111T173239Z",
+      "kind": "planner_usage",
+      "turn": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "latency_sec": 0.0,
+      "cost_usd": 0.0,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251111T173239Z",
       "kind": "planner_plan",
       "turn": 1,
       "plan": {
@@ -22,13 +32,61 @@
           "section_name": null,
           "elements": []
         },
-        "notes": "empty_text"
+        "notes": "planner_call_failed: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'The model is overloaded. Please try again later.', 'status': 'UNAVAILABLE'}}",
+        "_usage": {
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "source": "estimate",
+          "latency_sec": 0.0
+        }
       }
     },
     {
-      "ts": "20251107T181525Z",
+      "ts": "20251111T173259Z",
+      "kind": "planner_usage",
+      "turn": 2,
+      "input_tokens": 381,
+      "output_tokens": 0,
+      "latency_sec": 20.060848712921143,
+      "cost_usd": 0.000476,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251111T173259Z",
       "kind": "planner_plan",
       "turn": 2,
+      "plan": {
+        "authenticated": false,
+        "on_settings_page": false,
+        "selectors": [],
+        "capture": {
+          "fullpage": false,
+          "section_name": null,
+          "elements": []
+        },
+        "notes": "empty_text",
+        "_usage": {
+          "input_tokens": 381,
+          "output_tokens": 0,
+          "source": "estimate",
+          "latency_sec": 20.060848712921143
+        }
+      }
+    },
+    {
+      "ts": "20251111T173328Z",
+      "kind": "planner_usage",
+      "turn": 3,
+      "input_tokens": 381,
+      "output_tokens": 39,
+      "latency_sec": 13.590359926223755,
+      "cost_usd": 0.000866,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251111T173328Z",
+      "kind": "planner_plan",
+      "turn": 3,
       "plan": {
         "authenticated": null,
         "on_settings_page": null,
@@ -64,11 +122,17 @@
             }
           ]
         },
-        "notes": "parsed_from_script"
+        "notes": "parsed_from_script",
+        "_usage": {
+          "input_tokens": 381,
+          "output_tokens": 39,
+          "source": "estimate",
+          "latency_sec": 13.590359926223755
+        }
       }
     },
     {
-      "ts": "20251107T181526Z",
+      "ts": "20251111T173329Z",
       "kind": "batch_click",
       "ok": true,
       "selector": {
@@ -78,14 +142,14 @@
       "url": "https://www.linkedin.com/mypreferences/d/categories/account"
     },
     {
-      "ts": "20251107T181527Z",
+      "ts": "20251111T173330Z",
       "kind": "auto_fullpage",
       "url": "https://www.linkedin.com/mypreferences/d/categories/account",
-      "path": "/Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/generaloutput/linkedin/screenshots/sections/after_click__Sign_in_security_20251107T181527Z.png",
+      "path": "/generaloutput/linkedin/screenshots/sections/after_click__Sign_in_security_20251111T173330Z.png",
       "label": "after_click__Sign_in_security"
     },
     {
-      "ts": "20251107T181527Z",
+      "ts": "20251111T173330Z",
       "kind": "batch_click",
       "ok": true,
       "selector": {
@@ -95,14 +159,14 @@
       "url": "https://www.linkedin.com/mypreferences/d/categories/sign-in-and-security"
     },
     {
-      "ts": "20251107T181528Z",
+      "ts": "20251111T173331Z",
       "kind": "auto_fullpage",
       "url": "https://www.linkedin.com/mypreferences/d/categories/sign-in-and-security",
-      "path": "/Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/generaloutput/linkedin/screenshots/sections/after_click__Visibility_20251107T181528Z.png",
+      "path": "/generaloutput/linkedin/screenshots/sections/after_click__Visibility_20251111T173331Z.png",
       "label": "after_click__Visibility"
     },
     {
-      "ts": "20251107T181529Z",
+      "ts": "20251111T173332Z",
       "kind": "batch_click",
       "ok": true,
       "selector": {
@@ -112,14 +176,14 @@
       "url": "https://www.linkedin.com/mypreferences/d/categories/profile-visibility"
     },
     {
-      "ts": "20251107T181529Z",
+      "ts": "20251111T173332Z",
       "kind": "auto_fullpage",
       "url": "https://www.linkedin.com/mypreferences/d/categories/profile-visibility",
-      "path": "/Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/generaloutput/linkedin/screenshots/sections/after_click__Data_privacy_20251107T181529Z.png",
+      "path": "/generaloutput/linkedin/screenshots/sections/after_click__Data_privacy_20251111T173332Z.png",
       "label": "after_click__Data_privacy"
     },
     {
-      "ts": "20251107T181530Z",
+      "ts": "20251111T173333Z",
       "kind": "batch_click",
       "ok": true,
       "selector": {
@@ -129,37 +193,31 @@
       "url": "https://www.linkedin.com/mypreferences/d/categories/privacy"
     },
     {
-      "ts": "20251107T181531Z",
+      "ts": "20251111T173333Z",
       "kind": "auto_fullpage",
       "url": "https://www.linkedin.com/mypreferences/d/categories/privacy",
-      "path": "/Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/generaloutput/linkedin/screenshots/sections/after_click__Advertising_data_20251107T181531Z.png",
+      "path": "/generaloutput/linkedin/screenshots/sections/after_click__Advertising_data_20251111T173333Z.png",
       "label": "after_click__Advertising_data"
     },
     {
-      "ts": "20251107T181531Z",
+      "ts": "20251111T173334Z",
       "kind": "capture_fullpage",
       "url": "https://www.linkedin.com/mypreferences/d/categories/ads",
-      "path": "/Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/generaloutput/linkedin/screenshots/sections/account_preferences_20251107T181531Z.png",
+      "path": "/generaloutput/linkedin/screenshots/sections/account_preferences_20251111T173334Z.png",
       "section": "Account preferences"
     },
     {
-      "ts": "20251107T181546Z",
-      "kind": "planner_plan",
-      "turn": 3,
-      "plan": {
-        "authenticated": false,
-        "on_settings_page": false,
-        "selectors": [],
-        "capture": {
-          "fullpage": false,
-          "section_name": null,
-          "elements": []
-        },
-        "notes": "empty_text"
-      }
+      "ts": "20251111T173358Z",
+      "kind": "planner_usage",
+      "turn": 4,
+      "input_tokens": 448,
+      "output_tokens": 14,
+      "latency_sec": 23.255876064300537,
+      "cost_usd": 0.0007,
+      "source": "estimate"
     },
     {
-      "ts": "20251107T181607Z",
+      "ts": "20251111T173358Z",
       "kind": "planner_plan",
       "turn": 4,
       "plan": {
@@ -185,11 +243,17 @@
             }
           ]
         },
-        "notes": "parsed_from_script"
+        "notes": "parsed_from_script",
+        "_usage": {
+          "input_tokens": 448,
+          "output_tokens": 14,
+          "source": "estimate",
+          "latency_sec": 23.255876064300537
+        }
       }
     },
     {
-      "ts": "20251107T181608Z",
+      "ts": "20251111T173358Z",
       "kind": "batch_click",
       "ok": true,
       "selector": {
@@ -199,21 +263,31 @@
       "url": "https://www.linkedin.com/mypreferences/d/categories/ads"
     },
     {
-      "ts": "20251107T181609Z",
+      "ts": "20251111T173359Z",
       "kind": "auto_fullpage",
       "url": "https://www.linkedin.com/mypreferences/d/categories/ads",
-      "path": "/Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/generaloutput/linkedin/screenshots/sections/after_click__Notifications_20251107T181609Z.png",
+      "path": "/generaloutput/linkedin/screenshots/sections/after_click__Notifications_20251111T173359Z.png",
       "label": "after_click__Notifications"
     },
     {
-      "ts": "20251107T181609Z",
+      "ts": "20251111T173359Z",
       "kind": "capture_fullpage",
       "url": "https://www.linkedin.com/mypreferences/d/categories/notifications",
-      "path": "/Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/generaloutput/linkedin/screenshots/sections/advertising_data_20251107T181609Z.png",
+      "path": "/generaloutput/linkedin/screenshots/sections/advertising_data_20251111T173359Z.png",
       "section": "Advertising data"
     },
     {
-      "ts": "20251107T181623Z",
+      "ts": "20251111T173412Z",
+      "kind": "planner_usage",
+      "turn": 5,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "latency_sec": 0.0,
+      "cost_usd": 0.0,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251111T173412Z",
       "kind": "planner_plan",
       "turn": 5,
       "plan": {
@@ -225,14 +299,20 @@
           "section_name": null,
           "elements": []
         },
-        "notes": "empty_text"
+        "notes": "planner_call_failed: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'The model is overloaded. Please try again later.', 'status': 'UNAVAILABLE'}}",
+        "_usage": {
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "source": "estimate",
+          "latency_sec": 0.0
+        }
       }
     },
     {
-      "ts": "20251107T181623Z",
+      "ts": "20251111T173412Z",
       "kind": "auto_fullpage",
       "url": "https://www.linkedin.com/mypreferences/d/categories/notifications",
-      "path": "/Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/generaloutput/linkedin/screenshots/sections/end_of_run_20251107T181623Z.png",
+      "path": "/generaloutput/linkedin/screenshots/sections/end_of_run_20251111T173412Z.png",
       "label": "end_of_run"
     }
   ],
@@ -243,7 +323,7 @@
         "Account preferences"
       ],
       "url": "https://www.linkedin.com/mypreferences/d/categories/ads",
-      "evidence_fullpage": "/Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/generaloutput/linkedin/screenshots/sections/account_preferences_20251107T181531Z.png",
+      "evidence_fullpage": "/generaloutput/linkedin/screenshots/sections/account_preferences_20251111T173334Z.png",
       "items": []
     },
     {
@@ -252,7 +332,7 @@
         "Advertising data"
       ],
       "url": "https://www.linkedin.com/mypreferences/d/categories/notifications",
-      "evidence_fullpage": "/Users/sebastianferragut/Desktop/DSC180A/repo/DSC180A_PrivacyProject/gemini-team/generaloutput/linkedin/screenshots/sections/advertising_data_20251107T181609Z.png",
+      "evidence_fullpage": "/generaloutput/linkedin/screenshots/sections/advertising_data_20251111T173359Z.png",
       "items": []
     }
   ],
@@ -272,5 +352,66 @@
       "advertising data"
     ],
     "last_capture_url": "https://www.linkedin.com/mypreferences/d/categories/notifications"
+  },
+  "metrics": {
+    "run_start_ts": "2025-11-11T17:32:20.950019Z",
+    "run_end_ts": "2025-11-11T17:34:12.394924Z",
+    "total_runtime_sec": 111.444905,
+    "turns": 5,
+    "steps": {
+      "batch_clicks": 5,
+      "selectors_applied": 0,
+      "fullpage_screens": 2,
+      "element_screens": 0,
+      "auto_screens": 12
+    },
+    "api": {
+      "calls": 5,
+      "input_tokens": 1210,
+      "output_tokens": 53,
+      "cost_usd": 0.002042,
+      "per_call": [
+        {
+          "turn": 1,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "latency_sec": 0.0,
+          "cost_usd": 0.0,
+          "source": "estimate"
+        },
+        {
+          "turn": 2,
+          "input_tokens": 381,
+          "output_tokens": 0,
+          "latency_sec": 20.060848712921143,
+          "cost_usd": 0.000476,
+          "source": "estimate"
+        },
+        {
+          "turn": 3,
+          "input_tokens": 381,
+          "output_tokens": 39,
+          "latency_sec": 13.590359926223755,
+          "cost_usd": 0.000866,
+          "source": "estimate"
+        },
+        {
+          "turn": 4,
+          "input_tokens": 448,
+          "output_tokens": 14,
+          "latency_sec": 23.255876064300537,
+          "cost_usd": 0.0007,
+          "source": "estimate"
+        },
+        {
+          "turn": 5,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "latency_sec": 0.0,
+          "cost_usd": 0.0,
+          "source": "estimate"
+        }
+      ]
+    }
   }
 }
