@@ -461,7 +461,7 @@ def main():
 
     # Initialize classifier
     try:
-        classifier = PrivacyScreenshotClassifier("AIzaSyDCfYGNl9tEBRFtUbSqLeUfGl7s6_kqVEA") # make sure to remove this
+        classifier = PrivacyScreenshotClassifier()
         print("✅ Privacy Screenshot Classifier initialized successfully")
     except ValueError as e:
         print(f"❌ Error: {e}")
