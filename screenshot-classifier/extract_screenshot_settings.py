@@ -4,6 +4,7 @@ Extract Privacy Settings from Screenshot Classification Summary
 
 Creates a comprehensive JSON file listing all privacy settings
 organized by category from the screenshot classification summary.
+Uses screenshot_classification_summarizer.py as the source.
 """
 
 import json
@@ -13,28 +14,51 @@ from typing import Dict, List, Optional
 from collections import defaultdict
 from datetime import datetime
 
+# Import the summarizer class
+from screenshot_classification_summarizer import ScreenshotClassificationSummarizer
+
 
 class ScreenshotSettingsExtractor:
     """Extract and organize privacy settings from screenshot classification summary."""
     
-    def __init__(self, summary_file: str = "classification_summary.json", 
+    def __init__(self, results_dir: str = ".", 
                  results_file: str = "classification_results.json",
-                 summaries_file: str = "summaries.json"):
-        """Initialize extractor."""
-        self.summary_file = Path(summary_file)
-        self.results_file = Path(results_file)
-        self.summaries_file = Path(summaries_file)
-        self.summary = self.load_summary()
+                 summaries_file: str = "summaries.json",
+                 use_summarizer: bool = True):
+        """
+        Initialize extractor.
+        
+        Args:
+            results_dir: Directory containing classification result JSON files
+            results_file: Original classification results JSON file
+            summaries_file: Summaries JSON file
+            use_summarizer: If True, use summarizer class directly; if False, load from JSON
+        """
+        self.results_dir = Path(results_dir)
+        self.results_file = Path(results_dir) / results_file
+        self.summaries_file = Path(results_dir) / summaries_file
+        self.use_summarizer = use_summarizer
+        
+        # Load or generate summary
+        if use_summarizer:
+            print("Using screenshot_classification_summarizer to generate summary...")
+            summarizer = ScreenshotClassificationSummarizer(results_dir=str(results_dir))
+            self.summary = summarizer.summarize_all_files()
+            if "error" in self.summary:
+                raise ValueError(f"Error generating summary: {self.summary['error']}")
+        else:
+            summary_file = self.results_dir / "classification_summary.json"
+            if not summary_file.exists():
+                raise FileNotFoundError(f"Summary file not found: {summary_file}")
+            self.summary = self.load_summary(summary_file)
+        
         self.results_data = self.load_results()
         self.summaries_data = self.load_summaries()
         self.application_map = self.build_application_map()
         
-    def load_summary(self) -> Dict:
+    def load_summary(self, summary_file: Path) -> Dict:
         """Load classification summary JSON."""
-        if not self.summary_file.exists():
-            raise FileNotFoundError(f"Summary file not found: {self.summary_file}")
-        
-        with open(self.summary_file, 'r', encoding='utf-8') as f:
+        with open(summary_file, 'r', encoding='utf-8') as f:
             return json.load(f)
     
     def load_results(self) -> Optional[Dict]:
@@ -45,7 +69,8 @@ class ScreenshotSettingsExtractor:
         try:
             with open(self.results_file, 'r', encoding='utf-8') as f:
                 return json.load(f)
-        except:
+        except Exception as e:
+            print(f"Warning: Could not load results file: {e}")
             return None
     
     def load_summaries(self) -> Optional[Dict]:
@@ -56,7 +81,8 @@ class ScreenshotSettingsExtractor:
         try:
             with open(self.summaries_file, 'r', encoding='utf-8') as f:
                 return json.load(f)
-        except:
+        except Exception as e:
+            print(f"Warning: Could not load summaries file: {e}")
             return None
     
     def extract_application_from_raw_response(self, raw_response: str) -> Optional[str]:
@@ -342,7 +368,7 @@ class ScreenshotSettingsExtractor:
         return {
             "metadata": {
                 "generated_at": datetime.now().isoformat(),
-                "source_file": str(self.summary_file),
+                "source": "screenshot_classification_summarizer.py" if self.use_summarizer else "classification_summary.json",
                 "total_settings": len(all_settings),
                 "unique_settings": len(setting_metadata),
                 "categories": len(organized_settings),
@@ -366,11 +392,12 @@ class ScreenshotSettingsExtractor:
         """Save settings to JSON file."""
         settings_data = self.extract_settings_by_category()
         
-        output_path = Path(output_file)
+        output_path = self.results_dir / output_file
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(settings_data, f, indent=2, ensure_ascii=False)
         
         print(f"✅ Screenshot privacy settings catalog saved to: {output_path}")
+        print(f"   Source: {settings_data['metadata']['source']}")
         print(f"   Total unique settings: {settings_data['metadata']['unique_settings']}")
         print(f"   Categories: {settings_data['metadata']['categories']}")
         print(f"   Total screenshots: {settings_data['metadata']['total_screenshots']}")
@@ -386,16 +413,18 @@ def main():
     print("=" * 60)
     
     try:
-        extractor = ScreenshotSettingsExtractor("classification_summary.json")
+        # Use summarizer directly as source
+        extractor = ScreenshotSettingsExtractor(
+            results_dir=".",
+            use_summarizer=True
+        )
         extractor.save_settings_json("screenshot_privacy_settings_catalog.json")
         print("\n✅ Extraction complete!")
-    except FileNotFoundError as e:
-        print(f"❌ Error: {e}")
-        print("   Please run screenshot_classification_summarizer.py first to generate classification_summary.json")
     except Exception as e:
         print(f"❌ Error: {e}")
         import traceback
         traceback.print_exc()
+        print("\n💡 Tip: Make sure classification_results.json exists in the current directory")
 
 
 if __name__ == "__main__":
