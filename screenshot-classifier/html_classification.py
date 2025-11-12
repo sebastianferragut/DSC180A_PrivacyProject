@@ -3,6 +3,8 @@ HTML Classification System for Privacy Settings Pages
 
 This system uses Google's Gemini API to analyze HTML files of privacy settings pages
 and categorize them based on privacy-related content and settings.
+
+(not currently working)
 """
 
 import os

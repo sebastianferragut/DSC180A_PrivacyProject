@@ -39,6 +39,10 @@ class PrivacyScreenshotClassifier:
         self.client = genai.Client(api_key=self.api_key)
         self.model_id = 'gemini-2.5-pro'
         
+        # Gemini API pricing (per 1M tokens) - unsure how accurate this is
+        self.cost_input_per_1m = float(os.environ.get('GEMINI_COST_IN_PER_1M', '1.25'))
+        self.cost_output_per_1m = float(os.environ.get('GEMINI_COST_OUT_PER_1M', '10.0'))
+        
         # Privacy categories for classification (add to this as domain knowledge expands)
         self.privacy_categories = {
             # Device and Sensor Access
@@ -136,6 +140,69 @@ class PrivacyScreenshotClassifier:
                 Be thorough and accurate in your analysis. Focus on privacy-related content and settings.
             """
     
+    
+    ### Calculates token usage and costs
+
+    def _extract_usage_metadata(self, response) -> Dict:
+        """
+        Extract token usage information from Gemini API response.
+        
+        Args:
+            response: The response object from Gemini API
+            
+        Returns:
+            Dictionary with input_tokens, output_tokens, and source information
+        """
+        usage_in, usage_out = 0, 0
+        source = "estimate"
+        
+        try:
+            # Try to get usage_metadata from response
+            md = getattr(response, "usage_metadata", None) or getattr(response, "usage", None)
+            if md:
+                usage_in = int(getattr(md, "prompt_token_count", 0) or getattr(md, "input_tokens", 0) or 0)
+                usage_out = int(getattr(md, "candidates_token_count", 0) or getattr(md, "output_tokens", 0) or 0)
+                if (usage_in + usage_out) > 0:
+                    source = "api"
+            
+            # If not found, try from candidates
+            if (usage_in + usage_out) == 0:
+                c0 = (getattr(response, "candidates", None) or [None])[0]
+                if c0:
+                    md2 = getattr(c0, "usage_metadata", None)
+                    if md2:
+                        usage_in = int(getattr(md2, "prompt_token_count", 0) or getattr(md2, "input_tokens", 0) or 0)
+                        usage_out = int(getattr(md2, "candidates_token_count", 0) or getattr(md2, "output_tokens", 0) or 0)
+                        if (usage_in + usage_out) > 0:
+                            source = "api"
+        except Exception:
+            pass
+        
+        return {
+            "input_tokens": usage_in,
+            "output_tokens": usage_out,
+            "total_tokens": usage_in + usage_out,
+            "source": source
+        }
+    
+    def _calculate_cost(self, input_tokens: int, output_tokens: int) -> float:
+        """
+        Calculate cost in USD based on token usage.
+        
+        Args:
+            input_tokens: Number of input tokens
+            output_tokens: Number of output tokens
+            
+        Returns:
+            Cost in USD
+        """
+        cost = (input_tokens / 1_000_000 * self.cost_input_per_1m) + \
+               (output_tokens / 1_000_000 * self.cost_output_per_1m)
+        return round(cost, 8)
+    
+    ###
+
+
     def _parse_analysis_response(self, response_text: str, image_path: str) -> Dict:
         """Parse the Gemini response and structure the data."""
         try:
@@ -207,9 +274,18 @@ class PrivacyScreenshotClassifier:
                 )
             )
             
+            # Extract usage metadata
+            usage_info = self._extract_usage_metadata(response)
+            
             # Parse response
             analysis_text = response.candidates[0].content.parts[0].text # would like to return this
-            return self._parse_analysis_response(analysis_text, image_path)
+            analysis_data = self._parse_analysis_response(analysis_text, image_path)
+            
+            # Add usage information to analysis data
+            analysis_data["token_usage"] = usage_info
+            analysis_data["cost_usd"] = self._calculate_cost(usage_info["input_tokens"], usage_info["output_tokens"])
+            
+            return analysis_data
             
         except Exception as e:
             return {
@@ -330,6 +406,54 @@ class PrivacyScreenshotClassifier:
             print(f"Results saved to {output_file}")
         
         return results
+    
+    # Called in main()
+    def calculate_token_usage(self, image_path: str, output_file: Optional[str] = None) -> Dict:
+        """
+        Calculate token usage and costs for analyzing a single screenshot.
+        
+        Args:
+            image_path: Path to the screenshot image file
+            output_file: Optional file path to save the token usage information as JSON
+            
+        Returns:
+            Dictionary containing token usage, costs, and image path
+        """
+        # Analyze the screenshot (this will capture usage information)
+        analysis = self.analyze_screenshot(image_path)
+        
+        # Extract usage information
+        usage_info = analysis.get("token_usage", {})
+        cost = analysis.get("cost_usd", 0.0)
+        
+        # Create token usage report
+        token_report = {
+            "image_path": image_path,
+            "model_used": self.model_id,
+            "timestamp": datetime.now().isoformat(),
+            "token_usage": {
+                "input_tokens": usage_info.get("input_tokens", 0),
+                "output_tokens": usage_info.get("output_tokens", 0),
+                "total_tokens": usage_info.get("total_tokens", 0),
+                "source": usage_info.get("source", "unknown")
+            },
+            "cost": {
+                "cost_usd": cost,
+                "pricing": {
+                    "input_cost_per_1m_tokens": self.cost_input_per_1m,
+                    "output_cost_per_1m_tokens": self.cost_output_per_1m
+                }
+            },
+            "analysis_status": analysis.get("status", "unknown")
+        }
+        
+        # Save to file if specified
+        if output_file:
+            with open(output_file, 'w') as f:
+                json.dump(token_report, f, indent=2)
+            print(f"Token usage information saved to {output_file}")
+        
+        return token_report
 
 
 def main():
@@ -337,17 +461,62 @@ def main():
 
     # Initialize classifier
     try:
-        classifier = PrivacyScreenshotClassifier()
+        classifier = PrivacyScreenshotClassifier("AIzaSyDCfYGNl9tEBRFtUbSqLeUfGl7s6_kqVEA") # make sure to remove this
         print("✅ Privacy Screenshot Classifier initialized successfully")
     except ValueError as e:
         print(f"❌ Error: {e}")
         print("Please set your GEMINI_API_KEY environment variable")
         return
     
-    # Batch classification
+    # Calculate token usage for all screenshots
     screenshots_dir = "screenshots"
     
     if os.path.exists(screenshots_dir):
+        # Find all image files
+        image_extensions = {'.png', '.jpg', '.jpeg', '.bmp', '.tiff', '.webp'}
+        image_files = [f for f in Path(screenshots_dir).iterdir() if f.suffix.lower() in image_extensions]
+        
+        if image_files:
+            print(f"\n💰 Calculating token usage for {len(image_files)} screenshot(s)...")
+            all_token_reports = []
+            total_input_tokens = 0
+            total_output_tokens = 0
+            total_cost = 0.0
+            
+            for image_file in image_files:
+                image_path = str(image_file)
+                print(f"  Processing: {image_file.name}...")
+                token_report = classifier.calculate_token_usage(image_path)
+                all_token_reports.append(token_report)
+                
+                total_input_tokens += token_report['token_usage']['input_tokens']
+                total_output_tokens += token_report['token_usage']['output_tokens']
+                total_cost += token_report['cost']['cost_usd']
+            
+            # Create aggregated report
+            aggregated_report = {
+                "summary": {
+                    "total_images": len(image_files),
+                    "total_input_tokens": total_input_tokens,
+                    "total_output_tokens": total_output_tokens,
+                    "total_tokens": total_input_tokens + total_output_tokens,
+                    "total_cost_usd": round(total_cost, 8),
+                    "average_cost_per_image": round(total_cost / len(image_files), 8) if image_files else 0.0,
+                    "pricing": {
+                        "input_cost_per_1m_tokens": classifier.cost_input_per_1m,
+                        "output_cost_per_1m_tokens": classifier.cost_output_per_1m
+                    }
+                },
+                "individual_reports": all_token_reports,
+                "timestamp": datetime.now().isoformat()
+            }
+            
+            # Save aggregated report
+            output_file = "screenshot_classifier_token_usage.json"
+            with open(output_file, 'w') as f:
+                json.dump(aggregated_report, f, indent=2)
+        
+        # Batch classification
         print(f"\n🔍 Batch analyzing screenshots in: {screenshots_dir}")
         batch_results = classifier.batch_classify(screenshots_dir, "classification_results.json")
         print(f"📊 Batch Results:")

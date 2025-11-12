@@ -109,9 +109,6 @@ print(f"Processed {results['total_images']} images")
 ```bash
 # Run the main script
 python screenshot_classification.py
-
-# Run example usage
-python example_usage.py
 ```
 
 ## Example Output
