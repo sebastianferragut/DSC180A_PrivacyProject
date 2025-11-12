@@ -1,13 +1,16 @@
 {
   "metadata": {
-    "generated_at": "2025-11-11T16:45:06.612306",
+    "generated_at": "2025-11-12T09:13:27.437429",
     "source_file": "classification_summary.json",
     "total_settings": 30,
     "unique_settings": 15,
     "categories": 5,
     "total_screenshots": 8,
     "total_files": 2,
-    "average_confidence": 1.0
+    "average_confidence": 1.0,
+    "applications": [
+      "Zoom"
+    ]
   },
   "categories": {
     "access_to_device": {
@@ -30,6 +33,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -49,6 +55,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -70,6 +79,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -89,6 +101,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -110,6 +125,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -129,6 +147,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -150,6 +171,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -169,6 +193,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -190,6 +217,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -209,6 +239,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -230,6 +263,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -250,6 +286,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -269,6 +308,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -297,6 +339,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -316,6 +361,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -337,6 +385,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -356,6 +407,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -377,6 +431,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -396,6 +453,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -417,6 +477,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -436,6 +499,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -457,6 +523,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -476,6 +545,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -497,6 +569,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -517,6 +592,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -536,6 +614,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -564,6 +645,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -583,6 +667,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -604,6 +691,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -623,6 +713,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -644,6 +737,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -663,6 +759,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -684,6 +783,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -703,6 +805,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -724,6 +829,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -743,6 +851,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -764,6 +875,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -783,6 +897,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -804,6 +921,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -822,6 +942,9 @@
           "page_types": [
             "Specific category settings page (Audio Conferencing)"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -839,6 +962,9 @@
           ],
           "page_types": [
             "Specific category settings page (Audio Conferencing)"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -867,6 +993,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -886,6 +1015,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -907,6 +1039,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -926,6 +1061,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -947,6 +1085,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -966,6 +1107,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -987,6 +1131,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -1006,6 +1153,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -1027,6 +1177,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -1046,6 +1199,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -1067,6 +1223,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -1086,6 +1245,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -1107,6 +1269,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -1125,6 +1290,9 @@
           "page_types": [
             "Specific category settings page (Audio Conferencing)"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -1142,6 +1310,9 @@
           ],
           "page_types": [
             "Specific category settings page (Audio Conferencing)"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -1170,6 +1341,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -1189,6 +1363,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -1210,6 +1387,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -1229,6 +1409,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -1250,6 +1433,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -1269,6 +1455,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -1290,6 +1479,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -1309,6 +1501,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -1330,6 +1525,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -1349,6 +1547,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -1370,6 +1571,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -1389,6 +1593,9 @@
           ],
           "page_types": [
             "In-Meeting Security Settings Menu"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -1410,6 +1617,9 @@
           "page_types": [
             "In-Meeting Security Settings Menu"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -1428,6 +1638,9 @@
           "page_types": [
             "Specific category settings page (Audio Conferencing)"
           ],
+          "applications": [
+            "Zoom"
+          ],
           "files": [
             "classification_results.json"
           ],
@@ -1445,6 +1658,9 @@
           ],
           "page_types": [
             "Specific category settings page (Audio Conferencing)"
+          ],
+          "applications": [
+            "Zoom"
           ],
           "files": [
             "classification_results.json"
@@ -1470,6 +1686,9 @@
       "page_types": [
         "In-Meeting Security Settings Menu"
       ],
+      "applications": [
+        "Zoom"
+      ],
       "files": [
         "classification_results.json"
       ],
@@ -1492,6 +1711,9 @@
       ],
       "page_types": [
         "In-Meeting Security Settings Menu"
+      ],
+      "applications": [
+        "Zoom"
       ],
       "files": [
         "classification_results.json"
@@ -1516,6 +1738,9 @@
       "page_types": [
         "In-Meeting Security Settings Menu"
       ],
+      "applications": [
+        "Zoom"
+      ],
       "files": [
         "classification_results.json"
       ],
@@ -1538,6 +1763,9 @@
       ],
       "page_types": [
         "In-Meeting Security Settings Menu"
+      ],
+      "applications": [
+        "Zoom"
       ],
       "files": [
         "classification_results.json"
@@ -1562,6 +1790,9 @@
       "page_types": [
         "In-Meeting Security Settings Menu"
       ],
+      "applications": [
+        "Zoom"
+      ],
       "files": [
         "classification_results.json"
       ],
@@ -1584,6 +1815,9 @@
       ],
       "page_types": [
         "In-Meeting Security Settings Menu"
+      ],
+      "applications": [
+        "Zoom"
       ],
       "files": [
         "classification_results.json"
@@ -1608,6 +1842,9 @@
       "page_types": [
         "In-Meeting Security Settings Menu"
       ],
+      "applications": [
+        "Zoom"
+      ],
       "files": [
         "classification_results.json"
       ],
@@ -1630,6 +1867,9 @@
       ],
       "page_types": [
         "In-Meeting Security Settings Menu"
+      ],
+      "applications": [
+        "Zoom"
       ],
       "files": [
         "classification_results.json"
@@ -1654,6 +1894,9 @@
       "page_types": [
         "In-Meeting Security Settings Menu"
       ],
+      "applications": [
+        "Zoom"
+      ],
       "files": [
         "classification_results.json"
       ],
@@ -1676,6 +1919,9 @@
       ],
       "page_types": [
         "In-Meeting Security Settings Menu"
+      ],
+      "applications": [
+        "Zoom"
       ],
       "files": [
         "classification_results.json"
@@ -1700,6 +1946,9 @@
       "page_types": [
         "In-Meeting Security Settings Menu"
       ],
+      "applications": [
+        "Zoom"
+      ],
       "files": [
         "classification_results.json"
       ],
@@ -1722,6 +1971,9 @@
       ],
       "page_types": [
         "In-Meeting Security Settings Menu"
+      ],
+      "applications": [
+        "Zoom"
       ],
       "files": [
         "classification_results.json"
@@ -1746,6 +1998,9 @@
       "page_types": [
         "In-Meeting Security Settings Menu"
       ],
+      "applications": [
+        "Zoom"
+      ],
       "files": [
         "classification_results.json"
       ],
@@ -1767,6 +2022,9 @@
       "page_types": [
         "Specific category settings page (Audio Conferencing)"
       ],
+      "applications": [
+        "Zoom"
+      ],
       "files": [
         "classification_results.json"
       ],
@@ -1787,6 +2045,9 @@
       ],
       "page_types": [
         "Specific category settings page (Audio Conferencing)"
+      ],
+      "applications": [
+        "Zoom"
       ],
       "files": [
         "classification_results.json"
