@@ -1,0 +1,1822 @@
+{
+  "metadata": {
+    "generated_at": "2025-11-11T16:45:06.612306",
+    "source_file": "classification_summary.json",
+    "total_settings": 30,
+    "unique_settings": 15,
+    "categories": 5,
+    "total_screenshots": 8,
+    "total_files": 2,
+    "average_confidence": 1.0
+  },
+  "categories": {
+    "access_to_device": {
+      "category": "access_to_device",
+      "total_occurrences": 26,
+      "unique_settings_count": 13,
+      "settings": [
+        {
+          "setting": "Banner prompt: 'Please enable access to your microphone and camera for the best experience.'",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Lock Meeting",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Enable Waiting Room",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Hide Profile Pictures",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Share Screen (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Chat (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Rename Themselves (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Unmute Themselves (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Start Video (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Share Whiteboards (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Suspend Participant Activities",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Audio (Muted)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Video (Off)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        }
+      ]
+    },
+    "account_security": {
+      "category": "account_security",
+      "total_occurrences": 26,
+      "unique_settings_count": 13,
+      "settings": [
+        {
+          "setting": "Banner prompt: 'Please enable access to your microphone and camera for the best experience.'",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Lock Meeting",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Enable Waiting Room",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Hide Profile Pictures",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Share Screen (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Chat (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Rename Themselves (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Unmute Themselves (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Start Video (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Share Whiteboards (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Suspend Participant Activities",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Audio (Muted)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Video (Off)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        }
+      ]
+    },
+    "communication_privacy": {
+      "category": "communication_privacy",
+      "total_occurrences": 30,
+      "unique_settings_count": 15,
+      "settings": [
+        {
+          "setting": "Banner prompt: 'Please enable access to your microphone and camera for the best experience.'",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Lock Meeting",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Enable Waiting Room",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Hide Profile Pictures",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Share Screen (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Chat (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Rename Themselves (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Unmute Themselves (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Start Video (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Share Whiteboards (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Suspend Participant Activities",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Audio (Muted)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Video (Off)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Show international numbers link on the invitation email: A toggle switch, currently enabled, to include a link for international dial-in numbers in email invitations.",
+          "categories": [
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy"
+          ],
+          "images": [
+            "audio_conferencing_20251022_110156.png"
+          ],
+          "page_types": [
+            "Specific category settings page (Audio Conferencing)"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Mask phone number in the participant list: A toggle switch, currently disabled, to mask the phone numbers of users who dial into a meeting.",
+          "categories": [
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy"
+          ],
+          "images": [
+            "audio_conferencing_20251022_110156.png"
+          ],
+          "page_types": [
+            "Specific category settings page (Audio Conferencing)"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        }
+      ]
+    },
+    "personal_information": {
+      "category": "personal_information",
+      "total_occurrences": 30,
+      "unique_settings_count": 15,
+      "settings": [
+        {
+          "setting": "Banner prompt: 'Please enable access to your microphone and camera for the best experience.'",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Lock Meeting",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Enable Waiting Room",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Hide Profile Pictures",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Share Screen (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Chat (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Rename Themselves (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Unmute Themselves (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Start Video (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Share Whiteboards (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Suspend Participant Activities",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Audio (Muted)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Video (Off)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Show international numbers link on the invitation email: A toggle switch, currently enabled, to include a link for international dial-in numbers in email invitations.",
+          "categories": [
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy"
+          ],
+          "images": [
+            "audio_conferencing_20251022_110156.png"
+          ],
+          "page_types": [
+            "Specific category settings page (Audio Conferencing)"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Mask phone number in the participant list: A toggle switch, currently disabled, to mask the phone numbers of users who dial into a meeting.",
+          "categories": [
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy"
+          ],
+          "images": [
+            "audio_conferencing_20251022_110156.png"
+          ],
+          "page_types": [
+            "Specific category settings page (Audio Conferencing)"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        }
+      ]
+    },
+    "sharing_settings": {
+      "category": "sharing_settings",
+      "total_occurrences": 30,
+      "unique_settings_count": 15,
+      "settings": [
+        {
+          "setting": "Banner prompt: 'Please enable access to your microphone and camera for the best experience.'",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Lock Meeting",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Enable Waiting Room",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Hide Profile Pictures",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Share Screen (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Chat (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Rename Themselves (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Unmute Themselves (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Start Video (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Allow participants to: Share Whiteboards (enabled)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Suspend Participant Activities",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Audio (Muted)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Video (Off)",
+          "categories": [
+            "access_to_device",
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy",
+            "account_security"
+          ],
+          "images": [
+            "security_menu_fullpage_20251022_110816.png"
+          ],
+          "page_types": [
+            "In-Meeting Security Settings Menu"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Show international numbers link on the invitation email: A toggle switch, currently enabled, to include a link for international dial-in numbers in email invitations.",
+          "categories": [
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy"
+          ],
+          "images": [
+            "audio_conferencing_20251022_110156.png"
+          ],
+          "page_types": [
+            "Specific category settings page (Audio Conferencing)"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        },
+        {
+          "setting": "Mask phone number in the participant list: A toggle switch, currently disabled, to mask the phone numbers of users who dial into a meeting.",
+          "categories": [
+            "personal_information",
+            "sharing_settings",
+            "communication_privacy"
+          ],
+          "images": [
+            "audio_conferencing_20251022_110156.png"
+          ],
+          "page_types": [
+            "Specific category settings page (Audio Conferencing)"
+          ],
+          "files": [
+            "classification_results.json"
+          ],
+          "average_confidence": 1.0
+        }
+      ]
+    }
+  },
+  "all_settings": [
+    {
+      "setting": "Banner prompt: 'Please enable access to your microphone and camera for the best experience.'",
+      "categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "account_security"
+      ],
+      "images": [
+        "security_menu_fullpage_20251022_110816.png"
+      ],
+      "page_types": [
+        "In-Meeting Security Settings Menu"
+      ],
+      "files": [
+        "classification_results.json"
+      ],
+      "confidence_scores": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "setting": "Lock Meeting",
+      "categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "account_security"
+      ],
+      "images": [
+        "security_menu_fullpage_20251022_110816.png"
+      ],
+      "page_types": [
+        "In-Meeting Security Settings Menu"
+      ],
+      "files": [
+        "classification_results.json"
+      ],
+      "confidence_scores": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "setting": "Enable Waiting Room",
+      "categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "account_security"
+      ],
+      "images": [
+        "security_menu_fullpage_20251022_110816.png"
+      ],
+      "page_types": [
+        "In-Meeting Security Settings Menu"
+      ],
+      "files": [
+        "classification_results.json"
+      ],
+      "confidence_scores": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "setting": "Hide Profile Pictures",
+      "categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "account_security"
+      ],
+      "images": [
+        "security_menu_fullpage_20251022_110816.png"
+      ],
+      "page_types": [
+        "In-Meeting Security Settings Menu"
+      ],
+      "files": [
+        "classification_results.json"
+      ],
+      "confidence_scores": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "setting": "Allow participants to: Share Screen (enabled)",
+      "categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "account_security"
+      ],
+      "images": [
+        "security_menu_fullpage_20251022_110816.png"
+      ],
+      "page_types": [
+        "In-Meeting Security Settings Menu"
+      ],
+      "files": [
+        "classification_results.json"
+      ],
+      "confidence_scores": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "setting": "Allow participants to: Chat (enabled)",
+      "categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "account_security"
+      ],
+      "images": [
+        "security_menu_fullpage_20251022_110816.png"
+      ],
+      "page_types": [
+        "In-Meeting Security Settings Menu"
+      ],
+      "files": [
+        "classification_results.json"
+      ],
+      "confidence_scores": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "setting": "Allow participants to: Rename Themselves (enabled)",
+      "categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "account_security"
+      ],
+      "images": [
+        "security_menu_fullpage_20251022_110816.png"
+      ],
+      "page_types": [
+        "In-Meeting Security Settings Menu"
+      ],
+      "files": [
+        "classification_results.json"
+      ],
+      "confidence_scores": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "setting": "Allow participants to: Unmute Themselves (enabled)",
+      "categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "account_security"
+      ],
+      "images": [
+        "security_menu_fullpage_20251022_110816.png"
+      ],
+      "page_types": [
+        "In-Meeting Security Settings Menu"
+      ],
+      "files": [
+        "classification_results.json"
+      ],
+      "confidence_scores": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "setting": "Allow participants to: Start Video (enabled)",
+      "categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "account_security"
+      ],
+      "images": [
+        "security_menu_fullpage_20251022_110816.png"
+      ],
+      "page_types": [
+        "In-Meeting Security Settings Menu"
+      ],
+      "files": [
+        "classification_results.json"
+      ],
+      "confidence_scores": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "setting": "Allow participants to: Share Whiteboards (enabled)",
+      "categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "account_security"
+      ],
+      "images": [
+        "security_menu_fullpage_20251022_110816.png"
+      ],
+      "page_types": [
+        "In-Meeting Security Settings Menu"
+      ],
+      "files": [
+        "classification_results.json"
+      ],
+      "confidence_scores": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "setting": "Suspend Participant Activities",
+      "categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "account_security"
+      ],
+      "images": [
+        "security_menu_fullpage_20251022_110816.png"
+      ],
+      "page_types": [
+        "In-Meeting Security Settings Menu"
+      ],
+      "files": [
+        "classification_results.json"
+      ],
+      "confidence_scores": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "setting": "Audio (Muted)",
+      "categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "account_security"
+      ],
+      "images": [
+        "security_menu_fullpage_20251022_110816.png"
+      ],
+      "page_types": [
+        "In-Meeting Security Settings Menu"
+      ],
+      "files": [
+        "classification_results.json"
+      ],
+      "confidence_scores": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "setting": "Video (Off)",
+      "categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "account_security"
+      ],
+      "images": [
+        "security_menu_fullpage_20251022_110816.png"
+      ],
+      "page_types": [
+        "In-Meeting Security Settings Menu"
+      ],
+      "files": [
+        "classification_results.json"
+      ],
+      "confidence_scores": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "setting": "Show international numbers link on the invitation email: A toggle switch, currently enabled, to include a link for international dial-in numbers in email invitations.",
+      "categories": [
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy"
+      ],
+      "images": [
+        "audio_conferencing_20251022_110156.png"
+      ],
+      "page_types": [
+        "Specific category settings page (Audio Conferencing)"
+      ],
+      "files": [
+        "classification_results.json"
+      ],
+      "confidence_scores": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "setting": "Mask phone number in the participant list: A toggle switch, currently disabled, to mask the phone numbers of users who dial into a meeting.",
+      "categories": [
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy"
+      ],
+      "images": [
+        "audio_conferencing_20251022_110156.png"
+      ],
+      "page_types": [
+        "Specific category settings page (Audio Conferencing)"
+      ],
+      "files": [
+        "classification_results.json"
+      ],
+      "confidence_scores": [
+        1.0,
+        1.0
+      ]
+    }
+  ],
+  "category_statistics": {
+    "access_to_device": {
+      "total_occurrences": 2,
+      "unique_settings": 13
+    },
+    "personal_information": {
+      "total_occurrences": 4,
+      "unique_settings": 15
+    },
+    "sharing_settings": {
+      "total_occurrences": 4,
+      "unique_settings": 15
+    },
+    "communication_privacy": {
+      "total_occurrences": 4,
+      "unique_settings": 15
+    },
+    "account_security": {
+      "total_occurrences": 2,
+      "unique_settings": 13
+    }
+  }
+}

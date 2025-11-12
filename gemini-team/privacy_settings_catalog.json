@@ -1,0 +1,1351 @@
+{
+  "metadata": {
+    "generated_at": "2025-11-11T16:44:51.470529",
+    "source_file": "privacy_summary.json",
+    "total_settings": 364,
+    "unique_settings": 24,
+    "categories": 8,
+    "total_pages": 38,
+    "total_files": 3,
+    "host": "zoom.us"
+  },
+  "categories": {
+    "account_security": {
+      "category": "account_security",
+      "total_occurrences": 9,
+      "unique_settings_count": 3,
+      "settings": [
+        {
+          "setting": "Require that all meetings are secured with one security option",
+          "type": "checkbox",
+          "categories": [
+            "communication_privacy",
+            "account_security"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=meeting"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-toggle__original"
+          ]
+        },
+        {
+          "setting": "Require passcode to access shared whiteboards",
+          "type": "checkbox",
+          "categories": [
+            "camera_microphone",
+            "account_security",
+            "sharing_settings"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=whiteboard"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-toggle__original"
+          ]
+        },
+        {
+          "setting": "Require passcode to access shared clips",
+          "type": "checkbox",
+          "categories": [
+            "camera_microphone",
+            "account_security",
+            "sharing_settings"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=zoomclips"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-toggle__original"
+          ]
+        }
+      ]
+    },
+    "camera_microphone": {
+      "category": "camera_microphone",
+      "total_occurrences": 24,
+      "unique_settings_count": 7,
+      "settings": [
+        {
+          "setting": "Record to computer files",
+          "type": "checkbox",
+          "categories": [
+            "camera_microphone"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=recording"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-toggle__original"
+          ]
+        },
+        {
+          "setting": "Support Version for Who can request host permission to record?",
+          "type": "button",
+          "categories": [
+            "camera_microphone"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=recording"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-button zoom-button--sm zoom-button--tertiary zoom-button__icon zoom-button--tertiary-icon zoom-tooltip__trigger"
+          ]
+        },
+        {
+          "setting": "Automatic recording",
+          "type": "checkbox",
+          "categories": [
+            "camera_microphone"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=recording"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-toggle__original"
+          ]
+        },
+        {
+          "setting": "Learn more about Recording notifications - Zoom clients",
+          "type": "button",
+          "categories": [
+            "camera_microphone",
+            "notification_privacy"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=recording"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-button zoom-button--sm zoom-button--tertiary zoom-button__icon zoom-button--tertiary-icon tooltips-icon-button-lg mgl-sm zoom-tooltip__trigger",
+            "zoom-button zoom-button--sm zoom-button--tertiary zoom-button__icon zoom-button--tertiary-icon zoom-tooltip__trigger"
+          ]
+        },
+        {
+          "setting": "Ask host to confirm before starting a recording",
+          "type": "checkbox",
+          "categories": [
+            "camera_microphone"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=recording"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-checkbox__original"
+          ]
+        },
+        {
+          "setting": "Require passcode to access shared whiteboards",
+          "type": "checkbox",
+          "categories": [
+            "camera_microphone",
+            "account_security",
+            "sharing_settings"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=whiteboard"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-toggle__original"
+          ]
+        },
+        {
+          "setting": "Require passcode to access shared clips",
+          "type": "checkbox",
+          "categories": [
+            "camera_microphone",
+            "account_security",
+            "sharing_settings"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=zoomclips"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-toggle__original"
+          ]
+        }
+      ]
+    },
+    "communication_privacy": {
+      "category": "communication_privacy",
+      "total_occurrences": 18,
+      "unique_settings_count": 6,
+      "settings": [
+        {
+          "setting": "Require that all meetings are secured with one security option",
+          "type": "checkbox",
+          "categories": [
+            "communication_privacy",
+            "account_security"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=meeting"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-toggle__original"
+          ]
+        },
+        {
+          "setting": "Bidirectional sync for Zoom meeting data between Zoom web portal and calendars",
+          "type": "checkbox",
+          "categories": [
+            "communication_privacy"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=zoomMailCalendar"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-toggle__original"
+          ]
+        },
+        {
+          "setting": "Support version for Enable In-Meeting Notes",
+          "type": "button",
+          "categories": [
+            "communication_privacy"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=notes"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-button zoom-button--sm zoom-button--tertiary zoom-button__icon zoom-button--tertiary-icon zoom-tooltip__trigger"
+          ]
+        },
+        {
+          "setting": "Enable In-Meeting Notes",
+          "type": "checkbox",
+          "categories": [
+            "communication_privacy"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=notes"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-toggle__original"
+          ]
+        },
+        {
+          "setting": "Enable Out-of-Meeting Notes",
+          "type": "checkbox",
+          "categories": [
+            "communication_privacy"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=notes"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-toggle__original"
+          ]
+        },
+        {
+          "setting": "Allow participants to share docs in meetings",
+          "type": "checkbox",
+          "categories": [
+            "communication_privacy",
+            "sharing_settings"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=zmDoc"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-toggle__original"
+          ]
+        }
+      ]
+    },
+    "cookie_consent": {
+      "category": "cookie_consent",
+      "total_occurrences": 304,
+      "unique_settings_count": 5,
+      "settings": [
+        {
+          "setting": "Accept All Cookies",
+          "type": "button",
+          "categories": [
+            "data_collection",
+            "cookie_consent"
+          ],
+          "pages": [
+            "https://zoom.us/signin",
+            "https://zoom.us/profile/setting?tab=aicompanion",
+            "https://zoom.us/profile/setting?tab=general",
+            "https://zoom.us/profile/setting?tab=meeting",
+            "https://zoom.us/profile/setting?tab=recording",
+            "https://zoom.us/profile/setting?tab=zoomMailCalendar",
+            "https://zoom.us/profile/setting?tab=telephony",
+            "https://zoom.us/profile/setting?tab=zoomapps",
+            "https://zoom.us/profile/setting?tab=whiteboard",
+            "https://zoom.us/profile/setting?tab=notes",
+            "https://zoom.us/profile/setting?tab=zmDoc",
+            "https://zoom.us/profile/setting?tab=zoomTasks",
+            "https://zoom.us/profile/setting?tab=zmHub",
+            "https://zoom.us/profile/setting?tab=zoomclips"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "accept-recommended-btn-handler"
+          ]
+        },
+        {
+          "setting": "Targeting Cookies",
+          "type": "button",
+          "categories": [
+            "data_collection",
+            "cookie_consent"
+          ],
+          "pages": [
+            "https://zoom.us/signin",
+            "https://zoom.us/profile/setting?tab=aicompanion",
+            "https://zoom.us/profile/setting?tab=general",
+            "https://zoom.us/profile/setting?tab=meeting",
+            "https://zoom.us/profile/setting?tab=recording",
+            "https://zoom.us/profile/setting?tab=zoomMailCalendar",
+            "https://zoom.us/profile/setting?tab=telephony",
+            "https://zoom.us/profile/setting?tab=zoomapps",
+            "https://zoom.us/profile/setting?tab=whiteboard",
+            "https://zoom.us/profile/setting?tab=notes",
+            "https://zoom.us/profile/setting?tab=zmDoc",
+            "https://zoom.us/profile/setting?tab=zoomTasks",
+            "https://zoom.us/profile/setting?tab=zmHub",
+            "https://zoom.us/profile/setting?tab=zoomclips"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "ot-switch"
+          ]
+        },
+        {
+          "setting": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "categories": [
+            "data_collection",
+            "cookie_consent"
+          ],
+          "pages": [
+            "https://zoom.us/signin",
+            "https://zoom.us/profile/setting?tab=aicompanion",
+            "https://zoom.us/profile/setting?tab=general",
+            "https://zoom.us/profile/setting?tab=meeting",
+            "https://zoom.us/profile/setting?tab=recording",
+            "https://zoom.us/profile/setting?tab=zoomMailCalendar",
+            "https://zoom.us/profile/setting?tab=telephony",
+            "https://zoom.us/profile/setting?tab=zoomapps",
+            "https://zoom.us/profile/setting?tab=whiteboard",
+            "https://zoom.us/profile/setting?tab=notes",
+            "https://zoom.us/profile/setting?tab=zmDoc",
+            "https://zoom.us/profile/setting?tab=zoomTasks",
+            "https://zoom.us/profile/setting?tab=zmHub",
+            "https://zoom.us/profile/setting?tab=zoomclips"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "ot-link-btn category-host-list-handler"
+          ]
+        },
+        {
+          "setting": "Functional Cookies",
+          "type": "button",
+          "categories": [
+            "data_collection",
+            "cookie_consent"
+          ],
+          "pages": [
+            "https://zoom.us/signin",
+            "https://zoom.us/profile/setting?tab=aicompanion",
+            "https://zoom.us/profile/setting?tab=general",
+            "https://zoom.us/profile/setting?tab=meeting",
+            "https://zoom.us/profile/setting?tab=recording",
+            "https://zoom.us/profile/setting?tab=zoomMailCalendar",
+            "https://zoom.us/profile/setting?tab=telephony",
+            "https://zoom.us/profile/setting?tab=zoomapps",
+            "https://zoom.us/profile/setting?tab=whiteboard",
+            "https://zoom.us/profile/setting?tab=notes",
+            "https://zoom.us/profile/setting?tab=zmDoc",
+            "https://zoom.us/profile/setting?tab=zoomTasks",
+            "https://zoom.us/profile/setting?tab=zmHub",
+            "https://zoom.us/profile/setting?tab=zoomclips"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "ot-switch"
+          ]
+        },
+        {
+          "setting": "Performance Cookies",
+          "type": "button",
+          "categories": [
+            "data_collection",
+            "cookie_consent"
+          ],
+          "pages": [
+            "https://zoom.us/signin",
+            "https://zoom.us/profile/setting?tab=aicompanion",
+            "https://zoom.us/profile/setting?tab=general",
+            "https://zoom.us/profile/setting?tab=meeting",
+            "https://zoom.us/profile/setting?tab=recording",
+            "https://zoom.us/profile/setting?tab=zoomMailCalendar",
+            "https://zoom.us/profile/setting?tab=telephony",
+            "https://zoom.us/profile/setting?tab=zoomapps",
+            "https://zoom.us/profile/setting?tab=whiteboard",
+            "https://zoom.us/profile/setting?tab=notes",
+            "https://zoom.us/profile/setting?tab=zmDoc",
+            "https://zoom.us/profile/setting?tab=zoomTasks",
+            "https://zoom.us/profile/setting?tab=zmHub",
+            "https://zoom.us/profile/setting?tab=zoomclips"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "ot-switch"
+          ]
+        }
+      ]
+    },
+    "data_collection": {
+      "category": "data_collection",
+      "total_occurrences": 304,
+      "unique_settings_count": 5,
+      "settings": [
+        {
+          "setting": "Accept All Cookies",
+          "type": "button",
+          "categories": [
+            "data_collection",
+            "cookie_consent"
+          ],
+          "pages": [
+            "https://zoom.us/signin",
+            "https://zoom.us/profile/setting?tab=aicompanion",
+            "https://zoom.us/profile/setting?tab=general",
+            "https://zoom.us/profile/setting?tab=meeting",
+            "https://zoom.us/profile/setting?tab=recording",
+            "https://zoom.us/profile/setting?tab=zoomMailCalendar",
+            "https://zoom.us/profile/setting?tab=telephony",
+            "https://zoom.us/profile/setting?tab=zoomapps",
+            "https://zoom.us/profile/setting?tab=whiteboard",
+            "https://zoom.us/profile/setting?tab=notes",
+            "https://zoom.us/profile/setting?tab=zmDoc",
+            "https://zoom.us/profile/setting?tab=zoomTasks",
+            "https://zoom.us/profile/setting?tab=zmHub",
+            "https://zoom.us/profile/setting?tab=zoomclips"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "accept-recommended-btn-handler"
+          ]
+        },
+        {
+          "setting": "Targeting Cookies",
+          "type": "button",
+          "categories": [
+            "data_collection",
+            "cookie_consent"
+          ],
+          "pages": [
+            "https://zoom.us/signin",
+            "https://zoom.us/profile/setting?tab=aicompanion",
+            "https://zoom.us/profile/setting?tab=general",
+            "https://zoom.us/profile/setting?tab=meeting",
+            "https://zoom.us/profile/setting?tab=recording",
+            "https://zoom.us/profile/setting?tab=zoomMailCalendar",
+            "https://zoom.us/profile/setting?tab=telephony",
+            "https://zoom.us/profile/setting?tab=zoomapps",
+            "https://zoom.us/profile/setting?tab=whiteboard",
+            "https://zoom.us/profile/setting?tab=notes",
+            "https://zoom.us/profile/setting?tab=zmDoc",
+            "https://zoom.us/profile/setting?tab=zoomTasks",
+            "https://zoom.us/profile/setting?tab=zmHub",
+            "https://zoom.us/profile/setting?tab=zoomclips"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "ot-switch"
+          ]
+        },
+        {
+          "setting": "Cookies Details Cookie Details button opens Cookie List menu",
+          "type": "button",
+          "categories": [
+            "data_collection",
+            "cookie_consent"
+          ],
+          "pages": [
+            "https://zoom.us/signin",
+            "https://zoom.us/profile/setting?tab=aicompanion",
+            "https://zoom.us/profile/setting?tab=general",
+            "https://zoom.us/profile/setting?tab=meeting",
+            "https://zoom.us/profile/setting?tab=recording",
+            "https://zoom.us/profile/setting?tab=zoomMailCalendar",
+            "https://zoom.us/profile/setting?tab=telephony",
+            "https://zoom.us/profile/setting?tab=zoomapps",
+            "https://zoom.us/profile/setting?tab=whiteboard",
+            "https://zoom.us/profile/setting?tab=notes",
+            "https://zoom.us/profile/setting?tab=zmDoc",
+            "https://zoom.us/profile/setting?tab=zoomTasks",
+            "https://zoom.us/profile/setting?tab=zmHub",
+            "https://zoom.us/profile/setting?tab=zoomclips"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "ot-link-btn category-host-list-handler"
+          ]
+        },
+        {
+          "setting": "Functional Cookies",
+          "type": "button",
+          "categories": [
+            "data_collection",
+            "cookie_consent"
+          ],
+          "pages": [
+            "https://zoom.us/signin",
+            "https://zoom.us/profile/setting?tab=aicompanion",
+            "https://zoom.us/profile/setting?tab=general",
+            "https://zoom.us/profile/setting?tab=meeting",
+            "https://zoom.us/profile/setting?tab=recording",
+            "https://zoom.us/profile/setting?tab=zoomMailCalendar",
+            "https://zoom.us/profile/setting?tab=telephony",
+            "https://zoom.us/profile/setting?tab=zoomapps",
+            "https://zoom.us/profile/setting?tab=whiteboard",
+            "https://zoom.us/profile/setting?tab=notes",
+            "https://zoom.us/profile/setting?tab=zmDoc",
+            "https://zoom.us/profile/setting?tab=zoomTasks",
+            "https://zoom.us/profile/setting?tab=zmHub",
+            "https://zoom.us/profile/setting?tab=zoomclips"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "ot-switch"
+          ]
+        },
+        {
+          "setting": "Performance Cookies",
+          "type": "button",
+          "categories": [
+            "data_collection",
+            "cookie_consent"
+          ],
+          "pages": [
+            "https://zoom.us/signin",
+            "https://zoom.us/profile/setting?tab=aicompanion",
+            "https://zoom.us/profile/setting?tab=general",
+            "https://zoom.us/profile/setting?tab=meeting",
+            "https://zoom.us/profile/setting?tab=recording",
+            "https://zoom.us/profile/setting?tab=zoomMailCalendar",
+            "https://zoom.us/profile/setting?tab=telephony",
+            "https://zoom.us/profile/setting?tab=zoomapps",
+            "https://zoom.us/profile/setting?tab=whiteboard",
+            "https://zoom.us/profile/setting?tab=notes",
+            "https://zoom.us/profile/setting?tab=zmDoc",
+            "https://zoom.us/profile/setting?tab=zoomTasks",
+            "https://zoom.us/profile/setting?tab=zmHub",
+            "https://zoom.us/profile/setting?tab=zoomclips"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "ot-switch"
+          ]
+        }
+      ]
+    },
+    "data_retention": {
+      "category": "data_retention",
+      "total_occurrences": 3,
+      "unique_settings_count": 1,
+      "settings": [
+        {
+          "setting": "Auto-delete specified notes",
+          "type": "checkbox",
+          "categories": [
+            "data_retention"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=notes"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-toggle__original"
+          ]
+        }
+      ]
+    },
+    "notification_privacy": {
+      "category": "notification_privacy",
+      "total_occurrences": 6,
+      "unique_settings_count": 1,
+      "settings": [
+        {
+          "setting": "Learn more about Recording notifications - Zoom clients",
+          "type": "button",
+          "categories": [
+            "camera_microphone",
+            "notification_privacy"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=recording"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-button zoom-button--sm zoom-button--tertiary zoom-button__icon zoom-button--tertiary-icon tooltips-icon-button-lg mgl-sm zoom-tooltip__trigger",
+            "zoom-button zoom-button--sm zoom-button--tertiary zoom-button__icon zoom-button--tertiary-icon zoom-tooltip__trigger"
+          ]
+        }
+      ]
+    },
+    "sharing_settings": {
+      "category": "sharing_settings",
+      "total_occurrences": 24,
+      "unique_settings_count": 8,
+      "settings": [
+        {
+          "setting": "Show Zoom windows during screen share",
+          "type": "checkbox",
+          "categories": [
+            "sharing_settings"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=meeting"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-toggle__original"
+          ]
+        },
+        {
+          "setting": "Learn more about How many participants can share at the same time?",
+          "type": "button",
+          "categories": [
+            "sharing_settings"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=meeting"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-button zoom-button--sm zoom-button--tertiary zoom-button__icon zoom-button--tertiary-icon zoom-tooltip__trigger"
+          ]
+        },
+        {
+          "setting": "Allow participants to share whiteboard",
+          "type": "checkbox",
+          "categories": [
+            "sharing_settings"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=whiteboard"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-toggle__original"
+          ]
+        },
+        {
+          "setting": "Require passcode to access shared whiteboards",
+          "type": "checkbox",
+          "categories": [
+            "camera_microphone",
+            "account_security",
+            "sharing_settings"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=whiteboard"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-toggle__original"
+          ]
+        },
+        {
+          "setting": "Allow participants to share note",
+          "type": "checkbox",
+          "categories": [
+            "sharing_settings"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=notes"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-toggle__original"
+          ]
+        },
+        {
+          "setting": "Allow participants to share docs in meetings",
+          "type": "checkbox",
+          "categories": [
+            "communication_privacy",
+            "sharing_settings"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=zmDoc"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-toggle__original"
+          ]
+        },
+        {
+          "setting": "Require passcode to access shared clips",
+          "type": "checkbox",
+          "categories": [
+            "camera_microphone",
+            "account_security",
+            "sharing_settings"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=zoomclips"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-toggle__original"
+          ]
+        },
+        {
+          "setting": "Display the shared clip's and playlist's thumbnail, title, and description",
+          "type": "checkbox",
+          "categories": [
+            "sharing_settings"
+          ],
+          "pages": [
+            "https://zoom.us/profile/setting?tab=zoomclips"
+          ],
+          "files": [
+            "privacy_map_20251029_131608.json",
+            "privacy_map_20251029_131753.json",
+            "privacy_map_20251104_100756.json"
+          ],
+          "selectors": [
+            "zoom-toggle__original"
+          ]
+        }
+      ]
+    }
+  },
+  "all_settings": [
+    {
+      "setting": "Accept All Cookies",
+      "type": "button",
+      "categories": [
+        "data_collection",
+        "cookie_consent"
+      ],
+      "pages": [
+        "https://zoom.us/signin",
+        "https://zoom.us/profile/setting?tab=aicompanion",
+        "https://zoom.us/profile/setting?tab=general",
+        "https://zoom.us/profile/setting?tab=meeting",
+        "https://zoom.us/profile/setting?tab=recording",
+        "https://zoom.us/profile/setting?tab=zoomMailCalendar",
+        "https://zoom.us/profile/setting?tab=telephony",
+        "https://zoom.us/profile/setting?tab=zoomapps",
+        "https://zoom.us/profile/setting?tab=whiteboard",
+        "https://zoom.us/profile/setting?tab=notes",
+        "https://zoom.us/profile/setting?tab=zmDoc",
+        "https://zoom.us/profile/setting?tab=zoomTasks",
+        "https://zoom.us/profile/setting?tab=zmHub",
+        "https://zoom.us/profile/setting?tab=zoomclips"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Targeting Cookies",
+      "type": "button",
+      "categories": [
+        "data_collection",
+        "cookie_consent"
+      ],
+      "pages": [
+        "https://zoom.us/signin",
+        "https://zoom.us/profile/setting?tab=aicompanion",
+        "https://zoom.us/profile/setting?tab=general",
+        "https://zoom.us/profile/setting?tab=meeting",
+        "https://zoom.us/profile/setting?tab=recording",
+        "https://zoom.us/profile/setting?tab=zoomMailCalendar",
+        "https://zoom.us/profile/setting?tab=telephony",
+        "https://zoom.us/profile/setting?tab=zoomapps",
+        "https://zoom.us/profile/setting?tab=whiteboard",
+        "https://zoom.us/profile/setting?tab=notes",
+        "https://zoom.us/profile/setting?tab=zmDoc",
+        "https://zoom.us/profile/setting?tab=zoomTasks",
+        "https://zoom.us/profile/setting?tab=zmHub",
+        "https://zoom.us/profile/setting?tab=zoomclips"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Cookies Details Cookie Details button opens Cookie List menu",
+      "type": "button",
+      "categories": [
+        "data_collection",
+        "cookie_consent"
+      ],
+      "pages": [
+        "https://zoom.us/signin",
+        "https://zoom.us/profile/setting?tab=aicompanion",
+        "https://zoom.us/profile/setting?tab=general",
+        "https://zoom.us/profile/setting?tab=meeting",
+        "https://zoom.us/profile/setting?tab=recording",
+        "https://zoom.us/profile/setting?tab=zoomMailCalendar",
+        "https://zoom.us/profile/setting?tab=telephony",
+        "https://zoom.us/profile/setting?tab=zoomapps",
+        "https://zoom.us/profile/setting?tab=whiteboard",
+        "https://zoom.us/profile/setting?tab=notes",
+        "https://zoom.us/profile/setting?tab=zmDoc",
+        "https://zoom.us/profile/setting?tab=zoomTasks",
+        "https://zoom.us/profile/setting?tab=zmHub",
+        "https://zoom.us/profile/setting?tab=zoomclips"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Functional Cookies",
+      "type": "button",
+      "categories": [
+        "data_collection",
+        "cookie_consent"
+      ],
+      "pages": [
+        "https://zoom.us/signin",
+        "https://zoom.us/profile/setting?tab=aicompanion",
+        "https://zoom.us/profile/setting?tab=general",
+        "https://zoom.us/profile/setting?tab=meeting",
+        "https://zoom.us/profile/setting?tab=recording",
+        "https://zoom.us/profile/setting?tab=zoomMailCalendar",
+        "https://zoom.us/profile/setting?tab=telephony",
+        "https://zoom.us/profile/setting?tab=zoomapps",
+        "https://zoom.us/profile/setting?tab=whiteboard",
+        "https://zoom.us/profile/setting?tab=notes",
+        "https://zoom.us/profile/setting?tab=zmDoc",
+        "https://zoom.us/profile/setting?tab=zoomTasks",
+        "https://zoom.us/profile/setting?tab=zmHub",
+        "https://zoom.us/profile/setting?tab=zoomclips"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Performance Cookies",
+      "type": "button",
+      "categories": [
+        "data_collection",
+        "cookie_consent"
+      ],
+      "pages": [
+        "https://zoom.us/signin",
+        "https://zoom.us/profile/setting?tab=aicompanion",
+        "https://zoom.us/profile/setting?tab=general",
+        "https://zoom.us/profile/setting?tab=meeting",
+        "https://zoom.us/profile/setting?tab=recording",
+        "https://zoom.us/profile/setting?tab=zoomMailCalendar",
+        "https://zoom.us/profile/setting?tab=telephony",
+        "https://zoom.us/profile/setting?tab=zoomapps",
+        "https://zoom.us/profile/setting?tab=whiteboard",
+        "https://zoom.us/profile/setting?tab=notes",
+        "https://zoom.us/profile/setting?tab=zmDoc",
+        "https://zoom.us/profile/setting?tab=zoomTasks",
+        "https://zoom.us/profile/setting?tab=zmHub",
+        "https://zoom.us/profile/setting?tab=zoomclips"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Require that all meetings are secured with one security option",
+      "type": "checkbox",
+      "categories": [
+        "communication_privacy",
+        "account_security"
+      ],
+      "pages": [
+        "https://zoom.us/profile/setting?tab=meeting"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Show Zoom windows during screen share",
+      "type": "checkbox",
+      "categories": [
+        "sharing_settings"
+      ],
+      "pages": [
+        "https://zoom.us/profile/setting?tab=meeting"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Learn more about How many participants can share at the same time?",
+      "type": "button",
+      "categories": [
+        "sharing_settings"
+      ],
+      "pages": [
+        "https://zoom.us/profile/setting?tab=meeting"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Record to computer files",
+      "type": "checkbox",
+      "categories": [
+        "camera_microphone"
+      ],
+      "pages": [
+        "https://zoom.us/profile/setting?tab=recording"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Support Version for Who can request host permission to record?",
+      "type": "button",
+      "categories": [
+        "camera_microphone"
+      ],
+      "pages": [
+        "https://zoom.us/profile/setting?tab=recording"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Automatic recording",
+      "type": "checkbox",
+      "categories": [
+        "camera_microphone"
+      ],
+      "pages": [
+        "https://zoom.us/profile/setting?tab=recording"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Learn more about Recording notifications - Zoom clients",
+      "type": "button",
+      "categories": [
+        "camera_microphone",
+        "notification_privacy"
+      ],
+      "pages": [
+        "https://zoom.us/profile/setting?tab=recording"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Ask host to confirm before starting a recording",
+      "type": "checkbox",
+      "categories": [
+        "camera_microphone"
+      ],
+      "pages": [
+        "https://zoom.us/profile/setting?tab=recording"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Bidirectional sync for Zoom meeting data between Zoom web portal and calendars",
+      "type": "checkbox",
+      "categories": [
+        "communication_privacy"
+      ],
+      "pages": [
+        "https://zoom.us/profile/setting?tab=zoomMailCalendar"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Allow participants to share whiteboard",
+      "type": "checkbox",
+      "categories": [
+        "sharing_settings"
+      ],
+      "pages": [
+        "https://zoom.us/profile/setting?tab=whiteboard"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Require passcode to access shared whiteboards",
+      "type": "checkbox",
+      "categories": [
+        "camera_microphone",
+        "account_security",
+        "sharing_settings"
+      ],
+      "pages": [
+        "https://zoom.us/profile/setting?tab=whiteboard"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Support version for Enable In-Meeting Notes",
+      "type": "button",
+      "categories": [
+        "communication_privacy"
+      ],
+      "pages": [
+        "https://zoom.us/profile/setting?tab=notes"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Enable In-Meeting Notes",
+      "type": "checkbox",
+      "categories": [
+        "communication_privacy"
+      ],
+      "pages": [
+        "https://zoom.us/profile/setting?tab=notes"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Allow participants to share note",
+      "type": "checkbox",
+      "categories": [
+        "sharing_settings"
+      ],
+      "pages": [
+        "https://zoom.us/profile/setting?tab=notes"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Enable Out-of-Meeting Notes",
+      "type": "checkbox",
+      "categories": [
+        "communication_privacy"
+      ],
+      "pages": [
+        "https://zoom.us/profile/setting?tab=notes"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Auto-delete specified notes",
+      "type": "checkbox",
+      "categories": [
+        "data_retention"
+      ],
+      "pages": [
+        "https://zoom.us/profile/setting?tab=notes"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Allow participants to share docs in meetings",
+      "type": "checkbox",
+      "categories": [
+        "communication_privacy",
+        "sharing_settings"
+      ],
+      "pages": [
+        "https://zoom.us/profile/setting?tab=zmDoc"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Require passcode to access shared clips",
+      "type": "checkbox",
+      "categories": [
+        "camera_microphone",
+        "account_security",
+        "sharing_settings"
+      ],
+      "pages": [
+        "https://zoom.us/profile/setting?tab=zoomclips"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    },
+    {
+      "setting": "Display the shared clip's and playlist's thumbnail, title, and description",
+      "type": "checkbox",
+      "categories": [
+        "sharing_settings"
+      ],
+      "pages": [
+        "https://zoom.us/profile/setting?tab=zoomclips"
+      ],
+      "files": [
+        "privacy_map_20251029_131608.json",
+        "privacy_map_20251029_131753.json",
+        "privacy_map_20251104_100756.json"
+      ]
+    }
+  ],
+  "category_statistics": {
+    "data_collection": {
+      "total_occurrences": 304,
+      "unique_settings": 5
+    },
+    "cookie_consent": {
+      "total_occurrences": 304,
+      "unique_settings": 5
+    },
+    "communication_privacy": {
+      "total_occurrences": 18,
+      "unique_settings": 6
+    },
+    "account_security": {
+      "total_occurrences": 9,
+      "unique_settings": 3
+    },
+    "sharing_settings": {
+      "total_occurrences": 24,
+      "unique_settings": 8
+    },
+    "camera_microphone": {
+      "total_occurrences": 24,
+      "unique_settings": 7
+    },
+    "notification_privacy": {
+      "total_occurrences": 6,
+      "unique_settings": 1
+    },
+    "data_retention": {
+      "total_occurrences": 3,
+      "unique_settings": 1
+    }
+  }
+}
