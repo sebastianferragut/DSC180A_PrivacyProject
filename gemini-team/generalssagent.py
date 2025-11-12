@@ -7,6 +7,9 @@
 #
 # First time per site:
 #   python save_state.py "$START_URL"
+#   Log in to the site with credentials:
+#   E: zoomaitester10@gmail.com
+#   P: ZoomTestPass
 #
 # ENV:
 #   export GEMINI_API_KEY="your_api_key_here" \
@@ -17,6 +20,7 @@
 # Example START_URLs:
 # https://zoom.us/profile/setting?tab=general
 # https://www.linkedin.com/mypreferences/d/categories/account 
+# https://accountscenter.facebook.com/password_and_security 
 
 # Optional:
 #   export DEVICE_TYPE="MacBook"
@@ -119,7 +123,6 @@ def _public_path(p: str) -> str:
         # Fallback: at least return something readable
         return p
 
-
 def fullpage_screenshot(page: Page, label: str, subdir: str) -> str:
     folder = os.path.join(OUT_DIR, safe_name(subdir))
     ensure_dir(folder)
@@ -128,7 +131,6 @@ def fullpage_screenshot(page: Page, label: str, subdir: str) -> str:
     page.screenshot(path=out, full_page=True)
     print(f"[saved] {out}")
     return _public_path(out)
-
 
 def element_screenshot(page: Page, locator_query: str, label: str, subdir: str) -> Optional[str]:
     folder = os.path.join(OUT_DIR, safe_name(subdir))
@@ -272,7 +274,6 @@ def new_report(h: str) -> Dict[str, Any]:
         }
     }
 
-
 def log_action(report: Dict[str, Any], kind: str, detail: Dict[str, Any]):
     report["actions"].append({"ts": ts(), "kind": kind, **detail})
 
@@ -289,66 +290,6 @@ def save_report(report: Dict[str, Any]):
     with open(JSON_OUT, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, ensure_ascii=False)
     print(f"[report] {JSON_OUT}")
-
-# =========================
-# Auth detection (generic)
-# =========================
-
-def dom_hash(page: Page) -> str:
-    try:
-        html = page.content()
-        return str(hash(html[:200000]))
-    except Exception:
-        return str(time.time())
-
-def is_auth_gate_visible(page: Page) -> bool:
-    try:
-        if page.locator("input[type='email'], input[name*='email' i], input[type='password'], input[name*='pass' i]").first.is_visible(timeout=800):
-            return True
-    except Exception:
-        pass
-    try:
-        if page.locator("[role='dialog'] input, [role='dialog'] button").count() > 0:
-            return True
-    except Exception:
-        pass
-    try:
-        frames = page.frames
-        if frames and len(frames) > 1:
-            for fr in frames:
-                try:
-                    if fr.locator("input, button").count() >= 2:
-                        return True
-                except Exception:
-                    continue
-    except Exception:
-        pass
-    try:
-        if page.locator("input, button, [role='button'], [role='dialog']").count() <= 1:
-            page.wait_for_load_state("domcontentloaded", timeout=800)
-    except Exception:
-        pass
-    return False
-
-def looks_authenticated(page: Page) -> bool:
-    try:
-        if is_auth_gate_visible(page):
-            return False
-    except Exception:
-        pass
-    try:
-        if page.locator("[role='menu'], [role='menubar'], [role='navigation']").count() > 0:
-            pass
-    except Exception:
-        pass
-    try:
-        ls = page.evaluate("Object.keys(window.localStorage||{}).length")
-        ss = page.evaluate("Object.keys(window.sessionStorage||{}).length")
-        if (ls + ss) >= 1:
-            pass
-    except Exception:
-        pass
-    return not is_auth_gate_visible(page)
 
 # =========================
 # Planner (model)
@@ -379,20 +320,18 @@ def planner(page: Page, budget: Budget, mode: str, executor_state: Dict[str, Any
         "for the signed-in user across any web app UI. You control nothing directly—you return structured guidance for an executor.\n\n"
         "GENERAL RULES\n"
         "- Stay generalized. Do NOT assume site-specific structures or names. Work only from the screenshot and the DOM signals provided.\n"
-        "- AUTHENTICATION FIRST: Do NOT navigate settings, expand content, or request settings screenshots until authenticated.\n"
         "- Use both the screenshot and the provided DOM_TEXT_MAP and DOM_OUTLINE to propose precise role/text/CSS selectors; "
         "avoid coordinates unless no semantic target exists.\n"
         "- AVOID LEGAL/POLICY detours: If a policy/legal/marketing/external page is opened, deprioritize it and return to the app context.\n"
-        "- CAPTURE POLICY: Only after authentication and when a relevant settings surface is visible, request a full-page capture for that surface. "
+        "- CAPTURE POLICY: When a relevant settings surface is visible, request a full-page capture for that surface. "
         "For dialogs/popovers/toggles that reveal sensitive settings, you may also specify element-level captures.\n\n"
         "STATE AWARENESS\n"
-        "- Do not propose navigation to URLs already in executor_state.visited_urls unless required for authentication.\n"
+        "- Do not propose navigation to URLs already in executor_state.visited_urls unless needed.\n"
         "- Do not propose captures for section names present in executor_state.captured_sections.\n"
         "- Prefer discovering new settings areas not yet captured; avoid loops/duplicates.\n\n"
         "OUTPUT CONTRACT (prefer JSON; plain text allowed):\n"
         "Option A (JSON):\n"
         "{\n"
-        '  \"authenticated\": <bool>,\n'
         '  \"on_settings_page\": <bool>,\n'
         '  \"selectors\": [ { \"purpose\": <string>, \"selector\": <string>, \"type\": \"css\"|\"text\"|\"role\"|\"coord\", \"confidence\": <0..1> } ],\n'
         '  \"capture\": { \"fullpage\": <bool>, \"section_name\": <string|null>, \"elements\": [ { \"selector\": <string>, \"label\": <string> } ] },\n'
@@ -480,12 +419,11 @@ def planner(page: Page, budget: Budget, mode: str, executor_state: Dict[str, Any
     if resp is None:
         plan_usage = {
             "input_tokens": int(usage_in),
-            "output_tokens": 0,            # no text yet
+            "output_tokens": 0,
             "source": src,
             "latency_sec": float(plan_gen_time)
         }
         return {
-            "authenticated": False,
             "on_settings_page": False,
             "selectors": [],
             "capture": {"fullpage": False, "section_name": None, "elements": []},
@@ -504,7 +442,6 @@ def planner(page: Page, budget: Budget, mode: str, executor_state: Dict[str, Any
                 "latency_sec": float(plan_gen_time)
             }
             return {
-                "authenticated": False,
                 "on_settings_page": False,
                 "selectors": [],
                 "capture": {"fullpage": False, "section_name": None, "elements": []},
@@ -530,7 +467,6 @@ def planner(page: Page, budget: Budget, mode: str, executor_state: Dict[str, Any
                 "latency_sec": float(plan_gen_time)
             }
             return {
-                "authenticated": False,
                 "on_settings_page": False,
                 "selectors": [],
                 "capture": {"fullpage": False, "section_name": None, "elements": []},
@@ -545,7 +481,6 @@ def planner(page: Page, budget: Budget, mode: str, executor_state: Dict[str, Any
             "latency_sec": float(plan_gen_time)
         }
         return {
-            "authenticated": False,
             "on_settings_page": False,
             "selectors": [],
             "capture": {"fullpage": False, "section_name": None, "elements": []},
@@ -565,6 +500,8 @@ def planner(page: Page, budget: Budget, mode: str, executor_state: Dict[str, Any
     try:
         data = json.loads(text)
         if isinstance(data, dict):
+            # if legacy planners include an 'authenticated' field, ignore it silently
+            data.pop("authenticated", None)
             data["_usage"] = plan_usage
             return data
     except Exception:
@@ -572,7 +509,6 @@ def planner(page: Page, budget: Budget, mode: str, executor_state: Dict[str, Any
 
     # 2) Micro-script path
     parsed = {
-        "authenticated": None,
         "on_settings_page": None,
         "selectors": [],
         "capture": {"fullpage": False, "section_name": None, "elements": []},
@@ -607,7 +543,6 @@ def planner(page: Page, budget: Budget, mode: str, executor_state: Dict[str, Any
 
     # Fallback if nothing parsed
     return {
-        "authenticated": False,
         "on_settings_page": False,
         "selectors": [],
         "capture": {"fullpage": False, "section_name": None, "elements": []},
@@ -670,7 +605,6 @@ def apply_clicks_batch(page: Page, clicks: List[Dict[str, str]], report: Dict[st
                 report["metrics"]["steps"]["auto_screens"] += 1
         if page.url not in report["state"]["visited_urls"]:
             report["state"]["visited_urls"].append(page.url)
-
 
 def apply_screenshots_batch(page: Page, shots: List[Dict[str, Any]], report: Dict[str, Any]):
     for s in shots[:2]:  # safety cap per turn
@@ -736,7 +670,6 @@ def autosnap(page: Page, report: Dict[str, Any], label: str, subdir: str = "sect
         return path
     except Exception:
         return None
-
 
 def page_change_signature(page: Page) -> Tuple[str, str]:
     """Lightweight change detector: (url_no_hash, dom_sig)."""
@@ -805,12 +738,6 @@ def harvest():
         # initial baseline shot
         autosnap(page, report, label="initial_load", subdir="sections")
 
-
-
-
-        last_auth_hash = None
-        auth_stuck_turns = 0
-
         MAX_TURNS = 10
         for turn in range(1, MAX_TURNS + 1):
             print(f"--- Planner Turn {turn} ---")
@@ -861,19 +788,12 @@ def harvest():
 
             log_action(report, "planner_plan", {"turn": turn, "plan": plan})
 
-            authenticated = bool(plan.get("authenticated")) if plan.get("authenticated") is not None else looks_authenticated(page)
             on_settings_page = bool(plan.get("on_settings_page", False))
             selectors = plan.get("selectors", []) or []
             capture = plan.get("capture", {}) or {}
             batch = plan.get("batch") or {}
             batch_clicks = batch.get("clicks") or []
             batch_shots = batch.get("screenshots") or []
-
-            # Enforce auth gate
-            executor_auth = looks_authenticated(page)
-            if authenticated and not executor_auth:
-                authenticated = False
-                on_settings_page = False
 
             # 1) Execute batch clicks (multi-step)
             if batch_clicks:
@@ -895,7 +815,7 @@ def harvest():
                         report["state"]["visited_urls"].append(page.url)
                     cur_url, cur_sig = page_change_signature(page)
                     changed = (cur_url != prev_url) or (cur_sig != prev_sig)
-                    if changed and looks_authenticated(page):
+                    if changed:
                         try:
                             title = (page.title() or "").strip()
                         except Exception:
@@ -916,43 +836,22 @@ def harvest():
                         report["state"]["last_capture_url"] = page.url
                         prev_url, prev_sig = cur_url, cur_sig
                     else:
-                        prev_url, prev_sig = cur_url, cur_sig    
-                        
+                        prev_url, prev_sig = cur_url, cur_sig
 
-            # 3) Capture only if authenticated
-            if authenticated and capture and (capture.get("fullpage") or capture.get("elements")):
+            # 3) Capture block (no auth gating)
+            if capture and (capture.get("fullpage") or capture.get("elements")):
                 sec = (capture.get("section_name") or "Settings").strip().lower()
                 if capture.get("fullpage") and sec in report["state"]["captured_sections"]:
                     capture = {**capture, "fullpage": False}
                 capture_block(page, capture, report)
-            else:
-                if not authenticated and (capture.get("fullpage") or capture.get("elements")):
-                    log_action(report, "skip_capture_not_authenticated", {"url": page.url})
-                    capture = {}
 
-            # 4) Execute any batch screenshots
-            if authenticated and batch_shots:
+            # 4) Execute any batch screenshots (no gating)
+            if batch_shots:
                 apply_screenshots_batch(page, batch_shots, report)
 
-            # Exit heuristic: authenticated + on settings + something captured + no next selectors
-            if authenticated and on_settings_page and not selectors and report["state"]["captured_sections"]:
+            # Exit heuristic: on settings + something captured + no next selectors
+            if on_settings_page and not selectors and report["state"]["captured_sections"]:
                 break
-
-            # Auth progress & nudge
-            current_hash = dom_hash(page)
-            if not looks_authenticated(page):
-                if last_auth_hash == current_hash:
-                    auth_stuck_turns += 1
-                else:
-                    auth_stuck_turns = 0
-                last_auth_hash = current_hash
-                if auth_stuck_turns >= 3:
-                    report["actions"].append({"ts": ts(), "kind": "auth_nudge", "turn": turn})
-                    # The next planner call will see the latest screenshot; this just logs the nudge.
-                    auth_stuck_turns = 1
-            else:
-                last_auth_hash = None
-                auth_stuck_turns = 0
 
             if not budget.allow(1):
                 break
@@ -966,7 +865,7 @@ def harvest():
                 log_action(report, "capture_fullpage", {"url": page.url, "path": fp, "section": "Safety Capture"})
             except Exception:
                 pass
-        
+
         try:
             autosnap(page, report, label="end_of_run", subdir="sections")
         except Exception:
