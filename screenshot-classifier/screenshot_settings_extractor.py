@@ -180,84 +180,111 @@ class PrivacySettingsExtractor:
                 "settings": []
             }
 
-    def batch_extract(self, image_directory: str, output_file: Optional[str] = None) -> Dict:
+    def batch_extract(self, image_directory: str, output_file: Optional[str] = None) -> List[Dict]:
         
         """
-        Processes all screenshots in a directory, extracts settings from each, and returns a flattened list of all settings plus per-image results.
+        Processes all platform subdirectories, extracts settings from screenshots in each platform folder, and returns results organized by platform.
         Optionally saves results to a JSON file.
         
         Args:
-            image_directory: Directory containing screenshot images
+            image_directory: Directory containing platform subdirectories with screenshot images
             output_file: Optional file to save results
             
         Returns:
-            Batch extraction results with all settings flattened
+            List of platform extraction results, each with status, total_images, platform, all_settings, summary, and timestamp
         """
 
         image_dir = Path(image_directory)
         if not image_dir.exists():
-            return {"status": "error", "message": f"Directory {image_directory} does not exist"}
+            return [{"status": "error", "message": f"Directory {image_directory} does not exist"}]
         
-        # Find image files
+        # Find platform subdirectories (folders that contain images)
         image_extensions = {'.png', '.jpg', '.jpeg', '.bmp', '.tiff', '.webp'}
-        image_files = [f for f in image_dir.iterdir() if f.suffix.lower() in image_extensions]
+        platform_dirs = [d for d in image_dir.iterdir() if d.is_dir()]
         
-        if not image_files:
-            return {"status": "error", "message": "No image files found in directory"}
+        if not platform_dirs:
+            return [{"status": "error", "message": "No platform subdirectories found in directory"}]
         
-        results = {
-            "status": "success",
-            "total_images": len(image_files),
-            "all_settings": [],  # Flattened list of all settings
-            "by_image": [],  # Per-image extraction results
-            "summary": {},
-            "timestamp": datetime.now().isoformat()
-        }
+        all_platform_results = []
         
-        # Process each image
-        total_settings = 0
-        successful_extractions = 0
-        failed_extractions = 0
-        
-        for image_file in image_files:
-            print(f"Processing {image_file.name}...")
-            extraction = self.extract_settings(str(image_file))
+        # Process each platform directory
+        for platform_dir in platform_dirs:
+            platform_name = platform_dir.name
+            print(f"\n📁 Processing platform: {platform_name}")
             
-            # Add to per-image results
-            results["by_image"].append({
-                "image_path": str(image_file),
-                "status": extraction.get("status", "unknown"),
-                "application": extraction.get("application", "unknown"),
-                "settings_count": extraction.get("settings_count", 0),
-                "settings": extraction.get("settings", [])
-            })
+            # Find image files in this platform directory
+            image_files = [f for f in platform_dir.iterdir() 
+                          if f.is_file() and f.suffix.lower() in image_extensions]
             
-            # Flatten settings into all_settings
-            if extraction.get("status") == "success":
-                successful_extractions += 1
-                settings = extraction.get("settings", [])
-                results["all_settings"].extend(settings)
-                total_settings += len(settings)
-            else:
-                failed_extractions += 1
-                print(f"  ⚠️  Failed to extract from {image_file.name}: {extraction.get('message', 'Unknown error')}")
-        
-        # Generate summary
-        results["summary"] = {
-            "total_settings_extracted": total_settings,
-            "successful_extractions": successful_extractions,
-            "failed_extractions": failed_extractions,
-            "average_settings_per_image": round(total_settings / successful_extractions, 2) if successful_extractions > 0 else 0
-        }
+            if not image_files:
+                print(f"  ⚠️  No image files found in {platform_name}")
+                all_platform_results.append({
+                    "status": "success",
+                    "total_images": 0,
+                    "platform": platform_name,
+                    "all_settings": [],
+                    "summary": {
+                        "total_settings_extracted": 0,
+                        "successful_extractions": 0,
+                        "failed_extractions": 0,
+                        "failed image paths": [],
+                        "average_settings_per_image": 0
+                    },
+                    "timestamp": datetime.now().isoformat()
+                })
+                continue
+            
+            # Initialize results for this platform
+            platform_results = {
+                "status": "success",
+                "total_images": len(image_files),
+                "platform": platform_name,
+                "all_settings": [],
+                "summary": {},
+                "timestamp": datetime.now().isoformat()
+            }
+            
+            # Process each image in this platform
+            total_settings = 0
+            successful_extractions = 0
+            failed_image_paths = []
+            
+            for image_file in image_files:
+                print(f"  Processing {image_file.name}...")
+                extraction = self.extract_settings(str(image_file))
+                
+                # Flatten settings into all_settings
+                if extraction.get("status") == "success":
+                    successful_extractions += 1
+                    settings = extraction.get("settings", [])
+                    platform_results["all_settings"].extend(settings)
+                    total_settings += len(settings)
+                else:
+                    failed_image_paths.append(str(image_file))
+                    print(f"    ⚠️  Failed to extract from {image_file.name}: {extraction.get('message', 'Unknown error')}")
+            
+            # Generate summary for this platform
+            platform_results["summary"] = {
+                "total_settings_extracted": total_settings,
+                "successful_extractions": successful_extractions,
+                "failed_extractions": len(failed_image_paths),
+                "failed image paths": failed_image_paths,
+                "average_settings_per_image": round(total_settings / successful_extractions, 2) if successful_extractions > 0 else 0
+            }
+            
+            all_platform_results.append(platform_results)
+            print(f"  ✅ Extracted {total_settings} settings from {successful_extractions} images in {platform_name}")
         
         # Save results if output file specified
         if output_file:
             with open(output_file, 'w', encoding='utf-8') as f:
-                json.dump(results, f, indent=2, ensure_ascii=False)
+                json.dump(all_platform_results, f, indent=2, ensure_ascii=False)
+            total_all_settings = sum(r["summary"]["total_settings_extracted"] for r in all_platform_results)
+            total_all_images = sum(r["total_images"] for r in all_platform_results)
             print(f"\n✅ Results saved to {output_file}")
-            print(f"📊 Extracted {total_settings} settings from {successful_extractions} images")
+            print(f"📊 Total: {total_all_settings} settings from {total_all_images} images across {len(all_platform_results)} platforms")
         
-        return results
+        return all_platform_results
 
 
 def main():
@@ -278,20 +305,39 @@ def main():
     
     if os.path.exists(screenshots_dir):
         print(f"\n🔍 Extracting settings from screenshots in: {screenshots_dir}")
-        results = extractor.batch_extract(screenshots_dir, "extracted_settings.json")
+        platform_results = extractor.batch_extract(screenshots_dir, "extracted_settings.json")
         
-        if results.get("status") == "success":
-            print(f"\n📊 Summary:")
-            print(f"  Total images processed: {results['total_images']}")
-            print(f"  Successful extractions: {results['summary']['successful_extractions']}")
-            print(f"  Failed extractions: {results['summary']['failed_extractions']}")
-            print(f"  Total settings extracted: {results['summary']['total_settings_extracted']}")
-            print(f"  Average settings per image: {results['summary']['average_settings_per_image']}")
+        if platform_results and isinstance(platform_results, list):
+            # Check if there are any errors
+            if len(platform_results) == 1 and platform_results[0].get("status") == "error":
+                print(f"❌ Error: {platform_results[0].get('message', 'Unknown error')}")
+            else:
+                print(f"\n📊 Summary by Platform:")
+                total_all_images = 0
+                total_all_settings = 0
+                for result in platform_results:
+                    if result.get("status") == "success":
+                        print(f"\n  Platform: {result['platform']}")
+                        print(f"    Total images: {result['total_images']}")
+                        print(f"    Successful extractions: {result['summary']['successful_extractions']}")
+                        failed_count = result['summary']['failed_extractions']
+                        failed_paths = result['summary'].get('failed image paths', [])
+                        print(f"    Failed extractions: {failed_count}")
+                        if failed_paths:
+                            print(f"    Failed image paths: {failed_paths}")
+                        print(f"    Total settings extracted: {result['summary']['total_settings_extracted']}")
+                        print(f"    Average settings per image: {result['summary']['average_settings_per_image']}")
+                        total_all_images += result['total_images']
+                        total_all_settings += result['summary']['total_settings_extracted']
+                print(f"\n📊 Overall Summary:")
+                print(f"  Total platforms processed: {len(platform_results)}")
+                print(f"  Total images across all platforms: {total_all_images}")
+                print(f"  Total settings extracted: {total_all_settings}")
         else:
-            print(f"❌ Error: {results.get('message', 'Unknown error')}")
+            print(f"❌ Error: Unexpected results format")
     else:
         print(f"⚠️ Screenshots directory not found: {screenshots_dir}")
-        print("Please create a directory with your screenshot files")
+        print("Please create a directory with platform subdirectories containing your screenshot files")
 
 
 if __name__ == "__main__":

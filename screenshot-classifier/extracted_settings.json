@@ -1,371 +1,801 @@
-{
-  "status": "success",
-  "total_images": 4,
-  "all_settings": [
-    {
-      "setting": "Show international numbers link on the invitation email",
-      "description": "Show the link for Zoom International Dial-in Numbers on email invitations",
-      "state": "enabled",
-      "image_path": "screenshots\\audio_conferencing_20251022_110156.png"
+[
+  {
+    "status": "success",
+    "total_images": 3,
+    "platform": "facebook",
+    "all_settings": [
+      {
+        "setting": "Export your information",
+        "description": "Allows the user to download or transfer a copy of their information.",
+        "state": "navigation link",
+        "image_path": "screenshots\\facebook\\after_click__Ad_preferences_20251112T172233Z.png"
+      },
+      {
+        "setting": "Access your information",
+        "description": "Allows the user to access their information.",
+        "state": "navigation link",
+        "image_path": "screenshots\\facebook\\after_click__Ad_preferences_20251112T172233Z.png"
+      },
+      {
+        "setting": "Search history",
+        "description": "Allows the user to view and manage their search history.",
+        "state": "navigation link",
+        "image_path": "screenshots\\facebook\\after_click__Ad_preferences_20251112T172233Z.png"
+      },
+      {
+        "setting": "Your activity off Meta technologies",
+        "description": "Control what information Meta technologies can use to influence your experiences.",
+        "state": "navigation link",
+        "image_path": "screenshots\\facebook\\after_click__Ad_preferences_20251112T172233Z.png"
+      },
+      {
+        "setting": "Specific ad partners",
+        "description": "Control what information Meta technologies can use to influence your experiences.",
+        "state": "navigation link",
+        "image_path": "screenshots\\facebook\\after_click__Ad_preferences_20251112T172233Z.png"
+      },
+      {
+        "setting": "Contact info",
+        "description": "Manages the user's contact information used for identity verification.",
+        "state": "zoomaitester10@gmail.com",
+        "image_path": "screenshots\\facebook\\after_click__Personal_details_20251112T172234Z.png"
+      },
+      {
+        "setting": "Birthday",
+        "description": "Manages the user's date of birth used for identity verification.",
+        "state": "January 10, 2000",
+        "image_path": "screenshots\\facebook\\after_click__Personal_details_20251112T172234Z.png"
+      },
+      {
+        "setting": "Identity confirmation",
+        "description": "Settings to verify your identity and keep the community safe.",
+        "state": "navigational link",
+        "image_path": "screenshots\\facebook\\after_click__Personal_details_20251112T172234Z.png"
+      },
+      {
+        "setting": "Account ownership and control",
+        "description": "Manage your data, modify your legacy contact, deactivate or delete your accounts and profiles.",
+        "state": "navigational link",
+        "image_path": "screenshots\\facebook\\after_click__Personal_details_20251112T172234Z.png"
+      },
+      {
+        "setting": "Change password",
+        "description": "Manage your passwords, login preferences and recovery methods.",
+        "state": "navigation",
+        "image_path": "screenshots\\facebook\\initial_load_20251112T172213Z.png"
+      },
+      {
+        "setting": "Two-factor authentication",
+        "description": "Manage your passwords, login preferences and recovery methods.",
+        "state": "navigation",
+        "image_path": "screenshots\\facebook\\initial_load_20251112T172213Z.png"
+      },
+      {
+        "setting": "Saved login",
+        "description": "Manage your passwords, login preferences and recovery methods.",
+        "state": "navigation",
+        "image_path": "screenshots\\facebook\\initial_load_20251112T172213Z.png"
+      },
+      {
+        "setting": "Passkey",
+        "description": "Manage your passwords, login preferences and recovery methods.",
+        "state": "navigation",
+        "image_path": "screenshots\\facebook\\initial_load_20251112T172213Z.png"
+      },
+      {
+        "setting": "Where you're logged in",
+        "description": "Review security issues by running checks across apps, devices and emails sent.",
+        "state": "navigation",
+        "image_path": "screenshots\\facebook\\initial_load_20251112T172213Z.png"
+      },
+      {
+        "setting": "Login alerts",
+        "description": "Review security issues by running checks across apps, devices and emails sent.",
+        "state": "navigation",
+        "image_path": "screenshots\\facebook\\initial_load_20251112T172213Z.png"
+      },
+      {
+        "setting": "Recent emails",
+        "description": "Review security issues by running checks across apps, devices and emails sent.",
+        "state": "navigation",
+        "image_path": "screenshots\\facebook\\initial_load_20251112T172213Z.png"
+      },
+      {
+        "setting": "Security Checkup",
+        "description": "Review security issues by running checks across apps, devices and emails sent.",
+        "state": "navigation",
+        "image_path": "screenshots\\facebook\\initial_load_20251112T172213Z.png"
+      }
+    ],
+    "summary": {
+      "total_settings_extracted": 17,
+      "successful_extractions": 3,
+      "failed_extractions": 0,
+      "failed image paths": [],
+      "average_settings_per_image": 5.67
     },
-    {
-      "setting": "Mask phone number in the participant list",
-      "description": "Phone numbers of users dialing into a meeting will be masked in the participant list.",
-      "state": "disabled",
-      "image_path": "screenshots\\audio_conferencing_20251022_110156.png"
-    },
-    {
-      "setting": "Detailed crash dumps (Windows)",
-      "description": "Generate crash dumps with more information in the event of an application crash on Zoom Workplace for Windows. Those information can assist Zoom with troubleshooting issues. The dumps are not automatically shared or uploaded to Zoom.",
-      "state": "enabled",
-      "image_path": "screenshots\\general_20251022_110016.png"
-    },
-    {
-      "setting": "Feedback to Zoom",
-      "description": "Users can provide satisfaction scores and other preset feedback to Zoom.",
-      "state": "enabled",
-      "image_path": "screenshots\\general_20251022_110016.png"
-    },
-    {
-      "setting": "Allow users to send text feedback",
-      "description": "A sub-setting of 'Feedback to Zoom' that allows users to provide text feedback.",
-      "state": "enabled",
-      "image_path": "screenshots\\general_20251022_110016.png"
-    },
-    {
-      "setting": "Show \"Join from a room\" feature on Zoom meetings in the Zoom client meeting list",
-      "description": "Users can easily start a meeting on a Zoom Room from their Zoom client.",
-      "state": "enabled",
-      "image_path": "screenshots\\general_20251022_110016.png"
-    },
-    {
-      "setting": "Allow automatic direct sharing and pairing to Zoom Rooms using ultrasonic proximity signal",
-      "description": "Enable users to share their screen, start a meeting, switch a meeting in progress, open a whiteboard or send a phone call from their laptop or mobile device to Zoom Rooms, without entering a meeting ID or sharing key.",
-      "state": "enabled",
-      "image_path": "screenshots\\general_20251022_110016.png"
-    },
-    {
-      "setting": "Hide potentially sensitive information on mobile task switcher",
-      "description": "By enable this option, iOS will blur the screenshot in the task switcher when multiple apps are open, and Android will hide the screenshot in the system-level recent apps list.",
-      "state": "enabled",
-      "image_path": "screenshots\\general_20251022_110016.png"
-    },
-    {
-      "setting": "Change my status to away when screen saver begins",
-      "description": "While a user's presence status is in a calendar event and the computer screen saver begins, their presence status on Zoom changes to away.",
-      "state": "disabled",
-      "image_path": "screenshots\\general_20251022_110016.png"
-    },
-    {
-      "setting": "Track billable hours",
-      "description": "When enabled, your account will have the ability to track and manage billable hours for phone calls and meetings. Users can assign client codes and add billing notes during or after a call or a meeting, and download billable hours reports directly from Contacts.",
-      "state": "enabled",
-      "image_path": "screenshots\\general_20251022_110016.png"
-    },
-    {
-      "setting": "Enable manual control to start and stop billable hours tracking for calls and meetings.",
-      "description": "An option for how to track billable hours.",
-      "state": "selected",
-      "image_path": "screenshots\\general_20251022_110016.png"
-    },
-    {
-      "setting": "Enable automatic tracking of billable hours for calls and meetings.",
-      "description": "An option for how to track billable hours.",
-      "state": "not selected",
-      "image_path": "screenshots\\general_20251022_110016.png"
-    },
-    {
-      "setting": "Show educational onboarding assistant for new features",
-      "description": "By enabling this setting, users will periodically see pop ups showing them how to set up new features in the Zoom Workplace app.",
-      "state": "enabled",
-      "image_path": "screenshots\\general_20251022_110016.png"
-    },
-    {
-      "setting": "Lock Meeting",
-      "description": "Prevents new participants from joining the meeting.",
-      "state": "disabled",
-      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-    },
-    {
-      "setting": "Enable Waiting Room",
-      "description": "Requires the host to manually admit participants from a waiting room.",
-      "state": "disabled",
-      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-    },
-    {
-      "setting": "Hide Profile Pictures",
-      "description": "Hides the profile pictures of all participants in the meeting.",
-      "state": "disabled",
-      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-    },
-    {
-      "setting": "Allow participants to: Share Screen",
-      "description": "Permits participants to share their screen.",
-      "state": "enabled",
-      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-    },
-    {
-      "setting": "Allow participants to: Chat",
-      "description": "Permits participants to use the in-meeting chat.",
-      "state": "enabled",
-      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-    },
-    {
-      "setting": "Allow participants to: Rename Themselves",
-      "description": "Permits participants to change their own display name.",
-      "state": "enabled",
-      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-    },
-    {
-      "setting": "Allow participants to: Unmute Themselves",
-      "description": "Permits participants to unmute their own microphone.",
-      "state": "enabled",
-      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-    },
-    {
-      "setting": "Allow participants to: Start Video",
-      "description": "Permits participants to start their own video camera.",
-      "state": "enabled",
-      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-    },
-    {
-      "setting": "Allow participants to: Share Whiteboards",
-      "description": "Permits participants to create and share whiteboards.",
-      "state": "enabled",
-      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-    },
-    {
-      "setting": "Suspend Participant Activities",
-      "description": "Immediately suspends all participant activities, turning off all video, audio, in-meeting chat, annotation, screen sharing, and recording, and ends Breakout Rooms.",
-      "state": "action button",
-      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-    },
-    {
-      "setting": "Audio",
-      "description": "Controls the user's microphone.",
-      "state": "disabled",
-      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-    },
-    {
-      "setting": "Video",
-      "description": "Controls the user's camera.",
-      "state": "disabled",
-      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-    },
-    {
-      "setting": "Zoom Apps Quick Launch Button",
-      "description": "Show \"Zoom Apps\" button in the Zoom interface for quick access to productivity tools before, during, or after meetings.",
-      "state": "enabled",
-      "image_path": "screenshots\\whiteboard_20251022_110201.png"
-    },
-    {
-      "setting": "Enable Developer Mode on mobile clients",
-      "description": "Developer Mode allows users to debug Zoom Apps using web inspector tools. Activates web inspection for new Zoom App instances.",
-      "state": "disabled",
-      "image_path": "screenshots\\whiteboard_20251022_110201.png"
-    }
-  ],
-  "by_image": [
-    {
-      "image_path": "screenshots\\audio_conferencing_20251022_110156.png",
-      "status": "success",
-      "application": "Zoom",
-      "settings_count": 2,
-      "settings": [
-        {
-          "setting": "Show international numbers link on the invitation email",
-          "description": "Show the link for Zoom International Dial-in Numbers on email invitations",
-          "state": "enabled",
-          "image_path": "screenshots\\audio_conferencing_20251022_110156.png"
-        },
-        {
-          "setting": "Mask phone number in the participant list",
-          "description": "Phone numbers of users dialing into a meeting will be masked in the participant list.",
-          "state": "disabled",
-          "image_path": "screenshots\\audio_conferencing_20251022_110156.png"
-        }
-      ]
-    },
-    {
-      "image_path": "screenshots\\general_20251022_110016.png",
-      "status": "success",
-      "application": "Zoom",
-      "settings_count": 11,
-      "settings": [
-        {
-          "setting": "Detailed crash dumps (Windows)",
-          "description": "Generate crash dumps with more information in the event of an application crash on Zoom Workplace for Windows. Those information can assist Zoom with troubleshooting issues. The dumps are not automatically shared or uploaded to Zoom.",
-          "state": "enabled",
-          "image_path": "screenshots\\general_20251022_110016.png"
-        },
-        {
-          "setting": "Feedback to Zoom",
-          "description": "Users can provide satisfaction scores and other preset feedback to Zoom.",
-          "state": "enabled",
-          "image_path": "screenshots\\general_20251022_110016.png"
-        },
-        {
-          "setting": "Allow users to send text feedback",
-          "description": "A sub-setting of 'Feedback to Zoom' that allows users to provide text feedback.",
-          "state": "enabled",
-          "image_path": "screenshots\\general_20251022_110016.png"
-        },
-        {
-          "setting": "Show \"Join from a room\" feature on Zoom meetings in the Zoom client meeting list",
-          "description": "Users can easily start a meeting on a Zoom Room from their Zoom client.",
-          "state": "enabled",
-          "image_path": "screenshots\\general_20251022_110016.png"
-        },
-        {
-          "setting": "Allow automatic direct sharing and pairing to Zoom Rooms using ultrasonic proximity signal",
-          "description": "Enable users to share their screen, start a meeting, switch a meeting in progress, open a whiteboard or send a phone call from their laptop or mobile device to Zoom Rooms, without entering a meeting ID or sharing key.",
-          "state": "enabled",
-          "image_path": "screenshots\\general_20251022_110016.png"
-        },
-        {
-          "setting": "Hide potentially sensitive information on mobile task switcher",
-          "description": "By enable this option, iOS will blur the screenshot in the task switcher when multiple apps are open, and Android will hide the screenshot in the system-level recent apps list.",
-          "state": "enabled",
-          "image_path": "screenshots\\general_20251022_110016.png"
-        },
-        {
-          "setting": "Change my status to away when screen saver begins",
-          "description": "While a user's presence status is in a calendar event and the computer screen saver begins, their presence status on Zoom changes to away.",
-          "state": "disabled",
-          "image_path": "screenshots\\general_20251022_110016.png"
-        },
-        {
-          "setting": "Track billable hours",
-          "description": "When enabled, your account will have the ability to track and manage billable hours for phone calls and meetings. Users can assign client codes and add billing notes during or after a call or a meeting, and download billable hours reports directly from Contacts.",
-          "state": "enabled",
-          "image_path": "screenshots\\general_20251022_110016.png"
-        },
-        {
-          "setting": "Enable manual control to start and stop billable hours tracking for calls and meetings.",
-          "description": "An option for how to track billable hours.",
-          "state": "selected",
-          "image_path": "screenshots\\general_20251022_110016.png"
-        },
-        {
-          "setting": "Enable automatic tracking of billable hours for calls and meetings.",
-          "description": "An option for how to track billable hours.",
-          "state": "not selected",
-          "image_path": "screenshots\\general_20251022_110016.png"
-        },
-        {
-          "setting": "Show educational onboarding assistant for new features",
-          "description": "By enabling this setting, users will periodically see pop ups showing them how to set up new features in the Zoom Workplace app.",
-          "state": "enabled",
-          "image_path": "screenshots\\general_20251022_110016.png"
-        }
-      ]
-    },
-    {
-      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png",
-      "status": "success",
-      "application": "Zoom Workplace",
-      "settings_count": 12,
-      "settings": [
-        {
-          "setting": "Lock Meeting",
-          "description": "Prevents new participants from joining the meeting.",
-          "state": "disabled",
-          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-        },
-        {
-          "setting": "Enable Waiting Room",
-          "description": "Requires the host to manually admit participants from a waiting room.",
-          "state": "disabled",
-          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-        },
-        {
-          "setting": "Hide Profile Pictures",
-          "description": "Hides the profile pictures of all participants in the meeting.",
-          "state": "disabled",
-          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-        },
-        {
-          "setting": "Allow participants to: Share Screen",
-          "description": "Permits participants to share their screen.",
-          "state": "enabled",
-          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-        },
-        {
-          "setting": "Allow participants to: Chat",
-          "description": "Permits participants to use the in-meeting chat.",
-          "state": "enabled",
-          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-        },
-        {
-          "setting": "Allow participants to: Rename Themselves",
-          "description": "Permits participants to change their own display name.",
-          "state": "enabled",
-          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-        },
-        {
-          "setting": "Allow participants to: Unmute Themselves",
-          "description": "Permits participants to unmute their own microphone.",
-          "state": "enabled",
-          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-        },
-        {
-          "setting": "Allow participants to: Start Video",
-          "description": "Permits participants to start their own video camera.",
-          "state": "enabled",
-          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-        },
-        {
-          "setting": "Allow participants to: Share Whiteboards",
-          "description": "Permits participants to create and share whiteboards.",
-          "state": "enabled",
-          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-        },
-        {
-          "setting": "Suspend Participant Activities",
-          "description": "Immediately suspends all participant activities, turning off all video, audio, in-meeting chat, annotation, screen sharing, and recording, and ends Breakout Rooms.",
-          "state": "action button",
-          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-        },
-        {
-          "setting": "Audio",
-          "description": "Controls the user's microphone.",
-          "state": "disabled",
-          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-        },
-        {
-          "setting": "Video",
-          "description": "Controls the user's camera.",
-          "state": "disabled",
-          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
-        }
-      ]
-    },
-    {
-      "image_path": "screenshots\\whiteboard_20251022_110201.png",
-      "status": "success",
-      "application": "Zoom",
-      "settings_count": 2,
-      "settings": [
-        {
-          "setting": "Zoom Apps Quick Launch Button",
-          "description": "Show \"Zoom Apps\" button in the Zoom interface for quick access to productivity tools before, during, or after meetings.",
-          "state": "enabled",
-          "image_path": "screenshots\\whiteboard_20251022_110201.png"
-        },
-        {
-          "setting": "Enable Developer Mode on mobile clients",
-          "description": "Developer Mode allows users to debug Zoom Apps using web inspector tools. Activates web inspection for new Zoom App instances.",
-          "state": "disabled",
-          "image_path": "screenshots\\whiteboard_20251022_110201.png"
-        }
-      ]
-    }
-  ],
-  "summary": {
-    "total_settings_extracted": 27,
-    "successful_extractions": 4,
-    "failed_extractions": 0,
-    "average_settings_per_image": 6.75
+    "timestamp": "2025-11-14T14:41:54.611760"
   },
-  "timestamp": "2025-11-14T12:47:09.521287"
-}
+  {
+    "status": "success",
+    "total_images": 5,
+    "platform": "linkedin",
+    "all_settings": [
+      {
+        "setting": "Connections",
+        "description": "Controls the use of your connections data for advertising purposes.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\account_preferences_20251111T173334Z.png"
+      },
+      {
+        "setting": "Companies you follow",
+        "description": "Controls the use of data about companies you follow for advertising purposes.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\account_preferences_20251111T173334Z.png"
+      },
+      {
+        "setting": "Groups",
+        "description": "Controls the use of your group membership data for advertising purposes.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\account_preferences_20251111T173334Z.png"
+      },
+      {
+        "setting": "Education and skills",
+        "description": "Controls the use of your education and skills data for advertising purposes.",
+        "state": "Schools & 4 more",
+        "image_path": "screenshots\\linkedin\\account_preferences_20251111T173334Z.png"
+      },
+      {
+        "setting": "Job information",
+        "description": "Controls the use of your job information for advertising purposes.",
+        "state": "Current job & 1 more",
+        "image_path": "screenshots\\linkedin\\account_preferences_20251111T173334Z.png"
+      },
+      {
+        "setting": "Employer",
+        "description": "Controls the use of your employer data for advertising purposes.",
+        "state": "Current company & 1 more",
+        "image_path": "screenshots\\linkedin\\account_preferences_20251111T173334Z.png"
+      },
+      {
+        "setting": "Customized display format",
+        "description": "Controls the use of customized display format data for advertising purposes.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\account_preferences_20251111T173334Z.png"
+      },
+      {
+        "setting": "Profile location",
+        "description": "Controls the use of your profile location for advertising purposes.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\account_preferences_20251111T173334Z.png"
+      },
+      {
+        "setting": "Inferred city location",
+        "description": "Controls the use of your inferred city location from your activity for advertising purposes.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\account_preferences_20251111T173334Z.png"
+      },
+      {
+        "setting": "Interests and traits",
+        "description": "Controls the use of your inferred interests and traits for advertising purposes.",
+        "state": "Not specified",
+        "image_path": "screenshots\\linkedin\\account_preferences_20251111T173334Z.png"
+      },
+      {
+        "setting": "Age range",
+        "description": "Controls the use of your age range for advertising purposes.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\account_preferences_20251111T173334Z.png"
+      },
+      {
+        "setting": "Gender",
+        "description": "Controls the use of your gender for advertising purposes.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\account_preferences_20251111T173334Z.png"
+      },
+      {
+        "setting": "Ads off LinkedIn",
+        "description": "Controls whether you see ads from LinkedIn on other sites and apps.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\account_preferences_20251111T173334Z.png"
+      },
+      {
+        "setting": "Data from others for ads",
+        "description": "Controls whether data from third-party partners is used to show you ads.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\account_preferences_20251111T173334Z.png"
+      },
+      {
+        "setting": "Measure ad success",
+        "description": "Controls whether your data is used to measure the success of ad campaigns.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\account_preferences_20251111T173334Z.png"
+      },
+      {
+        "setting": "Share data with affiliates and partners",
+        "description": "Controls whether your data is shared with LinkedIn's affiliates and partners.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\account_preferences_20251111T173334Z.png"
+      },
+      {
+        "setting": "Searching for a job",
+        "description": "Navigates to a page to manage notifications related to searching for a job.",
+        "state": "navigates to sub-settings",
+        "image_path": "screenshots\\linkedin\\advertising_data_20251111T173359Z.png"
+      },
+      {
+        "setting": "Hiring someone",
+        "description": "Navigates to a page to manage notifications related to hiring someone.",
+        "state": "navigates to sub-settings",
+        "image_path": "screenshots\\linkedin\\advertising_data_20251111T173359Z.png"
+      },
+      {
+        "setting": "Connecting with others",
+        "description": "Navigates to a page to manage notifications related to connecting with others.",
+        "state": "navigates to sub-settings",
+        "image_path": "screenshots\\linkedin\\advertising_data_20251111T173359Z.png"
+      },
+      {
+        "setting": "Network catch-up updates",
+        "description": "Navigates to a page to manage notifications related to network catch-up updates.",
+        "state": "navigates to sub-settings",
+        "image_path": "screenshots\\linkedin\\advertising_data_20251111T173359Z.png"
+      },
+      {
+        "setting": "Posting and commenting",
+        "description": "Navigates to a page to manage notifications related to posting and commenting.",
+        "state": "navigates to sub-settings",
+        "image_path": "screenshots\\linkedin\\advertising_data_20251111T173359Z.png"
+      },
+      {
+        "setting": "Messaging",
+        "description": "Navigates to a page to manage notifications related to messaging.",
+        "state": "navigates to sub-settings",
+        "image_path": "screenshots\\linkedin\\advertising_data_20251111T173359Z.png"
+      },
+      {
+        "setting": "Groups",
+        "description": "Navigates to a page to manage notifications related to groups.",
+        "state": "navigates to sub-settings",
+        "image_path": "screenshots\\linkedin\\advertising_data_20251111T173359Z.png"
+      },
+      {
+        "setting": "Pages",
+        "description": "Navigates to a page to manage notifications related to pages.",
+        "state": "navigates to sub-settings",
+        "image_path": "screenshots\\linkedin\\advertising_data_20251111T173359Z.png"
+      },
+      {
+        "setting": "Attending events",
+        "description": "Navigates to a page to manage notifications related to attending events.",
+        "state": "navigates to sub-settings",
+        "image_path": "screenshots\\linkedin\\advertising_data_20251111T173359Z.png"
+      },
+      {
+        "setting": "News and reports",
+        "description": "Navigates to a page to manage notifications related to news and reports.",
+        "state": "navigates to sub-settings",
+        "image_path": "screenshots\\linkedin\\advertising_data_20251111T173359Z.png"
+      },
+      {
+        "setting": "Updating your profile",
+        "description": "Navigates to a page to manage notifications related to updating your profile.",
+        "state": "navigates to sub-settings",
+        "image_path": "screenshots\\linkedin\\advertising_data_20251111T173359Z.png"
+      },
+      {
+        "setting": "Verifications",
+        "description": "Navigates to a page to manage notifications related to verifications.",
+        "state": "navigates to sub-settings",
+        "image_path": "screenshots\\linkedin\\advertising_data_20251111T173359Z.png"
+      },
+      {
+        "setting": "Games",
+        "description": "Navigates to a page to manage notifications related to games.",
+        "state": "navigates to sub-settings",
+        "image_path": "screenshots\\linkedin\\advertising_data_20251111T173359Z.png"
+      },
+      {
+        "setting": "Manage your data and activity",
+        "description": "Navigates to a page to manage your data and activity.",
+        "state": "navigation link",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "Get a copy of your data",
+        "description": "Navigates to a page to download a copy of your data.",
+        "state": "navigation link",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "Search history",
+        "description": "Navigates to a page to manage your search history.",
+        "state": "navigation link",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "Personal demographic information",
+        "description": "Navigates to a page to manage your personal demographic information.",
+        "state": "navigation link",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "Social, economic, and workplace research",
+        "description": "Controls whether your data is used for social, economic, and workplace research.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "Data for Generative AI Improvement",
+        "description": "Controls whether your data is used for Generative AI improvement.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "Invitations to connect",
+        "description": "Navigates to a page to manage who can send you connection invitations.",
+        "state": "navigation link",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "Invitations from your network",
+        "description": "Navigates to a page to manage invitations from your network.",
+        "state": "navigation link",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "Messages",
+        "description": "Navigates to a page to manage message settings.",
+        "state": "navigation link",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "Research invites",
+        "description": "Controls whether you receive research invites.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "LinkedIn promotions",
+        "description": "Navigates to a page to manage settings for LinkedIn promotions.",
+        "state": "navigation link",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "Focused Inbox",
+        "description": "Controls the Focused Inbox feature for messages.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "Read receipts and typing indicators",
+        "description": "Navigates to a page to manage read receipts and typing indicators.",
+        "state": "navigation link",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "Messaging suggestions",
+        "description": "Controls whether you receive messaging suggestions.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "Message nudges",
+        "description": "Controls whether you receive message nudges.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "Automated detection of harmful content",
+        "description": "Controls the automated detection of harmful content in messages.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "Job application settings",
+        "description": "Navigates to a page to manage job application settings.",
+        "state": "navigation link",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "Share your profile when you click Apply for a job",
+        "description": "Controls whether your profile is shared when you apply for a job.",
+        "state": "Off",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "Signal your interest to recruiters at companies you've created job alerts for",
+        "description": "Controls whether to signal your interest to recruiters at companies for which you have created job alerts.",
+        "state": "Off",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "Stored job applicant accounts",
+        "description": "Navigates to a page to manage stored job applicant accounts.",
+        "state": "navigation link",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "Permitted services",
+        "description": "Navigates to a page to manage third-party services connected to your account.",
+        "state": "navigation link",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "Microsoft Word",
+        "description": "Controls the integration with Microsoft Word.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png"
+      },
+      {
+        "setting": "Profile viewing options",
+        "description": "Controls how you appear to others when you view their profile.",
+        "state": "Your name and headline",
+        "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png"
+      },
+      {
+        "setting": "Page visit visibility",
+        "description": "Controls visibility when you visit a page.",
+        "state": "Off",
+        "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png"
+      },
+      {
+        "setting": "Edit your public profile",
+        "description": "Allows editing of the public-facing version of your profile.",
+        "state": "not applicable",
+        "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png"
+      },
+      {
+        "setting": "Who can see or download your email address",
+        "description": "Controls who is able to view or download your email address.",
+        "state": "not applicable",
+        "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png"
+      },
+      {
+        "setting": "Who can see your connections",
+        "description": "Controls who can see your list of connections.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png"
+      },
+      {
+        "setting": "Who can see members you follow",
+        "description": "Controls who can see the list of members you are following.",
+        "state": "Anyone on LinkedIn",
+        "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png"
+      },
+      {
+        "setting": "Who can see your last name",
+        "description": "Controls who can see your full last name.",
+        "state": "not applicable",
+        "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png"
+      },
+      {
+        "setting": "Representing your organizations and interests",
+        "description": "Controls whether your profile is used to represent your organizations and interests.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png"
+      },
+      {
+        "setting": "Page owners exporting your data",
+        "description": "Controls whether page owners can export your data.",
+        "state": "Off",
+        "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png"
+      },
+      {
+        "setting": "Profile discovery and visibility off LinkedIn",
+        "description": "Controls whether your profile can be discovered and viewed on services off LinkedIn (e.g., search engines).",
+        "state": "not applicable",
+        "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png"
+      },
+      {
+        "setting": "Profile discovery using email address",
+        "description": "Controls who can find your profile using your email address.",
+        "state": "Anyone",
+        "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png"
+      },
+      {
+        "setting": "Profile discovery using phone number",
+        "description": "Controls who can find your profile using your phone number.",
+        "state": "Everyone",
+        "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png"
+      },
+      {
+        "setting": "Blocked members",
+        "description": "Manage the list of members you have blocked.",
+        "state": "not applicable",
+        "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png"
+      },
+      {
+        "setting": "Manage active status",
+        "description": "Controls who can see when you are active on LinkedIn.",
+        "state": "No one",
+        "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png"
+      },
+      {
+        "setting": "Share job changes, education changes, and work anniversaries from profile",
+        "description": "Controls whether your network is notified about changes to your job, education, or work anniversaries.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png"
+      },
+      {
+        "setting": "Notify connections when you're in the news",
+        "description": "Controls whether your connections are notified when you are mentioned in news articles.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png"
+      },
+      {
+        "setting": "Mentioned by others",
+        "description": "Controls whether others can mention or tag you.",
+        "state": "On",
+        "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png"
+      },
+      {
+        "setting": "Followers",
+        "description": "Manage your followers and who can follow you.",
+        "state": "not applicable",
+        "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png"
+      }
+    ],
+    "summary": {
+      "total_settings_extracted": 69,
+      "successful_extractions": 4,
+      "failed_extractions": 1,
+      "failed image paths": [
+        "screenshots\\linkedin\\after_click__Sign_in_security_20251111T173330Z.png"
+      ],
+      "average_settings_per_image": 17.25
+    },
+    "timestamp": "2025-11-14T14:42:45.886729"
+  },
+  {
+    "status": "success",
+    "total_images": 8,
+    "platform": "zoom",
+    "all_settings": [
+      {
+        "setting": "Optional Diagnostic Data",
+        "description": "Allow collection of additional data that helps Zoom make product improvements and provide enhanced information to help Zoom detect, diagnose, and remediate issues.",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\after_click__Data_Privacy_20251111T172742Z.png"
+      },
+      {
+        "setting": "Record to computer files",
+        "description": "Allow hosts and participants to record the meeting to a computer. The recording will include video and shared content matching the recorder's view options, and an audio-only file.",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\after_click__Recording_20251111T172741Z.png"
+      },
+      {
+        "setting": "Who can request host permission to record? - Internal meeting participants",
+        "description": "Allows internal meeting participants to request permission to record.",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\after_click__Recording_20251111T172741Z.png"
+      },
+      {
+        "setting": "Who can request host permission to record? - Auto approve their permission requests (Internal)",
+        "description": "Automatically approve recording permission requests from internal meeting participants.",
+        "state": "disabled",
+        "image_path": "screenshots\\zoom\\after_click__Recording_20251111T172741Z.png"
+      },
+      {
+        "setting": "Who can request host permission to record? - External meeting participants",
+        "description": "Allows external meeting participants to request permission to record.",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\after_click__Recording_20251111T172741Z.png"
+      },
+      {
+        "setting": "Who can request host permission to record? - Auto approve their permission requests (External)",
+        "description": "Automatically approve recording permission requests from external meeting participants.",
+        "state": "disabled",
+        "image_path": "screenshots\\zoom\\after_click__Recording_20251111T172741Z.png"
+      },
+      {
+        "setting": "Who can request host permission to record? - Meeting participants with specified domains",
+        "description": "Allows meeting participants with specified domains to request permission to record. This option will take precedence regardless of the two above options.",
+        "state": "disabled",
+        "image_path": "screenshots\\zoom\\after_click__Recording_20251111T172741Z.png"
+      },
+      {
+        "setting": "Automatic recording",
+        "description": "Record meetings automatically as they start",
+        "state": "disabled",
+        "image_path": "screenshots\\zoom\\after_click__Recording_20251111T172741Z.png"
+      },
+      {
+        "setting": "Play voice prompt for",
+        "description": "Determines for which participants a voice prompt is played when a recording starts.",
+        "state": "All participants",
+        "image_path": "screenshots\\zoom\\after_click__Recording_20251111T172741Z.png"
+      },
+      {
+        "setting": "Ask host to confirm before starting a recording",
+        "description": "Requires the host to confirm before a recording is started.",
+        "state": "disabled",
+        "image_path": "screenshots\\zoom\\after_click__Recording_20251111T172741Z.png"
+      },
+      {
+        "setting": "Multiple notifications for phone users",
+        "description": "By default, phone users will hear one audio notification indicating that a recording has started. This enables multiple notifications.",
+        "state": "disabled",
+        "image_path": "screenshots\\zoom\\after_click__Recording_20251111T172741Z.png"
+      },
+      {
+        "setting": "Show international numbers link on the invitation email",
+        "description": "Show the link for Zoom International Dial-in Numbers on email invitations",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\audio_conferencing_20251022_110156.png"
+      },
+      {
+        "setting": "Mask phone number in the participant list",
+        "description": "Phone numbers of users dialing into a meeting will be masked in the participant list.",
+        "state": "disabled",
+        "image_path": "screenshots\\zoom\\audio_conferencing_20251022_110156.png"
+      },
+      {
+        "setting": "Detailed crash dumps (Windows)",
+        "description": "Generate crash dumps with more information in the event of an application crash on Zoom Workplace for Windows. Those information can assist Zoom with troubleshooting issues. The dumps are not automatically shared or uploaded to Zoom.",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\general_20251022_110016.png"
+      },
+      {
+        "setting": "Feedback to Zoom",
+        "description": "Users can provide satisfaction scores and other preset feedback to Zoom.",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\general_20251022_110016.png"
+      },
+      {
+        "setting": "Allow users to send text feedback",
+        "description": "A sub-setting of 'Feedback to Zoom' that allows users to send text feedback.",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\general_20251022_110016.png"
+      },
+      {
+        "setting": "Show \"Join from a room\" feature on Zoom meetings in the Zoom client meeting list",
+        "description": "Users can easily start a meeting on a Zoom Room from their Zoom client.",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\general_20251022_110016.png"
+      },
+      {
+        "setting": "Allow automatic direct sharing and pairing to Zoom Rooms using ultrasonic proximity signal",
+        "description": "Enable users to share their screen, start a meeting, switch a meeting in progress, open a whiteboard or send a phone call from their laptop or mobile device to Zoom Rooms, without entering a meeting ID or sharing key.",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\general_20251022_110016.png"
+      },
+      {
+        "setting": "Hide potentially sensitive information on mobile task switcher",
+        "description": "By enable this option, iOS will blur the screenshot in the task switcher when multiple apps are open, and Android will hide the screenshot in the system-level recent apps list.",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\general_20251022_110016.png"
+      },
+      {
+        "setting": "Change my status to away when screen saver begins",
+        "description": "While a user's presence status is in a calendar event and the computer screen saver begins, their presence status on Zoom changes to away.",
+        "state": "disabled",
+        "image_path": "screenshots\\zoom\\general_20251022_110016.png"
+      },
+      {
+        "setting": "Track billable hours",
+        "description": "When enabled, your account will have the ability to track and manage billable hours for phone calls and meetings. Users can assign client codes and add billing notes during or after a call or a meeting, and download billable hours reports directly from Contacts.",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\general_20251022_110016.png"
+      },
+      {
+        "setting": "Enable manual control to start and stop billable hours tracking for calls and meetings.",
+        "description": "A sub-setting of 'Track billable hours' to manually control tracking.",
+        "state": "selected",
+        "image_path": "screenshots\\zoom\\general_20251022_110016.png"
+      },
+      {
+        "setting": "Enable automatic tracking of billable hours for calls and meetings.",
+        "description": "A sub-setting of 'Track billable hours' to automatically track hours.",
+        "state": "not selected",
+        "image_path": "screenshots\\zoom\\general_20251022_110016.png"
+      },
+      {
+        "setting": "Show educational onboarding assistant for new features",
+        "description": "By enabling this setting, users will periodically see pop ups showing them how to set up new features in the Zoom Workplace app.",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\general_20251022_110016.png"
+      },
+      {
+        "setting": "Use full display names for meeting assets generated by AI Companion",
+        "description": "By enabling this setting, you can override the display name that AI Companion detects for you with the full display name set in your profile.",
+        "state": "disabled",
+        "image_path": "screenshots\\zoom\\safety_capture_20251111T172904Z.png"
+      },
+      {
+        "setting": "Create with avatars",
+        "description": "Create clips that uses your user's chosen avatar to read the script they enter.",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\safety_capture_20251111T172904Z.png"
+      },
+      {
+        "setting": "Create custom avatars",
+        "description": "Allow users to create custom avatars for clips that would read the script they enter.",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\safety_capture_20251111T172904Z.png"
+      },
+      {
+        "setting": "Lock Meeting",
+        "description": "Prevents new participants from joining the meeting.",
+        "state": "disabled",
+        "image_path": "screenshots\\zoom\\security_menu_fullpage_20251022_110816.png"
+      },
+      {
+        "setting": "Enable Waiting Room",
+        "description": "Requires the host to manually admit participants from a waiting room.",
+        "state": "disabled",
+        "image_path": "screenshots\\zoom\\security_menu_fullpage_20251022_110816.png"
+      },
+      {
+        "setting": "Hide Profile Pictures",
+        "description": "Hides the profile pictures of all participants in the meeting.",
+        "state": "disabled",
+        "image_path": "screenshots\\zoom\\security_menu_fullpage_20251022_110816.png"
+      },
+      {
+        "setting": "Share Screen",
+        "description": "Allows participants to share their screen.",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\security_menu_fullpage_20251022_110816.png"
+      },
+      {
+        "setting": "Chat",
+        "description": "Allows participants to use the in-meeting chat.",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\security_menu_fullpage_20251022_110816.png"
+      },
+      {
+        "setting": "Rename Themselves",
+        "description": "Allows participants to change their own display name.",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\security_menu_fullpage_20251022_110816.png"
+      },
+      {
+        "setting": "Unmute Themselves",
+        "description": "Allows participants to unmute their own microphones.",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\security_menu_fullpage_20251022_110816.png"
+      },
+      {
+        "setting": "Start Video",
+        "description": "Allows participants to start their own video.",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\security_menu_fullpage_20251022_110816.png"
+      },
+      {
+        "setting": "Share Whiteboards",
+        "description": "Allows participants to share whiteboards.",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\security_menu_fullpage_20251022_110816.png"
+      },
+      {
+        "setting": "Suspend Participant Activities",
+        "description": "An action to immediately suspend all participant activities, such as video, audio, and sharing.",
+        "state": "not activated",
+        "image_path": "screenshots\\zoom\\security_menu_fullpage_20251022_110816.png"
+      },
+      {
+        "setting": "Zoom Apps Quick Launch Button",
+        "description": "Show \"Zoom Apps\" button in the Zoom interface for quick access to productivity tools before, during, or after meetings.",
+        "state": "enabled",
+        "image_path": "screenshots\\zoom\\whiteboard_20251022_110201.png"
+      },
+      {
+        "setting": "Enable Developer Mode on mobile clients",
+        "description": "Developer Mode allows users to debug Zoom Apps using web inspector tools. Activates web inspection for new Zoom App instances.",
+        "state": "disabled",
+        "image_path": "screenshots\\zoom\\whiteboard_20251022_110201.png"
+      }
+    ],
+    "summary": {
+      "total_settings_extracted": 39,
+      "successful_extractions": 7,
+      "failed_extractions": 1,
+      "failed image paths": [
+        "screenshots\\zoom\\after_click__Meeting_20251111T172739Z.png"
+      ],
+      "average_settings_per_image": 5.57
+    },
+    "timestamp": "2025-11-14T14:44:21.938961"
+  }
+]

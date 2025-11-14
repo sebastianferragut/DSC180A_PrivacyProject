@@ -110,7 +110,6 @@ class PrivacyScreenshotClassifier:
                 You are a privacy settings expert analyzing a screenshot of a privacy settings page. 
 
                 Analyze the screenshot and provide detailed information about:
-
                 1. **Application/Service**: What application or service is this privacy settings page for?
                 2. **Page Type**: What type of privacy settings page is this (e.g., main settings, specific category, etc.)?
                 3. **Privacy Categories Present**: Which of the following privacy categories, if any, are visible or relevant in this screenshot?
