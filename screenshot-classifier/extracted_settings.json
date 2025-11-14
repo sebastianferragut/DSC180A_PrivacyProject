@@ -1,0 +1,371 @@
+{
+  "status": "success",
+  "total_images": 4,
+  "all_settings": [
+    {
+      "setting": "Show international numbers link on the invitation email",
+      "description": "Show the link for Zoom International Dial-in Numbers on email invitations",
+      "state": "enabled",
+      "image_path": "screenshots\\audio_conferencing_20251022_110156.png"
+    },
+    {
+      "setting": "Mask phone number in the participant list",
+      "description": "Phone numbers of users dialing into a meeting will be masked in the participant list.",
+      "state": "disabled",
+      "image_path": "screenshots\\audio_conferencing_20251022_110156.png"
+    },
+    {
+      "setting": "Detailed crash dumps (Windows)",
+      "description": "Generate crash dumps with more information in the event of an application crash on Zoom Workplace for Windows. Those information can assist Zoom with troubleshooting issues. The dumps are not automatically shared or uploaded to Zoom.",
+      "state": "enabled",
+      "image_path": "screenshots\\general_20251022_110016.png"
+    },
+    {
+      "setting": "Feedback to Zoom",
+      "description": "Users can provide satisfaction scores and other preset feedback to Zoom.",
+      "state": "enabled",
+      "image_path": "screenshots\\general_20251022_110016.png"
+    },
+    {
+      "setting": "Allow users to send text feedback",
+      "description": "A sub-setting of 'Feedback to Zoom' that allows users to provide text feedback.",
+      "state": "enabled",
+      "image_path": "screenshots\\general_20251022_110016.png"
+    },
+    {
+      "setting": "Show \"Join from a room\" feature on Zoom meetings in the Zoom client meeting list",
+      "description": "Users can easily start a meeting on a Zoom Room from their Zoom client.",
+      "state": "enabled",
+      "image_path": "screenshots\\general_20251022_110016.png"
+    },
+    {
+      "setting": "Allow automatic direct sharing and pairing to Zoom Rooms using ultrasonic proximity signal",
+      "description": "Enable users to share their screen, start a meeting, switch a meeting in progress, open a whiteboard or send a phone call from their laptop or mobile device to Zoom Rooms, without entering a meeting ID or sharing key.",
+      "state": "enabled",
+      "image_path": "screenshots\\general_20251022_110016.png"
+    },
+    {
+      "setting": "Hide potentially sensitive information on mobile task switcher",
+      "description": "By enable this option, iOS will blur the screenshot in the task switcher when multiple apps are open, and Android will hide the screenshot in the system-level recent apps list.",
+      "state": "enabled",
+      "image_path": "screenshots\\general_20251022_110016.png"
+    },
+    {
+      "setting": "Change my status to away when screen saver begins",
+      "description": "While a user's presence status is in a calendar event and the computer screen saver begins, their presence status on Zoom changes to away.",
+      "state": "disabled",
+      "image_path": "screenshots\\general_20251022_110016.png"
+    },
+    {
+      "setting": "Track billable hours",
+      "description": "When enabled, your account will have the ability to track and manage billable hours for phone calls and meetings. Users can assign client codes and add billing notes during or after a call or a meeting, and download billable hours reports directly from Contacts.",
+      "state": "enabled",
+      "image_path": "screenshots\\general_20251022_110016.png"
+    },
+    {
+      "setting": "Enable manual control to start and stop billable hours tracking for calls and meetings.",
+      "description": "An option for how to track billable hours.",
+      "state": "selected",
+      "image_path": "screenshots\\general_20251022_110016.png"
+    },
+    {
+      "setting": "Enable automatic tracking of billable hours for calls and meetings.",
+      "description": "An option for how to track billable hours.",
+      "state": "not selected",
+      "image_path": "screenshots\\general_20251022_110016.png"
+    },
+    {
+      "setting": "Show educational onboarding assistant for new features",
+      "description": "By enabling this setting, users will periodically see pop ups showing them how to set up new features in the Zoom Workplace app.",
+      "state": "enabled",
+      "image_path": "screenshots\\general_20251022_110016.png"
+    },
+    {
+      "setting": "Lock Meeting",
+      "description": "Prevents new participants from joining the meeting.",
+      "state": "disabled",
+      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+    },
+    {
+      "setting": "Enable Waiting Room",
+      "description": "Requires the host to manually admit participants from a waiting room.",
+      "state": "disabled",
+      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+    },
+    {
+      "setting": "Hide Profile Pictures",
+      "description": "Hides the profile pictures of all participants in the meeting.",
+      "state": "disabled",
+      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+    },
+    {
+      "setting": "Allow participants to: Share Screen",
+      "description": "Permits participants to share their screen.",
+      "state": "enabled",
+      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+    },
+    {
+      "setting": "Allow participants to: Chat",
+      "description": "Permits participants to use the in-meeting chat.",
+      "state": "enabled",
+      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+    },
+    {
+      "setting": "Allow participants to: Rename Themselves",
+      "description": "Permits participants to change their own display name.",
+      "state": "enabled",
+      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+    },
+    {
+      "setting": "Allow participants to: Unmute Themselves",
+      "description": "Permits participants to unmute their own microphone.",
+      "state": "enabled",
+      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+    },
+    {
+      "setting": "Allow participants to: Start Video",
+      "description": "Permits participants to start their own video camera.",
+      "state": "enabled",
+      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+    },
+    {
+      "setting": "Allow participants to: Share Whiteboards",
+      "description": "Permits participants to create and share whiteboards.",
+      "state": "enabled",
+      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+    },
+    {
+      "setting": "Suspend Participant Activities",
+      "description": "Immediately suspends all participant activities, turning off all video, audio, in-meeting chat, annotation, screen sharing, and recording, and ends Breakout Rooms.",
+      "state": "action button",
+      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+    },
+    {
+      "setting": "Audio",
+      "description": "Controls the user's microphone.",
+      "state": "disabled",
+      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+    },
+    {
+      "setting": "Video",
+      "description": "Controls the user's camera.",
+      "state": "disabled",
+      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+    },
+    {
+      "setting": "Zoom Apps Quick Launch Button",
+      "description": "Show \"Zoom Apps\" button in the Zoom interface for quick access to productivity tools before, during, or after meetings.",
+      "state": "enabled",
+      "image_path": "screenshots\\whiteboard_20251022_110201.png"
+    },
+    {
+      "setting": "Enable Developer Mode on mobile clients",
+      "description": "Developer Mode allows users to debug Zoom Apps using web inspector tools. Activates web inspection for new Zoom App instances.",
+      "state": "disabled",
+      "image_path": "screenshots\\whiteboard_20251022_110201.png"
+    }
+  ],
+  "by_image": [
+    {
+      "image_path": "screenshots\\audio_conferencing_20251022_110156.png",
+      "status": "success",
+      "application": "Zoom",
+      "settings_count": 2,
+      "settings": [
+        {
+          "setting": "Show international numbers link on the invitation email",
+          "description": "Show the link for Zoom International Dial-in Numbers on email invitations",
+          "state": "enabled",
+          "image_path": "screenshots\\audio_conferencing_20251022_110156.png"
+        },
+        {
+          "setting": "Mask phone number in the participant list",
+          "description": "Phone numbers of users dialing into a meeting will be masked in the participant list.",
+          "state": "disabled",
+          "image_path": "screenshots\\audio_conferencing_20251022_110156.png"
+        }
+      ]
+    },
+    {
+      "image_path": "screenshots\\general_20251022_110016.png",
+      "status": "success",
+      "application": "Zoom",
+      "settings_count": 11,
+      "settings": [
+        {
+          "setting": "Detailed crash dumps (Windows)",
+          "description": "Generate crash dumps with more information in the event of an application crash on Zoom Workplace for Windows. Those information can assist Zoom with troubleshooting issues. The dumps are not automatically shared or uploaded to Zoom.",
+          "state": "enabled",
+          "image_path": "screenshots\\general_20251022_110016.png"
+        },
+        {
+          "setting": "Feedback to Zoom",
+          "description": "Users can provide satisfaction scores and other preset feedback to Zoom.",
+          "state": "enabled",
+          "image_path": "screenshots\\general_20251022_110016.png"
+        },
+        {
+          "setting": "Allow users to send text feedback",
+          "description": "A sub-setting of 'Feedback to Zoom' that allows users to provide text feedback.",
+          "state": "enabled",
+          "image_path": "screenshots\\general_20251022_110016.png"
+        },
+        {
+          "setting": "Show \"Join from a room\" feature on Zoom meetings in the Zoom client meeting list",
+          "description": "Users can easily start a meeting on a Zoom Room from their Zoom client.",
+          "state": "enabled",
+          "image_path": "screenshots\\general_20251022_110016.png"
+        },
+        {
+          "setting": "Allow automatic direct sharing and pairing to Zoom Rooms using ultrasonic proximity signal",
+          "description": "Enable users to share their screen, start a meeting, switch a meeting in progress, open a whiteboard or send a phone call from their laptop or mobile device to Zoom Rooms, without entering a meeting ID or sharing key.",
+          "state": "enabled",
+          "image_path": "screenshots\\general_20251022_110016.png"
+        },
+        {
+          "setting": "Hide potentially sensitive information on mobile task switcher",
+          "description": "By enable this option, iOS will blur the screenshot in the task switcher when multiple apps are open, and Android will hide the screenshot in the system-level recent apps list.",
+          "state": "enabled",
+          "image_path": "screenshots\\general_20251022_110016.png"
+        },
+        {
+          "setting": "Change my status to away when screen saver begins",
+          "description": "While a user's presence status is in a calendar event and the computer screen saver begins, their presence status on Zoom changes to away.",
+          "state": "disabled",
+          "image_path": "screenshots\\general_20251022_110016.png"
+        },
+        {
+          "setting": "Track billable hours",
+          "description": "When enabled, your account will have the ability to track and manage billable hours for phone calls and meetings. Users can assign client codes and add billing notes during or after a call or a meeting, and download billable hours reports directly from Contacts.",
+          "state": "enabled",
+          "image_path": "screenshots\\general_20251022_110016.png"
+        },
+        {
+          "setting": "Enable manual control to start and stop billable hours tracking for calls and meetings.",
+          "description": "An option for how to track billable hours.",
+          "state": "selected",
+          "image_path": "screenshots\\general_20251022_110016.png"
+        },
+        {
+          "setting": "Enable automatic tracking of billable hours for calls and meetings.",
+          "description": "An option for how to track billable hours.",
+          "state": "not selected",
+          "image_path": "screenshots\\general_20251022_110016.png"
+        },
+        {
+          "setting": "Show educational onboarding assistant for new features",
+          "description": "By enabling this setting, users will periodically see pop ups showing them how to set up new features in the Zoom Workplace app.",
+          "state": "enabled",
+          "image_path": "screenshots\\general_20251022_110016.png"
+        }
+      ]
+    },
+    {
+      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png",
+      "status": "success",
+      "application": "Zoom Workplace",
+      "settings_count": 12,
+      "settings": [
+        {
+          "setting": "Lock Meeting",
+          "description": "Prevents new participants from joining the meeting.",
+          "state": "disabled",
+          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+        },
+        {
+          "setting": "Enable Waiting Room",
+          "description": "Requires the host to manually admit participants from a waiting room.",
+          "state": "disabled",
+          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+        },
+        {
+          "setting": "Hide Profile Pictures",
+          "description": "Hides the profile pictures of all participants in the meeting.",
+          "state": "disabled",
+          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+        },
+        {
+          "setting": "Allow participants to: Share Screen",
+          "description": "Permits participants to share their screen.",
+          "state": "enabled",
+          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+        },
+        {
+          "setting": "Allow participants to: Chat",
+          "description": "Permits participants to use the in-meeting chat.",
+          "state": "enabled",
+          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+        },
+        {
+          "setting": "Allow participants to: Rename Themselves",
+          "description": "Permits participants to change their own display name.",
+          "state": "enabled",
+          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+        },
+        {
+          "setting": "Allow participants to: Unmute Themselves",
+          "description": "Permits participants to unmute their own microphone.",
+          "state": "enabled",
+          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+        },
+        {
+          "setting": "Allow participants to: Start Video",
+          "description": "Permits participants to start their own video camera.",
+          "state": "enabled",
+          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+        },
+        {
+          "setting": "Allow participants to: Share Whiteboards",
+          "description": "Permits participants to create and share whiteboards.",
+          "state": "enabled",
+          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+        },
+        {
+          "setting": "Suspend Participant Activities",
+          "description": "Immediately suspends all participant activities, turning off all video, audio, in-meeting chat, annotation, screen sharing, and recording, and ends Breakout Rooms.",
+          "state": "action button",
+          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+        },
+        {
+          "setting": "Audio",
+          "description": "Controls the user's microphone.",
+          "state": "disabled",
+          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+        },
+        {
+          "setting": "Video",
+          "description": "Controls the user's camera.",
+          "state": "disabled",
+          "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png"
+        }
+      ]
+    },
+    {
+      "image_path": "screenshots\\whiteboard_20251022_110201.png",
+      "status": "success",
+      "application": "Zoom",
+      "settings_count": 2,
+      "settings": [
+        {
+          "setting": "Zoom Apps Quick Launch Button",
+          "description": "Show \"Zoom Apps\" button in the Zoom interface for quick access to productivity tools before, during, or after meetings.",
+          "state": "enabled",
+          "image_path": "screenshots\\whiteboard_20251022_110201.png"
+        },
+        {
+          "setting": "Enable Developer Mode on mobile clients",
+          "description": "Developer Mode allows users to debug Zoom Apps using web inspector tools. Activates web inspection for new Zoom App instances.",
+          "state": "disabled",
+          "image_path": "screenshots\\whiteboard_20251022_110201.png"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_settings_extracted": 27,
+    "successful_extractions": 4,
+    "failed_extractions": 0,
+    "average_settings_per_image": 6.75
+  },
+  "timestamp": "2025-11-14T12:47:09.521287"
+}
