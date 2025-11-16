@@ -1,0 +1,371 @@
+{
+  "site": "zoom.us",
+  "ts_iso": "2025-11-11T17:26:59.981846Z",
+  "actions": [
+    {
+      "ts": "20251111T172703Z",
+      "kind": "auto_fullpage",
+      "url": "https://zoom.us/profile/setting?tab=general",
+      "path": "/generaloutput/zoom/screenshots/sections/initial_load_20251111T172703Z.png",
+      "label": "initial_load"
+    },
+    {
+      "ts": "20251111T172721Z",
+      "kind": "planner_usage",
+      "turn": 1,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "latency_sec": 0.0,
+      "cost_usd": 0.0,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251111T172721Z",
+      "kind": "planner_plan",
+      "turn": 1,
+      "plan": {
+        "authenticated": false,
+        "on_settings_page": false,
+        "selectors": [],
+        "capture": {
+          "fullpage": false,
+          "section_name": null,
+          "elements": []
+        },
+        "notes": "planner_call_failed: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'The model is overloaded. Please try again later.', 'status': 'UNAVAILABLE'}}",
+        "_usage": {
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "source": "estimate",
+          "latency_sec": 0.0
+        }
+      }
+    },
+    {
+      "ts": "20251111T172738Z",
+      "kind": "planner_usage",
+      "turn": 2,
+      "input_tokens": 455,
+      "output_tokens": 25,
+      "latency_sec": 15.400757074356079,
+      "cost_usd": 0.000819,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251111T172738Z",
+      "kind": "planner_plan",
+      "turn": 2,
+      "plan": {
+        "authenticated": null,
+        "on_settings_page": null,
+        "selectors": [],
+        "capture": {
+          "fullpage": false,
+          "section_name": null,
+          "elements": []
+        },
+        "batch": {
+          "clicks": [
+            {
+              "type": "text",
+              "selector": "Meeting"
+            },
+            {
+              "type": "text",
+              "selector": "Recording"
+            },
+            {
+              "type": "text",
+              "selector": "Data & Privacy"
+            }
+          ],
+          "screenshots": [
+            {
+              "fullpage": true,
+              "section_name": "General"
+            }
+          ]
+        },
+        "notes": "parsed_from_script",
+        "_usage": {
+          "input_tokens": 455,
+          "output_tokens": 25,
+          "source": "estimate",
+          "latency_sec": 15.400757074356079
+        }
+      }
+    },
+    {
+      "ts": "20251111T172738Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Meeting"
+      },
+      "url": "https://zoom.us/profile/setting?tab=meeting"
+    },
+    {
+      "ts": "20251111T172739Z",
+      "kind": "auto_fullpage",
+      "url": "https://zoom.us/profile/setting?tab=meeting",
+      "path": "/generaloutput/zoom/screenshots/sections/after_click__Meeting_20251111T172739Z.png",
+      "label": "after_click__Meeting"
+    },
+    {
+      "ts": "20251111T172740Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Recording"
+      },
+      "url": "https://zoom.us/profile/setting?tab=recording"
+    },
+    {
+      "ts": "20251111T172741Z",
+      "kind": "auto_fullpage",
+      "url": "https://zoom.us/profile/setting?tab=recording",
+      "path": "/generaloutput/zoom/screenshots/sections/after_click__Recording_20251111T172741Z.png",
+      "label": "after_click__Recording"
+    },
+    {
+      "ts": "20251111T172742Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Data & Privacy"
+      },
+      "url": "https://zoom.us/profile/privacy"
+    },
+    {
+      "ts": "20251111T172742Z",
+      "kind": "auto_fullpage",
+      "url": "https://zoom.us/profile/privacy",
+      "path": "/generaloutput/zoom/screenshots/sections/after_click__Data_Privacy_20251111T172742Z.png",
+      "label": "after_click__Data_Privacy"
+    },
+    {
+      "ts": "20251111T172808Z",
+      "kind": "planner_usage",
+      "turn": 3,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "latency_sec": 0.0,
+      "cost_usd": 0.0,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251111T172808Z",
+      "kind": "planner_plan",
+      "turn": 3,
+      "plan": {
+        "authenticated": false,
+        "on_settings_page": false,
+        "selectors": [],
+        "capture": {
+          "fullpage": false,
+          "section_name": null,
+          "elements": []
+        },
+        "notes": "planner_call_failed: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'The model is overloaded. Please try again later.', 'status': 'UNAVAILABLE'}}",
+        "_usage": {
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "source": "estimate",
+          "latency_sec": 0.0
+        }
+      }
+    },
+    {
+      "ts": "20251111T172839Z",
+      "kind": "planner_usage",
+      "turn": 4,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "latency_sec": 0.0,
+      "cost_usd": 0.0,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251111T172839Z",
+      "kind": "planner_plan",
+      "turn": 4,
+      "plan": {
+        "authenticated": false,
+        "on_settings_page": false,
+        "selectors": [],
+        "capture": {
+          "fullpage": false,
+          "section_name": null,
+          "elements": []
+        },
+        "notes": "planner_call_failed: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'The model is overloaded. Please try again later.', 'status': 'UNAVAILABLE'}}",
+        "_usage": {
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "source": "estimate",
+          "latency_sec": 0.0
+        }
+      }
+    },
+    {
+      "ts": "20251111T172902Z",
+      "kind": "planner_usage",
+      "turn": 5,
+      "input_tokens": 534,
+      "output_tokens": 12,
+      "latency_sec": 19.673277854919434,
+      "cost_usd": 0.000788,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251111T172902Z",
+      "kind": "planner_plan",
+      "turn": 5,
+      "plan": {
+        "authenticated": null,
+        "on_settings_page": null,
+        "selectors": [],
+        "capture": {
+          "fullpage": false,
+          "section_name": null,
+          "elements": []
+        },
+        "batch": {
+          "clicks": [
+            {
+              "type": "text",
+              "selector": "Settings"
+            }
+          ],
+          "screenshots": [
+            {
+              "fullpage": true,
+              "section_name": "Data & Privacy"
+            }
+          ]
+        },
+        "notes": "parsed_from_script",
+        "_usage": {
+          "input_tokens": 534,
+          "output_tokens": 12,
+          "source": "estimate",
+          "latency_sec": 19.673277854919434
+        }
+      }
+    },
+    {
+      "ts": "20251111T172903Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Settings"
+      },
+      "url": "https://zoom.us/profile/setting"
+    },
+    {
+      "ts": "20251111T172904Z",
+      "kind": "auto_fullpage",
+      "url": "https://zoom.us/profile/setting",
+      "path": "/generaloutput/zoom/screenshots/sections/after_click__Settings_20251111T172904Z.png",
+      "label": "after_click__Settings"
+    },
+    {
+      "ts": "20251111T172904Z",
+      "kind": "capture_fullpage",
+      "url": "https://zoom.us/profile/setting",
+      "path": "/generaloutput/zoom/screenshots/sections/safety_capture_20251111T172904Z.png",
+      "section": "Safety Capture"
+    }
+  ],
+  "sections": [
+    {
+      "name": "Safety Capture",
+      "path": [
+        "Safety"
+      ],
+      "url": "https://zoom.us/profile/setting",
+      "evidence_fullpage": "/generaloutput/zoom/screenshots/sections/safety_capture_20251111T172904Z.png",
+      "items": []
+    }
+  ],
+  "errors": [],
+  "model_calls": 5,
+  "state": {
+    "visited_urls": [
+      "https://zoom.us/profile/setting?tab=general",
+      "https://zoom.us/profile/setting?tab=meeting",
+      "https://zoom.us/profile/setting?tab=recording",
+      "https://zoom.us/profile/privacy",
+      "https://zoom.us/profile/privacy#/settings",
+      "https://zoom.us/profile/setting"
+    ],
+    "captured_sections": [],
+    "last_capture_url": null
+  },
+  "metrics": {
+    "run_start_ts": "2025-11-11T17:26:59.981952Z",
+    "run_end_ts": "2025-11-11T17:29:04.458159Z",
+    "total_runtime_sec": 124.476207,
+    "turns": 5,
+    "steps": {
+      "batch_clicks": 4,
+      "selectors_applied": 0,
+      "fullpage_screens": 0,
+      "element_screens": 0,
+      "auto_screens": 9
+    },
+    "api": {
+      "calls": 5,
+      "input_tokens": 989,
+      "output_tokens": 37,
+      "cost_usd": 0.001606,
+      "per_call": [
+        {
+          "turn": 1,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "latency_sec": 0.0,
+          "cost_usd": 0.0,
+          "source": "estimate"
+        },
+        {
+          "turn": 2,
+          "input_tokens": 455,
+          "output_tokens": 25,
+          "latency_sec": 15.400757074356079,
+          "cost_usd": 0.000819,
+          "source": "estimate"
+        },
+        {
+          "turn": 3,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "latency_sec": 0.0,
+          "cost_usd": 0.0,
+          "source": "estimate"
+        },
+        {
+          "turn": 4,
+          "input_tokens": 0,
+          "output_tokens": 0,
+          "latency_sec": 0.0,
+          "cost_usd": 0.0,
+          "source": "estimate"
+        },
+        {
+          "turn": 5,
+          "input_tokens": 534,
+          "output_tokens": 12,
+          "latency_sec": 19.673277854919434,
+          "cost_usd": 0.000788,
+          "source": "estimate"
+        }
+      ]
+    }
+  }
+}
+

@@ -1,0 +1,411 @@
+{
+  "site": "accountscenter.facebook.com",
+  "ts_iso": "2025-11-12T17:22:12.141724Z",
+  "actions": [
+    {
+      "ts": "20251112T172214Z",
+      "kind": "auto_fullpage",
+      "url": "https://accountscenter.facebook.com/password_and_security",
+      "path": "/generaloutput/facebook/screenshots/sections/initial_load_20251112T172213Z.png",
+      "label": "initial_load"
+    },
+    {
+      "ts": "20251112T172230Z",
+      "kind": "planner_usage",
+      "turn": 1,
+      "input_tokens": 204,
+      "output_tokens": 36,
+      "latency_sec": 13.017916917800903,
+      "cost_usd": 0.000615,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251112T172230Z",
+      "kind": "planner_plan",
+      "turn": 1,
+      "plan": {
+        "on_settings_page": null,
+        "selectors": [],
+        "capture": {
+          "fullpage": false,
+          "section_name": null,
+          "elements": []
+        },
+        "batch": {
+          "clicks": [
+            {
+              "type": "text",
+              "selector": "Your information and permissions"
+            },
+            {
+              "type": "text",
+              "selector": "Ad preferences"
+            },
+            {
+              "type": "text",
+              "selector": "Personal details"
+            }
+          ],
+          "screenshots": [
+            {
+              "fullpage": true,
+              "section_name": "Password and security"
+            }
+          ]
+        },
+        "notes": "parsed_from_script",
+        "_usage": {
+          "input_tokens": 204,
+          "output_tokens": 36,
+          "source": "estimate",
+          "latency_sec": 13.017916917800903
+        }
+      }
+    },
+    {
+      "ts": "20251112T172231Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Your information and permissions"
+      },
+      "url": "https://accountscenter.facebook.com/info_and_permissions"
+    },
+    {
+      "ts": "20251112T172232Z",
+      "kind": "auto_fullpage",
+      "url": "https://accountscenter.facebook.com/info_and_permissions",
+      "path": "/generaloutput/facebook/screenshots/sections/after_click__Your_information_and_permissions_20251112T172232Z.png",
+      "label": "after_click__Your_information_and_permissions"
+    },
+    {
+      "ts": "20251112T172232Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Ad preferences"
+      },
+      "url": "https://accountscenter.facebook.com/ads"
+    },
+    {
+      "ts": "20251112T172233Z",
+      "kind": "auto_fullpage",
+      "url": "https://accountscenter.facebook.com/ads",
+      "path": "/generaloutput/facebook/screenshots/sections/after_click__Ad_preferences_20251112T172233Z.png",
+      "label": "after_click__Ad_preferences"
+    },
+    {
+      "ts": "20251112T172234Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Personal details"
+      },
+      "url": "https://accountscenter.facebook.com/personal_info"
+    },
+    {
+      "ts": "20251112T172234Z",
+      "kind": "auto_fullpage",
+      "url": "https://accountscenter.facebook.com/personal_info",
+      "path": "/generaloutput/facebook/screenshots/sections/after_click__Personal_details_20251112T172234Z.png",
+      "label": "after_click__Personal_details"
+    },
+    {
+      "ts": "20251112T172235Z",
+      "kind": "capture_fullpage",
+      "url": "https://accountscenter.facebook.com/personal_info",
+      "path": "/generaloutput/facebook/screenshots/sections/password_and_security_20251112T172235Z.png",
+      "section": "Password and security"
+    },
+    {
+      "ts": "20251112T172247Z",
+      "kind": "planner_usage",
+      "turn": 2,
+      "input_tokens": 272,
+      "output_tokens": 149,
+      "latency_sec": 11.89202880859375,
+      "cost_usd": 0.00183,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251112T172247Z",
+      "kind": "planner_plan",
+      "turn": 2,
+      "plan": {
+        "on_settings_page": false,
+        "selectors": [],
+        "capture": {
+          "fullpage": false,
+          "section_name": null,
+          "elements": []
+        },
+        "notes": "no_parse",
+        "_usage": {
+          "input_tokens": 272,
+          "output_tokens": 149,
+          "source": "estimate",
+          "latency_sec": 11.89202880859375
+        }
+      }
+    },
+    {
+      "ts": "20251112T172304Z",
+      "kind": "planner_usage",
+      "turn": 3,
+      "input_tokens": 272,
+      "output_tokens": 18,
+      "latency_sec": 15.489788055419922,
+      "cost_usd": 0.00052,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251112T172304Z",
+      "kind": "planner_plan",
+      "turn": 3,
+      "plan": {
+        "on_settings_page": null,
+        "selectors": [],
+        "capture": {
+          "fullpage": false,
+          "section_name": null,
+          "elements": []
+        },
+        "batch": {
+          "clicks": [
+            {
+              "type": "text",
+              "selector": "Account ownership and control"
+            }
+          ],
+          "screenshots": [
+            {
+              "fullpage": true,
+              "section_name": "Personal details"
+            }
+          ]
+        },
+        "notes": "parsed_from_script",
+        "_usage": {
+          "input_tokens": 272,
+          "output_tokens": 18,
+          "source": "estimate",
+          "latency_sec": 15.489788055419922
+        }
+      }
+    },
+    {
+      "ts": "20251112T172304Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Account ownership and control"
+      },
+      "url": "https://accountscenter.facebook.com/personal_info/account_ownership_and_control"
+    },
+    {
+      "ts": "20251112T172305Z",
+      "kind": "auto_fullpage",
+      "url": "https://accountscenter.facebook.com/personal_info/account_ownership_and_control",
+      "path": "/generaloutput/facebook/screenshots/sections/after_click__Account_ownership_and_control_20251112T172305Z.png",
+      "label": "after_click__Account_ownership_and_control"
+    },
+    {
+      "ts": "20251112T172305Z",
+      "kind": "capture_fullpage",
+      "url": "https://accountscenter.facebook.com/personal_info/account_ownership_and_control",
+      "path": "/generaloutput/facebook/screenshots/sections/personal_details_20251112T172305Z.png",
+      "section": "Personal details"
+    },
+    {
+      "ts": "20251112T172328Z",
+      "kind": "planner_usage",
+      "turn": 4,
+      "input_tokens": 368,
+      "output_tokens": 0,
+      "latency_sec": 22.579695224761963,
+      "cost_usd": 0.00046,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251112T172328Z",
+      "kind": "planner_plan",
+      "turn": 4,
+      "plan": {
+        "on_settings_page": false,
+        "selectors": [],
+        "capture": {
+          "fullpage": false,
+          "section_name": null,
+          "elements": []
+        },
+        "notes": "empty_text",
+        "_usage": {
+          "input_tokens": 368,
+          "output_tokens": 0,
+          "source": "estimate",
+          "latency_sec": 22.579695224761963
+        }
+      }
+    },
+    {
+      "ts": "20251112T172347Z",
+      "kind": "planner_usage",
+      "turn": 5,
+      "input_tokens": 368,
+      "output_tokens": 10,
+      "latency_sec": 11.800998210906982,
+      "cost_usd": 0.00056,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251112T172347Z",
+      "kind": "planner_plan",
+      "turn": 5,
+      "plan": {
+        "on_settings_page": null,
+        "selectors": [],
+        "capture": {
+          "fullpage": false,
+          "section_name": null,
+          "elements": []
+        },
+        "batch": {
+          "clicks": [
+            {
+              "type": "text",
+              "selector": "Deactivation or deletion"
+            }
+          ],
+          "screenshots": []
+        },
+        "notes": "parsed_from_script",
+        "_usage": {
+          "input_tokens": 368,
+          "output_tokens": 10,
+          "source": "estimate",
+          "latency_sec": 11.800998210906982
+        }
+      }
+    },
+    {
+      "ts": "20251112T172348Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Deactivation or deletion"
+      },
+      "url": "https://accountscenter.facebook.com/personal_info/account_ownership_and_control/deletion_and_deactivation/?is_from_dialog=true"
+    },
+    {
+      "ts": "20251112T172349Z",
+      "kind": "auto_fullpage",
+      "url": "https://accountscenter.facebook.com/personal_info/account_ownership_and_control/deletion_and_deactivation/?is_from_dialog=true",
+      "path": "/generaloutput/facebook/screenshots/sections/after_click__Deactivation_or_deletion_20251112T172349Z.png",
+      "label": "after_click__Deactivation_or_deletion"
+    }
+  ],
+  "sections": [
+    {
+      "name": "Password and security",
+      "path": [
+        "Password and security"
+      ],
+      "url": "https://accountscenter.facebook.com/personal_info",
+      "evidence_fullpage": "/generaloutput/facebook/screenshots/sections/password_and_security_20251112T172235Z.png",
+      "items": []
+    },
+    {
+      "name": "Personal details",
+      "path": [
+        "Personal details"
+      ],
+      "url": "https://accountscenter.facebook.com/personal_info/account_ownership_and_control",
+      "evidence_fullpage": "/generaloutput/facebook/screenshots/sections/personal_details_20251112T172305Z.png",
+      "items": []
+    }
+  ],
+  "errors": [],
+  "model_calls": 5,
+  "state": {
+    "visited_urls": [
+      "https://accountscenter.facebook.com/password_and_security",
+      "https://accountscenter.facebook.com/info_and_permissions",
+      "https://accountscenter.facebook.com/ads",
+      "https://accountscenter.facebook.com/personal_info",
+      "https://accountscenter.facebook.com/personal_info/account_ownership_and_control",
+      "https://accountscenter.facebook.com/personal_info/account_ownership_and_control/deletion_and_deactivation/?is_from_dialog=true"
+    ],
+    "captured_sections": [
+      "password and security",
+      "personal details"
+    ],
+    "last_capture_url": "https://accountscenter.facebook.com/personal_info/account_ownership_and_control"
+  },
+  "metrics": {
+    "run_start_ts": "2025-11-12T17:22:12.141826Z",
+    "run_end_ts": "2025-11-12T17:23:49.466101Z",
+    "total_runtime_sec": 97.324275,
+    "turns": 5,
+    "steps": {
+      "batch_clicks": 5,
+      "selectors_applied": 0,
+      "fullpage_screens": 2,
+      "element_screens": 0,
+      "auto_screens": 11
+    },
+    "api": {
+      "calls": 5,
+      "input_tokens": 1484,
+      "output_tokens": 213,
+      "cost_usd": 0.003985,
+      "per_call": [
+        {
+          "turn": 1,
+          "input_tokens": 204,
+          "output_tokens": 36,
+          "latency_sec": 13.017916917800903,
+          "cost_usd": 0.000615,
+          "source": "estimate"
+        },
+        {
+          "turn": 2,
+          "input_tokens": 272,
+          "output_tokens": 149,
+          "latency_sec": 11.89202880859375,
+          "cost_usd": 0.00183,
+          "source": "estimate"
+        },
+        {
+          "turn": 3,
+          "input_tokens": 272,
+          "output_tokens": 18,
+          "latency_sec": 15.489788055419922,
+          "cost_usd": 0.00052,
+          "source": "estimate"
+        },
+        {
+          "turn": 4,
+          "input_tokens": 368,
+          "output_tokens": 0,
+          "latency_sec": 22.579695224761963,
+          "cost_usd": 0.00046,
+          "source": "estimate"
+        },
+        {
+          "turn": 5,
+          "input_tokens": 368,
+          "output_tokens": 10,
+          "latency_sec": 11.800998210906982,
+          "cost_usd": 0.00056,
+          "source": "estimate"
+        }
+      ]
+    }
+  }
+}
+
