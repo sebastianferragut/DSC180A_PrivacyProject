@@ -38,6 +38,32 @@ class PrivacySettingsExtractor:
         self.client = genai.Client(api_key=self.api_key)
         self.model_id = 'gemini-2.5-pro'
 
+    def _slice_vertical(self, image_path: str, max_height: int = 2200) -> List[str]:
+        """
+        Automatically slices extremely tall images into smaller vertical segments.
+        Returns a list of file paths to slice images (including the original if short).
+        """
+        from PIL import Image
+        
+        img = Image.open(image_path)
+        w, h = img.size
+        
+        # If not tall enough, return original
+        if h <= max_height:
+            return [image_path]
+        
+        slices = []
+        base = Path(image_path)
+        
+        for top in range(0, h, max_height):
+            box = (0, top, w, min(top + max_height, h))
+            slice_img = img.crop(box)
+            slice_path = f"{base.parent}/{base.stem}_slice_{top}{base.suffix}"
+            slice_img.save(slice_path)
+            slices.append(slice_path)
+        
+        return slices
+    
     def _create_extraction_prompt(self) -> str:
         """Creates the prompt that instructs Gemini to extract all individual privacy settings with their names, descriptions, and states from a screenshot."""
         return """
@@ -126,6 +152,29 @@ class PrivacySettingsExtractor:
                 "settings": []
             }
     
+    def _retry_generate_content(self, parts, max_retries=5):
+        import time, random
+        
+        for i in range(max_retries):
+            try:
+                return self.client.models.generate_content(
+                    model=self.model_id,
+                    contents=[Content(role="user", parts=parts)],
+                    config=types.GenerateContentConfig(
+                        temperature=0.1,
+                        max_output_tokens=4096
+                    )
+                )
+            except Exception as e:
+                msg = str(e)
+                if "503" in msg or "overloaded" in msg or "UNAVAILABLE" in msg:
+                    wait = 1.0 * (2 ** i) + random.uniform(0, 0.4)
+                    print(f"⚠️ Model overloaded — retrying in {wait:.2f}s...")
+                    time.sleep(wait)
+                    continue
+                raise
+        raise RuntimeError("Max retries exceeded while calling Gemini API")
+    
     def extract_settings(self, image_path: str) -> Dict:
 
         """
@@ -140,37 +189,64 @@ class PrivacySettingsExtractor:
         """
 
         try:
-            # Load and prepare image
-            with open(image_path, 'rb') as f:
-                image_data = f.read()
-            
-            # Create extraction prompt
-            extraction_prompt = self._create_extraction_prompt()
-            
-            # Call Gemini API
-            response = self.client.models.generate_content(
-                model=self.model_id,
-                contents=[
-                    Content(
-                        role="user",
-                        parts=[
-                            Part(text=extraction_prompt),
-                            Part.from_bytes(data=image_data, mime_type='image/png')
-                        ]
+            # 1. Slice extremely tall images
+            slice_paths = self._slice_vertical(image_path)
+
+            all_slice_settings = []
+
+            for slice_path in slice_paths:
+                # Load image
+                with open(slice_path, 'rb') as f:
+                    image_data = f.read()
+
+                # Create prompt
+                extraction_prompt = self._create_extraction_prompt()
+
+                # Parts for Gemini API
+                parts = [
+                    Part(text=extraction_prompt),
+                    Part.from_bytes(data=image_data, mime_type="image/png")
+                ]
+
+                # 2. Safe retry wrapper
+                try:
+                    response = self._retry_generate_content(parts)
+                except Exception as e:
+                    return {
+                        "status": "error",
+                        "message": f"Failed to extract settings: {str(e)}",
+                        "image_path": image_path,
+                        "timestamp": datetime.now().isoformat(),
+                        "settings": []
+                    }
+
+                # 3. Null-safe extraction
+                try:
+                    text = (
+                        response.candidates[0].content.parts[0].text
+                        if response and response.candidates
+                        and response.candidates[0].content
+                        and response.candidates[0].content.parts
+                        else ""
                     )
-                ],
-                config=types.GenerateContentConfig(
-                    temperature=0.1,
-                    max_output_tokens=4096  # Increased for potentially many settings
-                )
-            )
-            
-            # Parse response
-            extraction_text = response.candidates[0].content.parts[0].text
-            extraction_data = self._parse_extraction_response(extraction_text, image_path)
-            
-            return extraction_data
-            
+                except Exception:
+                    text = ""
+
+                if not text.strip():
+                    continue
+
+                parsed = self._parse_extraction_response(text, slice_path)
+                all_slice_settings.extend(parsed.get("settings", []))
+
+            # Combine slices output
+            return {
+                "status": "success",
+                "image_path": image_path,
+                "timestamp": datetime.now().isoformat(),
+                "settings": all_slice_settings,
+                "settings_count": len(all_slice_settings)
+            }
+
         except Exception as e:
             return {
                 "status": "error",
