@@ -1,47 +1,8 @@
 #!/usr/bin/env python3
-"""
-Navigate to URLs from Facebook JSON
+# Usage:
+# python3 navigate_to_urls.py --find "password"
+# or any other keyword to find a matching URL
 
-This script loads URLs from facebook.json and navigates to them using Playwright.
-This is the first step in creating a tool to navigate to specific privacy settings pages.
-
-Quick Start (Auth + Session Persistence)
----------------------------------------
-There are two ways to avoid logging in every run:
-
-A) Storage State (cookies/session in a JSON file)
-   1) Run this script normally; on first protected URL it will auto-detect login and fill credentials.
-   2) After a successful login, it saves storage to: profiles/storage/accountscenter.facebook.com.json
-   3) Next runs will automatically load this storage file and skip login (until it expires).
-   4) To force a fresh save or use a different site, set storage_state_file in URLNavigator.
-
-   Example:
-       navigator = URLNavigator(
-           "json_data/facebook.json",
-           headless=False,
-           storage_state_file="profiles/storage/accountscenter.facebook.com.json",
-           save_storage_after_login=True
-       )
-
-B) Persistent Profile (Chrome user data directory)
-   1) Enable use_persistent_profile=True and pick a profile_dir (created if missing).
-   2) First time, log in (auto-fill will try to help). The profile persists across runs.
-   3) Subsequent runs reuse the profile and remain logged in unless the site logs you out.
-
-   Example:
-       navigator = URLNavigator(
-           "json_data/facebook.json",
-           headless=False,
-           use_persistent_profile=True,
-           profile_dir="profiles/chrome/facebook"
-       )
-
-Notes
------
-- You may need to solve CAPTCHA/2FA once. After that, storage/profile will be reused.
-- Sessions can expire; if that happens, the script will detect login again and resave storage.
-- Do this once per site (Facebook, LinkedIn, Zoom), each with its own storage/profile path.
-"""
 
 import json
 from pathlib import Path
