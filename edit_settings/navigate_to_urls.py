@@ -1,15 +1,31 @@
 #!/usr/bin/env python3
 # Usage:
-# python3 navigate_to_urls.py --json-file json_data/facebook.json --find "password"
-# or any other keyword to find a matching URL
+# python3 navigate_to_urls.py facebook --find "Personal Details" --change-birthday 5 15 1990
+# python3 navigate_to_urls.py zoom --url "https://zoom.us/profile/setting?tab=general" --list-toggles
+# python3 navigate_to_urls.py zoom --url "https://zoom.us/profile/setting?tab=general" --change-toggle "Enable notifications" disable
+# python3 navigate_to_urls.py linkedin --ads
+# or use --json-file for custom paths: python3 navigate_to_urls.py --json-file custom/path.json --find "password"
 
 
 import json
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 import time
 import argparse
 import re
+import os
+import tempfile
+import base64
+
+try:
+    from google import genai
+    from google.genai import types
+    from google.genai.types import Content, Part
+    GEMINI_AVAILABLE = True
+except ImportError:
+    GEMINI_AVAILABLE = False
+    print("Warning: google-genai is required for Gemini features")
+    print("Install with: pip install google-genai")
 
 try:
     from playwright.sync_api import sync_playwright, Browser, Page, BrowserContext
@@ -661,6 +677,113 @@ class URLNavigator:
             print(f"   ⚠️  Error finding toggle: {e}")
             return None
     
+    def change_toggle(self, toggle_label: str, enable: bool = True, wait_time: float = 2.0) -> Dict[str, any]:
+        """
+        Change any toggle/switch on the current page by finding it by label.
+        
+        Args:
+            toggle_label: Name/label of the toggle to change (e.g., "Enable notifications", "Auto-start")
+            enable: True to enable, False to disable
+            wait_time: Time to wait after page load (seconds)
+        
+        Returns:
+            Dictionary with operation result
+        """
+        if not self.page:
+            raise RuntimeError("Browser not started. Call start_browser() first.")
+        
+        try:
+            print(f"🔧 Looking for toggle: '{toggle_label}'")
+            
+            # Wait for page to be ready
+            self.page.wait_for_load_state("domcontentloaded", timeout=30000)
+            time.sleep(1)
+            
+            # Try to expand sections first (some sites use accordions)
+            try:
+                expand_buttons = self.page.locator("button, [role='button'], summary").filter(has_text=re.compile(r"expand|show|more|manage", re.I))
+                for i in range(min(expand_buttons.count(), 10)):
+                    try:
+                        expand_buttons.nth(i).click(timeout=2000)
+                        time.sleep(0.5)
+                    except:
+                        pass
+            except:
+                pass
+            
+            # Find the toggle
+            toggle = self.find_toggle_by_label(toggle_label, partial_match=True)
+            
+            if not toggle or toggle.count() == 0:
+                return {
+                    "status": "error",
+                    "message": f"Could not find toggle: '{toggle_label}'"
+                }
+            
+            # Scroll toggle into view to ensure it's visible and interactable
+            try:
+                toggle.scroll_into_view_if_needed()
+                time.sleep(0.3)  # Small delay after scrolling
+            except:
+                pass  # Continue even if scrolling fails
+            
+            # Check current state
+            try:
+                is_checked = False
+                try:
+                    is_checked = toggle.is_checked()
+                except:
+                    # Try aria-checked for role="switch"
+                    aria_checked = toggle.get_attribute("aria-checked")
+                    if aria_checked == "true":
+                        is_checked = True
+                
+                current_state = "enabled" if is_checked else "disabled"
+                target_state = "enabled" if enable else "disabled"
+                
+                print(f"   📊 Current state: {current_state}")
+                print(f"   🎯 Target state: {target_state}")
+                
+                # Only toggle if needed
+                if (enable and not is_checked) or (not enable and is_checked):
+                    print(f"   🔄 Toggling switch...")
+                    toggle.click(timeout=5000)
+                    time.sleep(wait_time)
+                    
+                    # Verify the change
+                    try:
+                        new_checked = toggle.is_checked()
+                    except:
+                        new_aria_checked = toggle.get_attribute("aria-checked")
+                        new_checked = new_aria_checked == "true"
+                    
+                    new_state = "enabled" if new_checked else "disabled"
+                    print(f"   ✅ Toggle changed to: {new_state}")
+                    
+                    return {
+                        "status": "success",
+                        "message": f"Toggle '{toggle_label}' changed to {target_state}",
+                        "previous_state": current_state,
+                        "new_state": new_state
+                    }
+                else:
+                    return {
+                        "status": "success",
+                        "message": f"Toggle '{toggle_label}' is already {target_state}",
+                        "current_state": current_state
+                    }
+            except Exception as e:
+                return {
+                    "status": "error",
+                    "message": f"Error toggling switch: {str(e)}"
+                }
+                
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": f"Failed to change toggle: {str(e)}"
+            }
+    
     def change_ad_setting(self, setting_name: str, enable: bool = True, wait_time: float = 2.0) -> Dict[str, any]:
         """
         Change an ad setting by finding and toggling it.
@@ -759,6 +882,1452 @@ class URLNavigator:
             return {
                 "status": "error",
                 "message": f"Failed to change ad setting: {str(e)}"
+            }
+    
+    def change_birthday(self, month: int, day: int, year: int, wait_time: float = 2.0) -> Dict[str, any]:
+        """
+        Change the birthday on the current page.
+        
+        Args:
+            month: Month (1-12)
+            day: Day (1-31)
+            year: Year (e.g., 1990)
+            wait_time: Time to wait after page load (seconds)
+        
+        Returns:
+            Dictionary with operation result
+        """
+        if not self.page:
+            raise RuntimeError("Browser not started. Call start_browser() first.")
+        
+        try:
+            print(f"🎂 Changing birthday to: {month}/{day}/{year}")
+            
+            # Validate inputs
+            if not (1 <= month <= 12):
+                return {
+                    "status": "error",
+                    "message": f"Invalid month: {month}. Must be between 1 and 12."
+                }
+            if not (1 <= day <= 31):
+                return {
+                    "status": "error",
+                    "message": f"Invalid day: {day}. Must be between 1 and 31."
+                }
+            if not (1900 <= year <= 2100):
+                return {
+                    "status": "error",
+                    "message": f"Invalid year: {year}. Must be between 1900 and 2100."
+                }
+            
+            # Wait for page to be ready
+            self.page.wait_for_load_state("domcontentloaded", timeout=30000)
+            time.sleep(1)
+            
+            # Try to expand sections first (Facebook often uses accordions)
+            try:
+                expand_buttons = self.page.locator("button, [role='button'], summary").filter(has_text=re.compile(r"expand|show|more|manage|edit", re.I))
+                for i in range(min(expand_buttons.count(), 10)):
+                    try:
+                        expand_buttons.nth(i).click(timeout=2000)
+                        time.sleep(0.5)
+                    except:
+                        pass
+            except:
+                pass
+            
+            # Find birthday fields - try multiple strategies
+            month_filled = False
+            day_filled = False
+            year_filled = False
+            
+            # Strategy 1: Look for select elements with month/day/year
+            try:
+                # Find month select
+                month_selectors = [
+                    'select[name*="month" i]',
+                    'select[id*="month" i]',
+                    'select[aria-label*="month" i]',
+                    'select:has(option[value*="month" i])',
+                ]
+                for selector in month_selectors:
+                    try:
+                        month_select = self.page.locator(selector).first
+                        if month_select.count() > 0:
+                            month_select.select_option(value=str(month))
+                            month_filled = True
+                            print(f"   ✅ Filled month: {month}")
+                            time.sleep(0.5)
+                            break
+                    except:
+                        continue
+                
+                # Find day select
+                day_selectors = [
+                    'select[name*="day" i]',
+                    'select[id*="day" i]',
+                    'select[aria-label*="day" i]',
+                ]
+                for selector in day_selectors:
+                    try:
+                        day_select = self.page.locator(selector).first
+                        if day_select.count() > 0:
+                            day_select.select_option(value=str(day))
+                            day_filled = True
+                            print(f"   ✅ Filled day: {day}")
+                            time.sleep(0.5)
+                            break
+                    except:
+                        continue
+                
+                # Find year select
+                year_selectors = [
+                    'select[name*="year" i]',
+                    'select[id*="year" i]',
+                    'select[aria-label*="year" i]',
+                ]
+                for selector in year_selectors:
+                    try:
+                        year_select = self.page.locator(selector).first
+                        if year_select.count() > 0:
+                            year_select.select_option(value=str(year))
+                            year_filled = True
+                            print(f"   ✅ Filled year: {year}")
+                            time.sleep(0.5)
+                            break
+                    except:
+                        continue
+            except Exception as e:
+                print(f"   ⚠️  Select-based search failed: {e}")
+            
+            # Strategy 2: Look for input fields
+            if not month_filled or not day_filled or not year_filled:
+                try:
+                    # Find all input fields that might be date-related
+                    inputs = self.page.locator('input[type="text"], input[type="number"], input:not([type])').all()
+                    for input_elem in inputs[:20]:  # Check first 20 inputs
+                        try:
+                            name = (input_elem.get_attribute("name") or "").lower()
+                            input_id = (input_elem.get_attribute("id") or "").lower()
+                            placeholder = (input_elem.get_attribute("placeholder") or "").lower()
+                            aria_label = (input_elem.get_attribute("aria-label") or "").lower()
+                            
+                            # Check if it's a month field
+                            if not month_filled and ("month" in name or "month" in input_id or "month" in placeholder or "month" in aria_label):
+                                input_elem.fill(str(month))
+                                month_filled = True
+                                print(f"   ✅ Filled month (input): {month}")
+                                time.sleep(0.5)
+                            
+                            # Check if it's a day field
+                            if not day_filled and ("day" in name or "day" in input_id or "day" in placeholder or "day" in aria_label):
+                                input_elem.fill(str(day))
+                                day_filled = True
+                                print(f"   ✅ Filled day (input): {day}")
+                                time.sleep(0.5)
+                            
+                            # Check if it's a year field
+                            if not year_filled and ("year" in name or "year" in input_id or "year" in placeholder or "year" in aria_label):
+                                input_elem.fill(str(year))
+                                year_filled = True
+                                print(f"   ✅ Filled year (input): {year}")
+                                time.sleep(0.5)
+                        except:
+                            continue
+                except Exception as e:
+                    print(f"   ⚠️  Input-based search failed: {e}")
+            
+            # Strategy 3: Look for date picker or combined date field
+            if not (month_filled and day_filled and year_filled):
+                try:
+                    # Look for a single date input field
+                    date_inputs = self.page.locator('input[type="date"], input[name*="birth" i], input[id*="birth" i], input[placeholder*="birth" i]').all()
+                    for date_input in date_inputs[:5]:
+                        try:
+                            # Format as YYYY-MM-DD for date input
+                            date_value = f"{year:04d}-{month:02d}-{day:02d}"
+                            date_input.fill(date_value)
+                            month_filled = day_filled = year_filled = True
+                            print(f"   ✅ Filled date (combined field): {date_value}")
+                            time.sleep(0.5)
+                            break
+                        except:
+                            continue
+                except Exception as e:
+                    print(f"   ⚠️  Date picker search failed: {e}")
+            
+            # Check if we found and filled all fields
+            if month_filled and day_filled and year_filled:
+                time.sleep(wait_time)
+                
+                # Try to find and click save/submit button
+                save_button = None
+                save_selectors = [
+                    'button:has-text("Save")',
+                    'button:has-text("Update")',
+                    'button:has-text("Confirm")',
+                    'button[type="submit"]',
+                    'button[id*="save" i]',
+                    '[role="button"]:has-text("Save")',
+                ]
+                
+                for selector in save_selectors:
+                    try:
+                        save_button = self.page.locator(selector).first
+                        if save_button.count() > 0:
+                            save_button.click(timeout=5000)
+                            print(f"   ✅ Clicked save button")
+                            time.sleep(2)
+                            break
+                    except:
+                        continue
+                
+                return {
+                    "status": "success",
+                    "message": f"Birthday changed to {month}/{day}/{year}",
+                    "month": month,
+                    "day": day,
+                    "year": year,
+                    "saved": save_button is not None and save_button.count() > 0
+                }
+            else:
+                missing = []
+                if not month_filled:
+                    missing.append("month")
+                if not day_filled:
+                    missing.append("day")
+                if not year_filled:
+                    missing.append("year")
+                
+                return {
+                    "status": "error",
+                    "message": f"Could not find birthday fields. Missing: {', '.join(missing)}",
+                    "month_filled": month_filled,
+                    "day_filled": day_filled,
+                    "year_filled": year_filled
+                }
+                
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": f"Failed to change birthday: {str(e)}"
+            }
+    
+    def list_toggles(self) -> List[Dict[str, any]]:
+        """
+        List all available toggles/switches on the current page.
+        
+        Returns:
+            List of dictionaries with toggle information
+        """
+        if not self.page:
+            raise RuntimeError("Browser not started. Call start_browser() first.")
+        
+        try:
+            self.page.wait_for_load_state("domcontentloaded", timeout=30000)
+            time.sleep(1)
+            
+            toggles_list = []
+            
+            # Find all toggles/switches - simple selector-based approach
+            toggle_selectors = [
+                '[role="switch"]',
+                'input[type="checkbox"]',
+                'input[type="radio"]',
+                '[class*="toggle" i]',
+                '[class*="switch" i]',
+            ]
+            
+            all_toggles = []
+            for selector in toggle_selectors:
+                try:
+                    toggles = self.page.locator(selector).all()
+                    all_toggles.extend(toggles[:50])  # Limit per selector
+                except:
+                    continue
+            
+            # Remove duplicates
+            seen_elements = set()
+            unique_toggles = []
+            for toggle in all_toggles:
+                try:
+                    toggle_id = toggle.get_attribute("id") or ""
+                    toggle_name = toggle.get_attribute("name") or ""
+                    key = f"{toggle_id}:{toggle_name}"
+                    if key and key not in seen_elements:
+                        seen_elements.add(key)
+                        unique_toggles.append(toggle)
+                    elif not key:
+                        try:
+                            box = toggle.bounding_box()
+                            pos_key = f"{box['x']}:{box['y']}"
+                            if pos_key not in seen_elements:
+                                seen_elements.add(pos_key)
+                                unique_toggles.append(toggle)
+                        except:
+                            unique_toggles.append(toggle)
+                except:
+                    continue
+            
+            for toggle in unique_toggles[:100]:  # Limit to first 100
+                try:
+                    # Scroll toggle into view
+                    toggle.scroll_into_view_if_needed()
+                    time.sleep(0.1)
+                    
+                    # Get label
+                    label = None
+                    try:
+                        label = toggle.get_attribute("aria-label")
+                    except:
+                        pass
+                    
+                    if not label:
+                        try:
+                            toggle_id = toggle.get_attribute("id")
+                            if toggle_id:
+                                label_elem = self.page.locator(f"label[for='{toggle_id}']")
+                                if label_elem.count() > 0:
+                                    label = label_elem.inner_text()
+                        except:
+                            pass
+                    
+                    if not label:
+                        try:
+                            parent = toggle.locator("xpath=..")
+                            label = parent.inner_text()[:100]
+                        except:
+                            pass
+                    
+                    # Get state
+                    state = "unknown"
+                    try:
+                        if toggle.get_attribute("type") == "checkbox":
+                            state = "checked" if toggle.is_checked() else "unchecked"
+                        else:
+                            aria_checked = toggle.get_attribute("aria-checked")
+                            state = "on" if aria_checked == "true" else "off"
+                    except:
+                        pass
+                    
+                    if label:
+                        label = ' '.join(label.split())[:150]
+                        toggles_list.append({
+                            "label": label.strip(),
+                            "state": state,
+                            "selector": str(toggle)
+                        })
+                except:
+                    continue
+            
+            return toggles_list
+        except Exception as e:
+            print(f"⚠️  Error listing toggles: {e}")
+            return []
+    
+    def check_checkbox(self, checkbox_label: str, check: bool = True, wait_time: float = 2.0) -> Dict[str, any]:
+        """
+        Check or uncheck a checkbox by parsing the HTML DOM to find it by label text.
+        
+        Args:
+            checkbox_label: Label text of the checkbox to check/uncheck
+            check: True to check, False to uncheck
+            wait_time: Time to wait after checking/unchecking (seconds)
+        
+        Returns:
+            Dictionary with operation result
+        """
+        if not self.page:
+            raise RuntimeError("Browser not started. Call start_browser() first.")
+        
+        try:
+            action = "check" if check else "uncheck"
+            print(f"☑️  Parsing DOM to find checkbox: '{checkbox_label}' ({action})")
+            
+            # Wait for page to be ready
+            self.page.wait_for_load_state("domcontentloaded", timeout=30000)
+            time.sleep(1)
+            
+            # Parse HTML DOM using JavaScript to find the checkbox
+            # Use json.dumps to properly escape the label for JavaScript
+            search_text_js = json.dumps(checkbox_label)
+            checkbox_info = self.page.evaluate(f"""
+                (() => {{
+                    // Helper function to get XPath
+                    function getXPath(element) {{
+                        if (element.id !== '') {{
+                            return `//*[@id="${{element.id}}"]`;
+                        }}
+                        if (element === document.body) {{
+                            return '/html/body';
+                        }}
+                        let ix = 0;
+                        const siblings = element.parentNode.childNodes;
+                        for (let i = 0; i < siblings.length; i++) {{
+                            const sibling = siblings[i];
+                            if (sibling === element) {{
+                                return getXPath(element.parentNode) + '/' + element.tagName.toLowerCase() + '[' + (ix + 1) + ']';
+                            }}
+                            if (sibling.nodeType === 1 && sibling.tagName === element.tagName) {{
+                                ix++;
+                            }}
+                        }}
+                    }}
+                    
+                    const searchText = {search_text_js}.toLowerCase();
+                    const allInputs = document.querySelectorAll('input[type="checkbox"]');
+                    
+                    for (const checkbox of allInputs) {{
+                        // Try multiple ways to find the label
+                        let labelText = '';
+                        
+                        // 1. Check aria-label
+                        if (checkbox.getAttribute('aria-label')) {{
+                            labelText = checkbox.getAttribute('aria-label').toLowerCase();
+                            if (labelText.includes(searchText)) {{
+                                return {{
+                                    found: true,
+                                    id: checkbox.id || '',
+                                    name: checkbox.name || '',
+                                    selector: checkbox.id ? `#${{checkbox.id}}` : `input[type="checkbox"][name="${{checkbox.name}}"]`,
+                                    checked: checkbox.checked,
+                                    xpath: getXPath(checkbox)
+                                }};
+                            }}
+                        }}
+                        
+                        // 2. Check associated label element
+                        if (checkbox.id) {{
+                            const label = document.querySelector(`label[for="${{checkbox.id}}"]`);
+                            if (label) {{
+                                labelText = (label.innerText || label.textContent || '').toLowerCase();
+                                if (labelText.includes(searchText)) {{
+                                    return {{
+                                        found: true,
+                                        id: checkbox.id,
+                                        name: checkbox.name || '',
+                                        selector: `#${{checkbox.id}}`,
+                                        checked: checkbox.checked,
+                                        xpath: getXPath(checkbox)
+                                    }};
+                                }}
+                            }}
+                        }}
+                        
+                        // 3. Check parent element text
+                        let parent = checkbox.parentElement;
+                        for (let i = 0; i < 3 && parent; i++) {{
+                            const text = (parent.innerText || parent.textContent || '').toLowerCase();
+                            if (text.includes(searchText)) {{
+                                return {{
+                                    found: true,
+                                    id: checkbox.id || '',
+                                    name: checkbox.name || '',
+                                    selector: checkbox.id ? `#${{checkbox.id}}` : `input[type="checkbox"][name="${{checkbox.name}}"]`,
+                                    checked: checkbox.checked,
+                                    xpath: getXPath(checkbox)
+                                }};
+                            }}
+                            parent = parent.parentElement;
+                        }}
+                        
+                        // 4. Check previous siblings
+                        let sibling = checkbox.previousElementSibling;
+                        for (let i = 0; i < 3 && sibling; i++) {{
+                            const text = (sibling.innerText || sibling.textContent || '').toLowerCase();
+                            if (text.includes(searchText)) {{
+                                return {{
+                                    found: true,
+                                    id: checkbox.id || '',
+                                    name: checkbox.name || '',
+                                    selector: checkbox.id ? `#${{checkbox.id}}` : `input[type="checkbox"][name="${{checkbox.name}}"]`,
+                                    checked: checkbox.checked,
+                                    xpath: getXPath(checkbox)
+                                }};
+                            }}
+                            sibling = sibling.previousElementSibling;
+                        }}
+                        
+                        // 5. Check next siblings
+                        sibling = checkbox.nextElementSibling;
+                        for (let i = 0; i < 3 && sibling; i++) {{
+                            const text = (sibling.innerText || sibling.textContent || '').toLowerCase();
+                            if (text.includes(searchText)) {{
+                                return {{
+                                    found: true,
+                                    id: checkbox.id || '',
+                                    name: checkbox.name || '',
+                                    selector: checkbox.id ? `#${{checkbox.id}}` : `input[type="checkbox"][name="${{checkbox.name}}"]`,
+                                    checked: checkbox.checked,
+                                    xpath: getXPath(checkbox)
+                                }};
+                            }}
+                            sibling = sibling.nextElementSibling;
+                        }}
+                    }}
+                    
+                    return {{ found: false }};
+                }})()
+            """)
+            
+            if not checkbox_info or not checkbox_info.get("found"):
+                return {
+                    "status": "error",
+                    "message": f"Could not find checkbox with label containing: '{checkbox_label}'"
+                }
+            
+            # Use the selector or XPath to find the checkbox
+            checkbox = None
+            selector = checkbox_info.get("selector")
+            xpath = checkbox_info.get("xpath")
+            
+            if selector:
+                try:
+                    checkbox = self.page.locator(selector).first
+                    if checkbox.count() == 0:
+                        checkbox = None
+                except:
+                    checkbox = None
+            
+            if not checkbox and xpath:
+                try:
+                    checkbox = self.page.locator(f"xpath={xpath}").first
+                    if checkbox.count() == 0:
+                        checkbox = None
+                except:
+                    checkbox = None
+            
+            if not checkbox:
+                # Fallback: try to find by name or id
+                checkbox_id = checkbox_info.get("id")
+                checkbox_name = checkbox_info.get("name")
+                
+                if checkbox_id:
+                    checkbox = self.page.locator(f"#{checkbox_id}").first
+                elif checkbox_name:
+                    checkbox = self.page.locator(f'input[type="checkbox"][name="{checkbox_name}"]').first
+            
+            if not checkbox or checkbox.count() == 0:
+                return {
+                    "status": "error",
+                    "message": f"Found checkbox in DOM but could not create locator for: '{checkbox_label}'"
+                }
+            
+            # Scroll checkbox into view
+            try:
+                checkbox.scroll_into_view_if_needed()
+                time.sleep(0.3)
+            except:
+                pass
+            
+            # Check current state
+            was_checked = checkbox_info.get("checked", False)
+            try:
+                is_checked = checkbox.is_checked()
+                was_checked = is_checked
+            except:
+                try:
+                    aria_checked = checkbox.get_attribute("aria-checked")
+                    was_checked = aria_checked == "true"
+                except:
+                    pass
+            
+            # Check if it's already in the desired state
+            if check and was_checked:
+                return {
+                    "status": "success",
+                    "message": f"Checkbox '{checkbox_label}' is already checked",
+                    "was_checked": True,
+                    "now_checked": True
+                }
+            elif not check and not was_checked:
+                return {
+                    "status": "success",
+                    "message": f"Checkbox '{checkbox_label}' is already unchecked",
+                    "was_checked": False,
+                    "now_checked": False
+                }
+            
+            # Check or uncheck the checkbox
+            if check:
+                print(f"   ☑️  Checking checkbox...")
+                checkbox.check(timeout=5000)
+            else:
+                print(f"   ☐  Unchecking checkbox...")
+                checkbox.uncheck(timeout=5000)
+            
+            time.sleep(wait_time)
+            
+            # Verify the state
+            try:
+                is_checked = checkbox.is_checked()
+            except:
+                aria_checked = checkbox.get_attribute("aria-checked")
+                is_checked = aria_checked == "true"
+            
+            # Verify the desired state was achieved
+            if check and is_checked:
+                print(f"   ✅ Checkbox checked successfully")
+                return {
+                    "status": "success",
+                    "message": f"Checkbox '{checkbox_label}' checked successfully",
+                    "was_checked": was_checked,
+                    "now_checked": True
+                }
+            elif not check and not is_checked:
+                print(f"   ✅ Checkbox unchecked successfully")
+                return {
+                    "status": "success",
+                    "message": f"Checkbox '{checkbox_label}' unchecked successfully",
+                    "was_checked": was_checked,
+                    "now_checked": False
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": f"Checkbox '{checkbox_label}' was {'checked' if check else 'unchecked'} but may not be in the expected state"
+                }
+                
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return {
+                "status": "error",
+                "message": f"Failed to check checkbox: {str(e)}"
+            }
+    
+    def physical_toggle(self, label: str, enable: bool) -> Dict[str, any]:
+        """
+        Physically click a checkbox/toggle using Playwright's mouse API.
+        
+        Args:
+            label: Label text to find the element
+            enable: True to check/enable, False to uncheck/disable
+        
+        Returns:
+            Dictionary with previous_state, new_state, and element_found
+        """
+        if not self.page:
+            raise RuntimeError("Browser not started. Call start_browser() first.")
+        
+        try:
+            action = "enable" if enable else "disable"
+            print(f"🖱️  Physically clicking to {action}: '{label}'")
+            
+            # Wait for page to be ready
+            self.page.wait_for_load_state("domcontentloaded", timeout=30000)
+            time.sleep(1)
+            
+            # Find the element by label using the existing method
+            element = self.find_toggle_by_label(label, partial_match=True)
+            
+            if not element or element.count() == 0:
+                return {
+                    "element_found": False,
+                    "previous_state": None,
+                    "new_state": None,
+                    "status": "error",
+                    "message": f"Could not find element with label: '{label}'"
+                }
+            
+            # Scroll element into view
+            try:
+                element.scroll_into_view_if_needed()
+                time.sleep(0.3)
+            except Exception as e:
+                print(f"   ⚠️  Error scrolling into view: {e}")
+            
+            # Wait for element to be visible
+            try:
+                element.wait_for(state="visible", timeout=5000)
+            except Exception as e:
+                print(f"   ⚠️  Element may not be visible: {e}")
+            
+            # Get current state before clicking
+            previous_state = None
+            try:
+                if element.get_attribute("type") == "checkbox":
+                    previous_state = "checked" if element.is_checked() else "unchecked"
+                else:
+                    aria_checked = element.get_attribute("aria-checked")
+                    previous_state = "on" if aria_checked == "true" else "off"
+            except Exception as e:
+                print(f"   ⚠️  Could not determine previous state: {e}")
+                previous_state = "unknown"
+            
+            # Get bounding box
+            try:
+                box = element.bounding_box()
+                if not box:
+                    return {
+                        "element_found": True,
+                        "previous_state": previous_state,
+                        "new_state": None,
+                        "status": "error",
+                        "message": f"Could not get bounding box for element: '{label}'"
+                    }
+                
+                # Calculate center coordinates
+                center_x = box["x"] + box["width"] / 2
+                center_y = box["y"] + box["height"] / 2
+                
+                print(f"   📍 Element center: ({center_x:.0f}, {center_y:.0f})")
+                
+                # Move mouse to center of element
+                self.page.mouse.move(center_x, center_y)
+                time.sleep(0.2)  # Small delay after moving
+                
+                # Click using mouse API
+                print(f"   🖱️  Clicking at ({center_x:.0f}, {center_y:.0f})...")
+                self.page.mouse.click(center_x, center_y)
+                time.sleep(0.5)  # Wait for state change
+                
+            except Exception as e:
+                return {
+                    "element_found": True,
+                    "previous_state": previous_state,
+                    "new_state": None,
+                    "status": "error",
+                    "message": f"Error during mouse click: {str(e)}"
+                }
+            
+            # Verify the new state
+            new_state = None
+            try:
+                if element.get_attribute("type") == "checkbox":
+                    new_state = "checked" if element.is_checked() else "unchecked"
+                else:
+                    aria_checked = element.get_attribute("aria-checked")
+                    new_state = "on" if aria_checked == "true" else "off"
+            except Exception as e:
+                print(f"   ⚠️  Could not determine new state: {e}")
+                new_state = "unknown"
+            
+            # Check if state changed as expected
+            expected_state = "checked" if enable else "unchecked"
+            if element.get_attribute("type") != "checkbox":
+                expected_state = "on" if enable else "off"
+            
+            success = (new_state == expected_state) or (previous_state != new_state)
+            
+            if success:
+                print(f"   ✅ State changed: {previous_state} → {new_state}")
+                return {
+                    "element_found": True,
+                    "previous_state": previous_state,
+                    "new_state": new_state,
+                    "status": "success",
+                    "message": f"Element '{label}' toggled from {previous_state} to {new_state}"
+                }
+            else:
+                print(f"   ⚠️  State may not have changed as expected: {previous_state} → {new_state}")
+                return {
+                    "element_found": True,
+                    "previous_state": previous_state,
+                    "new_state": new_state,
+                    "status": "warning",
+                    "message": f"Element '{label}' clicked but state is {new_state} (expected {expected_state})"
+                }
+                
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return {
+                "element_found": False,
+                "previous_state": None,
+                "new_state": None,
+                "status": "error",
+                "message": f"Failed to physically toggle: {str(e)}"
+            }
+    
+    def _call_gemini_for_element_location(self, current_screenshot_path: str, reference_screenshot_path: str, text_elements_json: str) -> Dict[str, Any]:
+        """
+        Helper function to call Gemini API to locate an element.
+        
+        Args:
+            current_screenshot_path: Path to current page screenshot
+            reference_screenshot_path: Path to reference screenshot
+            text_elements_json: JSON string of text elements from DOM
+            
+        Returns:
+            Dictionary with Gemini's response or error
+        """
+        if not GEMINI_AVAILABLE:
+            return {
+                "status": "error",
+                "reason": "Gemini API not available. Install google-genai package.",
+                "raw_response": None
+            }
+        
+        api_key = os.environ.get("GEMINI_API_KEY")
+        if not api_key:
+            return {
+                "status": "error",
+                "reason": "GEMINI_API_KEY environment variable not set",
+                "raw_response": None
+            }
+        
+        try:
+            client = genai.Client(api_key=api_key)
+            model_id = 'gemini-2.5-pro'
+            
+            prompt = """
+You are helping a browser automation agent.
+
+You are given:
+1) A reference screenshot showing the desired setting in Zoom:
+   'Allow users to send text feedback'.
+
+2) A screenshot of the current page.
+
+3) A JSON list of text elements extracted from the current HTML, each with:
+   - text
+   - tag
+   - role
+   - bounding box (x, y, width, height)
+
+Task:
+- Look at the reference screenshot to understand approximately where and how the
+  'Allow users to send text feedback' control appears.
+- Using the CURRENT screenshot and the JSON list of text elements,
+  identify which element corresponds to the label or control for
+  'Allow users to send text feedback' (allow for partial matches and similar phrasing).
+
+Output ONLY JSON in this exact format:
+
+{
+  "label_text": "<the exact text of the best matching element>",
+  "reason": "<short explanation>",
+  "mode": "selector" | "coordinates",
+  "selector": "<CSS selector or empty string>",
+  "x": <number or null>,
+  "y": <number or null>
+}
+
+- Prefer a CSS selector if possible (mode="selector").
+- If you cannot reliably provide a selector, use mode="coordinates"
+  with x,y as the center of the target element's bounding box.
+"""
+            
+            # Read image files
+            with open(reference_screenshot_path, 'rb') as f:
+                reference_image = f.read()
+            
+            with open(current_screenshot_path, 'rb') as f:
+                current_image = f.read()
+            
+            # Create content with images and text
+            contents = Content(
+                role="user",
+                parts=[
+                    Part(text=prompt),
+                    Part(text=f"\n\nText elements from DOM:\n{text_elements_json}"),
+                    Part.from_bytes(data=reference_image, mime_type='image/png'),
+                    Part.from_bytes(data=current_image, mime_type='image/png')
+                ]
+            )
+            
+            # Call Gemini
+            response = client.models.generate_content(
+                model=model_id,
+                contents=[contents]
+            )
+            
+            # Extract text response
+            response_text = response.candidates[0].content.parts[0].text.strip()
+            
+            # Try to parse JSON from response (might be wrapped in markdown code blocks)
+            json_text = response_text
+            if "```json" in response_text:
+                json_text = response_text.split("```json")[1].split("```")[0].strip()
+            elif "```" in response_text:
+                json_text = response_text.split("```")[1].split("```")[0].strip()
+            
+            result = json.loads(json_text)
+            return {
+                "status": "success",
+                "result": result,
+                "raw_response": response_text
+            }
+            
+        except json.JSONDecodeError as e:
+            return {
+                "status": "error",
+                "reason": f"Failed to parse JSON from Gemini response: {str(e)}",
+                "raw_response": response_text if 'response_text' in locals() else None
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "reason": f"Gemini API call failed: {str(e)}",
+                "raw_response": None
+            }
+    
+    def _call_gemini_for_save_button(self, current_screenshot_path: str, text_elements_json: str) -> Dict[str, Any]:
+        """
+        Helper function to call Gemini API to locate the Save button.
+        
+        Args:
+            current_screenshot_path: Path to current page screenshot
+            text_elements_json: JSON string of text elements from DOM
+            
+        Returns:
+            Dictionary with Gemini's response or error
+        """
+        if not GEMINI_AVAILABLE:
+            return {
+                "status": "error",
+                "reason": "Gemini API not available. Install google-genai package.",
+                "raw_response": None
+            }
+        
+        api_key = os.environ.get("GEMINI_API_KEY")
+        if not api_key:
+            return {
+                "status": "error",
+                "reason": "GEMINI_API_KEY environment variable not set",
+                "raw_response": None
+            }
+        
+        try:
+            client = genai.Client(api_key=api_key)
+            model_id = 'gemini-2.5-pro'
+            
+            prompt = """
+You are helping a browser automation agent.
+
+You are given:
+1) A screenshot of the current page (after a setting was changed).
+2) A JSON list of text elements extracted from the current HTML, each with:
+   - text
+   - tag
+   - role
+   - bounding box (x, y, width, height)
+
+Task:
+- Look at the screenshot and identify the "Save" button (or similar: "Save Changes", "Apply", "Confirm", etc.)
+- Using the screenshot and the JSON list of text elements,
+  identify which element corresponds to the Save/Apply/Confirm button.
+
+Output ONLY JSON in this exact format:
+
+{
+  "button_text": "<the exact text of the button>",
+  "reason": "<short explanation>",
+  "mode": "selector" | "coordinates",
+  "selector": "<CSS selector or empty string>",
+  "x": <number or null>,
+  "y": <number or null>
+}
+
+- Prefer a CSS selector if possible (mode="selector").
+- If you cannot reliably provide a selector, use mode="coordinates"
+  with x,y as the center of the target button's bounding box.
+"""
+            
+            # Read image file
+            with open(current_screenshot_path, 'rb') as f:
+                current_image = f.read()
+            
+            # Create content with image and text
+            contents = Content(
+                role="user",
+                parts=[
+                    Part(text=prompt),
+                    Part(text=f"\n\nText elements from DOM:\n{text_elements_json}"),
+                    Part.from_bytes(data=current_image, mime_type='image/png')
+                ]
+            )
+            
+            # Call Gemini
+            response = client.models.generate_content(
+                model=model_id,
+                contents=[contents]
+            )
+            
+            # Extract text response
+            response_text = response.candidates[0].content.parts[0].text.strip()
+            
+            # Try to parse JSON from response (might be wrapped in markdown code blocks)
+            json_text = response_text
+            if "```json" in response_text:
+                json_text = response_text.split("```json")[1].split("```")[0].strip()
+            elif "```" in response_text:
+                json_text = response_text.split("```")[1].split("```")[0].strip()
+            
+            result = json.loads(json_text)
+            return {
+                "status": "success",
+                "result": result,
+                "raw_response": response_text
+            }
+            
+        except json.JSONDecodeError as e:
+            return {
+                "status": "error",
+                "reason": f"Failed to parse JSON from Gemini response: {str(e)}",
+                "raw_response": response_text if 'response_text' in locals() else None
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "reason": f"Gemini API call failed: {str(e)}",
+                "raw_response": None
+            }
+    
+    def toggle_zoom_text_feedback_setting(self, enable: bool) -> Dict[str, Any]:
+        """
+        Use Gemini + HTML text to locate and toggle the
+        'Allow users to send text feedback' setting on a Zoom settings page.
+        
+        Args:
+            enable: True to enable/check, False to disable/uncheck
+            
+        Returns:
+            Dictionary with status, previous_state, new_state, etc.
+        """
+        if not self.page:
+            raise RuntimeError("Browser not started. Call start_browser() first.")
+        
+        if not GEMINI_AVAILABLE:
+            return {
+                "status": "error",
+                "target": "Allow users to send text feedback",
+                "previous_state": "unknown",
+                "new_state": "unknown",
+                "selection_mode": "none",
+                "gemini_reason": "Gemini API not available"
+            }
+        
+        try:
+            print(f"🤖 Using Gemini to locate 'Allow users to send text feedback' setting...")
+            
+            # Wait for page to be ready
+            self.page.wait_for_load_state("domcontentloaded", timeout=30000)
+            time.sleep(1)
+            
+            # a) Collect structured text info from the current page
+            print("   📝 Collecting text elements from DOM...")
+            text_elements = self.page.evaluate("""
+                () => {
+                    const elements = [];
+                    const allElements = document.querySelectorAll('*');
+                    
+                    for (const el of allElements) {
+                        try {
+                            const text = (el.innerText || el.textContent || '').trim();
+                            
+                            // Filter to reasonable text length
+                            if (text.length < 2 || text.length > 200) continue;
+                            
+                            // Skip if element is not visible
+                            const rect = el.getBoundingClientRect();
+                            if (rect.width === 0 || rect.height === 0) continue;
+                            
+                            // Get role
+                            const role = el.getAttribute('role') || '';
+                            
+                            elements.push({
+                                text: text,
+                                tag: el.tagName.toLowerCase(),
+                                role: role,
+                                x: rect.x,
+                                y: rect.y,
+                                width: rect.width,
+                                height: rect.height
+                            });
+                        } catch (e) {
+                            // Skip elements that cause errors
+                            continue;
+                        }
+                    }
+                    
+                    return elements;
+                }
+            """)
+            
+            print(f"   ✅ Collected {len(text_elements)} text elements")
+            
+            # b) Capture current screenshot
+            print("   📸 Capturing current page screenshot...")
+            with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp_file:
+                current_screenshot_path = tmp_file.name
+                self.page.screenshot(path=current_screenshot_path, full_page=True)
+            
+            # c) Load reference screenshot
+            # Get the script directory and construct path
+            script_dir = Path(__file__).parent
+            reference_screenshot_path = script_dir.parent / "screenshot-classifier" / "screenshots" / "zoom" / "allow_text_feedback.png"
+            
+            # If the specific file doesn't exist, try to find a similar one
+            if not reference_screenshot_path.exists():
+                # Try to find any zoom screenshot as fallback
+                zoom_screenshots_dir = script_dir.parent / "screenshot-classifier" / "screenshots" / "zoom"
+                if zoom_screenshots_dir.exists():
+                    # Look for a settings-related screenshot
+                    for screenshot_file in zoom_screenshots_dir.glob("*.png"):
+                        if "setting" in screenshot_file.name.lower() or "initial" in screenshot_file.name.lower():
+                            reference_screenshot_path = screenshot_file
+                            print(f"   ⚠️  Using fallback reference: {reference_screenshot_path.name}")
+                            break
+                
+                if not reference_screenshot_path.exists():
+                    return {
+                        "status": "error",
+                        "target": "Allow users to send text feedback",
+                        "previous_state": "unknown",
+                        "new_state": "unknown",
+                        "selection_mode": "none",
+                        "gemini_reason": f"Reference screenshot not found at {reference_screenshot_path}"
+                    }
+            
+            print(f"   📷 Using reference screenshot: {reference_screenshot_path.name}")
+            
+            # d) Call Gemini
+            print("   🤖 Calling Gemini API...")
+            text_elements_json = json.dumps(text_elements, indent=2)
+            gemini_result = self._call_gemini_for_element_location(
+                current_screenshot_path,
+                str(reference_screenshot_path),
+                text_elements_json
+            )
+            
+            # Clean up temp screenshot
+            try:
+                os.unlink(current_screenshot_path)
+            except:
+                pass
+            
+            if gemini_result["status"] != "success":
+                return {
+                    "status": "error",
+                    "target": "Allow users to send text feedback",
+                    "previous_state": "unknown",
+                    "new_state": "unknown",
+                    "selection_mode": "none",
+                    "gemini_reason": gemini_result.get("reason", "Unknown error")
+                }
+            
+            gemini_response = gemini_result["result"]
+            selection_mode = gemini_response.get("mode", "none")
+            gemini_reason = gemini_response.get("reason", "")
+            
+            print(f"   ✅ Gemini found element: {gemini_response.get('label_text', 'N/A')}")
+            print(f"   📍 Mode: {selection_mode}")
+            
+            # e) Parse Gemini's response and toggle
+            previous_state = "unknown"
+            new_state = "unknown"
+            
+            if selection_mode == "selector":
+                selector = gemini_response.get("selector", "")
+                if selector:
+                    try:
+                        element = self.page.locator(selector).first
+                        if element.count() > 0:
+                            element.scroll_into_view_if_needed()
+                            time.sleep(0.3)
+                            
+                            # Get current state
+                            try:
+                                if element.get_attribute("type") == "checkbox":
+                                    is_checked = element.is_checked()
+                                    previous_state = "enabled" if is_checked else "disabled"
+                                else:
+                                    aria_checked = element.get_attribute("aria-checked")
+                                    previous_state = "enabled" if aria_checked == "true" else "disabled"
+                            except:
+                                pass
+                            
+                            # Toggle if needed
+                            current_is_enabled = previous_state == "enabled"
+                            if current_is_enabled != enable:
+                                if element.get_attribute("type") == "checkbox":
+                                    if enable:
+                                        element.check()
+                                    else:
+                                        element.uncheck()
+                                else:
+                                    element.click()
+                                time.sleep(0.5)
+                            
+                            # Get new state
+                            try:
+                                if element.get_attribute("type") == "checkbox":
+                                    is_checked = element.is_checked()
+                                    new_state = "enabled" if is_checked else "disabled"
+                                else:
+                                    aria_checked = element.get_attribute("aria-checked")
+                                    new_state = "enabled" if aria_checked == "true" else "disabled"
+                            except:
+                                pass
+                    except Exception as e:
+                        return {
+                            "status": "error",
+                            "target": "Allow users to send text feedback",
+                            "previous_state": previous_state,
+                            "new_state": new_state,
+                            "selection_mode": "selector",
+                            "gemini_reason": f"Error using selector: {str(e)}"
+                        }
+                else:
+                    return {
+                        "status": "error",
+                        "target": "Allow users to send text feedback",
+                        "previous_state": "unknown",
+                        "new_state": "unknown",
+                        "selection_mode": "selector",
+                        "gemini_reason": "No selector provided by Gemini"
+                    }
+            
+            elif selection_mode == "coordinates":
+                x = gemini_response.get("x")
+                y = gemini_response.get("y")
+                
+                if x is not None and y is not None:
+                    try:
+                        # Get state before clicking by finding nearby element
+                        # Try to find checkbox/toggle near coordinates
+                        nearby_element = self.page.evaluate(f"""
+                            () => {{
+                                const x = {x};
+                                const y = {y};
+                                const allInputs = document.querySelectorAll('input[type="checkbox"], [role="switch"]');
+                                let closest = null;
+                                let minDist = Infinity;
+                                
+                                for (const el of allInputs) {{
+                                    const rect = el.getBoundingClientRect();
+                                    const centerX = rect.x + rect.width / 2;
+                                    const centerY = rect.y + rect.height / 2;
+                                    const dist = Math.sqrt(Math.pow(centerX - x, 2) + Math.pow(centerY - y, 2));
+                                    
+                                    if (dist < minDist && dist < 100) {{
+                                        minDist = dist;
+                                        closest = el;
+                                    }}
+                                }}
+                                
+                                if (closest) {{
+                                    const rect = closest.getBoundingClientRect();
+                                    if (closest.type === 'checkbox') {{
+                                        return {{checked: closest.checked, type: 'checkbox'}};
+                                    }} else {{
+                                        return {{checked: closest.getAttribute('aria-checked') === 'true', type: 'switch'}};
+                                    }}
+                                }}
+                                return null;
+                            }}
+                        """)
+                        
+                        if nearby_element:
+                            previous_state = "enabled" if nearby_element.get("checked") else "disabled"
+                        
+                        # Move mouse and click
+                        self.page.mouse.move(x, y)
+                        time.sleep(0.2)
+                        self.page.mouse.click(x, y)
+                        time.sleep(0.5)
+                        
+                        # Get new state
+                        nearby_element_after = self.page.evaluate(f"""
+                            () => {{
+                                const x = {x};
+                                const y = {y};
+                                const allInputs = document.querySelectorAll('input[type="checkbox"], [role="switch"]');
+                                let closest = null;
+                                let minDist = Infinity;
+                                
+                                for (const el of allInputs) {{
+                                    const rect = el.getBoundingClientRect();
+                                    const centerX = rect.x + rect.width / 2;
+                                    const centerY = rect.y + rect.height / 2;
+                                    const dist = Math.sqrt(Math.pow(centerX - x, 2) + Math.pow(centerY - y, 2));
+                                    
+                                    if (dist < minDist && dist < 100) {{
+                                        minDist = dist;
+                                        closest = el;
+                                    }}
+                                }}
+                                
+                                if (closest) {{
+                                    if (closest.type === 'checkbox') {{
+                                        return {{checked: closest.checked, type: 'checkbox'}};
+                                    }} else {{
+                                        return {{checked: closest.getAttribute('aria-checked') === 'true', type: 'switch'}};
+                                    }}
+                                }}
+                                return null;
+                            }}
+                        """)
+                        
+                        if nearby_element_after:
+                            new_state = "enabled" if nearby_element_after.get("checked") else "disabled"
+                        
+                    except Exception as e:
+                        return {
+                            "status": "error",
+                            "target": "Allow users to send text feedback",
+                            "previous_state": previous_state,
+                            "new_state": new_state,
+                            "selection_mode": "coordinates",
+                            "gemini_reason": f"Error clicking coordinates: {str(e)}"
+                        }
+                else:
+                    return {
+                        "status": "error",
+                        "target": "Allow users to send text feedback",
+                        "previous_state": "unknown",
+                        "new_state": "unknown",
+                        "selection_mode": "coordinates",
+                        "gemini_reason": "No coordinates provided by Gemini"
+                    }
+            else:
+                return {
+                    "status": "error",
+                    "target": "Allow users to send text feedback",
+                    "previous_state": "unknown",
+                    "new_state": "unknown",
+                    "selection_mode": "none",
+                    "gemini_reason": f"Invalid mode from Gemini: {selection_mode}"
+                }
+            
+            # After successful toggle, find and click Save button
+            save_clicked = False
+            save_error = None
+            
+            if previous_state != new_state:  # Only try to save if state actually changed
+                print("   💾 Looking for Save button...")
+                time.sleep(1)  # Wait for page to update after toggle
+                
+                try:
+                    # Capture new screenshot after toggle
+                    with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp_file:
+                        post_toggle_screenshot_path = tmp_file.name
+                        self.page.screenshot(path=post_toggle_screenshot_path, full_page=True)
+                    
+                    # Collect text elements again (page may have changed)
+                    text_elements_after = self.page.evaluate("""
+                        () => {
+                            const elements = [];
+                            const allElements = document.querySelectorAll('*');
+                            
+                            for (const el of allElements) {
+                                try {
+                                    const text = (el.innerText || el.textContent || '').trim();
+                                    
+                                    // Filter to reasonable text length
+                                    if (text.length < 2 || text.length > 200) continue;
+                                    
+                                    // Skip if element is not visible
+                                    const rect = el.getBoundingClientRect();
+                                    if (rect.width === 0 || rect.height === 0) continue;
+                                    
+                                    // Get role
+                                    const role = el.getAttribute('role') || '';
+                                    
+                                    elements.push({
+                                        text: text,
+                                        tag: el.tagName.toLowerCase(),
+                                        role: role,
+                                        x: rect.x,
+                                        y: rect.y,
+                                        width: rect.width,
+                                        height: rect.height
+                                    });
+                                } catch (e) {
+                                    continue;
+                                }
+                            }
+                            
+                            return elements;
+                        }
+                    """)
+                    
+                    text_elements_json_after = json.dumps(text_elements_after, indent=2)
+                    
+                    # Call Gemini to find Save button
+                    save_result = self._call_gemini_for_save_button(
+                        post_toggle_screenshot_path,
+                        text_elements_json_after
+                    )
+                    
+                    # Clean up temp screenshot
+                    try:
+                        os.unlink(post_toggle_screenshot_path)
+                    except:
+                        pass
+                    
+                    if save_result["status"] == "success":
+                        save_response = save_result["result"]
+                        save_mode = save_response.get("mode", "none")
+                        
+                        print(f"   ✅ Found Save button: {save_response.get('button_text', 'N/A')}")
+                        print(f"   📍 Mode: {save_mode}")
+                        
+                        if save_mode == "selector":
+                            selector = save_response.get("selector", "")
+                            if selector:
+                                try:
+                                    save_button = self.page.locator(selector).first
+                                    if save_button.count() > 0:
+                                        save_button.scroll_into_view_if_needed()
+                                        time.sleep(0.3)
+                                        save_button.click(timeout=5000)
+                                        save_clicked = True
+                                        print("   ✅ Save button clicked (selector)")
+                                        time.sleep(1)
+                                except Exception as e:
+                                    save_error = f"Error clicking Save with selector: {str(e)}"
+                        elif save_mode == "coordinates":
+                            x = save_response.get("x")
+                            y = save_response.get("y")
+                            if x is not None and y is not None:
+                                try:
+                                    self.page.mouse.move(x, y)
+                                    time.sleep(0.2)
+                                    self.page.mouse.click(x, y)
+                                    save_clicked = True
+                                    print(f"   ✅ Save button clicked at ({x:.0f}, {y:.0f})")
+                                    time.sleep(1)
+                                except Exception as e:
+                                    save_error = f"Error clicking Save at coordinates: {str(e)}"
+                        else:
+                            save_error = f"Invalid Save button mode: {save_mode}"
+                    else:
+                        save_error = save_result.get("reason", "Could not find Save button")
+                        print(f"   ⚠️  {save_error}")
+                
+                except Exception as e:
+                    save_error = f"Exception while finding Save button: {str(e)}"
+                    print(f"   ⚠️  {save_error}")
+            
+            # f) Return result
+            result = {
+                "status": "success",
+                "target": "Allow users to send text feedback",
+                "previous_state": previous_state,
+                "new_state": new_state,
+                "selection_mode": selection_mode,
+                "gemini_reason": gemini_reason,
+                "save_clicked": save_clicked
+            }
+            
+            if save_error:
+                result["save_error"] = save_error
+            
+            return result
+            
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            return {
+                "status": "error",
+                "target": "Allow users to send text feedback",
+                "previous_state": "unknown",
+                "new_state": "unknown",
+                "selection_mode": "none",
+                "gemini_reason": f"Exception: {str(e)}"
             }
     
     def list_ad_settings(self) -> List[Dict[str, any]]:
@@ -1699,9 +3268,22 @@ def prompt_for_settings_switch(navigator: URLNavigator) -> bool:
 
 def main():
     """Main function to demonstrate URL navigation."""
-    parser = argparse.ArgumentParser(description="Navigate to URLs from JSON data files with optional targeting.")
-    parser.add_argument("--json-file", default="json_data/facebook.json",
-                        help="Path to JSON file containing URL data (default: json_data/facebook.json)")
+    parser = argparse.ArgumentParser(
+        description="Navigate to URLs from JSON data files with optional targeting.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  %(prog)s facebook --find "Personal Details" --change-birthday 5 15 1990
+  %(prog)s zoom --url "https://zoom.us/profile/setting?tab=general" --list-toggles
+  %(prog)s zoom --url "https://zoom.us/profile/setting?tab=general" --change-toggle "Enable notifications" disable
+  %(prog)s linkedin --ads
+  %(prog)s --json-file custom/path.json --find "settings"
+        """
+    )
+    parser.add_argument("service", nargs="?", default=None,
+                        help="Service name (facebook, zoom, linkedin). Auto-generates json_data/{service}.json")
+    parser.add_argument("--json-file",
+                        help="Path to JSON file containing URL data (overrides service name if provided)")
     parser.add_argument("--url", help="Navigate directly to this URL (takes precedence).")
     parser.add_argument("--find", help="Keyword to find a matching URL (e.g., 'ads', 'password').")
     parser.add_argument("--category", default="all_unique",
@@ -1730,10 +3312,36 @@ def main():
                         help="Automatically list all links/buttons after each navigation.")
     parser.add_argument("--navigate-to", metavar="LINK_TEXT",
                         help="Navigate to another page by clicking a link/button with this text. Example: --navigate-to 'Ad preferences'")
+    parser.add_argument("--change-birthday", nargs=3, metavar=("MONTH", "DAY", "YEAR"),
+                        help="Change birthday. Will auto-navigate to Personal Details if needed. Example: facebook --find 'Personal Details' --change-birthday 5 15 1990")
+    parser.add_argument("--list-toggles", action="store_true",
+                        help="List all available toggles/switches on current page.")
+    parser.add_argument("--change-toggle", nargs=2, metavar=("TOGGLE_LABEL", "STATE"),
+                        help="Change a toggle/switch. STATE should be 'enable' or 'disable'. Example: zoom --url 'https://zoom.us/profile/setting?tab=general' --change-toggle 'Enable notifications' disable")
+    parser.add_argument("--check-checkbox", nargs=2, metavar=("CHECKBOX_LABEL", "STATE"),
+                        help="Check or uncheck a checkbox by label. STATE should be 'check' or 'uncheck'. Example: zoom --url 'https://zoom.us/profile/setting?tab=general' --check-checkbox 'Allow users to send text feedback' check")
+    parser.add_argument("--physical-toggle", nargs=2, metavar=("LABEL", "STATE"),
+                        help="Physically click a toggle/checkbox using mouse API. STATE should be 'enable' or 'disable'. Example: zoom --url 'https://zoom.us/profile/setting?tab=general' --physical-toggle 'Allow users to send text feedback' enable")
+    parser.add_argument("--gemini-toggle-text-feedback", metavar="STATE",
+                        help="Use Gemini AI to locate and toggle 'Allow users to send text feedback' setting. STATE should be 'enable' or 'disable'. Example: zoom --url 'https://zoom.us/profile/setting?tab=general' --gemini-toggle-text-feedback enable")
     args, unknown = parser.parse_known_args()
     
+    # Determine JSON file path
+    if args.json_file:
+        # Use explicitly provided JSON file
+        json_file_path = args.json_file
+    elif args.service:
+        # Auto-generate from service name
+        json_file_path = f"json_data/{args.service.lower()}.json"
+    else:
+        # Default to facebook for backward compatibility
+        json_file_path = "json_data/facebook.json"
+        print("⚠️  No service specified, defaulting to 'facebook'")
+        print("   Usage: python3 navigate_to_urls.py <service> [options]")
+        print("   Example: python3 navigate_to_urls.py facebook --find 'Personal Details'")
+    
     # Extract service name for display
-    service_name = extract_service_name(args.json_file)
+    service_name = extract_service_name(json_file_path)
     print(f"🔍 URL Navigator - {service_name.upper()}")
     print("=" * 60)
     
@@ -1756,7 +3364,7 @@ def main():
         
         # Initialize navigator with login credentials
         navigator = URLNavigator(
-            args.json_file, 
+            json_file_path, 
             headless=headless_flag,
             email="zoomaitester10@gmail.com",
             password="ZoomTestPass",
@@ -1858,6 +3466,114 @@ def main():
                 print(f"   ✅ {result['message']}")
             else:
                 print(f"   ❌ {result.get('message', 'Unknown error')}")
+        
+        # Handle birthday change operation
+        if args.change_birthday:
+            month_str, day_str, year_str = args.change_birthday
+            try:
+                month = int(month_str)
+                day = int(day_str)
+                year = int(year_str)
+                
+                # If --find was used, we should already be on the Personal Details page
+                # But if not, try to navigate there
+                if args.find and "personal" in args.find.lower() and "detail" in args.find.lower():
+                    print(f"\n🎂 Birthday change requested. Already navigating to Personal Details via --find...")
+                else:
+                    # Try to navigate to Personal Details if not already there
+                    print(f"\n🎂 Birthday change requested. Navigating to Personal Details...")
+                    personal_details_result = navigator.navigate_by_link_text("Personal details", partial_match=True, wait_time=2.0)
+                    if personal_details_result["status"] not in ["success", "warning"]:
+                        print(f"   ⚠️  Could not navigate to Personal Details. Attempting to change birthday on current page anyway...")
+                
+                print(f"\n🎂 Changing birthday to: {month}/{day}/{year}")
+                result = navigator.change_birthday(month, day, year)
+                if result["status"] == "success":
+                    print(f"   ✅ {result['message']}")
+                    if result.get("saved"):
+                        print(f"   💾 Changes saved")
+                    else:
+                        print(f"   ⚠️  Changes made but save button not found/clicked. Please verify manually.")
+                else:
+                    print(f"   ❌ {result.get('message', 'Unknown error')}")
+            except ValueError:
+                print(f"   ❌ Invalid birthday format. Please provide three integers: MONTH DAY YEAR")
+                print(f"   Example: --change-birthday 5 15 1990")
+        
+        # Handle toggle operations
+        if args.list_toggles:
+            print("\n🔘 Listing available toggles/switches...")
+            toggles = navigator.list_toggles()
+            if toggles:
+                print(f"\n✅ Found {len(toggles)} toggles/switches:")
+                for i, toggle in enumerate(toggles, 1):
+                    state_icon = "✅" if toggle["state"] in ["checked", "on"] else "❌"
+                    print(f"  {i}. {state_icon} {toggle['label']} ({toggle['state']})")
+            else:
+                print("   ⚠️  No toggles found on this page.")
+        
+        if args.change_toggle:
+            toggle_label, state_str = args.change_toggle
+            enable = state_str.lower() in ["enable", "on", "true", "1", "yes"]
+            print(f"\n🔧 Changing toggle: '{toggle_label}' to {'enabled' if enable else 'disabled'}")
+            result = navigator.change_toggle(toggle_label, enable=enable)
+            if result["status"] == "success":
+                print(f"   ✅ {result['message']}")
+            else:
+                print(f"   ❌ {result.get('message', 'Unknown error')}")
+        
+        if args.check_checkbox:
+            checkbox_label, state_str = args.check_checkbox
+            check = state_str.lower() in ["check", "checked", "true", "1", "yes", "on"]
+            action = "checking" if check else "unchecking"
+            print(f"\n☑️  {action.capitalize()} checkbox: '{checkbox_label}'")
+            result = navigator.check_checkbox(checkbox_label, check=check)
+            if result["status"] == "success":
+                print(f"   ✅ {result['message']}")
+            else:
+                print(f"   ❌ {result.get('message', 'Unknown error')}")
+        
+        if args.physical_toggle:
+            toggle_label, state_str = args.physical_toggle
+            enable = state_str.lower() in ["enable", "on", "true", "1", "yes", "check", "checked"]
+            print(f"\n🖱️  Physically toggling: '{toggle_label}' to {'enabled' if enable else 'disabled'}")
+            result = navigator.physical_toggle(toggle_label, enable=enable)
+            if result["status"] == "success":
+                print(f"   ✅ {result['message']}")
+                print(f"   📊 Previous state: {result.get('previous_state', 'unknown')}")
+                print(f"   📊 New state: {result.get('new_state', 'unknown')}")
+            elif result["status"] == "warning":
+                print(f"   ⚠️  {result['message']}")
+                print(f"   📊 Previous state: {result.get('previous_state', 'unknown')}")
+                print(f"   📊 New state: {result.get('new_state', 'unknown')}")
+            else:
+                print(f"   ❌ {result.get('message', 'Unknown error')}")
+                if not result.get("element_found"):
+                    print(f"   ⚠️  Element not found")
+        
+        if args.gemini_toggle_text_feedback:
+            state_str = args.gemini_toggle_text_feedback
+            enable = state_str.lower() in ["enable", "on", "true", "1", "yes", "check", "checked"]
+            print(f"\n🤖 Using Gemini to toggle 'Allow users to send text feedback' to {'enabled' if enable else 'disabled'}")
+            result = navigator.toggle_zoom_text_feedback_setting(enable=enable)
+            if result["status"] == "success":
+                print(f"   ✅ Success!")
+                print(f"   📊 Target: {result.get('target', 'N/A')}")
+                print(f"   📊 Previous state: {result.get('previous_state', 'unknown')}")
+                print(f"   📊 New state: {result.get('new_state', 'unknown')}")
+                print(f"   📊 Selection mode: {result.get('selection_mode', 'none')}")
+                if result.get("gemini_reason"):
+                    print(f"   💡 Gemini reason: {result.get('gemini_reason')}")
+                # Show save status
+                if result.get("save_clicked"):
+                    print(f"   💾 Save button: ✅ Clicked successfully")
+                elif result.get("save_error"):
+                    print(f"   💾 Save button: ⚠️  {result.get('save_error')}")
+                else:
+                    print(f"   💾 Save button: ℹ️  Not needed (state unchanged)")
+            else:
+                print(f"   ❌ Error: {result.get('gemini_reason', 'Unknown error')}")
+                print(f"   📊 Selection mode: {result.get('selection_mode', 'none')}")
         
         # Handle navigation operations
         if args.list_links:
