@@ -76,6 +76,38 @@ def get_default_storage_state_file(service_name: str) -> str:
         return f"profiles/storage/{service_name}.json"
 
 
+def click_save_if_present(page, timeout: int = 5000) -> bool:
+    """
+    If a Save button appears after a setting is changed, click it.
+    Return True if Save was clicked, False otherwise.
+    
+    Behavior:
+    - Look for any button whose visible text or aria-label contains "save" (case-insensitive)
+    - Wait up to `timeout` ms for it to become visible
+    - Scroll into view
+    - Click it
+    - Handle if "Cancel" is also present but ignore it
+    - Should not throw; all errors return False
+    """
+    try:
+        # Try to find a button with text containing "save" (case-insensitive)
+        save_button = page.get_by_role("button", name=re.compile(r"save", re.I))
+        
+        # Wait for it to be visible
+        save_button.first.wait_for(state="visible", timeout=timeout)
+        
+        # Scroll into view
+        save_button.first.scroll_into_view_if_needed()
+        
+        # Click it
+        save_button.first.click(timeout=5000)
+        
+        return True
+    except Exception:
+        # All errors return False - don't throw
+        return False
+
+
 class URLNavigator:
     """Navigate to URLs from JSON data for any service."""
     
@@ -860,11 +892,15 @@ class URLNavigator:
                     new_state = "enabled" if new_checked else "disabled"
                     print(f"   ✅ Setting changed to: {new_state}")
                     
+                    # Check for and click Save button if present
+                    save_clicked = click_save_if_present(self.page, timeout=5000)
+                    
                     return {
                         "status": "success",
                         "message": f"Setting '{setting_name}' changed to {target_state}",
                         "previous_state": current_state,
-                        "new_state": new_state
+                        "new_state": new_state,
+                        "save_clicked": save_clicked
                     }
                 else:
                     return {
@@ -2194,113 +2230,28 @@ Output ONLY JSON in this exact format:
             
             # After successful toggle, find and click Save button
             save_clicked = False
-            save_error = None
             
-            if previous_state != new_state:  # Only try to save if state actually changed
+            # Only skip Save if we're confident the state didn't change
+            # (both states are enabled/disabled and they're equal)
+            should_skip_save = (
+                previous_state in {"enabled", "disabled"} and
+                new_state in {"enabled", "disabled"} and
+                previous_state == new_state
+            )
+            
+            if should_skip_save:
+                print(f"   💾 Save button: ℹ️  skipped (state truly unchanged: {previous_state} → {new_state})")
+            else:
+                # Try to click Save - either states are unknown or they changed
                 print("   💾 Looking for Save button...")
                 time.sleep(1)  # Wait for page to update after toggle
                 
-                try:
-                    # Capture new screenshot after toggle
-                    with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp_file:
-                        post_toggle_screenshot_path = tmp_file.name
-                        self.page.screenshot(path=post_toggle_screenshot_path, full_page=True)
-                    
-                    # Collect text elements again (page may have changed)
-                    text_elements_after = self.page.evaluate("""
-                        () => {
-                            const elements = [];
-                            const allElements = document.querySelectorAll('*');
-                            
-                            for (const el of allElements) {
-                                try {
-                                    const text = (el.innerText || el.textContent || '').trim();
-                                    
-                                    // Filter to reasonable text length
-                                    if (text.length < 2 || text.length > 200) continue;
-                                    
-                                    // Skip if element is not visible
-                                    const rect = el.getBoundingClientRect();
-                                    if (rect.width === 0 || rect.height === 0) continue;
-                                    
-                                    // Get role
-                                    const role = el.getAttribute('role') || '';
-                                    
-                                    elements.push({
-                                        text: text,
-                                        tag: el.tagName.toLowerCase(),
-                                        role: role,
-                                        x: rect.x,
-                                        y: rect.y,
-                                        width: rect.width,
-                                        height: rect.height
-                                    });
-                                } catch (e) {
-                                    continue;
-                                }
-                            }
-                            
-                            return elements;
-                        }
-                    """)
-                    
-                    text_elements_json_after = json.dumps(text_elements_after, indent=2)
-                    
-                    # Call Gemini to find Save button
-                    save_result = self._call_gemini_for_save_button(
-                        post_toggle_screenshot_path,
-                        text_elements_json_after
-                    )
-                    
-                    # Clean up temp screenshot
-                    try:
-                        os.unlink(post_toggle_screenshot_path)
-                    except:
-                        pass
-                    
-                    if save_result["status"] == "success":
-                        save_response = save_result["result"]
-                        save_mode = save_response.get("mode", "none")
-                        
-                        print(f"   ✅ Found Save button: {save_response.get('button_text', 'N/A')}")
-                        print(f"   📍 Mode: {save_mode}")
-                        
-                        if save_mode == "selector":
-                            selector = save_response.get("selector", "")
-                            if selector:
-                                try:
-                                    save_button = self.page.locator(selector).first
-                                    if save_button.count() > 0:
-                                        save_button.scroll_into_view_if_needed()
-                                        time.sleep(0.3)
-                                        save_button.click(timeout=5000)
-                                        save_clicked = True
-                                        print("   ✅ Save button clicked (selector)")
-                                        time.sleep(1)
-                                except Exception as e:
-                                    save_error = f"Error clicking Save with selector: {str(e)}"
-                        elif save_mode == "coordinates":
-                            x = save_response.get("x")
-                            y = save_response.get("y")
-                            if x is not None and y is not None:
-                                try:
-                                    self.page.mouse.move(x, y)
-                                    time.sleep(0.2)
-                                    self.page.mouse.click(x, y)
-                                    save_clicked = True
-                                    print(f"   ✅ Save button clicked at ({x:.0f}, {y:.0f})")
-                                    time.sleep(1)
-                                except Exception as e:
-                                    save_error = f"Error clicking Save at coordinates: {str(e)}"
-                        else:
-                            save_error = f"Invalid Save button mode: {save_mode}"
-                    else:
-                        save_error = save_result.get("reason", "Could not find Save button")
-                        print(f"   ⚠️  {save_error}")
+                save_clicked = click_save_if_present(self.page, timeout=5000)
                 
-                except Exception as e:
-                    save_error = f"Exception while finding Save button: {str(e)}"
-                    print(f"   ⚠️  {save_error}")
+                if save_clicked:
+                    print("   💾 Save button: ✅ clicked")
+                else:
+                    print("   💾 Save button: ⚠️  not found")
             
             # f) Return result
             result = {
@@ -2312,9 +2263,6 @@ Output ONLY JSON in this exact format:
                 "gemini_reason": gemini_reason,
                 "save_clicked": save_clicked
             }
-            
-            if save_error:
-                result["save_error"] = save_error
             
             return result
             
@@ -3564,13 +3512,7 @@ Examples:
                 print(f"   📊 Selection mode: {result.get('selection_mode', 'none')}")
                 if result.get("gemini_reason"):
                     print(f"   💡 Gemini reason: {result.get('gemini_reason')}")
-                # Show save status
-                if result.get("save_clicked"):
-                    print(f"   💾 Save button: ✅ Clicked successfully")
-                elif result.get("save_error"):
-                    print(f"   💾 Save button: ⚠️  {result.get('save_error')}")
-                else:
-                    print(f"   💾 Save button: ℹ️  Not needed (state unchanged)")
+                # Save status is already logged in toggle_zoom_text_feedback_setting
             else:
                 print(f"   ❌ Error: {result.get('gemini_reason', 'Unknown error')}")
                 print(f"   📊 Selection mode: {result.get('selection_mode', 'none')}")
