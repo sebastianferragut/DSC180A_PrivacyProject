@@ -248,7 +248,10 @@ def new_report(h: str) -> Dict[str, Any]:
         "state": {
             "visited_urls": [],
             "captured_sections": [],
-            "last_capture_url": None
+            "last_capture_url": None,
+            # navigation trail of clicks leading to current view
+            # each entry: {"ts": "...", "label": "...", "url": "..."}
+            "nav_trail": []
         },
         "metrics": {
             # Efficiency
@@ -277,19 +280,85 @@ def new_report(h: str) -> Dict[str, Any]:
 def log_action(report: Dict[str, Any], kind: str, detail: Dict[str, Any]):
     report["actions"].append({"ts": ts(), "kind": kind, **detail})
 
-def add_section(report: Dict[str, Any], name: str, path: List[str], url: str, fullpage_path: Optional[str]):
-    report["sections"].append({
+def add_section(
+    report: Dict[str, Any],
+    name: str,
+    path: List[str],
+    url: str,
+    fullpage_path: Optional[str],
+    nav_path: Optional[List[str]] = None
+):
+    section = {
         "name": name,
         "path": path,
         "url": url,
         "evidence_fullpage": fullpage_path,
         "items": []
-    })
+    }
+    if nav_path:
+        section["nav_path"] = nav_path
+        section["nav_path_desc"] = " > ".join(nav_path)
+    report["sections"].append(section)
+
 
 def save_report(report: Dict[str, Any]):
     with open(JSON_OUT, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, ensure_ascii=False)
     print(f"[report] {JSON_OUT}")
+
+def _register_nav_step(report: Dict[str, Any], label: str, url: str):
+    """Append a navigation step (click) to the nav_trail, de-duplicating trivial repeats."""
+    if not label:
+        return
+    label = re.sub(r"\s+", " ", label).strip()
+    if not label:
+        return
+    st = report.setdefault("state", {})
+    trail = st.setdefault("nav_trail", [])
+    entry = {"ts": ts(), "label": label, "url": url}
+    if trail:
+        last = trail[-1]
+        if last.get("label") == label and last.get("url") == url:
+            return
+    trail.append(entry)
+
+def _nav_label_from_selector(page: Page, sel: Dict[str, Any]) -> str:
+    """Try to derive a human-readable step label from the selector + DOM."""
+    stype = (sel.get("type") or "css").lower()
+    sval = (sel.get("selector") or "").strip()
+    if not sval:
+        return ""
+
+    # For text selectors, the selector *is* the human label
+    if stype == "text":
+        return sval
+
+    # For role/css selectors, try to look up element text
+    try:
+        loc = page.locator(sval)
+        if loc.count():
+            try:
+                txt = (loc.first.inner_text() or "").strip()
+            except Exception:
+                txt = (loc.first.text_content() or "").strip()
+            if txt:
+                return re.sub(r"\s+", " ", txt)[:80]
+    except Exception:
+        pass
+
+    # Fallback to raw selector string
+    return sval
+
+def _current_nav_path(report: Dict[str, Any]) -> List[str]:
+    """Return the list of labels representing the navigation path."""
+    trail = report.get("state", {}).get("nav_trail") or []
+    return [step.get("label", "").strip() for step in trail if step.get("label")]
+
+def _current_nav_desc(report: Dict[str, Any]) -> str:
+    """Return a single string description like 'Settings > Privacy > Security'."""
+    labels = _current_nav_path(report)
+    return " > ".join(labels) if labels else ""
+
 
 # =========================
 # Planner (model)
@@ -597,6 +666,9 @@ def apply_clicks_batch(page: Page, clicks: List[Dict[str, str]], report: Dict[st
         log_action(report, "batch_click", {"ok": ok, "selector": c, "url": page.url})
         if ok:
             report["metrics"]["steps"]["batch_clicks"] += 1
+            # record navigation step
+            label = _nav_label_from_selector(page, c)
+            _register_nav_step(report, label, page.url)
         time.sleep(delay)
         if ok:
             sec = c.get("selector") or "step"
@@ -611,8 +683,19 @@ def apply_screenshots_batch(page: Page, shots: List[Dict[str, Any]], report: Dic
         if s.get("fullpage"):
             sec = (s.get("section_name") or "Settings").strip()
             fp = fullpage_screenshot(page, label=sec.lower().replace(" ","_"), subdir="sections")
-            add_section(report, sec, [sec], page.url, fullpage_path=fp)
-            log_action(report, "capture_fullpage", {"url": page.url, "path": fp, "section": sec})
+            nav_path = _current_nav_path(report)
+            add_section(report, sec, [sec], page.url, fullpage_path=fp, nav_path=nav_path)
+            log_action(
+                report,
+                "capture_fullpage",
+                {
+                    "url": page.url,
+                    "path": fp,
+                    "section": sec,
+                    "nav_path": nav_path,
+                    "nav_path_desc": _current_nav_desc(report)
+                }
+            )
             report["metrics"]["steps"]["fullpage_screens"] += 1
             norm = sec.lower()
             if norm and norm not in report["state"]["captured_sections"]:
@@ -621,14 +704,26 @@ def apply_screenshots_batch(page: Page, shots: List[Dict[str, Any]], report: Dic
             if page.url not in report["state"]["visited_urls"]:
                 report["state"]["visited_urls"].append(page.url)
 
+
 def capture_block(page: Page, capture: Dict[str, Any], report: Dict[str, Any]):
     if not capture:
         return
     section_name = capture.get("section_name") or "Settings"
     if capture.get("fullpage"):
         fp = fullpage_screenshot(page, label=section_name.lower().replace(" ", "_"), subdir="sections")
-        add_section(report, section_name, [section_name], page.url, fullpage_path=fp)
-        log_action(report, "capture_fullpage", {"url": page.url, "path": fp, "section": section_name})
+        nav_path = _current_nav_path(report)
+        add_section(report, section_name, [section_name], page.url, fullpage_path=fp, nav_path=nav_path)
+        log_action(
+            report,
+            "capture_fullpage",
+            {
+                "url": page.url,
+                "path": fp,
+                "section": section_name,
+                "nav_path": nav_path,
+                "nav_path_desc": _current_nav_desc(report)
+            }
+        )
         report["metrics"]["steps"]["fullpage_screens"] += 1
         norm = section_name.strip().lower()
         if norm and norm not in report["state"]["captured_sections"]:
@@ -648,7 +743,18 @@ def capture_block(page: Page, capture: Dict[str, Any], report: Dict[str, Any]):
         except Exception:
             path = None
         if path:
-            log_action(report, "capture_element", {"url": page.url, "path": path, "label": label})
+            nav_path = _current_nav_path(report)
+            log_action(
+                report,
+                "capture_element",
+                {
+                    "url": page.url,
+                    "path": path,
+                    "label": label,
+                    "nav_path": nav_path,
+                    "nav_path_desc": _current_nav_desc(report)
+                }
+            )
             report["metrics"]["steps"]["element_screens"] += 1
 
 # --- Auto screenshot throttle to avoid spam on same URL frame-to-frame ---
@@ -661,7 +767,18 @@ def autosnap(page: Page, report: Dict[str, Any], label: str, subdir: str = "sect
         if _last_shot["url"] == url and (now - _last_shot["t"]) < min_interval_sec:
             return None
         path = fullpage_screenshot(page, label=label, subdir=subdir)
-        log_action(report, "auto_fullpage", {"url": url, "path": path, "label": label})
+        nav_path = _current_nav_path(report)
+        log_action(
+            report,
+            "auto_fullpage",
+            {
+                "url": url,
+                "path": path,
+                "label": label,
+                "nav_path": nav_path,
+                "nav_path_desc": _current_nav_desc(report)
+            }
+        )
         report["metrics"]["steps"]["auto_screens"] += 1
         _last_shot["url"] = url
         _last_shot["t"] = now
@@ -670,7 +787,6 @@ def autosnap(page: Page, report: Dict[str, Any], label: str, subdir: str = "sect
         return path
     except Exception:
         return None
-
 def page_change_signature(page: Page) -> Tuple[str, str]:
     """Lightweight change detector: (url_no_hash, dom_sig)."""
     try:
@@ -808,6 +924,11 @@ def harvest():
                 if ok:
                     report["metrics"]["steps"]["selectors_applied"] += 1
                     applied_any = True
+
+                    # register nav step for this click
+                    nav_label = _nav_label_from_selector(page, sel)
+                    _register_nav_step(report, nav_label, page.url)
+
                     time.sleep(0.7)
                     sec = sel.get("selector") or "selector_step"
                     autosnap(page, report, label=f"after_click__{safe_name(sec)[:50]}", subdir="sections")
@@ -828,8 +949,27 @@ def harvest():
                             title = tail or "section"
                         label = title.lower().replace(" ", "_")[:60]
                         fp = fullpage_screenshot(page, label=label, subdir="sections")
-                        add_section(report, title or "Section", [title or "Section"], page.url, fullpage_path=fp)
-                        log_action(report, "auto_capture_fullpage", {"url": page.url, "path": fp, "label": title})
+
+                        nav_path = _current_nav_path(report)
+                        add_section(
+                            report,
+                            title or "Section",
+                            [title or "Section"],
+                            page.url,
+                            fullpage_path=fp,
+                            nav_path=nav_path
+                        )
+                        log_action(
+                            report,
+                            "auto_capture_fullpage",
+                            {
+                                "url": page.url,
+                                "path": fp,
+                                "label": title,
+                                "nav_path": nav_path,
+                                "nav_path_desc": _current_nav_desc(report)
+                            }
+                        )
                         norm = (title or "section").strip().lower()
                         if norm and norm not in report["state"]["captured_sections"]:
                             report["state"]["captured_sections"].append(norm)
@@ -861,10 +1001,22 @@ def harvest():
         if not report["sections"]:
             try:
                 fp = fullpage_screenshot(page, label="safety_capture", subdir="sections")
-                add_section(report, "Safety Capture", ["Safety"], page.url, fullpage_path=fp)
-                log_action(report, "capture_fullpage", {"url": page.url, "path": fp, "section": "Safety Capture"})
+                nav_path = _current_nav_path(report)
+                add_section(report, "Safety Capture", ["Safety"], page.url, fullpage_path=fp, nav_path=nav_path)
+                log_action(
+                    report,
+                    "capture_fullpage",
+                    {
+                        "url": page.url,
+                        "path": fp,
+                        "section": "Safety Capture",
+                        "nav_path": nav_path,
+                        "nav_path_desc": _current_nav_desc(report)
+                    }
+                )
             except Exception:
                 pass
+
 
         try:
             autosnap(page, report, label="end_of_run", subdir="sections")
