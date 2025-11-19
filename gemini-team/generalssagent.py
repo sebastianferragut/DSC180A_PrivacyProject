@@ -7,7 +7,7 @@
 #
 # First time per site:
 #   python save_state.py "$START_URL"
-#   Log in to the site with credentials:
+#   Log in to the site with Google credentials:
 #   E: zoomaitester10@gmail.com
 #   P: ZoomTestPass
 #
