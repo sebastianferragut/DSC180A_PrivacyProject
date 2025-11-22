@@ -4,16 +4,7 @@ URL Navigator - Browser automation tool for navigating and modifying settings on
 
 Usage Examples:
 
-Basic Navigation:
-  python3 navigate_to_urls.py facebook --find "Personal Details"
-  python3 navigate_to_urls.py zoom --url "https://zoom.us/profile/setting?tab=general"
-  python3 navigate_to_urls.py linkedin --ads
-  python3 navigate_to_urls.py --json-file custom/path.json --find "password"
 
-Listing Settings:
-  python3 navigate_to_urls.py zoom --url "https://zoom.us/profile/setting?tab=general" --list-toggles
-  python3 navigate_to_urls.py facebook --ads --list-ads
-  python3 navigate_to_urls.py zoom --url "https://zoom.us/profile/setting?tab=general" --list-links
 
 Changing Settings (Traditional Methods):
   python3 navigate_to_urls.py zoom --url "https://zoom.us/profile/setting?tab=general" --change-toggle "Enable notifications" disable
@@ -30,14 +21,7 @@ Gemini AI-Powered Toggle (Generic - Works for any setting):
 Gemini AI-Powered Toggle (Legacy Zoom-specific):
   python3 navigate_to_urls.py zoom --url "https://zoom.us/profile/setting?tab=general" --gemini-toggle-text-feedback enable
 
-Navigation and Interaction:
-  python3 navigate_to_urls.py zoom --url "https://zoom.us/profile/setting?tab=general" --navigate-to "Data & Privacy"
-  python3 navigate_to_urls.py zoom --url "https://zoom.us/profile/setting?tab=general" --list-links --auto-list-links
 
-Browser Options:
-  python3 navigate_to_urls.py zoom --url "https://zoom.us/profile/setting?tab=general" --headless
-  python3 navigate_to_urls.py zoom --url "https://zoom.us/profile/setting?tab=general" --use-persistent-profile --profile-dir ./my_profile
-  python3 navigate_to_urls.py zoom --url "https://zoom.us/profile/setting?tab=general" --storage-state-file ./profiles/storage/zoom.us.json
 """
 
 
@@ -142,451 +126,405 @@ def click_save_if_present(page, timeout: int = 5000) -> bool:
         return False
 
 
+def viewport_dom_textmap(page, max_items=120) -> str:
+    """Extract visible text elements from the page viewport."""
+    items = []
+    try:
+        for sel in ["h1,h2,h3,[role='heading']", "a,button", "[role='tab']", "[role='menuitem']", "[aria-label]"]:
+            loc = page.locator(sel)
+            count = min(loc.count(), max_items)
+            for i in range(count):
+                try:
+                    t = loc.nth(i).inner_text().strip()
+                except Exception:
+                    try:
+                        t = loc.nth(i).text_content().strip()
+                    except Exception:
+                        t = ""
+                if t:
+                    t = re.sub(r'\s+', ' ', t)
+                    items.append(t[:160])
+                if len(items) >= max_items:
+                    break
+            if len(items) >= max_items:
+                break
+    except Exception:
+        pass
+    out, seen = [], set()
+    for t in items:
+        if t not in seen:
+            seen.add(t)
+            out.append(t)
+    return "\n".join(out[:max_items])
+
+
+def dom_outline(page, max_nodes: int = 300) -> str:
+    """Compact DOM outline to anchor CV with roles/labels/expand info."""
+    try:
+        data = page.evaluate(f"""
+(() => {{
+  const max = {max_nodes};
+  const take = (n) => Array.from(n).slice(0, max);
+  const norm = s => (s||"").replace(/\\s+/g,' ').trim();
+  const sel = (el) => {{
+    const id = el.id ? '#'+CSS.escape(el.id) : '';
+    const cls = (el.className && typeof el.className==='string')
+      ? '.'+el.className.trim().split(/\\s+/).slice(0,3).map(CSS.escape).join('.') : '';
+    return el.tagName.toLowerCase()+id+cls;
+  }};
+  const nodes = take(document.querySelectorAll('a,button,[role],[aria-label],summary,[aria-expanded]'));
+  return nodes.map(el => ({{
+    tag: el.tagName.toLowerCase(),
+    role: el.getAttribute('role')||'',
+    text: norm(el.innerText||''),
+    ariaLabel: norm(el.getAttribute('aria-label')||''),
+    expanded: el.getAttribute('aria-expanded'),
+    clickable: (typeof el.click==='function'),
+    selector: sel(el)
+  }}));
+}})();
+""")
+        return json.dumps(data[:max_nodes], ensure_ascii=False)
+    except Exception:
+        return "[]"
+
+
 def toggle_setting_with_gemini(
     page,
     setting_label: str,
     enable: bool,
     description: Optional[str] = None,
     save_after: bool = True,
-    navigator_instance = None,
 ) -> dict:
     """
-    Use DOM text + screenshot + Gemini to locate and toggle a UI setting
-    whose label matches `setting_label`.
-    
-    Args:
-        page: Playwright Page object
-        setting_label: Label/text of the setting to toggle (e.g., "Allow users to send text feedback")
-        enable: True to enable/check, False to disable/uncheck
-        description: Optional hint text for Gemini (e.g., "Zoom general settings page")
-        save_after: Whether to attempt clicking Save button after toggle
-        navigator_instance: URLNavigator instance (needed for Gemini API call)
-    
-    Returns:
-        Dictionary containing:
-            - status: "success" | "error"
-            - target: setting_label
-            - previous_state: "enabled" | "disabled" | "unknown"
-            - new_state: "enabled" | "disabled" | "unknown"
-            - selection_mode: "selector" | "coordinates" | "none"
-            - gemini_reason: short explanation
-            - save_clicked: bool (if save_after=True)
+    Use screenshot + DOM text + Gemini to locate and toggle a UI setting whose
+    label roughly matches `setting_label`.
+
+    Arguments:
+      - page: Playwright Page
+      - setting_label: visible label near the toggle, e.g. 'Allow users to send text feedback'
+      - enable: True => setting should end up ON, False => OFF
+      - description: optional extra natural-language hint (e.g. 'Zoom general settings page')
+      - save_after: if True, try to click a Save button after toggling
+
+    Returns a dict with at least:
+      - status: 'success' | 'error'
+      - target: setting_label
+      - previous_state: 'enabled' | 'disabled' | 'unknown'
+      - new_state: 'enabled' | 'disabled' | 'unknown'
+      - selection_mode: 'selector' | 'coordinates' | 'none'
+      - gemini_reason: short explanation string
+      - save_clicked: bool (whether a Save button was actually clicked)
     """
+    result = {
+        "status": "error",
+        "target": setting_label,
+        "previous_state": "unknown",
+        "new_state": "unknown",
+        "selection_mode": "none",
+        "gemini_reason": "",
+        "save_clicked": False
+    }
+
     if not page:
-        return {
-            "status": "error",
-            "target": setting_label,
-            "previous_state": "unknown",
-            "new_state": "unknown",
-            "selection_mode": "none",
-            "gemini_reason": "Page object not provided"
-        }
-    
+        result["gemini_reason"] = "Page object not provided"
+        return result
+
     if not GEMINI_AVAILABLE:
-        return {
-            "status": "error",
-            "target": setting_label,
-            "previous_state": "unknown",
-            "new_state": "unknown",
-            "selection_mode": "none",
-            "gemini_reason": "Gemini API not available"
-        }
-    
-    if not navigator_instance:
-        return {
-            "status": "error",
-            "target": setting_label,
-            "previous_state": "unknown",
-            "new_state": "unknown",
-            "selection_mode": "none",
-            "gemini_reason": "Navigator instance required for Gemini API call"
-        }
-    
+        result["gemini_reason"] = "Gemini API not available. Install google-genai package."
+        return result
+
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        result["gemini_reason"] = "GEMINI_API_KEY environment variable not set"
+        return result
+
     try:
         print(f"🤖 Using Gemini to locate '{setting_label}' setting...")
         
         # Wait for page to be ready
         page.wait_for_load_state("domcontentloaded", timeout=30000)
         time.sleep(1)
-        
-        # a) Collect structured text info from the current page
-        print("   📝 Collecting text elements from DOM...")
-        text_elements = page.evaluate("""
-            () => {
-                const elements = [];
-                const allElements = document.querySelectorAll('*');
-                
-                for (const el of allElements) {
-                    try {
-                        const text = (el.innerText || el.textContent || '').trim();
-                        
-                        // Filter to reasonable text length
-                        if (text.length < 2 || text.length > 200) continue;
-                        
-                        // Skip if element is not visible
-                        const rect = el.getBoundingClientRect();
-                        if (rect.width === 0 || rect.height === 0) continue;
-                        
-                        // Get role
-                        const role = el.getAttribute('role') || '';
-                        
-                        elements.push({
-                            text: text,
-                            tag: el.tagName.toLowerCase(),
-                            role: role,
-                            x: rect.x,
-                            y: rect.y,
-                            width: rect.width,
-                            height: rect.height
-                        });
-                    } catch (e) {
-                        // Skip elements that cause errors
-                        continue;
-                    }
-                }
-                
-                return elements;
-            }
-        """)
-        
-        print(f"   ✅ Collected {len(text_elements)} text elements")
-        
-        # b) Capture current screenshot
-        print("   📸 Capturing current page screenshot...")
-        with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp_file:
-            current_screenshot_path = tmp_file.name
-            page.screenshot(path=current_screenshot_path, full_page=True)
-        
-        # c) Load reference screenshot (optional - try to find a fallback)
-        script_dir = Path(__file__).parent
-        reference_screenshot_path = None
-        
-        # Try to find a reference screenshot in screenshot-classifier
-        screenshot_dirs = [
-            script_dir.parent / "screenshot-classifier" / "screenshots",
-            script_dir.parent / "gemini-team" / "generaloutput"
-        ]
-        
-        for base_dir in screenshot_dirs:
-            # Try to find any screenshot as fallback
-            for platform_dir in base_dir.iterdir():
-                if platform_dir.is_dir():
-                    for screenshot_file in platform_dir.glob("*.png"):
-                        if "setting" in screenshot_file.name.lower() or "initial" in screenshot_file.name.lower():
-                            reference_screenshot_path = screenshot_file
-                            print(f"   📷 Using reference screenshot: {reference_screenshot_path.name}")
-                            break
-                    if reference_screenshot_path:
-                        break
-                if reference_screenshot_path:
-                    break
-            if reference_screenshot_path:
-                break
-        
-        if not reference_screenshot_path:
-            # Use current screenshot as reference (Gemini can still work)
-            reference_screenshot_path = current_screenshot_path
-            print(f"   ⚠️  No reference screenshot found, using current page as reference")
-        
-        # d) Call Gemini with custom prompt
-        print("   🤖 Calling Gemini API...")
-        text_elements_json = json.dumps(text_elements, indent=2)
-        
-        # Create custom prompt for this setting
-        desc_text = f" ({description})" if description else ""
-        prompt = f"""
-You are helping a browser automation agent.
 
-You are given:
-1) A reference screenshot showing a settings page{desc_text}.
+        # a) Collect context similar to planner()
+        print("   📝 Collecting DOM context...")
+        DOM_TEXT_MAP = viewport_dom_textmap(page, max_items=120)
+        DOM_OUTLINE = dom_outline(page, max_nodes=300)
+        screenshot_bytes = page.screenshot(full_page=True)
+        print(f"   ✅ Collected context (text map: {len(DOM_TEXT_MAP.split(chr(10)))} items, outline: {len(json.loads(DOM_OUTLINE))} nodes)")
 
-2) A screenshot of the current page.
-
-3) A JSON list of text elements extracted from the current HTML, each with:
-   - text
-   - tag
-   - role
-   - bounding box (x, y, width, height)
-
-Task:
-- Using the CURRENT screenshot and the JSON list of text elements,
-  identify which element corresponds to the label or control for
-  '{setting_label}' (allow for partial matches and similar phrasing).
-
-Output ONLY JSON in this exact format:
-
-{{
-  "label_text": "<the exact text of the best matching element>",
-  "reason": "<short explanation>",
-  "mode": "selector" | "coordinates",
-  "selector": "<CSS selector or empty string>",
-  "x": <number or null>,
-  "y": <number or null>
-}}
-
-- Prefer a CSS selector if possible (mode="selector").
-- If you cannot reliably provide a selector, use mode="coordinates"
-  with x,y as the center of the target element's bounding box.
-"""
-        
-        # Call Gemini using navigator's method but with custom prompt
-        gemini_result = navigator_instance._call_gemini_for_element_location_with_prompt(
-            current_screenshot_path,
-            str(reference_screenshot_path),
-            text_elements_json,
-            prompt
+        # b) Build Gemini prompt
+        system_instruction = (
+            "You are a UI assistant that helps locate and operate a single setting "
+            "in a web app UI based on its label. You see:\n"
+            "- a full-page screenshot,\n"
+            "- a DOM_TEXT_MAP listing visible strings,\n"
+            "- a DOM_OUTLINE listing clickable-like nodes.\n\n"
+            "Your task is to identify the element that controls the setting associated "
+            "with the given label (allow fuzzy/partial match), infer whether it is currently "
+            "ON/OFF if possible (checkbox checked, aria-checked, etc.), and return ONLY JSON "
+            "in the specified schema.\n\n"
+            "Prefer mode='selector' if a stable CSS or role-based selector can be derived from "
+            "DOM_OUTLINE; fall back to coordinates otherwise."
         )
-        
-        # Clean up temp screenshot (if it's not the reference)
-        if reference_screenshot_path != current_screenshot_path:
+
+        user_prompt_parts = [
+            f"Setting label to find: '{setting_label}'",
+            f"Target state: {'enabled' if enable else 'disabled'}",
+        ]
+        if description:
+            user_prompt_parts.append(f"Context: {description}")
+
+        user_prompt_parts.extend([
+            "\nDOM_TEXT_MAP_START",
+            DOM_TEXT_MAP,
+            "DOM_TEXT_MAP_END",
+            "\nDOM_OUTLINE_START",
+            DOM_OUTLINE,
+            "DOM_OUTLINE_END",
+            "\n\nReturn ONLY valid JSON in this exact schema:",
+            '{\n'
+            '  "mode": "selector" | "coordinates",\n'
+            '  "selector": "<CSS or text selector or empty>",\n'
+            '  "x": <number or null>,\n'
+            '  "y": <number or null>,\n'
+            '  "previous_state": "enabled" | "disabled" | "unknown",\n'
+            '  "reason": "<short explanation>"\n'
+            '}'
+        ])
+
+        user_prompt = "\n".join(user_prompt_parts)
+
+        config = types.GenerateContentConfig(
+            system_instruction=system_instruction,
+            temperature=0.2,
+            max_output_tokens=800
+        )
+
+        # c) Call Gemini
+        print("   🤖 Calling Gemini API...")
+        gemini_response = None
+        last_error = None
+        for attempt in range(3):
             try:
-                os.unlink(current_screenshot_path)
-            except:
-                pass
+                client = genai.Client(api_key=api_key)
+                gemini_response = client.models.generate_content(
+                    model='gemini-2.5-pro',
+                    contents=[Content(role="user", parts=[
+                        Part(text=user_prompt),
+                        Part.from_bytes(data=screenshot_bytes, mime_type="image/png")
+                    ])],
+                    config=config
+                )
+                # Verify we got a response
+                if gemini_response is None:
+                    raise ValueError("Gemini returned None response")
+                break
+            except Exception as e:
+                last_error = e
+                print(f"   ⚠️  Attempt {attempt + 1} failed: {e}")
+                if attempt == 2:
+                    result["gemini_reason"] = f"Gemini call failed after 3 attempts: {last_error}"
+                    return result
+                time.sleep(0.6 + attempt * 0.6)
         
-        if gemini_result["status"] != "success":
-            return {
-                "status": "error",
-                "target": setting_label,
-                "previous_state": "unknown",
-                "new_state": "unknown",
-                "selection_mode": "none",
-                "gemini_reason": gemini_result.get("reason", "Unknown error")
-            }
-        
-        gemini_response = gemini_result["result"]
-        selection_mode = gemini_response.get("mode", "none")
-        gemini_reason = gemini_response.get("reason", "")
-        
-        print(f"   ✅ Gemini found element: {gemini_response.get('label_text', 'N/A')}")
-        print(f"   📍 Mode: {selection_mode}")
-        
-        # e) Parse Gemini's response and toggle
-        previous_state = "unknown"
-        new_state = "unknown"
-        
-        if selection_mode == "selector":
-            selector = gemini_response.get("selector", "")
-            if selector:
-                try:
-                    element = page.locator(selector).first
-                    if element.count() > 0:
-                        element.scroll_into_view_if_needed()
-                        time.sleep(0.3)
-                        
-                        # Get current state
-                        try:
-                            if element.get_attribute("type") == "checkbox":
-                                is_checked = element.is_checked()
-                                previous_state = "enabled" if is_checked else "disabled"
-                            else:
-                                aria_checked = element.get_attribute("aria-checked")
-                                previous_state = "enabled" if aria_checked == "true" else "disabled"
-                        except:
-                            pass
-                        
-                        # Toggle if needed
-                        current_is_enabled = previous_state == "enabled"
-                        if current_is_enabled != enable:
-                            if element.get_attribute("type") == "checkbox":
-                                if enable:
-                                    element.check()
-                                else:
-                                    element.uncheck()
-                            else:
-                                element.click()
-                            time.sleep(0.5)
-                        
-                        # Get new state
-                        try:
-                            if element.get_attribute("type") == "checkbox":
-                                is_checked = element.is_checked()
-                                new_state = "enabled" if is_checked else "disabled"
-                            else:
-                                aria_checked = element.get_attribute("aria-checked")
-                                new_state = "enabled" if aria_checked == "true" else "disabled"
-                        except:
-                            pass
-                except Exception as e:
-                    return {
-                        "status": "error",
-                        "target": setting_label,
-                        "previous_state": previous_state,
-                        "new_state": new_state,
-                        "selection_mode": "selector",
-                        "gemini_reason": f"Error using selector: {str(e)}"
-                    }
-            else:
-                return {
-                    "status": "error",
-                    "target": setting_label,
-                    "previous_state": "unknown",
-                    "new_state": "unknown",
-                    "selection_mode": "selector",
-                    "gemini_reason": "No selector provided by Gemini"
-                }
-        
-        elif selection_mode == "coordinates":
-            x = gemini_response.get("x")
-            y = gemini_response.get("y")
+        if gemini_response is None:
+            result["gemini_reason"] = f"Gemini returned None response. Last error: {last_error}"
+            return result
+
+        # Extract text from response
+        response_text = ""
+        try:
+            # Check for safety filters first
+            if hasattr(gemini_response, "candidates") and gemini_response.candidates:
+                first_candidate = gemini_response.candidates[0]
+                
+                # Check for finish_reason (safety filters)
+                finish_reason = getattr(first_candidate, "finish_reason", None)
+                if finish_reason and finish_reason != "STOP":
+                    safety_ratings = getattr(first_candidate, "safety_ratings", None) or []
+                    safety_info = ", ".join([f"{r.category}:{r.probability}" for r in safety_ratings if hasattr(r, "category")])
+                    result["gemini_reason"] = f"Gemini response blocked (finish_reason: {finish_reason}, safety: {safety_info})"
+                    return result
+                
+                # Extract content
+                content = getattr(first_candidate, "content", None)
+                if content:
+                    parts = getattr(content, "parts", None) or []
+                    for part in parts:
+                        part_text = getattr(part, "text", None)
+                        if part_text:
+                            response_text += part_text
+                
+                # Fallback: try direct text attribute
+                if not response_text:
+                    cand_text = getattr(first_candidate, "text", None)
+                    if isinstance(cand_text, str):
+                        response_text = cand_text
             
-            if x is not None and y is not None:
+            # If still empty, try alternative extraction methods
+            if not response_text:
+                # Try accessing response directly
+                if hasattr(gemini_response, "text"):
+                    response_text = gemini_response.text
+                elif hasattr(gemini_response, "candidates") and gemini_response.candidates:
+                    # Last resort: try to stringify the response for debugging
+                    print(f"   ⚠️  Debug: Response structure: {type(gemini_response)}")
+                    print(f"   ⚠️  Debug: Candidates count: {len(gemini_response.candidates) if gemini_response.candidates else 0}")
+                    if gemini_response.candidates:
+                        print(f"   ⚠️  Debug: First candidate type: {type(gemini_response.candidates[0])}")
+                        print(f"   ⚠️  Debug: First candidate attrs: {dir(gemini_response.candidates[0])}")
+                        
+        except Exception as e:
+            import traceback
+            print(f"   ⚠️  Debug: Exception extracting response: {e}")
+            print(f"   ⚠️  Debug: Traceback: {traceback.format_exc()}")
+            result["gemini_reason"] = f"Failed to extract response text: {e}"
+            return result
+
+        if not response_text:
+            # Add more debugging info
+            print(f"   ⚠️  Debug: Response object type: {type(gemini_response)}")
+            print(f"   ⚠️  Debug: Response has candidates: {hasattr(gemini_response, 'candidates')}")
+            if hasattr(gemini_response, 'candidates'):
+                print(f"   ⚠️  Debug: Candidates: {gemini_response.candidates}")
+            result["gemini_reason"] = "Empty response from Gemini - check API key and model availability"
+            return result
+
+        # Parse JSON response
+        try:
+            # Try to extract JSON from response (handle markdown code blocks)
+            json_text = response_text.strip()
+            if "```json" in json_text:
+                json_text = json_text.split("```json")[1].split("```")[0].strip()
+            elif "```" in json_text:
+                json_text = json_text.split("```")[1].split("```")[0].strip()
+            
+            gemini_data = json.loads(json_text)
+        except Exception as e:
+            result["gemini_reason"] = f"Failed to parse JSON from response: {e}. Response: {response_text[:200]}"
+            return result
+
+        mode = gemini_data.get("mode", "none")
+        selector = gemini_data.get("selector", "").strip()
+        x = gemini_data.get("x")
+        y = gemini_data.get("y")
+        previous_state_str = gemini_data.get("previous_state", "unknown")
+        reason = gemini_data.get("reason", "")
+
+        result["previous_state"] = previous_state_str
+        result["selection_mode"] = mode
+        result["gemini_reason"] = reason
+
+        print(f"   ✅ Gemini found element (mode: {mode}, state: {previous_state_str})")
+
+        # d) Execute based on mode
+        if mode == "selector" and selector:
+            try:
+                loc = page.locator(selector).first
+                if loc.count() == 0:
+                    result["gemini_reason"] = f"Selector '{selector}' found no elements"
+                    return result
+
+                loc.scroll_into_view_if_needed()
+                time.sleep(0.3)
+
+                # Determine current state
+                current_state = "unknown"
+                tag = None
+                input_type = None
                 try:
-                    # Get state before clicking by finding nearby element
-                    nearby_element = page.evaluate(f"""
-                        () => {{
-                            const x = {x};
-                            const y = {y};
-                            const allInputs = document.querySelectorAll('input[type="checkbox"], [role="switch"]');
-                            let closest = null;
-                            let minDist = Infinity;
-                            
-                            for (const el of allInputs) {{
-                                const rect = el.getBoundingClientRect();
-                                const centerX = rect.x + rect.width / 2;
-                                const centerY = rect.y + rect.height / 2;
-                                const dist = Math.sqrt(Math.pow(centerX - x, 2) + Math.pow(centerY - y, 2));
-                                
-                                if (dist < minDist && dist < 100) {{
-                                    minDist = dist;
-                                    closest = el;
-                                }}
-                            }}
-                            
-                            if (closest) {{
-                                const rect = closest.getBoundingClientRect();
-                                if (closest.type === 'checkbox') {{
-                                    return {{checked: closest.checked, type: 'checkbox'}};
-                                }} else {{
-                                    return {{checked: closest.getAttribute('aria-checked') === 'true', type: 'switch'}};
-                                }}
-                            }}
-                            return null;
-                        }}
-                    """)
-                    
-                    if nearby_element:
-                        previous_state = "enabled" if nearby_element.get("checked") else "disabled"
-                    
-                    # Move mouse and click
-                    page.mouse.move(x, y)
-                    time.sleep(0.2)
-                    page.mouse.click(x, y)
+                    tag = loc.evaluate("el => el.tagName.toLowerCase()")
+                    input_type = loc.get_attribute("type")
+                    if tag == "input" and input_type == "checkbox":
+                        current_state = "enabled" if loc.is_checked() else "disabled"
+                    else:
+                        aria_checked = loc.get_attribute("aria-checked")
+                        if aria_checked == "true":
+                            current_state = "enabled"
+                        elif aria_checked == "false":
+                            current_state = "disabled"
+                except Exception:
+                    pass
+
+                # Use Gemini's inferred state if we couldn't determine it
+                if current_state == "unknown":
+                    current_state = previous_state_str
+
+                result["previous_state"] = current_state
+
+                # Check if toggle is needed
+                desired_state = "enabled" if enable else "disabled"
+                if current_state != desired_state:
+                    loc.click(timeout=5000)
                     time.sleep(0.5)
-                    
-                    # Get new state
-                    nearby_element_after = page.evaluate(f"""
-                        () => {{
-                            const x = {x};
-                            const y = {y};
-                            const allInputs = document.querySelectorAll('input[type="checkbox"], [role="switch"]');
-                            let closest = null;
-                            let minDist = Infinity;
-                            
-                            for (const el of allInputs) {{
-                                const rect = el.getBoundingClientRect();
-                                const centerX = rect.x + rect.width / 2;
-                                const centerY = rect.y + rect.height / 2;
-                                const dist = Math.sqrt(Math.pow(centerX - x, 2) + Math.pow(centerY - y, 2));
-                                
-                                if (dist < minDist && dist < 100) {{
-                                    minDist = dist;
-                                    closest = el;
-                                }}
-                            }}
-                            
-                            if (closest) {{
-                                if (closest.type === 'checkbox') {{
-                                    return {{checked: closest.checked, type: 'checkbox'}};
-                                }} else {{
-                                    return {{checked: closest.getAttribute('aria-checked') === 'true', type: 'switch'}};
-                                }}
-                            }}
-                            return null;
-                        }}
-                    """)
-                    
-                    if nearby_element_after:
-                        new_state = "enabled" if nearby_element_after.get("checked") else "disabled"
-                    
-                except Exception as e:
-                    return {
-                        "status": "error",
-                        "target": setting_label,
-                        "previous_state": previous_state,
-                        "new_state": new_state,
-                        "selection_mode": "coordinates",
-                        "gemini_reason": f"Error clicking coordinates: {str(e)}"
-                    }
-            else:
-                return {
-                    "status": "error",
-                    "target": setting_label,
-                    "previous_state": "unknown",
-                    "new_state": "unknown",
-                    "selection_mode": "coordinates",
-                    "gemini_reason": "No coordinates provided by Gemini"
-                }
+
+                    # Re-check state after click
+                    try:
+                        if tag == "input" and input_type == "checkbox":
+                            new_state = "enabled" if loc.is_checked() else "disabled"
+                        else:
+                            aria_checked = loc.get_attribute("aria-checked")
+                            if aria_checked == "true":
+                                new_state = "enabled"
+                            elif aria_checked == "false":
+                                new_state = "disabled"
+                            else:
+                                new_state = "unknown"
+                        result["new_state"] = new_state
+                    except Exception:
+                        result["new_state"] = "unknown"
+                else:
+                    result["new_state"] = current_state
+
+                result["status"] = "success"
+
+            except Exception as e:
+                result["gemini_reason"] = f"Failed to execute selector '{selector}': {e}"
+                return result
+
+        elif mode == "coordinates" and x is not None and y is not None:
+            try:
+                page.mouse.click(int(x), int(y))
+                time.sleep(0.5)
+
+                # Try to infer new state by re-locating element
+                # This is best-effort; coordinates mode is less reliable
+                result["new_state"] = "unknown"
+                result["status"] = "success"
+            except Exception as e:
+                result["gemini_reason"] = f"Failed to click coordinates ({x}, {y}): {e}"
+                return result
         else:
-            return {
-                "status": "error",
-                "target": setting_label,
-                "previous_state": "unknown",
-                "new_state": "unknown",
-                "selection_mode": "none",
-                "gemini_reason": f"Invalid mode from Gemini: {selection_mode}"
-            }
-        
-        # After successful toggle, find and click Save button
-        save_clicked = False
-        
+            result["gemini_reason"] = f"Invalid mode '{mode}' or missing selector/coordinates"
+            return result
+
+        # e) Save button handling
         if save_after:
             # Only skip Save if we're confident the state didn't change
-            # (both states are enabled/disabled and they're equal)
             should_skip_save = (
-                previous_state in {"enabled", "disabled"} and
-                new_state in {"enabled", "disabled"} and
-                previous_state == new_state
+                result["previous_state"] in {"enabled", "disabled"} and
+                result["new_state"] in {"enabled", "disabled"} and
+                result["previous_state"] == result["new_state"]
             )
-            
-            if should_skip_save:
-                print(f"   💾 Save button: ℹ️  skipped (state truly unchanged: {previous_state} → {new_state})")
-            else:
-                # Try to click Save - either states are unknown or they changed
-                print("   💾 Looking for Save button...")
+
+            if not should_skip_save:
                 time.sleep(1)  # Wait for page to update after toggle
-                
-                save_clicked = click_save_if_present(page, timeout=5000)
-                
-                if save_clicked:
+                result["save_clicked"] = click_save_if_present(page, timeout=5000)
+                if result["save_clicked"]:
                     print("   💾 Save button: ✅ clicked")
                 else:
                     print("   💾 Save button: ⚠️  not found")
-        
-        # f) Return result
-        result = {
-            "status": "success",
-            "target": setting_label,
-            "previous_state": previous_state,
-            "new_state": new_state,
-            "selection_mode": selection_mode,
-            "gemini_reason": gemini_reason,
-            "save_clicked": save_clicked
-        }
-        
+            else:
+                print(f"   💾 Save button: ℹ️  skipped (state unchanged: {result['previous_state']} → {result['new_state']})")
+
         return result
-        
+
     except Exception as e:
         import traceback
         traceback.print_exc()
-        return {
-            "status": "error",
-            "target": setting_label,
-            "previous_state": "unknown",
-            "new_state": "unknown",
-            "selection_mode": "none",
-            "gemini_reason": f"Exception: {str(e)}"
-        }
+        result["gemini_reason"] = f"Exception: {str(e)}"
+        return result
 
 
 class URLNavigator:
@@ -2196,8 +2134,7 @@ Output ONLY JSON in this exact format:
             setting_label="Allow users to send text feedback",
             enable=enable,
             description="Zoom general settings page",
-            save_after=True,
-            navigator_instance=self
+            save_after=True
         )
     
     def close_browser(self):
@@ -2407,8 +2344,7 @@ Examples:
                     setting_label=args.setting,
                     enable=enable,
                     description=args.description,
-                    save_after=True,
-                    navigator_instance=navigator
+                    save_after=True
                 )
                 if result["status"] == "success":
                     print(f"   ✅ Success!")
