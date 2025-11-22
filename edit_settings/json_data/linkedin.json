@@ -6,7 +6,7 @@
       "ts": "20251111T173223Z",
       "kind": "auto_fullpage",
       "url": "https://www.linkedin.com/mypreferences/d/categories/account",
-      "path": "/generaloutput/linkedin/screenshots/sections/initial_load_20251111T173223Z.png",
+      "path": "../gemini-team/generaloutput/linkedin/screenshots/sections/initial_load_20251111T173223Z.png",
       "label": "initial_load"
     },
     {
@@ -145,7 +145,7 @@
       "ts": "20251111T173330Z",
       "kind": "auto_fullpage",
       "url": "https://www.linkedin.com/mypreferences/d/categories/account",
-      "path": "/generaloutput/linkedin/screenshots/sections/after_click__Sign_in_security_20251111T173330Z.png",
+      "path": "../gemini-team/generaloutput/linkedin/screenshots/sections/after_click__Sign_in_security_20251111T173330Z.png",
       "label": "after_click__Sign_in_security"
     },
     {
@@ -162,7 +162,7 @@
       "ts": "20251111T173331Z",
       "kind": "auto_fullpage",
       "url": "https://www.linkedin.com/mypreferences/d/categories/sign-in-and-security",
-      "path": "/generaloutput/linkedin/screenshots/sections/after_click__Visibility_20251111T173331Z.png",
+      "path": "../gemini-team/generaloutput/linkedin/screenshots/sections/after_click__Visibility_20251111T173331Z.png",
       "label": "after_click__Visibility"
     },
     {
@@ -179,7 +179,7 @@
       "ts": "20251111T173332Z",
       "kind": "auto_fullpage",
       "url": "https://www.linkedin.com/mypreferences/d/categories/profile-visibility",
-      "path": "/generaloutput/linkedin/screenshots/sections/after_click__Data_privacy_20251111T173332Z.png",
+      "path": "../gemini-team/generaloutput/linkedin/screenshots/sections/after_click__Data_privacy_20251111T173332Z.png",
       "label": "after_click__Data_privacy"
     },
     {
@@ -196,14 +196,14 @@
       "ts": "20251111T173333Z",
       "kind": "auto_fullpage",
       "url": "https://www.linkedin.com/mypreferences/d/categories/privacy",
-      "path": "/generaloutput/linkedin/screenshots/sections/after_click__Advertising_data_20251111T173333Z.png",
+      "path": "../gemini-team/generaloutput/linkedin/screenshots/sections/after_click__Advertising_data_20251111T173333Z.png",
       "label": "after_click__Advertising_data"
     },
     {
       "ts": "20251111T173334Z",
       "kind": "capture_fullpage",
       "url": "https://www.linkedin.com/mypreferences/d/categories/ads",
-      "path": "/generaloutput/linkedin/screenshots/sections/account_preferences_20251111T173334Z.png",
+      "path": "../gemini-team/generaloutput/linkedin/screenshots/sections/account_preferences_20251111T173334Z.png",
       "section": "Account preferences"
     },
     {
@@ -266,14 +266,14 @@
       "ts": "20251111T173359Z",
       "kind": "auto_fullpage",
       "url": "https://www.linkedin.com/mypreferences/d/categories/ads",
-      "path": "/generaloutput/linkedin/screenshots/sections/after_click__Notifications_20251111T173359Z.png",
+      "path": "../gemini-team/generaloutput/linkedin/screenshots/sections/after_click__Notifications_20251111T173359Z.png",
       "label": "after_click__Notifications"
     },
     {
       "ts": "20251111T173359Z",
       "kind": "capture_fullpage",
       "url": "https://www.linkedin.com/mypreferences/d/categories/notifications",
-      "path": "/generaloutput/linkedin/screenshots/sections/advertising_data_20251111T173359Z.png",
+      "path": "../gemini-team/generaloutput/linkedin/screenshots/sections/advertising_data_20251111T173359Z.png",
       "section": "Advertising data"
     },
     {
@@ -312,7 +312,7 @@
       "ts": "20251111T173412Z",
       "kind": "auto_fullpage",
       "url": "https://www.linkedin.com/mypreferences/d/categories/notifications",
-      "path": "/generaloutput/linkedin/screenshots/sections/end_of_run_20251111T173412Z.png",
+      "path": "../gemini-team/generaloutput/linkedin/screenshots/sections/end_of_run_20251111T173412Z.png",
       "label": "end_of_run"
     }
   ],
@@ -323,7 +323,7 @@
         "Account preferences"
       ],
       "url": "https://www.linkedin.com/mypreferences/d/categories/ads",
-      "evidence_fullpage": "/generaloutput/linkedin/screenshots/sections/account_preferences_20251111T173334Z.png",
+      "evidence_fullpage": "../gemini-team/generaloutput/linkedin/screenshots/sections/account_preferences_20251111T173334Z.png",
       "items": []
     },
     {
@@ -332,7 +332,7 @@
         "Advertising data"
       ],
       "url": "https://www.linkedin.com/mypreferences/d/categories/notifications",
-      "evidence_fullpage": "/generaloutput/linkedin/screenshots/sections/advertising_data_20251111T173359Z.png",
+      "evidence_fullpage": "../gemini-team/generaloutput/linkedin/screenshots/sections/advertising_data_20251111T173359Z.png",
       "items": []
     }
   ],
