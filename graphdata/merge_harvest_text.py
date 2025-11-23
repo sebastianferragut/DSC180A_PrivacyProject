@@ -76,7 +76,12 @@ def main():
     # HARVEST FILES (REAL PATHS)
     harvest_files = {
         "facebook": harvest_dir / "facebook/harvest_report.json",
+        "googleaccount": harvest_dir / "googleaccount/harvest_report.json",
+        "instagram": harvest_dir / "instagram/harvest_report.json",
         "linkedin": harvest_dir / "linkedin/harvest_report.json",
+        "reddit": harvest_dir / "reddit/harvest_report.json",
+        "spotify": harvest_dir / "spotify/harvest_report.json",
+        "twitterX": harvest_dir / "twitterX/harvest_report.json",
         "zoom": harvest_dir / "zoom/harvest_report.json"
     }
 

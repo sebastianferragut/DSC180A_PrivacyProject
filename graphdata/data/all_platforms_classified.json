@@ -1,1127 +1,1759 @@
 [
   {
     "platform": "facebook",
-    "image": "initial_load_20251112T172213Z.png",
-    "full_image_path": "/generaloutput/facebook/screenshots/sections/initial_load_20251112T172213Z.png",
+    "image": "initial_load_20251119T195333Z.png",
+    "full_image_path": "/generaloutput/facebook/screenshots/sections/initial_load_20251119T195333Z.png",
     "url": "https://accountscenter.facebook.com/password_and_security",
-    "settings": [
-      {
-        "setting": "Change password",
-        "description": "Manage your passwords, login preferences and recovery methods. This option navigates to a page to change your password.",
-        "state": "navigational"
-      },
-      {
-        "setting": "Two-factor authentication",
-        "description": "Manage your passwords, login preferences and recovery methods. This option navigates to a page to manage two-factor authentication.",
-        "state": "navigational"
-      },
-      {
-        "setting": "Saved login",
-        "description": "Manage your passwords, login preferences and recovery methods. This option navigates to a page to manage saved login information.",
-        "state": "navigational"
-      },
-      {
-        "setting": "Passkey",
-        "description": "Manage your passwords, login preferences and recovery methods. This option navigates to a page to manage passkeys.",
-        "state": "navigational"
-      },
-      {
-        "setting": "Where you're logged in",
-        "description": "Review security issues by running checks across apps, devices and emails sent. This option navigates to a page to see where your account is logged in.",
-        "state": "navigational"
-      },
-      {
-        "setting": "Login alerts",
-        "description": "Review security issues by running checks across apps, devices and emails sent. This option navigates to a page to manage login alerts.",
-        "state": "navigational"
-      },
-      {
-        "setting": "Recent emails",
-        "description": "Review security issues by running checks across apps, devices and emails sent. This option navigates to a page to review recent emails from Meta.",
-        "state": "navigational"
-      },
-      {
-        "setting": "Security Checkup",
-        "description": "Review security issues by running checks across apps, devices and emails sent. This option navigates to a page to run a security checkup.",
-        "state": "navigational"
-      }
-    ],
-    "category": "security_authentication"
+    "settings": [],
+    "category": "uncategorized"
   },
   {
     "platform": "facebook",
-    "image": "after_click__Your_information_and_permissions_20251112T172232Z.png",
-    "full_image_path": "/generaloutput/facebook/screenshots/sections/after_click__Your_information_and_permissions_20251112T172232Z.png",
+    "image": "after_click__Your_information_and_permissions_20251119T195344Z.png",
+    "full_image_path": "/generaloutput/facebook/screenshots/sections/after_click__Your_information_and_permissions_20251119T195344Z.png",
     "url": "https://accountscenter.facebook.com/info_and_permissions",
-    "settings": [
-      {
-        "setting": "Export your information",
-        "description": "View, export your information and activity on our apps. To download or transfer a copy of your information, go to Export your Information.",
-        "state": "navigation link"
-      },
-      {
-        "setting": "Access your information",
-        "description": "View, export your information and activity on our apps.",
-        "state": "navigation link"
-      },
-      {
-        "setting": "Search history",
-        "description": "View, export your information and activity on our apps.",
-        "state": "navigation link"
-      },
-      {
-        "setting": "Your activity off Meta technologies",
-        "description": "Control what information Meta technologies can use to influence your experiences.",
-        "state": "navigation link"
-      },
-      {
-        "setting": "Specific ad partners",
-        "description": "Control what information Meta technologies can use to influence your experiences.",
-        "state": "navigation link"
-      }
-    ],
-    "category": "data_collection_tracking"
+    "settings": [],
+    "category": "uncategorized"
   },
   {
     "platform": "facebook",
-    "image": "after_click__Ad_preferences_20251112T172233Z.png",
-    "full_image_path": "/generaloutput/facebook/screenshots/sections/after_click__Ad_preferences_20251112T172233Z.png",
+    "image": "after_click__Ad_preferences_20251119T195345Z.png",
+    "full_image_path": "/generaloutput/facebook/screenshots/sections/after_click__Ad_preferences_20251119T195345Z.png",
     "url": "https://accountscenter.facebook.com/ads",
-    "settings": [
-      {
-        "setting": "Export your information",
-        "description": "To download or transfer a copy of your information, go to Export your Information. View, export your information and activity on our apps.",
-        "state": "navigational link"
-      },
-      {
-        "setting": "Access your information",
-        "description": "View, export your information and activity on our apps.",
-        "state": "navigational link"
-      },
-      {
-        "setting": "Search history",
-        "description": "View, export your information and activity on our apps.",
-        "state": "navigational link"
-      },
-      {
-        "setting": "Your activity off Meta technologies",
-        "description": "Control what information Meta technologies can use to influence your experiences.",
-        "state": "navigational link"
-      },
-      {
-        "setting": "Specific ad partners",
-        "description": "Control what information Meta technologies can use to influence your experiences.",
-        "state": "navigational link"
-      }
-    ],
-    "category": "data_collection_tracking"
+    "settings": [],
+    "category": "uncategorized"
   },
   {
     "platform": "facebook",
-    "image": "after_click__Personal_details_20251112T172234Z.png",
-    "full_image_path": "/generaloutput/facebook/screenshots/sections/after_click__Personal_details_20251112T172234Z.png",
+    "image": "after_click__Personal_details_20251119T195346Z.png",
+    "full_image_path": "/generaloutput/facebook/screenshots/sections/after_click__Personal_details_20251119T195346Z.png",
     "url": "https://accountscenter.facebook.com/personal_info",
-    "settings": [
-      {
-        "setting": "Contact info",
-        "description": "Meta uses this information to verify your identity and to keep our community safe. You decide what personal details you make visible to others.",
-        "state": "zoomaitester10@gmail.com"
-      },
-      {
-        "setting": "Birthday",
-        "description": "Meta uses this information to verify your identity and to keep our community safe. You decide what personal details you make visible to others.",
-        "state": "January 10, 2000"
-      },
-      {
-        "setting": "Identity confirmation",
-        "description": "Meta uses this information to verify your identity and to keep our community safe.",
-        "state": "navigational link"
-      },
-      {
-        "setting": "Account ownership and control",
-        "description": "Manage your data, modify your legacy contact, deactivate or delete your accounts and profiles.",
-        "state": "navigational link"
-      }
-    ],
-    "category": "identity_personal_info"
+    "settings": [],
+    "category": "uncategorized"
   },
   {
     "platform": "facebook",
-    "image": "password_and_security_20251112T172235Z.png",
-    "full_image_path": "/generaloutput/facebook/screenshots/sections/password_and_security_20251112T172235Z.png",
+    "image": "password_and_security_20251119T195347Z.png",
+    "full_image_path": "/generaloutput/facebook/screenshots/sections/password_and_security_20251119T195347Z.png",
     "url": "https://accountscenter.facebook.com/personal_info",
-    "settings": [
-      {
-        "setting": "Contact info",
-        "description": "Meta uses this information to verify your identity and to keep our community safe. You decide what personal details you make visible to others.",
-        "state": "zoomaitester10@gmail.com"
-      },
-      {
-        "setting": "Birthday",
-        "description": "Meta uses this information to verify your identity and to keep our community safe. You decide what personal details you make visible to others.",
-        "state": "January 10, 2000"
-      },
-      {
-        "setting": "Identity confirmation",
-        "description": "Meta uses this information to verify your identity and to keep our community safe. You decide what personal details you make visible to others.",
-        "state": "not applicable"
-      },
-      {
-        "setting": "Account ownership and control",
-        "description": "Manage your data, modify your legacy contact, deactivate or delete your accounts and profiles.",
-        "state": "not applicable"
-      }
-    ],
-    "category": "identity_personal_info"
+    "settings": [],
+    "category": "uncategorized"
   },
   {
     "platform": "facebook",
-    "image": "after_click__Account_ownership_and_control_20251112T172305Z.png",
-    "full_image_path": "/generaloutput/facebook/screenshots/sections/after_click__Account_ownership_and_control_20251112T172305Z.png",
+    "image": "after_click__Account_ownership_and_control_20251119T195413Z.png",
+    "full_image_path": "/generaloutput/facebook/screenshots/sections/after_click__Account_ownership_and_control_20251119T195413Z.png",
     "url": "https://accountscenter.facebook.com/personal_info/account_ownership_and_control",
-    "settings": [
-      {
-        "setting": "Contact info",
-        "description": "Meta uses this information to verify your identity and to keep our community safe. You decide what personal details you make visible to others.",
-        "state": "zoomatester10@gmail.com"
-      },
-      {
-        "setting": "Birthday",
-        "description": "Meta uses this information to verify your identity and to keep our community safe. You decide what personal details you make visible to others.",
-        "state": "not applicable"
-      },
-      {
-        "setting": "Identity confirmation",
-        "description": "Confirm your identity to do things like run ads about social issues, elections or politics.",
-        "state": "not applicable"
-      },
-      {
-        "setting": "Account ownership and control",
-        "description": "Manage your data, modify your legacy contact, delete your accounts and profiles.",
-        "state": "not applicable"
-      },
-      {
-        "setting": "Memorialization",
-        "description": "Decide what happens to your main Facebook profile after you pass away.",
-        "state": "not applicable"
-      },
-      {
-        "setting": "Deactivation or deletion",
-        "description": "Temporarily deactivate or permanently delete your accounts and profiles",
-        "state": "not applicable"
-      }
-    ],
-    "category": "identity_personal_info"
+    "settings": [],
+    "category": "uncategorized"
   },
   {
     "platform": "facebook",
-    "image": "personal_details_20251112T172305Z.png",
-    "full_image_path": "/generaloutput/facebook/screenshots/sections/personal_details_20251112T172305Z.png",
+    "image": "personal_details_20251119T195413Z.png",
+    "full_image_path": "/generaloutput/facebook/screenshots/sections/personal_details_20251119T195413Z.png",
     "url": "https://accountscenter.facebook.com/personal_info/account_ownership_and_control",
-    "settings": [
-      {
-        "setting": "Contact info",
-        "description": "Meta uses this information to verify your identity and to keep our community safe. You decide what personal details you make visible to others.",
-        "state": "zoomatester10@gmail.com"
-      },
-      {
-        "setting": "Birthday",
-        "description": "Meta uses this information to verify your identity and to keep our community safe. You decide what personal details you make visible to others.",
-        "state": "navigational"
-      },
-      {
-        "setting": "Identity confirmation",
-        "description": "Confirm your identity to help keep your account secure.",
-        "state": "navigational"
-      },
-      {
-        "setting": "Account ownership and control",
-        "description": "Manage your data, modify your legacy contact, delete your accounts and profiles.",
-        "state": "navigational"
-      },
-      {
-        "setting": "Memorialization",
-        "description": "Decide what happens to your main Facebook profile after you pass away.",
-        "state": "navigational"
-      },
-      {
-        "setting": "Deactivation or deletion",
-        "description": "Temporarily deactivate or permanently delete your accounts and profiles.",
-        "state": "navigational"
-      }
-    ],
-    "category": "identity_personal_info"
+    "settings": [],
+    "category": "uncategorized"
   },
   {
     "platform": "facebook",
-    "image": "after_click__Deactivation_or_deletion_20251112T172349Z.png",
-    "full_image_path": "/generaloutput/facebook/screenshots/sections/after_click__Deactivation_or_deletion_20251112T172349Z.png",
-    "url": "https://accountscenter.facebook.com/personal_info/account_ownership_and_control/deletion_and_deactivation/?is_from_dialog=true",
-    "settings": [
-      {
-        "setting": "Contact info",
-        "description": "Meta uses this information to verify your identity and to keep our community safe. You decide what personal details you make visible to others.",
-        "state": "zoomatester10@gmail.com"
-      },
-      {
-        "setting": "Birthday",
-        "description": "Meta uses this information to verify your identity and to keep our community safe. You decide what personal details you make visible to others.",
-        "state": "not visible"
-      },
-      {
-        "setting": "Identity confirmation",
-        "description": "Confirm your identity on Facebook.",
-        "state": "not visible"
-      },
-      {
-        "setting": "Account ownership and control",
-        "description": "Manage your data, modify your legacy contact, delete your accounts and profiles.",
-        "state": "not visible"
-      },
-      {
-        "setting": "Select account for deactivation or deletion",
-        "description": "To start the process, select what you'd like to temporarily deactivate or permanently delete.",
-        "state": "Tester Test (Facebook)"
-      }
-    ],
-    "category": "identity_personal_info"
+    "image": "account_ownership_and_control_20251119T195441Z.png",
+    "full_image_path": "/generaloutput/facebook/screenshots/sections/account_ownership_and_control_20251119T195441Z.png",
+    "url": "https://accountscenter.facebook.com/personal_info",
+    "settings": [],
+    "category": "uncategorized"
   },
   {
-    "platform": "linkedin",
-    "image": "initial_load_20251111T173223Z.png",
-    "full_image_path": "/generaloutput/linkedin/screenshots/sections/initial_load_20251111T173223Z.png",
-    "url": "https://www.linkedin.com/mypreferences/d/categories/account",
+    "platform": "facebook",
+    "image": "end_of_run_20251119T195457Z.png",
+    "full_image_path": "/generaloutput/facebook/screenshots/sections/end_of_run_20251119T195457Z.png",
+    "url": "https://accountscenter.facebook.com/personal_info",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "googleaccount",
+    "image": "initial_load_20251119T201600Z.png",
+    "full_image_path": "/generaloutput/googleaccount/screenshots/sections/initial_load_20251119T201600Z.png",
+    "url": "https://myaccount.google.com/data-and-privacy",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "googleaccount",
+    "image": "data___privacy_overview_20251119T201629Z.png",
+    "full_image_path": "/generaloutput/googleaccount/screenshots/sections/data___privacy_overview_20251119T201629Z.png",
+    "url": "https://myaccount.google.com/data-and-privacy",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "googleaccount",
+    "image": "end_of_run_20251119T201718Z.png",
+    "full_image_path": "/generaloutput/googleaccount/screenshots/sections/end_of_run_20251119T201718Z.png",
+    "url": "https://myaccount.google.com/data-and-privacy",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "instagram",
+    "image": "initial_load_20251119T202447Z.png",
+    "full_image_path": "/generaloutput/instagram/screenshots/sections/initial_load_20251119T202447Z.png",
+    "url": "https://www.instagram.com/accounts/notifications",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "instagram",
+    "image": "after_click__Account_privacy_20251119T202515Z.png",
+    "full_image_path": "/generaloutput/instagram/screenshots/sections/after_click__Account_privacy_20251119T202515Z.png",
+    "url": "https://www.instagram.com/accounts/settings/v2/account_privacy/",
     "settings": [
       {
-        "setting": "Sync calendar",
-        "description": "Navigates to settings for synchronizing your calendar with LinkedIn.",
-        "state": "navigation"
-      },
-      {
-        "setting": "Sync contacts",
-        "description": "Navigates to settings for synchronizing your contacts with LinkedIn.",
-        "state": "navigation"
-      },
-      {
-        "setting": "Upgrade for Free",
-        "description": "Navigates to the page for upgrading the account subscription.",
-        "state": "navigation"
-      },
-      {
-        "setting": "View purchase history",
-        "description": "Navigates to the page to view past purchases on LinkedIn.",
-        "state": "navigation"
-      },
-      {
-        "setting": "Microsoft",
-        "description": "Navigates to settings for managing the connection and data sharing with your Microsoft account.",
-        "state": "navigation"
-      },
-      {
-        "setting": "Hibernate account",
-        "description": "Navigates to the page to temporarily deactivate your LinkedIn account.",
-        "state": "navigation"
-      },
-      {
-        "setting": "Close and delete account",
-        "description": "Navigates to the page to permanently close and delete your LinkedIn account.",
-        "state": "navigation"
+        "setting": "Private account",
+        "description": "When your account is public, your profile and posts can be seen by anyone, on or off Instagram, even if they don't have an Instagram account. When your account is private, only the followers you approve can see what you share, including your photos or videos on hashtag and location pages, and your followers and following lists.",
+        "state": "disabled"
       }
     ],
     "category": "visibility_audience"
   },
   {
-    "platform": "linkedin",
-    "image": "after_click__Sign_in_security_20251111T173330Z.png",
-    "full_image_path": "/generaloutput/linkedin/screenshots/sections/after_click__Sign_in_security_20251111T173330Z.png",
-    "url": "https://www.linkedin.com/mypreferences/d/categories/account",
+    "platform": "instagram",
+    "image": "after_click__Blocked_20251119T202517Z.png",
+    "full_image_path": "/generaloutput/instagram/screenshots/sections/after_click__Blocked_20251119T202517Z.png",
+    "url": "https://www.instagram.com/accounts/blocked_accounts/",
     "settings": [
       {
-        "setting": "Email addresses",
-        "description": "Manage the email addresses associated with your account.",
-        "state": "zoomaltester10@gmail.com"
-      },
-      {
-        "setting": "Phone numbers",
-        "description": "Manage the phone numbers associated with your account.",
-        "state": "not visible"
-      },
-      {
-        "setting": "Passkeys",
-        "description": "Manage passkeys for signing in to your account.",
-        "state": "not visible"
-      },
-      {
-        "setting": "Where you're signed in",
-        "description": "View and manage active sessions for your account.",
-        "state": "not visible"
-      },
-      {
-        "setting": "Devices that remember your password",
-        "description": "View and manage devices that have saved your password.",
-        "state": "not visible"
-      },
-      {
-        "setting": "Two-factor authentication",
-        "description": "Enable or disable an extra layer of security for your account.",
-        "state": "Off"
+        "setting": "Blocked accounts",
+        "description": "A list of people you have blocked. You can block people anytime from their profiles.",
+        "state": "You haven't blocked anyone."
       }
     ],
-    "category": "security_authentication"
+    "category": "visibility_audience"
   },
   {
-    "platform": "linkedin",
-    "image": "after_click__Visibility_20251111T173331Z.png",
-    "full_image_path": "/generaloutput/linkedin/screenshots/sections/after_click__Visibility_20251111T173331Z.png",
-    "url": "https://www.linkedin.com/mypreferences/d/categories/sign-in-and-security",
+    "platform": "instagram",
+    "image": "after_click__Story_and_location_20251119T202518Z.png",
+    "full_image_path": "/generaloutput/instagram/screenshots/sections/after_click__Story_and_location_20251119T202518Z.png",
+    "url": "https://www.instagram.com/accounts/hide_story_and_live/",
     "settings": [
       {
-        "setting": "Profile viewing options",
-        "description": "Controls how you appear to others when you view their profile.",
-        "state": "Your name and headline"
+        "setting": "Personal details",
+        "description": "Manage your personal details within the Meta Accounts Center.",
+        "state": "navigational link"
       },
       {
-        "setting": "Page visit visibility",
-        "description": "Controls the visibility of your visits to other pages.",
-        "state": "Off"
+        "setting": "Password and security",
+        "description": "Manage your password and security settings within the Meta Accounts Center.",
+        "state": "navigational link"
       },
       {
-        "setting": "Edit your public profile",
-        "description": "A link to a page where you can edit your public profile.",
-        "state": "navigation link"
+        "setting": "Ad preferences",
+        "description": "Manage your ad preferences within the Meta Accounts Center.",
+        "state": "navigational link"
       },
       {
-        "setting": "Who can see or download your email address",
-        "description": "Controls who is able to see or download your email address.",
-        "state": "navigation link"
+        "setting": "Account privacy",
+        "description": "Controls who can see your content, such as setting your account to private.",
+        "state": "navigational link"
       },
       {
-        "setting": "Who can see your connections",
-        "description": "Controls who can see your list of connections.",
-        "state": "On"
+        "setting": "Close Friends",
+        "description": "Manage your list of close friends to share content with.",
+        "state": "navigational link"
       },
       {
-        "setting": "Who can see members you follow",
-        "description": "Controls who can see the list of members you follow.",
-        "state": "Anyone on LinkedIn"
+        "setting": "Blocked",
+        "description": "View and manage accounts you have blocked.",
+        "state": "navigational link"
       },
       {
-        "setting": "Who can see your last name",
-        "description": "Controls who can see your last name on your profile.",
-        "state": "navigation link"
+        "setting": "Story and location",
+        "description": "Manage privacy settings for your stories and location.",
+        "state": "selected"
       },
       {
-        "setting": "Representing your organizations and interests",
-        "description": "Controls whether your profile can be featured on pages for organizations and interests you've listed.",
-        "state": "On"
+        "setting": "Messages and story replies",
+        "description": "Controls who can send you messages and reply to your stories.",
+        "state": "navigational link"
       },
       {
-        "setting": "Page owners exporting your data",
-        "description": "Controls whether page owners can export data about your interactions with their page.",
-        "state": "Off"
+        "setting": "Tags and mentions",
+        "description": "Controls who can tag you in photos/videos or mention your username.",
+        "state": "navigational link"
       },
       {
-        "setting": "Profile discovery and visibility off LinkedIn",
-        "description": "Controls whether your profile can be discovered and viewed through services off LinkedIn (e.g., search engines).",
-        "state": "navigation link"
+        "setting": "Comments",
+        "description": "Controls who can comment on your posts.",
+        "state": "navigational link"
       },
       {
-        "setting": "Profile discovery using email address",
-        "description": "Controls who can find your profile using your email address.",
-        "state": "Anyone"
+        "setting": "Hide story and live from",
+        "description": "Allows you to select people to hide your story and live videos from.",
+        "state": "navigational link"
+      }
+    ],
+    "category": "visibility_audience"
+  },
+  {
+    "platform": "instagram",
+    "image": "after_click__Messages_and_story_replies_20251119T202519Z.png",
+    "full_image_path": "/generaloutput/instagram/screenshots/sections/after_click__Messages_and_story_replies_20251119T202519Z.png",
+    "url": "https://www.instagram.com/accounts/messages_and_story_replies/",
+    "settings": [
+      {
+        "setting": "Personal details",
+        "description": "Manage your connected experiences and account settings across Meta technologies for personal details.",
+        "state": "navigational"
       },
       {
-        "setting": "Profile discovery using phone number",
-        "description": "Controls who can find your profile using your phone number.",
+        "setting": "Password and security",
+        "description": "Manage your connected experiences and account settings across Meta technologies for password and security.",
+        "state": "navigational"
+      },
+      {
+        "setting": "Ad preferences",
+        "description": "Manage your connected experiences and account settings across Meta technologies for ad preferences.",
+        "state": "navigational"
+      },
+      {
+        "setting": "Account privacy",
+        "description": "A navigation link to settings that control who can see your content.",
+        "state": "navigational"
+      },
+      {
+        "setting": "Close Friends",
+        "description": "A navigation link to manage your Close Friends list.",
+        "state": "navigational"
+      },
+      {
+        "setting": "Blocked",
+        "description": "A navigation link to manage blocked accounts.",
+        "state": "navigational"
+      },
+      {
+        "setting": "Story and location",
+        "description": "A navigation link to settings for stories and location.",
+        "state": "navigational"
+      },
+      {
+        "setting": "Messages and story replies",
+        "description": "A navigation link to settings for how others can interact with you via messages and story replies.",
+        "state": "selected"
+      },
+      {
+        "setting": "Tags and mentions",
+        "description": "A navigation link to settings for how others can interact with you via tags and mentions.",
+        "state": "navigational"
+      },
+      {
+        "setting": "Comments",
+        "description": "A navigation link to settings for how others can interact with you via comments.",
+        "state": "navigational"
+      },
+      {
+        "setting": "Message controls",
+        "description": "Controls for how people can reach you via messages.",
+        "state": "navigational"
+      },
+      {
+        "setting": "Story replies",
+        "description": "Controls for how people can reach you via story replies.",
+        "state": "navigational"
+      },
+      {
+        "setting": "Show activity status",
+        "description": "Controls who can see you're online.",
+        "state": "navigational"
+      }
+    ],
+    "category": "visibility_audience"
+  },
+  {
+    "platform": "instagram",
+    "image": "notifications_20251119T202519Z.png",
+    "full_image_path": "/generaloutput/instagram/screenshots/sections/notifications_20251119T202519Z.png",
+    "url": "https://www.instagram.com/accounts/messages_and_story_replies/",
+    "settings": [
+      {
+        "setting": "Personal details",
+        "description": "Manage your personal details within the Meta Accounts Center.",
+        "state": "navigates to another page"
+      },
+      {
+        "setting": "Password and security",
+        "description": "Manage your password and security settings within the Meta Accounts Center.",
+        "state": "navigates to another page"
+      },
+      {
+        "setting": "Ad preferences",
+        "description": "Manage your ad preferences within the Meta Accounts Center.",
+        "state": "navigates to another page"
+      },
+      {
+        "setting": "Account privacy",
+        "description": "Controls who can see your content, such as making your account private.",
+        "state": "navigates to another page"
+      },
+      {
+        "setting": "Close Friends",
+        "description": "Manages your list of close friends for sharing specific content.",
+        "state": "navigates to another page"
+      },
+      {
+        "setting": "Blocked",
+        "description": "View and manage accounts you have blocked.",
+        "state": "navigates to another page"
+      },
+      {
+        "setting": "Story and location",
+        "description": "Manage settings related to your stories and location sharing.",
+        "state": "navigates to another page"
+      },
+      {
+        "setting": "Tags and mentions",
+        "description": "Controls who can tag and mention you.",
+        "state": "navigates to another page"
+      },
+      {
+        "setting": "Comments",
+        "description": "Controls who can comment on your posts.",
+        "state": "navigates to another page"
+      },
+      {
+        "setting": "Message controls",
+        "description": "Controls who can send you message requests.",
+        "state": "navigates to another page"
+      },
+      {
+        "setting": "Story replies",
+        "description": "Controls who can reply to your stories.",
+        "state": "navigates to another page"
+      },
+      {
+        "setting": "Show activity status",
+        "description": "Controls whether other people can see when you're online.",
+        "state": "navigates to another page"
+      }
+    ],
+    "category": "visibility_audience"
+  },
+  {
+    "platform": "instagram",
+    "image": "after_click__Tags_and_mentions_20251119T202550Z.png",
+    "full_image_path": "/generaloutput/instagram/screenshots/sections/after_click__Tags_and_mentions_20251119T202550Z.png",
+    "url": "https://www.instagram.com/accounts/settings/v2/tags_and_mentions/",
+    "settings": [
+      {
+        "setting": "Who can tag you",
+        "description": "Choose who can tag you in their photos and videos. When people try to tag you, they'll see if you don't allow tags from everyone.",
+        "state": "Allow tags from everyone"
+      },
+      {
+        "setting": "Manually approve tags",
+        "description": "A setting to manually approve tags.",
+        "state": "navigates to another page"
+      },
+      {
+        "setting": "Who can @mention you",
+        "description": "Choose who can @mention you to link your account in their stories, notes, comments, live videos, bio, and captions. When people try to @mention you, they'll see if you don't allow @mentions.",
+        "state": "Allow mentions from everyone"
+      }
+    ],
+    "category": "visibility_audience"
+  },
+  {
+    "platform": "instagram",
+    "image": "after_click__Comments_20251119T202551Z.png",
+    "full_image_path": "/generaloutput/instagram/screenshots/sections/after_click__Comments_20251119T202551Z.png",
+    "url": "https://www.instagram.com/accounts/comments/",
+    "settings": [
+      {
+        "setting": "Allow comments from",
+        "description": "Controls which group of users can comment on your posts.",
         "state": "Everyone"
       },
       {
-        "setting": "Blocked members",
-        "description": "A link to a page where you can manage the list of members you have blocked.",
+        "setting": "Allow GIF comments",
+        "description": "People will be able to comment GIFs on your posts and reels.",
+        "state": "enabled"
+      }
+    ],
+    "category": "communication_notifications"
+  },
+  {
+    "platform": "instagram",
+    "image": "after_click__Sharing_and_reuse_20251119T202552Z.png",
+    "full_image_path": "/generaloutput/instagram/screenshots/sections/after_click__Sharing_and_reuse_20251119T202552Z.png",
+    "url": "https://www.instagram.com/accounts/settings/v2/sharing_and_reuse/",
+    "settings": [
+      {
+        "setting": "Story shares",
+        "description": "When this is on, people can send your stories in messages.",
+        "state": "enabled"
+      },
+      {
+        "setting": "Posts and reels to stories",
+        "description": "Allows people to share your posts and reels to their stories.",
+        "state": "enabled"
+      },
+      {
+        "setting": "Reposts on posts and reels",
+        "description": "Allows people to repost your posts and reels.",
+        "state": "enabled"
+      },
+      {
+        "setting": "Website embeds",
+        "description": "When this is on, your public posts or profile can be shown outside of Instagram, including articles and blogs.",
+        "state": "On"
+      }
+    ],
+    "category": "visibility_audience"
+  },
+  {
+    "platform": "instagram",
+    "image": "after_click__Restricted_accounts_20251119T202554Z.png",
+    "full_image_path": "/generaloutput/instagram/screenshots/sections/after_click__Restricted_accounts_20251119T202554Z.png",
+    "url": "https://www.instagram.com/accounts/restricted_accounts/",
+    "settings": [
+      {
+        "setting": "Accounts Center",
+        "description": "Manage your connected experiences and account settings across Meta technologies.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Personal details",
+        "description": "A link to manage personal details within the Meta Accounts Center.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Password and security",
+        "description": "A link to manage password and security settings within the Meta Accounts Center.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Ad preferences",
+        "description": "A link to manage ad preferences within the Meta Accounts Center.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Edit profile",
+        "description": "A link to the page for editing your profile information.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Notifications",
+        "description": "A link to the page for managing notifications.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Account privacy",
+        "description": "A link to the page for managing who can see your content.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Close Friends",
+        "description": "A link to the page for managing your Close Friends list.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Blocked",
+        "description": "A link to the page for managing blocked accounts.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Story and location",
+        "description": "A link to the page for managing story and location settings.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Messages and story replies",
+        "description": "A link to the page for managing who can interact with you via messages and story replies.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Tags and mentions",
+        "description": "A link to the page for managing who can tag and mention you.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Comments",
+        "description": "A link to the page for managing comments on your posts.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Restricted accounts",
+        "description": "Protect yourself from unwanted interactions without having to block or unfollow people you know. You can restrict them anytime from their profiles.",
+        "state": "You haven't restricted anyone."
+      }
+    ],
+    "category": "visibility_audience"
+  },
+  {
+    "platform": "instagram",
+    "image": "messages_and_story_replies_20251119T202554Z.png",
+    "full_image_path": "/generaloutput/instagram/screenshots/sections/messages_and_story_replies_20251119T202554Z.png",
+    "url": "https://www.instagram.com/accounts/restricted_accounts/",
+    "settings": [
+      {
+        "setting": "Personal details",
+        "description": "Manage your connected experiences and account settings across Meta technologies, specifically personal details.",
+        "state": "not specified"
+      },
+      {
+        "setting": "Password and security",
+        "description": "Manage your connected experiences and account settings across Meta technologies, specifically password and security.",
+        "state": "not specified"
+      },
+      {
+        "setting": "Ad preferences",
+        "description": "Manage your connected experiences and account settings across Meta technologies, specifically ad preferences.",
+        "state": "not specified"
+      },
+      {
+        "setting": "Account privacy",
+        "description": "Controls who can see your content.",
+        "state": "not specified"
+      },
+      {
+        "setting": "Close Friends",
+        "description": "Manage your Close Friends list to share content with a specific group.",
+        "state": "not specified"
+      },
+      {
+        "setting": "Blocked",
+        "description": "View and manage accounts you have blocked.",
+        "state": "not specified"
+      },
+      {
+        "setting": "Story and location",
+        "description": "Manage settings for your stories and location sharing.",
+        "state": "not specified"
+      },
+      {
+        "setting": "Messages and story replies",
+        "description": "Control who can send you messages and reply to your stories.",
+        "state": "not specified"
+      },
+      {
+        "setting": "Tags and mentions",
+        "description": "Control who can tag you in photos or mention your account.",
+        "state": "not specified"
+      },
+      {
+        "setting": "Comments",
+        "description": "Control who can comment on your posts.",
+        "state": "not specified"
+      },
+      {
+        "setting": "Restricted accounts",
+        "description": "Protect yourself from unwanted interactions without having to block or unfollow people you know. You can restrict them anytime from their profiles.",
+        "state": "No accounts restricted"
+      }
+    ],
+    "category": "visibility_audience"
+  },
+  {
+    "platform": "instagram",
+    "image": "after_click__Hidden_Words_20251119T202606Z.png",
+    "full_image_path": "/generaloutput/instagram/screenshots/sections/after_click__Hidden_Words_20251119T202606Z.png",
+    "url": "https://www.instagram.com/accounts/settings/v2/hidden_words/",
+    "settings": [
+      {
+        "setting": "Hide comments",
+        "description": "Comments that are potentially offensive, misleading or spam will be moved to a separate section. Anyone can see these comments, and you can unhide comments on your own posts at anytime.",
+        "state": "enabled"
+      },
+      {
+        "setting": "Advanced comment filtering",
+        "description": "Even more comments that meet our criteria will automatically be hidden.",
+        "state": "disabled"
+      },
+      {
+        "setting": "Hide message requests",
+        "description": "Message requests that may be offensive, spam or scams will be moved to the Hidden requests folder. We'll also filter notifications for these messages. This feature is not currently supported on web or Meta Quest.",
+        "state": "disabled"
+      },
+      {
+        "setting": "Manage custom words and phrases",
+        "description": "A navigation link to manage a custom list of words, phrases, or emojis to filter.",
         "state": "navigation link"
       },
       {
-        "setting": "Manage active status",
-        "description": "Controls who can see when you are active on LinkedIn.",
-        "state": "No one"
+        "setting": "Hide comments",
+        "description": "Comments that contain words, phrases or emojis on your custom list and similar misspellings will be filtered out so they are only visible to the authors.",
+        "state": "disabled"
       },
       {
-        "setting": "Share job changes, education changes, and work anniversaries from profile",
-        "description": "Controls whether updates about job changes, education, and work anniversaries are shared with your network.",
-        "state": "On"
+        "setting": "Hide message requests",
+        "description": "Message requests that contain words from your list will be hidden. This feature is not currently supported on web or Meta Quest.",
+        "state": "disabled"
+      }
+    ],
+    "category": "communication_notifications"
+  },
+  {
+    "platform": "instagram",
+    "image": "after_click__Muted_accounts_20251119T202607Z.png",
+    "full_image_path": "/generaloutput/instagram/screenshots/sections/after_click__Muted_accounts_20251119T202607Z.png",
+    "url": "https://www.instagram.com/accounts/muted_accounts/",
+    "settings": [
+      {
+        "setting": "Personal details",
+        "description": "Manage personal details within Meta Accounts Center.",
+        "state": "navigation"
       },
       {
-        "setting": "Notify connections when you're in the news",
-        "description": "Controls whether your connections are notified when you are mentioned in news articles.",
-        "state": "On"
+        "setting": "Password and security",
+        "description": "Manage password and security settings within Meta Accounts Center.",
+        "state": "navigation"
       },
       {
-        "setting": "Mentioned by others",
-        "description": "Controls whether others can mention or tag you in their posts, comments, or photos.",
-        "state": "On"
+        "setting": "Ad preferences",
+        "description": "Manage ad preferences within Meta Accounts Center.",
+        "state": "navigation"
+      },
+      {
+        "setting": "Edit profile",
+        "description": "A setting under 'How you use Instagram' to edit your profile.",
+        "state": "navigation"
+      },
+      {
+        "setting": "Notifications",
+        "description": "A setting under 'How you use Instagram' to manage notifications.",
+        "state": "navigation"
+      },
+      {
+        "setting": "Account privacy",
+        "description": "A setting under 'Who can see your content' to manage account privacy.",
+        "state": "navigation"
+      },
+      {
+        "setting": "Close Friends",
+        "description": "A setting under 'Who can see your content' to manage your Close Friends list.",
+        "state": "navigation"
+      },
+      {
+        "setting": "Blocked",
+        "description": "A setting under 'Who can see your content' to manage blocked accounts.",
+        "state": "navigation"
+      },
+      {
+        "setting": "Story and location",
+        "description": "A setting under 'Who can see your content' to manage story and location settings.",
+        "state": "navigation"
+      },
+      {
+        "setting": "Messages and story replies",
+        "description": "A setting under 'How others can interact with you' to manage messages and story replies.",
+        "state": "navigation"
+      },
+      {
+        "setting": "Tags and mentions",
+        "description": "A setting under 'How others can interact with you' to manage tags and mentions.",
+        "state": "navigation"
+      },
+      {
+        "setting": "Comments",
+        "description": "A setting under 'How others can interact with you' to manage comments.",
+        "state": "navigation"
+      },
+      {
+        "setting": "Muted accounts",
+        "description": "Shows a list of accounts you have muted.",
+        "state": "You haven't muted anyone."
+      }
+    ],
+    "category": "visibility_audience"
+  },
+  {
+    "platform": "instagram",
+    "image": "after_click__Content_preferences_20251119T202609Z.png",
+    "full_image_path": "/generaloutput/instagram/screenshots/sections/after_click__Content_preferences_20251119T202609Z.png",
+    "url": "https://www.instagram.com/accounts/settings/v2/content_preferences/",
+    "settings": [
+      {
+        "setting": "Personal details",
+        "description": "Manage your personal details within the Meta Accounts Center.",
+        "state": "navigation link"
+      },
+      {
+        "setting": "Password and security",
+        "description": "Manage your password and security settings within the Meta Accounts Center.",
+        "state": "navigation link"
+      },
+      {
+        "setting": "Ad preferences",
+        "description": "Manage your ad preferences within the Meta Accounts Center.",
+        "state": "navigation link"
+      },
+      {
+        "setting": "Edit profile",
+        "description": "Edit your Instagram profile information.",
+        "state": "navigation link"
+      },
+      {
+        "setting": "Notifications",
+        "description": "Manage your notification settings.",
+        "state": "navigation link"
+      },
+      {
+        "setting": "Account privacy",
+        "description": "Control who can see your content.",
+        "state": "navigation link"
+      },
+      {
+        "setting": "Close Friends",
+        "description": "Manage your Close Friends list.",
+        "state": "navigation link"
+      },
+      {
+        "setting": "Blocked",
+        "description": "Manage blocked accounts.",
+        "state": "navigation link"
+      },
+      {
+        "setting": "Story and location",
+        "description": "Manage settings for your stories and location.",
+        "state": "navigation link"
+      },
+      {
+        "setting": "Messages and story replies",
+        "description": "Control how others can interact with you through messages and story replies.",
+        "state": "navigation link"
+      },
+      {
+        "setting": "Tags and mentions",
+        "description": "Control how others can interact with you through tags and mentions.",
+        "state": "navigation link"
+      },
+      {
+        "setting": "Comments",
+        "description": "Control how others can interact with you through comments.",
+        "state": "navigation link"
+      },
+      {
+        "setting": "Sensitive content",
+        "description": "Control content from accounts you don't follow.",
+        "state": "navigation link"
+      }
+    ],
+    "category": "identity_personal_info"
+  },
+  {
+    "platform": "instagram",
+    "image": "after_click__Archiving_and_downloading_20251119T202610Z.png",
+    "full_image_path": "/generaloutput/instagram/screenshots/sections/after_click__Archiving_and_downloading_20251119T202610Z.png",
+    "url": "https://www.instagram.com/accounts/settings/v2/archiving_and_downloading/",
+    "settings": [
+      {
+        "setting": "Save story to archive",
+        "description": "Automatically save photos and videos to your archive so you don't have to save them to your phone. Only you can see your archive.",
+        "state": "disabled"
+      }
+    ],
+    "category": "data_collection_tracking"
+  },
+  {
+    "platform": "instagram",
+    "image": "after_click__Website_permissions_20251119T202611Z.png",
+    "full_image_path": "/generaloutput/instagram/screenshots/sections/after_click__Website_permissions_20251119T202611Z.png",
+    "url": "https://www.instagram.com/accounts/website_permissions/",
+    "settings": [
+      {
+        "setting": "Personal details",
+        "description": "Manage your connected experiences and account settings across Meta technologies, specifically personal details.",
+        "state": "navigates to sub-page"
+      },
+      {
+        "setting": "Password and security",
+        "description": "Manage your connected experiences and account settings across Meta technologies, specifically password and security.",
+        "state": "navigates to sub-page"
+      },
+      {
+        "setting": "Ad preferences",
+        "description": "Manage your connected experiences and account settings across Meta technologies, specifically ad preferences.",
+        "state": "navigates to sub-page"
+      },
+      {
+        "setting": "Edit profile",
+        "description": "A setting under 'How you use Instagram' to edit your profile information.",
+        "state": "navigates to sub-page"
+      },
+      {
+        "setting": "Notifications",
+        "description": "A setting under 'How you use Instagram' to manage notifications.",
+        "state": "navigates to sub-page"
+      },
+      {
+        "setting": "Account privacy",
+        "description": "A setting under 'Who can see your content' to manage account privacy.",
+        "state": "navigates to sub-page"
+      },
+      {
+        "setting": "Close Friends",
+        "description": "A setting under 'Who can see your content' to manage your Close Friends list.",
+        "state": "navigates to sub-page"
+      },
+      {
+        "setting": "Blocked",
+        "description": "A setting under 'Who can see your content' to manage blocked accounts.",
+        "state": "navigates to sub-page"
+      },
+      {
+        "setting": "Story and location",
+        "description": "A setting under 'Who can see your content' to manage story and location settings.",
+        "state": "navigates to sub-page"
+      },
+      {
+        "setting": "Messages and story replies",
+        "description": "A setting under 'How others can interact with you' to control who can send messages and reply to stories.",
+        "state": "navigates to sub-page"
+      },
+      {
+        "setting": "Tags and mentions",
+        "description": "A setting under 'How others can interact with you' to control who can tag and mention you.",
+        "state": "navigates to sub-page"
+      },
+      {
+        "setting": "Comments",
+        "description": "A setting under 'How others can interact with you' to control who can comment on your posts.",
+        "state": "navigates to sub-page"
+      },
+      {
+        "setting": "Apps and websites",
+        "description": "A setting under 'Website permissions' to manage permissions for connected apps and websites.",
+        "state": "navigates to sub-page"
+      }
+    ],
+    "category": "visibility_audience"
+  },
+  {
+    "platform": "instagram",
+    "image": "restricted_accounts_20251119T202611Z.png",
+    "full_image_path": "/generaloutput/instagram/screenshots/sections/restricted_accounts_20251119T202611Z.png",
+    "url": "https://www.instagram.com/accounts/website_permissions/",
+    "settings": [
+      {
+        "setting": "Personal details",
+        "description": "Manage personal details within the Meta Accounts Center.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Password and security",
+        "description": "Manage password and security settings within the Meta Accounts Center.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Ad preferences",
+        "description": "Manage ad preferences within the Meta Accounts Center.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Edit profile",
+        "description": "Settings for editing your profile information.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Notifications",
+        "description": "Settings for managing notifications.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Account privacy",
+        "description": "Settings to control who can see your content.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Close Friends",
+        "description": "Manage your Close Friends list for sharing specific content.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Blocked",
+        "description": "Manage accounts you have blocked.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Story and location",
+        "description": "Settings related to who can see your story and location information.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Messages and story replies",
+        "description": "Control who can send you messages and reply to your stories.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Tags and mentions",
+        "description": "Control who can tag and mention you.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Comments",
+        "description": "Control who can comment on your posts.",
+        "state": "navigational link"
+      },
+      {
+        "setting": "Apps and websites",
+        "description": "Manage permissions for third-party apps and websites connected to your account.",
+        "state": "navigational link"
+      }
+    ],
+    "category": "visibility_audience"
+  },
+  {
+    "platform": "linkedin",
+    "image": "initial_load_20251119T200207Z.png",
+    "full_image_path": "/generaloutput/linkedin/screenshots/sections/initial_load_20251119T200207Z.png",
+    "url": "https://www.linkedin.com/mypreferences/d/categories/account",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "linkedin",
+    "image": "after_click__Sign_in_security_20251119T200221Z.png",
+    "full_image_path": "/generaloutput/linkedin/screenshots/sections/after_click__Sign_in_security_20251119T200221Z.png",
+    "url": "https://www.linkedin.com/mypreferences/d/categories/account",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "linkedin",
+    "image": "after_click__Visibility_20251119T200222Z.png",
+    "full_image_path": "/generaloutput/linkedin/screenshots/sections/after_click__Visibility_20251119T200222Z.png",
+    "url": "https://www.linkedin.com/mypreferences/d/categories/sign-in-and-security",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "linkedin",
+    "image": "after_click__Data_privacy_20251119T200223Z.png",
+    "full_image_path": "/generaloutput/linkedin/screenshots/sections/after_click__Data_privacy_20251119T200223Z.png",
+    "url": "https://www.linkedin.com/mypreferences/d/categories/profile-visibility",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "linkedin",
+    "image": "after_click__Advertising_data_20251119T200225Z.png",
+    "full_image_path": "/generaloutput/linkedin/screenshots/sections/after_click__Advertising_data_20251119T200225Z.png",
+    "url": "https://www.linkedin.com/mypreferences/d/categories/privacy",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "linkedin",
+    "image": "account_preferences_20251119T200225Z.png",
+    "full_image_path": "/generaloutput/linkedin/screenshots/sections/account_preferences_20251119T200225Z.png",
+    "url": "https://www.linkedin.com/mypreferences/d/categories/ads",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "linkedin",
+    "image": "after_click__Notifications_20251119T200239Z.png",
+    "full_image_path": "/generaloutput/linkedin/screenshots/sections/after_click__Notifications_20251119T200239Z.png",
+    "url": "https://www.linkedin.com/mypreferences/d/categories/ads",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "linkedin",
+    "image": "advertising_data_20251119T200239Z.png",
+    "full_image_path": "/generaloutput/linkedin/screenshots/sections/advertising_data_20251119T200239Z.png",
+    "url": "https://www.linkedin.com/mypreferences/d/categories/notifications",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "linkedin",
+    "image": "after_click__Searching_for_a_job_20251119T200248Z.png",
+    "full_image_path": "/generaloutput/linkedin/screenshots/sections/after_click__Searching_for_a_job_20251119T200248Z.png",
+    "url": "https://www.linkedin.com/mypreferences/d/categories/notifications",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "linkedin",
+    "image": "notifications_20251119T200248Z.png",
+    "full_image_path": "/generaloutput/linkedin/screenshots/sections/notifications_20251119T200248Z.png",
+    "url": "https://www.linkedin.com/mypreferences/d/notification-categories/searching-for-a-job",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "linkedin",
+    "image": "end_of_run_20251119T200316Z.png",
+    "full_image_path": "/generaloutput/linkedin/screenshots/sections/end_of_run_20251119T200316Z.png",
+    "url": "https://www.linkedin.com/mypreferences/d/notification-categories/searching-for-a-job",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "reddit",
+    "image": "initial_load_20251119T200841Z.png",
+    "full_image_path": "/generaloutput/reddit/screenshots/sections/initial_load_20251119T200841Z.png",
+    "url": "https://www.reddit.com/settings/privacy",
+    "settings": [
+      {
+        "setting": "Allow people to follow you",
+        "description": "Let people follow you to see your profile posts in their home feed",
+        "state": "enabled"
+      },
+      {
+        "setting": "Who can send you chat requests",
+        "description": "Controls which users are able to send you chat requests.",
+        "state": "Everyone"
+      },
+      {
+        "setting": "Blocked accounts",
+        "description": "View and manage the accounts you have blocked.",
+        "state": "navigation"
+      },
+      {
+        "setting": "List your profile on old.reddit.com/users",
+        "description": "List your profile on old.reddit.com/users and allow posts to your profile to appear in r/all",
+        "state": "enabled"
+      },
+      {
+        "setting": "Show up in search results",
+        "description": "Allow search engines like Google to link to your profile in their search results",
+        "state": "enabled"
+      },
+      {
+        "setting": "Personalize ads on Reddit based on information and activity from our partners",
+        "description": "Allow us to use information from our partners to show you better ads on Reddit",
+        "state": "enabled"
+      },
+      {
+        "setting": "Third-party app authorizations",
+        "description": "Manage third-party applications that have access to your account.",
+        "state": "navigation"
+      },
+      {
+        "setting": "Clear history",
+        "description": "Delete your post views history",
+        "state": "action_button"
+      }
+    ],
+    "category": "visibility_audience"
+  },
+  {
+    "platform": "reddit",
+    "image": "after_click__Account_20251119T200922Z.png",
+    "full_image_path": "/generaloutput/reddit/screenshots/sections/after_click__Account_20251119T200922Z.png",
+    "url": "https://www.reddit.com/settings/account",
+    "settings": [
+      {
+        "setting": "Email address",
+        "description": "The email address associated with the account.",
+        "state": "zoomaltester10@gmail.com"
+      },
+      {
+        "setting": "Birthday",
+        "description": "The user's date of birth associated with the account.",
+        "state": "January 1, 2000"
+      },
+      {
+        "setting": "Gender",
+        "description": "The user's selected gender for their account.",
+        "state": "I prefer not to say"
+      },
+      {
+        "setting": "Location customization",
+        "description": "Controls how Reddit uses location to customize the user experience.",
+        "state": "Use approximate location (based on IP)"
+      },
+      {
+        "setting": "Google",
+        "description": "Connect to log in to Reddit with your Google account.",
+        "state": "Connected"
+      },
+      {
+        "setting": "Apple",
+        "description": "Connect to log in to Reddit with your Apple account.",
+        "state": "Not Connected"
+      },
+      {
+        "setting": "Two-factor authentication",
+        "description": "Enables or disables two-factor authentication for account security.",
+        "state": "disabled"
+      },
+      {
+        "setting": "Delete account",
+        "description": "Option to permanently delete the account.",
+        "state": "Not applicable (link)"
+      }
+    ],
+    "category": "identity_personal_info"
+  },
+  {
+    "platform": "reddit",
+    "image": "after_click__Profile_20251119T200923Z.png",
+    "full_image_path": "/generaloutput/reddit/screenshots/sections/after_click__Profile_20251119T200923Z.png",
+    "url": "https://www.reddit.com/settings/profile",
+    "settings": [
+      {
+        "setting": "Mark as mature (18+)",
+        "description": "Label your profile as Not Safe for Work (NSFW) and ensure it's inaccessible to people under 18",
+        "state": "disabled"
+      },
+      {
+        "setting": "NSFW",
+        "description": "Show all NSFW posts and comments",
+        "state": "enabled"
       },
       {
         "setting": "Followers",
-        "description": "A link to a page where you can manage settings related to your followers.",
-        "state": "navigation link"
+        "description": "Show your follower count",
+        "state": "disabled"
       }
     ],
     "category": "visibility_audience"
   },
   {
-    "platform": "linkedin",
-    "image": "after_click__Data_privacy_20251111T173332Z.png",
-    "full_image_path": "/generaloutput/linkedin/screenshots/sections/after_click__Data_privacy_20251111T173332Z.png",
-    "url": "https://www.linkedin.com/mypreferences/d/categories/profile-visibility",
+    "platform": "reddit",
+    "image": "after_click__Preferences_20251119T200924Z.png",
+    "full_image_path": "/generaloutput/reddit/screenshots/sections/after_click__Preferences_20251119T200924Z.png",
+    "url": "https://www.reddit.com/settings/preferences",
     "settings": [
       {
-        "setting": "Manage your data and activity",
-        "description": "Navigates to a page to manage your data and activity on LinkedIn.",
+        "setting": "Display language",
+        "description": "Controls the language of the user interface.",
+        "state": "English (US)"
+      },
+      {
+        "setting": "Content languages",
+        "description": "Controls the languages of the content shown.",
         "state": "navigation link"
       },
       {
-        "setting": "Get a copy of your data",
-        "description": "Navigates to a page to request a copy of your LinkedIn data.",
+        "setting": "Show mature content (I'm over 18)",
+        "description": "See Not Safe for Work mature and adult content in your feeds and search results",
+        "state": "disabled"
+      },
+      {
+        "setting": "Blur mature (18+) images and media",
+        "description": "Blurs mature images and media in feeds.",
+        "state": "enabled"
+      },
+      {
+        "setting": "Show recommendations in home feed",
+        "description": "Controls whether recommendations are shown in the home feed.",
+        "state": "enabled"
+      },
+      {
+        "setting": "Muted communities",
+        "description": "Manage communities you have muted.",
         "state": "navigation link"
       },
       {
-        "setting": "Search history",
-        "description": "Navigates to a page to manage your search history.",
+        "setting": "Autoplay media",
+        "description": "Controls whether media plays automatically.",
+        "state": "enabled"
+      },
+      {
+        "setting": "Reduce Motion",
+        "description": "Reduces animations and motion effects.",
+        "state": "disabled"
+      },
+      {
+        "setting": "Sync with computer's motion settings",
+        "description": "Automatically adjusts motion settings based on the computer's settings.",
+        "state": "enabled"
+      },
+      {
+        "setting": "Use community themes",
+        "description": "Controls whether custom community themes are displayed.",
+        "state": "enabled"
+      },
+      {
+        "setting": "Open posts in new tab",
+        "description": "Controls whether clicking a post opens it in a new browser tab.",
+        "state": "disabled"
+      },
+      {
+        "setting": "Default feed view",
+        "description": "Sets the default layout for feeds.",
+        "state": "Card"
+      },
+      {
+        "setting": "Default to markdown editor",
+        "description": "Sets the default text editor to Markdown.",
+        "state": "disabled"
+      },
+      {
+        "setting": "Keyboard shortcuts",
+        "description": "View and manage keyboard shortcuts.",
         "state": "navigation link"
       },
       {
-        "setting": "Personal demographic information",
-        "description": "Navigates to a page to manage your personal demographic information.",
+        "setting": "Default to old Reddit",
+        "description": "Sets the user experience to the classic old Reddit interface.",
+        "state": "disabled"
+      },
+      {
+        "setting": "Limit ads in selected categories",
+        "description": "Manage sensitive advertising categories.",
         "state": "navigation link"
-      },
-      {
-        "setting": "Social, economic, and workplace research",
-        "description": "Controls whether your data is used for social, economic, and workplace research.",
-        "state": "On"
-      },
-      {
-        "setting": "Data for Generative AI Improvement",
-        "description": "Controls whether your data is used for Generative AI improvement.",
-        "state": "On"
-      },
-      {
-        "setting": "Invitations to connect",
-        "description": "Navigates to a page to manage who can send you connection invitations.",
-        "state": "navigation link"
-      },
-      {
-        "setting": "Invitations from your network",
-        "description": "Navigates to a page to manage invitations from your network.",
-        "state": "navigation link"
-      },
-      {
-        "setting": "Messages",
-        "description": "Navigates to a page to manage your messaging settings.",
-        "state": "navigation link"
-      },
-      {
-        "setting": "Research invites",
-        "description": "Controls whether you receive invites to participate in research.",
-        "state": "On"
-      },
-      {
-        "setting": "LinkedIn promotions",
-        "description": "Navigates to a page to manage settings for LinkedIn promotions.",
-        "state": "navigation link"
-      },
-      {
-        "setting": "Focused Inbox",
-        "description": "Controls the Focused Inbox feature in your messages.",
-        "state": "On"
-      },
-      {
-        "setting": "Read receipts and typing indicators",
-        "description": "Navigates to a page to manage read receipts and typing indicators.",
-        "state": "navigation link"
-      },
-      {
-        "setting": "Messaging suggestions",
-        "description": "Controls whether you receive messaging suggestions.",
-        "state": "On"
-      },
-      {
-        "setting": "Message nudges",
-        "description": "Controls whether you receive message nudges.",
-        "state": "On"
-      },
-      {
-        "setting": "Automated detection of harmful content",
-        "description": "Controls the automated detection of harmful content in your messages.",
-        "state": "On"
-      },
-      {
-        "setting": "Job application settings",
-        "description": "Navigates to a page to manage your job application settings.",
-        "state": "navigation link"
-      },
-      {
-        "setting": "Share your profile when you click Apply for a job",
-        "description": "Controls whether your profile is shared when you apply for a job.",
-        "state": "Off"
-      },
-      {
-        "setting": "Signal your interest to recruiters at companies you've created job alerts for",
-        "description": "Controls whether your interest is signaled to recruiters at companies for which you have job alerts.",
-        "state": "Off"
-      },
-      {
-        "setting": "Stored job applicant accounts",
-        "description": "Navigates to a page to manage your stored job applicant accounts.",
-        "state": "navigation link"
-      },
-      {
-        "setting": "Permitted services",
-        "description": "Navigates to a page to manage third-party services permitted to access your account.",
-        "state": "navigation link"
-      },
-      {
-        "setting": "Microsoft Word",
-        "description": "Controls the integration with Microsoft Word.",
-        "state": "On"
       }
     ],
     "category": "data_collection_tracking"
   },
   {
-    "platform": "linkedin",
-    "image": "after_click__Advertising_data_20251111T173333Z.png",
-    "full_image_path": "/generaloutput/linkedin/screenshots/sections/after_click__Advertising_data_20251111T173333Z.png",
-    "url": "https://www.linkedin.com/mypreferences/d/categories/privacy",
+    "platform": "reddit",
+    "image": "privacy_20251119T200924Z.png",
+    "full_image_path": "/generaloutput/reddit/screenshots/sections/privacy_20251119T200924Z.png",
+    "url": "https://www.reddit.com/settings/preferences",
     "settings": [
       {
-        "setting": "Connections",
-        "description": "Controls the use of your connections data for advertising purposes.",
-        "state": "On"
+        "setting": "Display language",
+        "description": "Sets the language for the user interface.",
+        "state": "English (US)"
       },
       {
-        "setting": "Companies you follow",
-        "description": "Controls the use of data about companies you follow for advertising purposes.",
-        "state": "On"
+        "setting": "Content languages",
+        "description": "Sets the preferred languages for content.",
+        "state": "navigation link"
       },
       {
-        "setting": "Groups",
-        "description": "Controls the use of data about your groups for advertising purposes.",
-        "state": "On"
+        "setting": "Show mature content (I'm over 18)",
+        "description": "See Not Safe for Work mature and adult content in your feeds and search results",
+        "state": "disabled"
       },
       {
-        "setting": "Education and skills",
-        "description": "Controls the use of your education and skills data for advertising purposes.",
-        "state": "Schools & 4 more"
+        "setting": "Blur mature (18+) images and media",
+        "description": "Blurs mature images and media in feeds and search results.",
+        "state": "enabled"
       },
       {
-        "setting": "Job information",
-        "description": "Controls the use of your job information for advertising purposes.",
-        "state": "Current job & 1 more"
+        "setting": "Show recommendations in home feed",
+        "description": "Controls whether to show recommendations in the home feed.",
+        "state": "enabled"
       },
       {
-        "setting": "Employer",
-        "description": "Controls the use of your employer data for advertising purposes.",
-        "state": "Current company & 1 more"
+        "setting": "Muted communities",
+        "description": "Manage communities whose content is hidden from your feeds.",
+        "state": "navigation link"
       },
       {
-        "setting": "Customized display format",
-        "description": "Controls the use of your customized display format for advertising purposes.",
-        "state": "On"
+        "setting": "Autoplay media",
+        "description": "Controls whether videos and GIFs play automatically.",
+        "state": "enabled"
       },
       {
-        "setting": "Profile location",
-        "description": "Controls the use of your profile location for advertising purposes.",
-        "state": "On"
+        "setting": "Reduce Motion",
+        "description": "Reduces animations and motion effects.",
+        "state": "disabled"
       },
       {
-        "setting": "Inferred city location",
-        "description": "Controls the use of your inferred city location for advertising purposes.",
-        "state": "On"
+        "setting": "Sync with computer's motion settings",
+        "description": "Automatically adjusts motion settings based on the operating system's settings.",
+        "state": "enabled"
       },
       {
-        "setting": "Interests and traits",
-        "description": "Controls the use of your inferred interests and traits for advertising purposes.",
-        "state": "Not specified"
+        "setting": "Use community themes",
+        "description": "Allows subreddits to display their custom themes.",
+        "state": "enabled"
       },
       {
-        "setting": "Age range",
-        "description": "Controls the use of your age range for advertising purposes.",
-        "state": "On"
+        "setting": "Open posts in new tab",
+        "description": "Controls whether clicking a post opens it in a new browser tab.",
+        "state": "disabled"
       },
       {
-        "setting": "Gender",
-        "description": "Controls the use of your gender for advertising purposes.",
-        "state": "On"
+        "setting": "Default feed view",
+        "description": "Sets the default layout for feeds.",
+        "state": "Card"
       },
       {
-        "setting": "Ads off LinkedIn",
-        "description": "Controls showing you ads on third-party sites and apps.",
-        "state": "On"
+        "setting": "Default to markdown editor",
+        "description": "Sets the default text editor to Markdown.",
+        "state": "disabled"
       },
       {
-        "setting": "Data from others for ads",
-        "description": "Controls using data from partners to show you ads.",
-        "state": "On"
+        "setting": "Keyboard shortcuts",
+        "description": "View or manage keyboard shortcuts.",
+        "state": "navigation link"
       },
       {
-        "setting": "Measure ad success",
-        "description": "Controls using your data to measure ad performance.",
-        "state": "On"
+        "setting": "Default to old Reddit",
+        "description": "Opts the user into the old Reddit interface by default.",
+        "state": "disabled"
       },
       {
-        "setting": "Share data with affiliates and partners",
-        "description": "Controls sharing your data with LinkedIn's affiliates and partners for advertising.",
-        "state": "On"
+        "setting": "Limit ads in selected categories",
+        "description": "Manage preferences for ads from sensitive categories.",
+        "state": "navigation link"
       }
     ],
     "category": "data_collection_tracking"
   },
   {
-    "platform": "linkedin",
-    "image": "account_preferences_20251111T173334Z.png",
-    "full_image_path": "/generaloutput/linkedin/screenshots/sections/account_preferences_20251111T173334Z.png",
-    "url": "https://www.linkedin.com/mypreferences/d/categories/ads",
+    "platform": "reddit",
+    "image": "preferences_20251119T200941Z.png",
+    "full_image_path": "/generaloutput/reddit/screenshots/sections/preferences_20251119T200941Z.png",
+    "url": "https://www.reddit.com/settings/preferences",
     "settings": [
       {
-        "setting": "Connections",
-        "description": "Controls the use of your connections data for advertising purposes.",
-        "state": "On"
+        "setting": "Display language",
+        "description": "Controls the language of the user interface.",
+        "state": "English (US)"
       },
       {
-        "setting": "Companies you follow",
-        "description": "Controls the use of data about companies you follow for advertising purposes.",
-        "state": "On"
+        "setting": "Content languages",
+        "description": "Controls the languages of the content shown to the user.",
+        "state": "not specified"
       },
       {
-        "setting": "Groups",
-        "description": "Controls the use of your group membership data for advertising purposes.",
-        "state": "On"
+        "setting": "Show mature content (I'm over 18)",
+        "description": "See Not Safe for Work mature and adult content in your feeds and search results",
+        "state": "disabled"
       },
       {
-        "setting": "Education and skills",
-        "description": "Controls the use of your education and skills data for advertising purposes.",
-        "state": "Schools & 4 more"
+        "setting": "Blur mature (18+) images and media",
+        "description": "Blurs mature images and media.",
+        "state": "enabled"
       },
       {
-        "setting": "Job information",
-        "description": "Controls the use of your job information for advertising purposes.",
-        "state": "Current job & 1 more"
+        "setting": "Show recommendations in home feed",
+        "description": "Controls whether recommendations are shown in the home feed.",
+        "state": "enabled"
       },
       {
-        "setting": "Employer",
-        "description": "Controls the use of your employer data for advertising purposes.",
-        "state": "Current company & 1 more"
+        "setting": "Muted communities",
+        "description": "Manage muted communities.",
+        "state": "not specified"
       },
       {
-        "setting": "Customized display format",
-        "description": "Controls a customized display format setting for ads.",
-        "state": "On"
+        "setting": "Autoplay media",
+        "description": "Controls whether media plays automatically.",
+        "state": "enabled"
       },
       {
-        "setting": "Profile location",
-        "description": "Controls the use of your profile location for advertising purposes.",
-        "state": "On"
+        "setting": "Reduce Motion",
+        "description": "Reduces animations and motion effects.",
+        "state": "disabled"
       },
       {
-        "setting": "Inferred city location",
-        "description": "Controls the use of your inferred city location for advertising purposes.",
-        "state": "On"
+        "setting": "Sync with computer's motion settings",
+        "description": "Syncs the motion settings with the operating system's settings.",
+        "state": "enabled"
       },
       {
-        "setting": "Interests and traits",
-        "description": "Controls the use of your inferred interests and traits for advertising purposes.",
-        "state": "Not specified"
+        "setting": "Use community themes",
+        "description": "Controls whether custom themes for subreddits are displayed.",
+        "state": "enabled"
       },
       {
-        "setting": "Age range",
-        "description": "Controls the use of your age range for advertising purposes.",
-        "state": "On"
+        "setting": "Open posts in new tab",
+        "description": "Controls whether clicking on a post opens it in a new browser tab.",
+        "state": "disabled"
       },
       {
-        "setting": "Gender",
-        "description": "Controls the use of your gender for advertising purposes.",
-        "state": "On"
+        "setting": "Default feed view",
+        "description": "Controls the default layout for feeds.",
+        "state": "Card"
       },
       {
-        "setting": "Ads off LinkedIn",
-        "description": "Controls showing personalized ads on third-party sites and apps.",
-        "state": "On"
+        "setting": "Default to markdown editor",
+        "description": "Sets the default text editor to markdown.",
+        "state": "disabled"
       },
       {
-        "setting": "Data from others for ads",
-        "description": "Controls the use of data from partners to personalize ads.",
-        "state": "On"
+        "setting": "Keyboard shortcuts",
+        "description": "Manage keyboard shortcuts.",
+        "state": "not specified"
       },
       {
-        "setting": "Measure ad success",
-        "description": "Controls the use of your data to measure ad performance.",
-        "state": "On"
+        "setting": "Default to old Reddit",
+        "description": "Makes the old Reddit interface the default.",
+        "state": "disabled"
       },
       {
-        "setting": "Share data with affiliates and partners",
-        "description": "Controls sharing your data with LinkedIn's affiliates and partners.",
-        "state": "On"
+        "setting": "Limit ads in selected categories",
+        "description": "Allows limiting ads from sensitive categories.",
+        "state": "not specified"
       }
     ],
     "category": "data_collection_tracking"
   },
   {
-    "platform": "linkedin",
-    "image": "after_click__Notifications_20251111T173359Z.png",
-    "full_image_path": "/generaloutput/linkedin/screenshots/sections/after_click__Notifications_20251111T173359Z.png",
-    "url": "https://www.linkedin.com/mypreferences/d/categories/ads",
+    "platform": "reddit",
+    "image": "end_of_run_20251119T201001Z.png",
+    "full_image_path": "/generaloutput/reddit/screenshots/sections/end_of_run_20251119T201001Z.png",
+    "url": "https://www.reddit.com/settings/preferences",
     "settings": [
       {
-        "setting": "Searching for a job",
-        "description": "Manages notifications related to job searching activities.",
-        "state": "navigates to sub-page"
+        "setting": "Display language",
+        "description": "Controls the language of the Reddit interface.",
+        "state": "English (US)"
       },
       {
-        "setting": "Hiring someone",
-        "description": "Manages notifications related to hiring activities.",
-        "state": "navigates to sub-page"
+        "setting": "Content languages",
+        "description": "Controls the languages of the content shown to the user.",
+        "state": "not specified"
       },
       {
-        "setting": "Connecting with others",
-        "description": "Manages notifications for connection requests and other social interactions.",
-        "state": "navigates to sub-page"
+        "setting": "Show mature content (I'm over 18)",
+        "description": "See Not Safe for Work mature and adult content in your feeds and search results",
+        "state": "disabled"
       },
       {
-        "setting": "Network catch-up updates",
-        "description": "Manages notifications about updates from your network.",
-        "state": "navigates to sub-page"
+        "setting": "Blur mature (18+) images and media",
+        "description": "Controls whether mature images and media are blurred.",
+        "state": "enabled"
       },
       {
-        "setting": "Posting and commenting",
-        "description": "Manages notifications related to your posts and comments.",
-        "state": "navigates to sub-page"
+        "setting": "Show recommendations in home feed",
+        "description": "Controls whether to show recommendations in the home feed.",
+        "state": "enabled"
       },
       {
-        "setting": "Messaging",
-        "description": "Manages notifications for direct messages.",
-        "state": "navigates to sub-page"
+        "setting": "Muted communities",
+        "description": "Manage communities that have been muted.",
+        "state": "not specified"
       },
       {
-        "setting": "Groups",
-        "description": "Manages notifications from groups you are a member of.",
-        "state": "navigates to sub-page"
+        "setting": "Autoplay media",
+        "description": "Controls whether media plays automatically.",
+        "state": "enabled"
       },
       {
-        "setting": "Pages",
-        "description": "Manages notifications from pages you follow.",
-        "state": "navigates to sub-page"
+        "setting": "Reduce Motion",
+        "description": "Reduces animations and motion effects for accessibility.",
+        "state": "disabled"
       },
       {
-        "setting": "Attending events",
-        "description": "Manages notifications for events you are attending.",
-        "state": "navigates to sub-page"
+        "setting": "Sync with computer's motion settings",
+        "description": "Syncs Reddit's motion settings with the operating system's settings.",
+        "state": "enabled"
       },
       {
-        "setting": "News and reports",
-        "description": "Manages notifications for news and reports.",
-        "state": "navigates to sub-page"
+        "setting": "Use community themes",
+        "description": "Controls whether custom themes for communities are displayed.",
+        "state": "enabled"
       },
       {
-        "setting": "Updating your profile",
-        "description": "Manages notifications related to your profile updates.",
-        "state": "navigates to sub-page"
+        "setting": "Open posts in new tab",
+        "description": "Controls whether clicking on a post opens it in a new browser tab.",
+        "state": "disabled"
       },
       {
-        "setting": "Verifications",
-        "description": "Manages notifications related to account verifications.",
-        "state": "navigates to sub-page"
+        "setting": "Default feed view",
+        "description": "Controls the default layout for viewing feeds.",
+        "state": "Card"
       },
       {
-        "setting": "Games",
-        "description": "Manages notifications related to games.",
-        "state": "navigates to sub-page"
+        "setting": "Default to markdown editor",
+        "description": "Sets the default post/comment editor to markdown mode.",
+        "state": "disabled"
+      },
+      {
+        "setting": "Keyboard shortcuts",
+        "description": "Leads to a page for managing keyboard shortcuts.",
+        "state": "not specified"
+      },
+      {
+        "setting": "Default to old Reddit",
+        "description": "Allows users to use the old Reddit interface by default.",
+        "state": "disabled"
+      },
+      {
+        "setting": "Limit ads in selected categories",
+        "description": "Allows users to limit ads from certain sensitive categories.",
+        "state": "not specified"
       }
     ],
-    "category": "visibility_audience"
+    "category": "data_collection_tracking"
   },
   {
-    "platform": "linkedin",
-    "image": "advertising_data_20251111T173359Z.png",
-    "full_image_path": "/generaloutput/linkedin/screenshots/sections/advertising_data_20251111T173359Z.png",
-    "url": "https://www.linkedin.com/mypreferences/d/categories/notifications",
-    "settings": [
-      {
-        "setting": "Searching for a job",
-        "description": "Navigates to notification settings for job searching activities.",
-        "state": "navigational link"
-      },
-      {
-        "setting": "Hiring someone",
-        "description": "Navigates to notification settings for hiring activities.",
-        "state": "navigational link"
-      },
-      {
-        "setting": "Connecting with others",
-        "description": "Navigates to notification settings related to connecting with other people.",
-        "state": "navigational link"
-      },
-      {
-        "setting": "Network catch-up updates",
-        "description": "Navigates to notification settings for updates from your network.",
-        "state": "navigational link"
-      },
-      {
-        "setting": "Posting and commenting",
-        "description": "Navigates to notification settings for your posts and comments.",
-        "state": "navigational link"
-      },
-      {
-        "setting": "Messaging",
-        "description": "Navigates to notification settings for messages.",
-        "state": "navigational link"
-      },
-      {
-        "setting": "Groups",
-        "description": "Navigates to notification settings for groups you are a part of.",
-        "state": "navigational link"
-      },
-      {
-        "setting": "Pages",
-        "description": "Navigates to notification settings for pages you follow or manage.",
-        "state": "navigational link"
-      },
-      {
-        "setting": "Attending events",
-        "description": "Navigates to notification settings for events.",
-        "state": "navigational link"
-      },
-      {
-        "setting": "News and reports",
-        "description": "Navigates to notification settings for news and reports.",
-        "state": "navigational link"
-      },
-      {
-        "setting": "Updating your profile",
-        "description": "Navigates to notification settings related to profile updates.",
-        "state": "navigational link"
-      },
-      {
-        "setting": "Verifications",
-        "description": "Navigates to notification settings for verifications.",
-        "state": "navigational link"
-      },
-      {
-        "setting": "Games",
-        "description": "Navigates to notification settings for games.",
-        "state": "navigational link"
-      }
-    ],
-    "category": "visibility_audience"
+    "platform": "spotify",
+    "image": "initial_load_20251119T202249Z.png",
+    "full_image_path": "/generaloutput/spotify/screenshots/sections/initial_load_20251119T202249Z.png",
+    "url": "https://www.spotify.com/us/account/overview/",
+    "settings": [],
+    "category": "uncategorized"
   },
   {
-    "platform": "linkedin",
-    "image": "end_of_run_20251111T173412Z.png",
-    "full_image_path": "/generaloutput/linkedin/screenshots/sections/end_of_run_20251111T173412Z.png",
-    "url": "https://www.linkedin.com/mypreferences/d/categories/notifications",
+    "platform": "spotify",
+    "image": "safety_capture_20251119T202404Z.png",
+    "full_image_path": "/generaloutput/spotify/screenshots/sections/safety_capture_20251119T202404Z.png",
+    "url": "https://www.spotify.com/us/account/overview/",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "spotify",
+    "image": "end_of_run_20251119T202404Z.png",
+    "full_image_path": "/generaloutput/spotify/screenshots/sections/end_of_run_20251119T202404Z.png",
+    "url": "https://www.spotify.com/us/account/overview/",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "twitterX",
+    "image": "initial_load_20251119T201129Z.png",
+    "full_image_path": "/generaloutput/twitterX/screenshots/sections/initial_load_20251119T201129Z.png",
+    "url": "https://x.com/settings/account",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "twitterX",
+    "image": "after_click__Security_and_account_access_20251119T201142Z.png",
+    "full_image_path": "/generaloutput/twitterX/screenshots/sections/after_click__Security_and_account_access_20251119T201142Z.png",
+    "url": "https://x.com/settings/security_and_account_access",
     "settings": [
       {
-        "setting": "Searching for a job",
-        "description": "Manages notifications related to job searching activities.",
-        "state": "navigates to sub-page"
+        "setting": "Security",
+        "description": "Manage your account's security.",
+        "state": "navigation"
       },
       {
-        "setting": "Hiring someone",
-        "description": "Manages notifications related to hiring activities.",
-        "state": "navigates to sub-page"
+        "setting": "Apps and sessions",
+        "description": "See information about when you logged into your account and the apps you connected to your account.",
+        "state": "navigation"
       },
       {
-        "setting": "Connecting with others",
-        "description": "Manages notifications for connection requests, accepted invitations, and other social interactions.",
-        "state": "navigates to sub-page"
+        "setting": "Connected accounts",
+        "description": "Manage Google or Apple accounts connected to X to log in.",
+        "state": "navigation"
       },
       {
-        "setting": "Network catch-up updates",
-        "description": "Manages notifications about updates from your professional network.",
-        "state": "navigates to sub-page"
-      },
-      {
-        "setting": "Posting and commenting",
-        "description": "Manages notifications for activity on your posts and comments.",
-        "state": "navigates to sub-page"
-      },
-      {
-        "setting": "Messaging",
-        "description": "Manages notifications for direct messages.",
-        "state": "navigates to sub-page"
-      },
-      {
-        "setting": "Groups",
-        "description": "Manages notifications from groups you are a member of.",
-        "state": "navigates to sub-page"
-      },
-      {
-        "setting": "Pages",
-        "description": "Manages notifications from pages you follow.",
-        "state": "navigates to sub-page"
-      },
-      {
-        "setting": "Attending events",
-        "description": "Manages notifications related to events you are attending.",
-        "state": "navigates to sub-page"
-      },
-      {
-        "setting": "News and reports",
-        "description": "Manages notifications for news and reports from LinkedIn.",
-        "state": "navigates to sub-page"
-      },
-      {
-        "setting": "Updating your profile",
-        "description": "Manages notifications related to your profile, such as anniversaries or views.",
-        "state": "navigates to sub-page"
-      },
-      {
-        "setting": "Verifications",
-        "description": "Manages notifications related to account and identity verifications.",
-        "state": "navigates to sub-page"
-      },
-      {
-        "setting": "Games",
-        "description": "Manages notifications related to LinkedIn games.",
-        "state": "navigates to sub-page"
+        "setting": "Delegate",
+        "description": "Manage your shared accounts.",
+        "state": "navigation"
       }
     ],
-    "category": "visibility_audience"
+    "category": "security_authentication"
+  },
+  {
+    "platform": "twitterX",
+    "image": "after_click__Privacy_and_safety_20251119T201143Z.png",
+    "full_image_path": "/generaloutput/twitterX/screenshots/sections/after_click__Privacy_and_safety_20251119T201143Z.png",
+    "url": "https://x.com/settings/privacy_and_safety",
+    "settings": [
+      {
+        "setting": "Audience, media and tagging",
+        "description": "Manage what information you allow other people on X to see.",
+        "state": "not applicable"
+      },
+      {
+        "setting": "Your posts",
+        "description": "Manage the information associated with your posts.",
+        "state": "not applicable"
+      },
+      {
+        "setting": "Content you see",
+        "description": "Decide what you see on X based on your preferences like Topics and interests.",
+        "state": "not applicable"
+      },
+      {
+        "setting": "Mute and block",
+        "description": "Manage the accounts, words, and notifications that you've muted or blocked.",
+        "state": "not applicable"
+      },
+      {
+        "setting": "Direct Messages",
+        "description": "Manage who can message you directly.",
+        "state": "not applicable"
+      },
+      {
+        "setting": "Spaces",
+        "description": "Manage who can see your Spaces listening activity.",
+        "state": "not applicable"
+      },
+      {
+        "setting": "Discoverability and contacts",
+        "description": "Control your discoverability settings and manage contacts you've imported.",
+        "state": "not applicable"
+      },
+      {
+        "setting": "About your account",
+        "description": "Manage the location associated with your account.",
+        "state": "not applicable"
+      },
+      {
+        "setting": "Ads preferences",
+        "description": "Manage your ads experience on X.",
+        "state": "not applicable"
+      },
+      {
+        "setting": "Inferred identity",
+        "description": "Allow X to personalize your experience with your inferred activity, e.g. activity on devices you haven't used to log in to X.",
+        "state": "not applicable"
+      },
+      {
+        "setting": "Data sharing with business partners",
+        "description": "Allow sharing of additional information with X's business partners.",
+        "state": "not applicable"
+      },
+      {
+        "setting": "Location information",
+        "description": "Manage the location information X uses to personalize your experience.",
+        "state": "not applicable"
+      },
+      {
+        "setting": "Grok & Third-party Collaborators",
+        "description": "Allow your public data as well as your interactions, inputs, and results with Grok and xAI to be used for training and fine-tuning.",
+        "state": "not applicable"
+      }
+    ],
+    "category": "data_collection_tracking"
+  },
+  {
+    "platform": "twitterX",
+    "image": "your_account_20251119T201144Z.png",
+    "full_image_path": "/generaloutput/twitterX/screenshots/sections/your_account_20251119T201144Z.png",
+    "url": "https://x.com/settings/privacy_and_safety",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "twitterX",
+    "image": "end_of_run_20251119T201243Z.png",
+    "full_image_path": "/generaloutput/twitterX/screenshots/sections/end_of_run_20251119T201243Z.png",
+    "url": "https://x.com/settings/privacy_and_safety",
+    "settings": [
+      {
+        "setting": "Audience, media and tagging",
+        "description": "Manage what information you allow other people on X to see.",
+        "state": "navigation"
+      },
+      {
+        "setting": "Your posts",
+        "description": "Manage the information associated with your posts.",
+        "state": "navigation"
+      },
+      {
+        "setting": "Content you see",
+        "description": "Decide what you see on X based on your preferences like Topics and interests",
+        "state": "navigation"
+      },
+      {
+        "setting": "Mute and block",
+        "description": "Manage the accounts, words, and notifications that you've muted or blocked.",
+        "state": "navigation"
+      },
+      {
+        "setting": "Direct Messages",
+        "description": "Manage who can message you directly.",
+        "state": "navigation"
+      },
+      {
+        "setting": "Spaces",
+        "description": "Manage who can see your Spaces listening activity",
+        "state": "navigation"
+      },
+      {
+        "setting": "Discoverability and contacts",
+        "description": "Control your discoverability settings and manage contacts you've imported.",
+        "state": "navigation"
+      },
+      {
+        "setting": "About your account",
+        "description": "Manage the location associated with your account",
+        "state": "navigation"
+      },
+      {
+        "setting": "Ads preferences",
+        "description": "Manage your ads experience on X.",
+        "state": "navigation"
+      },
+      {
+        "setting": "Inferred identity",
+        "description": "Allow X to personalize your experience with your inferred activity, e.g. activity on devices you haven't used to log in to X.",
+        "state": "navigation"
+      },
+      {
+        "setting": "Data sharing with business partners",
+        "description": "Allow sharing of additional information with X's business partners.",
+        "state": "navigation"
+      },
+      {
+        "setting": "Location information",
+        "description": "Manage the location information X uses to personalize your experience.",
+        "state": "navigation"
+      },
+      {
+        "setting": "Grok & Third-party Collaborators",
+        "description": "Allow your public data as well as your interactions, inputs, and results with Grok and xAI to be used for training and fine-tuning",
+        "state": "navigation"
+      },
+      {
+        "setting": "Privacy center",
+        "description": "Navigates to the Privacy center for more information.",
+        "state": "navigation"
+      },
+      {
+        "setting": "Privacy policy",
+        "description": "Navigates to the Privacy policy document.",
+        "state": "navigation"
+      },
+      {
+        "setting": "Contact us",
+        "description": "Navigates to a page to contact support.",
+        "state": "navigation"
+      }
+    ],
+    "category": "data_collection_tracking"
   },
   {
     "platform": "zoom",
-    "image": "initial_load_20251111T172703Z.png",
-    "full_image_path": "/generaloutput/zoom/screenshots/sections/initial_load_20251111T172703Z.png",
-    "url": "https://zoom.us/profile/setting?tab=general",
+    "image": "initial_load_20251119T195922Z.png",
+    "full_image_path": "/generaloutput/zoom/screenshots/sections/initial_load_20251119T195922Z.png",
+    "url": "https://zoom.us/profile/setting",
     "settings": [],
     "category": "uncategorized"
   },
   {
     "platform": "zoom",
-    "image": "after_click__Meeting_20251111T172739Z.png",
-    "full_image_path": "/generaloutput/zoom/screenshots/sections/after_click__Meeting_20251111T172739Z.png",
+    "image": "after_click__Recording_20251119T195936Z.png",
+    "full_image_path": "/generaloutput/zoom/screenshots/sections/after_click__Recording_20251119T195936Z.png",
+    "url": "https://zoom.us/profile/setting?tab=recording",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "zoom",
+    "image": "after_click__Meeting_20251119T195937Z.png",
+    "full_image_path": "/generaloutput/zoom/screenshots/sections/after_click__Meeting_20251119T195937Z.png",
     "url": "https://zoom.us/profile/setting?tab=meeting",
     "settings": [],
     "category": "uncategorized"
   },
   {
     "platform": "zoom",
-    "image": "after_click__Recording_20251111T172741Z.png",
-    "full_image_path": "/generaloutput/zoom/screenshots/sections/after_click__Recording_20251111T172741Z.png",
-    "url": "https://zoom.us/profile/setting?tab=recording",
-    "settings": [
-      {
-        "setting": "Record to computer files",
-        "description": "Allow hosts and participants to record the meeting to a computer. The recording will include video and shared content matching the recorder's view options, and an audio-only file.",
-        "state": "enabled"
-      },
-      {
-        "setting": "Internal meeting participants",
-        "description": "Allow internal meeting participants to request host permission to record.",
-        "state": "enabled"
-      },
-      {
-        "setting": "Auto approve their permission requests (for Internal meeting participants)",
-        "description": "Automatically approve recording permission requests from internal meeting participants.",
-        "state": "disabled"
-      },
-      {
-        "setting": "External meeting participants",
-        "description": "Allow external meeting participants to request host permission to record.",
-        "state": "enabled"
-      },
-      {
-        "setting": "Auto approve their permission requests (for External meeting participants)",
-        "description": "Automatically approve recording permission requests from external meeting participants.",
-        "state": "disabled"
-      },
-      {
-        "setting": "Meeting participants with specified domains",
-        "description": "Allow meeting participants from specified domains to request host permission to record.",
-        "state": "disabled"
-      },
-      {
-        "setting": "Automatic recording",
-        "description": "Record meetings automatically as they start",
-        "state": "disabled"
-      },
-      {
-        "setting": "Play voice prompt for",
-        "description": "Controls which users on Zoom clients hear a voice prompt when a recording starts.",
-        "state": "All participants"
-      },
-      {
-        "setting": "Ask host to confirm before starting a recording",
-        "description": "Requires the host to confirm before a recording begins.",
-        "state": "disabled"
-      },
-      {
-        "setting": "Multiple notifications for phone users",
-        "description": "Enables multiple audio notifications for phone users to indicate that a recording is in progress.",
-        "state": "disabled"
-      }
-    ],
-    "category": "device_sensor_access"
-  },
-  {
-    "platform": "zoom",
-    "image": "after_click__Data_Privacy_20251111T172742Z.png",
-    "full_image_path": "/generaloutput/zoom/screenshots/sections/after_click__Data_Privacy_20251111T172742Z.png",
+    "image": "after_click__Data_Privacy_20251119T195939Z.png",
+    "full_image_path": "/generaloutput/zoom/screenshots/sections/after_click__Data_Privacy_20251119T195939Z.png",
     "url": "https://zoom.us/profile/privacy",
-    "settings": [
-      {
-        "setting": "Optional Diagnostic Data",
-        "description": "Allow collection of additional data that helps Zoom make product improvements and provide enhanced information to help Zoom detect, diagnose, and remediate issues.",
-        "state": "enabled"
-      }
-    ],
-    "category": "data_collection_tracking"
+    "settings": [],
+    "category": "uncategorized"
   },
   {
     "platform": "zoom",
-    "image": "after_click__Settings_20251111T172904Z.png",
-    "full_image_path": "/generaloutput/zoom/screenshots/sections/after_click__Settings_20251111T172904Z.png",
-    "url": "https://zoom.us/profile/setting",
-    "settings": [
-      {
-        "setting": "Use full display names for meeting assets generated by AI Companion",
-        "description": "By enabling this setting, you can override the display name that AI Companion detects for you with the full display name set in your profile.",
-        "state": "disabled"
-      },
-      {
-        "setting": "Create with avatars",
-        "description": "Create clips that uses your user's chosen avatar to read the script they enter.",
-        "state": "enabled"
-      },
-      {
-        "setting": "Create custom avatars",
-        "description": "Allow users to create custom avatars for clips that would read the script they enter.",
-        "state": "enabled"
-      }
-    ],
-    "category": "identity_personal_info"
+    "image": "ai_companion_settings_20251119T195939Z.png",
+    "full_image_path": "/generaloutput/zoom/screenshots/sections/ai_companion_settings_20251119T195939Z.png",
+    "url": "https://zoom.us/profile/privacy#/settings",
+    "settings": [],
+    "category": "uncategorized"
   },
   {
     "platform": "zoom",
-    "image": "safety_capture_20251111T172904Z.png",
-    "full_image_path": "/generaloutput/zoom/screenshots/sections/safety_capture_20251111T172904Z.png",
-    "url": "https://zoom.us/profile/setting",
-    "settings": [
-      {
-        "setting": "Use full display names for meeting assets generated by AI Companion",
-        "description": "By enabling this setting, you can override the display name that AI Companion detects for you with the full display name set in your profile.",
-        "state": "disabled"
-      },
-      {
-        "setting": "Create with avatars",
-        "description": "Create clips that uses your user's chosen avatar to read the script they enter.",
-        "state": "enabled"
-      },
-      {
-        "setting": "Create custom avatars",
-        "description": "Allow users to create custom avatars for clips that would read the script they enter.",
-        "state": "enabled"
-      }
-    ],
-    "category": "identity_personal_info"
+    "image": "data___privacy_settings_20251119T200043Z.png",
+    "full_image_path": "/generaloutput/zoom/screenshots/sections/data___privacy_settings_20251119T200043Z.png",
+    "url": "https://zoom.us/profile/privacy#/settings",
+    "settings": [],
+    "category": "uncategorized"
+  },
+  {
+    "platform": "zoom",
+    "image": "end_of_run_20251119T200043Z.png",
+    "full_image_path": "/generaloutput/zoom/screenshots/sections/end_of_run_20251119T200043Z.png",
+    "url": "https://zoom.us/profile/privacy#/settings",
+    "settings": [],
+    "category": "uncategorized"
   }
 ]
