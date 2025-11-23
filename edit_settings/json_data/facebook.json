@@ -6,7 +6,7 @@
       "ts": "20251112T172214Z",
       "kind": "auto_fullpage",
       "url": "https://accountscenter.facebook.com/password_and_security",
-      "path": "/generaloutput/facebook/screenshots/sections/initial_load_20251112T172213Z.png",
+      "path": "../gemini-team/generaloutput/facebook/screenshots/sections/initial_load_20251112T172213Z.png",
       "label": "initial_load"
     },
     {
@@ -76,7 +76,7 @@
       "ts": "20251112T172232Z",
       "kind": "auto_fullpage",
       "url": "https://accountscenter.facebook.com/info_and_permissions",
-      "path": "/generaloutput/facebook/screenshots/sections/after_click__Your_information_and_permissions_20251112T172232Z.png",
+      "path": "../gemini-team/generaloutput/facebook/screenshots/sections/after_click__Your_information_and_permissions_20251112T172232Z.png",
       "label": "after_click__Your_information_and_permissions"
     },
     {
@@ -93,7 +93,7 @@
       "ts": "20251112T172233Z",
       "kind": "auto_fullpage",
       "url": "https://accountscenter.facebook.com/ads",
-      "path": "/generaloutput/facebook/screenshots/sections/after_click__Ad_preferences_20251112T172233Z.png",
+      "path": "../gemini-team/generaloutput/facebook/screenshots/sections/after_click__Ad_preferences_20251112T172233Z.png",
       "label": "after_click__Ad_preferences"
     },
     {
@@ -110,14 +110,14 @@
       "ts": "20251112T172234Z",
       "kind": "auto_fullpage",
       "url": "https://accountscenter.facebook.com/personal_info",
-      "path": "/generaloutput/facebook/screenshots/sections/after_click__Personal_details_20251112T172234Z.png",
+      "path": "../gemini-team/generaloutput/facebook/screenshots/sections/after_click__Personal_details_20251112T172234Z.png",
       "label": "after_click__Personal_details"
     },
     {
       "ts": "20251112T172235Z",
       "kind": "capture_fullpage",
       "url": "https://accountscenter.facebook.com/personal_info",
-      "path": "/generaloutput/facebook/screenshots/sections/password_and_security_20251112T172235Z.png",
+      "path": "../gemini-team/generaloutput/facebook/screenshots/sections/password_and_security_20251112T172235Z.png",
       "section": "Password and security"
     },
     {
@@ -210,14 +210,14 @@
       "ts": "20251112T172305Z",
       "kind": "auto_fullpage",
       "url": "https://accountscenter.facebook.com/personal_info/account_ownership_and_control",
-      "path": "/generaloutput/facebook/screenshots/sections/after_click__Account_ownership_and_control_20251112T172305Z.png",
+      "path": "../gemini-team/generaloutput/facebook/screenshots/sections/after_click__Account_ownership_and_control_20251112T172305Z.png",
       "label": "after_click__Account_ownership_and_control"
     },
     {
       "ts": "20251112T172305Z",
       "kind": "capture_fullpage",
       "url": "https://accountscenter.facebook.com/personal_info/account_ownership_and_control",
-      "path": "/generaloutput/facebook/screenshots/sections/personal_details_20251112T172305Z.png",
+      "path": "../gemini-team/generaloutput/facebook/screenshots/sections/personal_details_20251112T172305Z.png",
       "section": "Personal details"
     },
     {
@@ -305,7 +305,7 @@
       "ts": "20251112T172349Z",
       "kind": "auto_fullpage",
       "url": "https://accountscenter.facebook.com/personal_info/account_ownership_and_control/deletion_and_deactivation/?is_from_dialog=true",
-      "path": "/generaloutput/facebook/screenshots/sections/after_click__Deactivation_or_deletion_20251112T172349Z.png",
+      "path": "../gemini-team/generaloutput/facebook/screenshots/sections/after_click__Deactivation_or_deletion_20251112T172349Z.png",
       "label": "after_click__Deactivation_or_deletion"
     }
   ],
@@ -316,7 +316,7 @@
         "Password and security"
       ],
       "url": "https://accountscenter.facebook.com/personal_info",
-      "evidence_fullpage": "/generaloutput/facebook/screenshots/sections/password_and_security_20251112T172235Z.png",
+      "evidence_fullpage": "../gemini-team/generaloutput/facebook/screenshots/sections/password_and_security_20251112T172235Z.png",
       "items": []
     },
     {
@@ -325,7 +325,7 @@
         "Personal details"
       ],
       "url": "https://accountscenter.facebook.com/personal_info/account_ownership_and_control",
-      "evidence_fullpage": "/generaloutput/facebook/screenshots/sections/personal_details_20251112T172305Z.png",
+      "evidence_fullpage": "../gemini-team/generaloutput/facebook/screenshots/sections/personal_details_20251112T172305Z.png",
       "items": []
     }
   ],

@@ -6,7 +6,7 @@
       "ts": "20251111T172703Z",
       "kind": "auto_fullpage",
       "url": "https://zoom.us/profile/setting?tab=general",
-      "path": "/generaloutput/zoom/screenshots/sections/initial_load_20251111T172703Z.png",
+      "path": "../gemini-team/generaloutput/zoom/screenshots/sections/initial_load_20251111T172703Z.png",
       "label": "initial_load"
     },
     {
@@ -109,7 +109,7 @@
       "ts": "20251111T172739Z",
       "kind": "auto_fullpage",
       "url": "https://zoom.us/profile/setting?tab=meeting",
-      "path": "/generaloutput/zoom/screenshots/sections/after_click__Meeting_20251111T172739Z.png",
+      "path": "../gemini-team/generaloutput/zoom/screenshots/sections/after_click__Meeting_20251111T172739Z.png",
       "label": "after_click__Meeting"
     },
     {
@@ -126,7 +126,7 @@
       "ts": "20251111T172741Z",
       "kind": "auto_fullpage",
       "url": "https://zoom.us/profile/setting?tab=recording",
-      "path": "/generaloutput/zoom/screenshots/sections/after_click__Recording_20251111T172741Z.png",
+      "path": "../gemini-team/generaloutput/zoom/screenshots/sections/after_click__Recording_20251111T172741Z.png",
       "label": "after_click__Recording"
     },
     {
@@ -143,7 +143,7 @@
       "ts": "20251111T172742Z",
       "kind": "auto_fullpage",
       "url": "https://zoom.us/profile/privacy",
-      "path": "/generaloutput/zoom/screenshots/sections/after_click__Data_Privacy_20251111T172742Z.png",
+      "path": "../gemini-team/generaloutput/zoom/screenshots/sections/after_click__Data_Privacy_20251111T172742Z.png",
       "label": "after_click__Data_Privacy"
     },
     {
@@ -270,14 +270,14 @@
       "ts": "20251111T172904Z",
       "kind": "auto_fullpage",
       "url": "https://zoom.us/profile/setting",
-      "path": "/generaloutput/zoom/screenshots/sections/after_click__Settings_20251111T172904Z.png",
+      "path": "../gemini-team/generaloutput/zoom/screenshots/sections/after_click__Settings_20251111T172904Z.png",
       "label": "after_click__Settings"
     },
     {
       "ts": "20251111T172904Z",
       "kind": "capture_fullpage",
       "url": "https://zoom.us/profile/setting",
-      "path": "/generaloutput/zoom/screenshots/sections/safety_capture_20251111T172904Z.png",
+      "path": "../gemini-team/generaloutput/zoom/screenshots/sections/safety_capture_20251111T172904Z.png",
       "section": "Safety Capture"
     }
   ],
@@ -288,7 +288,7 @@
         "Safety"
       ],
       "url": "https://zoom.us/profile/setting",
-      "evidence_fullpage": "/generaloutput/zoom/screenshots/sections/safety_capture_20251111T172904Z.png",
+      "evidence_fullpage": "../gemini-team/generaloutput/zoom/screenshots/sections/safety_capture_20251111T172904Z.png",
       "items": []
     }
   ],

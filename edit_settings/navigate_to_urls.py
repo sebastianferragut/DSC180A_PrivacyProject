@@ -1,10 +1,28 @@
 #!/usr/bin/env python3
-# Usage:
-# python3 navigate_to_urls.py facebook --find "Personal Details" --change-birthday 5 15 1990
-# python3 navigate_to_urls.py zoom --url "https://zoom.us/profile/setting?tab=general" --list-toggles
-# python3 navigate_to_urls.py zoom --url "https://zoom.us/profile/setting?tab=general" --change-toggle "Enable notifications" disable
-# python3 navigate_to_urls.py linkedin --ads
-# or use --json-file for custom paths: python3 navigate_to_urls.py --json-file custom/path.json --find "password"
+"""
+URL Navigator - Browser automation tool for navigating and modifying settings on various platforms.
+
+Usage Examples:
+
+
+
+Changing Settings (Traditional Methods):
+  python3 navigate_to_urls.py zoom --url "https://zoom.us/profile/setting?tab=general" --change-toggle "Enable notifications" disable
+  python3 navigate_to_urls.py zoom --url "https://zoom.us/profile/setting?tab=general" --check-checkbox "Allow users to send text feedback" check
+  python3 navigate_to_urls.py facebook --ads --change-ad-setting "Ad personalization" disable
+  python3 navigate_to_urls.py facebook --find "Personal Details" --change-birthday 5 15 1990
+
+Gemini AI-Powered Toggle (Generic - Works for any setting):
+  python3 navigate_to_urls.py zoom --url "https://zoom.us/profile/setting?tab=general" --setting "Allow users to send text feedback" --state enable
+  python3 navigate_to_urls.py zoom --url "https://zoom.us/profile/setting?tab=general" --setting "Enable notifications" --state disable --description "Zoom general settings page"
+  python3 navigate_to_urls.py facebook --url "https://accountscenter.facebook.com/ads" --setting "Ad personalization" --state disable
+  python3 navigate_to_urls.py linkedin --url "https://www.linkedin.com/mypreferences/d/categories/privacy" --setting "Data privacy setting" --state enable
+
+Gemini AI-Powered Toggle (Legacy Zoom-specific):
+  python3 navigate_to_urls.py zoom --url "https://zoom.us/profile/setting?tab=general" --gemini-toggle-text-feedback enable
+
+
+"""
 
 
 import json
@@ -108,6 +126,407 @@ def click_save_if_present(page, timeout: int = 5000) -> bool:
         return False
 
 
+def viewport_dom_textmap(page, max_items=120) -> str:
+    """Extract visible text elements from the page viewport."""
+    items = []
+    try:
+        for sel in ["h1,h2,h3,[role='heading']", "a,button", "[role='tab']", "[role='menuitem']", "[aria-label]"]:
+            loc = page.locator(sel)
+            count = min(loc.count(), max_items)
+            for i in range(count):
+                try:
+                    t = loc.nth(i).inner_text().strip()
+                except Exception:
+                    try:
+                        t = loc.nth(i).text_content().strip()
+                    except Exception:
+                        t = ""
+                if t:
+                    t = re.sub(r'\s+', ' ', t)
+                    items.append(t[:160])
+                if len(items) >= max_items:
+                    break
+            if len(items) >= max_items:
+                break
+    except Exception:
+        pass
+    out, seen = [], set()
+    for t in items:
+        if t not in seen:
+            seen.add(t)
+            out.append(t)
+    return "\n".join(out[:max_items])
+
+
+def dom_outline(page, max_nodes: int = 300) -> str:
+    """Compact DOM outline to anchor CV with roles/labels/expand info."""
+    try:
+        data = page.evaluate(f"""
+(() => {{
+  const max = {max_nodes};
+  const take = (n) => Array.from(n).slice(0, max);
+  const norm = s => (s||"").replace(/\\s+/g,' ').trim();
+  const sel = (el) => {{
+    const id = el.id ? '#'+CSS.escape(el.id) : '';
+    const cls = (el.className && typeof el.className==='string')
+      ? '.'+el.className.trim().split(/\\s+/).slice(0,3).map(CSS.escape).join('.') : '';
+    return el.tagName.toLowerCase()+id+cls;
+  }};
+  const nodes = take(document.querySelectorAll('a,button,[role],[aria-label],summary,[aria-expanded]'));
+  return nodes.map(el => ({{
+    tag: el.tagName.toLowerCase(),
+    role: el.getAttribute('role')||'',
+    text: norm(el.innerText||''),
+    ariaLabel: norm(el.getAttribute('aria-label')||''),
+    expanded: el.getAttribute('aria-expanded'),
+    clickable: (typeof el.click==='function'),
+    selector: sel(el)
+  }}));
+}})();
+""")
+        return json.dumps(data[:max_nodes], ensure_ascii=False)
+    except Exception:
+        return "[]"
+
+
+def toggle_setting_with_gemini(
+    page,
+    setting_label: str,
+    enable: bool,
+    description: Optional[str] = None,
+    save_after: bool = True,
+) -> dict:
+    """
+    Use screenshot + DOM text + Gemini to locate and toggle a UI setting whose
+    label roughly matches `setting_label`.
+
+    Arguments:
+      - page: Playwright Page
+      - setting_label: visible label near the toggle, e.g. 'Allow users to send text feedback'
+      - enable: True => setting should end up ON, False => OFF
+      - description: optional extra natural-language hint (e.g. 'Zoom general settings page')
+      - save_after: if True, try to click a Save button after toggling
+
+    Returns a dict with at least:
+      - status: 'success' | 'error'
+      - target: setting_label
+      - previous_state: 'enabled' | 'disabled' | 'unknown'
+      - new_state: 'enabled' | 'disabled' | 'unknown'
+      - selection_mode: 'selector' | 'coordinates' | 'none'
+      - gemini_reason: short explanation string
+      - save_clicked: bool (whether a Save button was actually clicked)
+    """
+    result = {
+        "status": "error",
+        "target": setting_label,
+        "previous_state": "unknown",
+        "new_state": "unknown",
+        "selection_mode": "none",
+        "gemini_reason": "",
+        "save_clicked": False
+    }
+
+    if not page:
+        result["gemini_reason"] = "Page object not provided"
+        return result
+
+    if not GEMINI_AVAILABLE:
+        result["gemini_reason"] = "Gemini API not available. Install google-genai package."
+        return result
+
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        result["gemini_reason"] = "GEMINI_API_KEY environment variable not set"
+        return result
+
+    try:
+        print(f"🤖 Using Gemini to locate '{setting_label}' setting...")
+        
+        # Wait for page to be ready
+        page.wait_for_load_state("domcontentloaded", timeout=30000)
+        time.sleep(1)
+
+        # a) Collect context similar to planner()
+        print("   📝 Collecting DOM context...")
+        DOM_TEXT_MAP = viewport_dom_textmap(page, max_items=120)
+        DOM_OUTLINE = dom_outline(page, max_nodes=300)
+        screenshot_bytes = page.screenshot(full_page=True)
+        print(f"   ✅ Collected context (text map: {len(DOM_TEXT_MAP.split(chr(10)))} items, outline: {len(json.loads(DOM_OUTLINE))} nodes)")
+
+        # b) Build Gemini prompt
+        system_instruction = (
+            "You are a UI assistant that helps locate and operate a single setting "
+            "in a web app UI based on its label. You see:\n"
+            "- a full-page screenshot,\n"
+            "- a DOM_TEXT_MAP listing visible strings,\n"
+            "- a DOM_OUTLINE listing clickable-like nodes.\n\n"
+            "Your task is to identify the element that controls the setting associated "
+            "with the given label (allow fuzzy/partial match), infer whether it is currently "
+            "ON/OFF if possible (checkbox checked, aria-checked, etc.), and return ONLY JSON "
+            "in the specified schema.\n\n"
+            "Prefer mode='selector' if a stable CSS or role-based selector can be derived from "
+            "DOM_OUTLINE; fall back to coordinates otherwise."
+        )
+
+        user_prompt_parts = [
+            f"Setting label to find: '{setting_label}'",
+            f"Target state: {'enabled' if enable else 'disabled'}",
+        ]
+        if description:
+            user_prompt_parts.append(f"Context: {description}")
+
+        user_prompt_parts.extend([
+            "\nDOM_TEXT_MAP_START",
+            DOM_TEXT_MAP,
+            "DOM_TEXT_MAP_END",
+            "\nDOM_OUTLINE_START",
+            DOM_OUTLINE,
+            "DOM_OUTLINE_END",
+            "\n\nReturn ONLY valid JSON in this exact schema:",
+            '{\n'
+            '  "mode": "selector" | "coordinates",\n'
+            '  "selector": "<CSS or text selector or empty>",\n'
+            '  "x": <number or null>,\n'
+            '  "y": <number or null>,\n'
+            '  "previous_state": "enabled" | "disabled" | "unknown",\n'
+            '  "reason": "<short explanation>"\n'
+            '}'
+        ])
+
+        user_prompt = "\n".join(user_prompt_parts)
+
+        config = types.GenerateContentConfig(
+            system_instruction=system_instruction,
+            temperature=0.2,
+            max_output_tokens=800
+        )
+
+        # c) Call Gemini
+        print("   🤖 Calling Gemini API...")
+        gemini_response = None
+        last_error = None
+        for attempt in range(3):
+            try:
+                client = genai.Client(api_key=api_key)
+                gemini_response = client.models.generate_content(
+                    model='gemini-2.5-pro',
+                    contents=[Content(role="user", parts=[
+                        Part(text=user_prompt),
+                        Part.from_bytes(data=screenshot_bytes, mime_type="image/png")
+                    ])],
+                    config=config
+                )
+                # Verify we got a response
+                if gemini_response is None:
+                    raise ValueError("Gemini returned None response")
+                break
+            except Exception as e:
+                last_error = e
+                print(f"   ⚠️  Attempt {attempt + 1} failed: {e}")
+                if attempt == 2:
+                    result["gemini_reason"] = f"Gemini call failed after 3 attempts: {last_error}"
+                    return result
+                time.sleep(0.6 + attempt * 0.6)
+        
+        if gemini_response is None:
+            result["gemini_reason"] = f"Gemini returned None response. Last error: {last_error}"
+            return result
+
+        # Extract text from response
+        response_text = ""
+        try:
+            # Check for safety filters first
+            if hasattr(gemini_response, "candidates") and gemini_response.candidates:
+                first_candidate = gemini_response.candidates[0]
+                
+                # Check for finish_reason (safety filters)
+                finish_reason = getattr(first_candidate, "finish_reason", None)
+                if finish_reason and finish_reason != "STOP":
+                    safety_ratings = getattr(first_candidate, "safety_ratings", None) or []
+                    safety_info = ", ".join([f"{r.category}:{r.probability}" for r in safety_ratings if hasattr(r, "category")])
+                    result["gemini_reason"] = f"Gemini response blocked (finish_reason: {finish_reason}, safety: {safety_info})"
+                    return result
+                
+                # Extract content
+                content = getattr(first_candidate, "content", None)
+                if content:
+                    parts = getattr(content, "parts", None) or []
+                    for part in parts:
+                        part_text = getattr(part, "text", None)
+                        if part_text:
+                            response_text += part_text
+                
+                # Fallback: try direct text attribute
+                if not response_text:
+                    cand_text = getattr(first_candidate, "text", None)
+                    if isinstance(cand_text, str):
+                        response_text = cand_text
+            
+            # If still empty, try alternative extraction methods
+            if not response_text:
+                # Try accessing response directly
+                if hasattr(gemini_response, "text"):
+                    response_text = gemini_response.text
+                elif hasattr(gemini_response, "candidates") and gemini_response.candidates:
+                    # Last resort: try to stringify the response for debugging
+                    print(f"   ⚠️  Debug: Response structure: {type(gemini_response)}")
+                    print(f"   ⚠️  Debug: Candidates count: {len(gemini_response.candidates) if gemini_response.candidates else 0}")
+                    if gemini_response.candidates:
+                        print(f"   ⚠️  Debug: First candidate type: {type(gemini_response.candidates[0])}")
+                        print(f"   ⚠️  Debug: First candidate attrs: {dir(gemini_response.candidates[0])}")
+                        
+        except Exception as e:
+            import traceback
+            print(f"   ⚠️  Debug: Exception extracting response: {e}")
+            print(f"   ⚠️  Debug: Traceback: {traceback.format_exc()}")
+            result["gemini_reason"] = f"Failed to extract response text: {e}"
+            return result
+
+        if not response_text:
+            # Add more debugging info
+            print(f"   ⚠️  Debug: Response object type: {type(gemini_response)}")
+            print(f"   ⚠️  Debug: Response has candidates: {hasattr(gemini_response, 'candidates')}")
+            if hasattr(gemini_response, 'candidates'):
+                print(f"   ⚠️  Debug: Candidates: {gemini_response.candidates}")
+            result["gemini_reason"] = "Empty response from Gemini - check API key and model availability"
+            return result
+
+        # Parse JSON response
+        try:
+            # Try to extract JSON from response (handle markdown code blocks)
+            json_text = response_text.strip()
+            if "```json" in json_text:
+                json_text = json_text.split("```json")[1].split("```")[0].strip()
+            elif "```" in json_text:
+                json_text = json_text.split("```")[1].split("```")[0].strip()
+            
+            gemini_data = json.loads(json_text)
+        except Exception as e:
+            result["gemini_reason"] = f"Failed to parse JSON from response: {e}. Response: {response_text[:200]}"
+            return result
+
+        mode = gemini_data.get("mode", "none")
+        selector = gemini_data.get("selector", "").strip()
+        x = gemini_data.get("x")
+        y = gemini_data.get("y")
+        previous_state_str = gemini_data.get("previous_state", "unknown")
+        reason = gemini_data.get("reason", "")
+
+        result["previous_state"] = previous_state_str
+        result["selection_mode"] = mode
+        result["gemini_reason"] = reason
+
+        print(f"   ✅ Gemini found element (mode: {mode}, state: {previous_state_str})")
+
+        # d) Execute based on mode
+        if mode == "selector" and selector:
+            try:
+                loc = page.locator(selector).first
+                if loc.count() == 0:
+                    result["gemini_reason"] = f"Selector '{selector}' found no elements"
+                    return result
+
+                loc.scroll_into_view_if_needed()
+                time.sleep(0.3)
+
+                # Determine current state
+                current_state = "unknown"
+                tag = None
+                input_type = None
+                try:
+                    tag = loc.evaluate("el => el.tagName.toLowerCase()")
+                    input_type = loc.get_attribute("type")
+                    if tag == "input" and input_type == "checkbox":
+                        current_state = "enabled" if loc.is_checked() else "disabled"
+                    else:
+                        aria_checked = loc.get_attribute("aria-checked")
+                        if aria_checked == "true":
+                            current_state = "enabled"
+                        elif aria_checked == "false":
+                            current_state = "disabled"
+                except Exception:
+                    pass
+
+                # Use Gemini's inferred state if we couldn't determine it
+                if current_state == "unknown":
+                    current_state = previous_state_str
+
+                result["previous_state"] = current_state
+
+                # Check if toggle is needed
+                desired_state = "enabled" if enable else "disabled"
+                if current_state != desired_state:
+                    loc.click(timeout=5000)
+                    time.sleep(0.5)
+
+                    # Re-check state after click
+                    try:
+                        if tag == "input" and input_type == "checkbox":
+                            new_state = "enabled" if loc.is_checked() else "disabled"
+                        else:
+                            aria_checked = loc.get_attribute("aria-checked")
+                            if aria_checked == "true":
+                                new_state = "enabled"
+                            elif aria_checked == "false":
+                                new_state = "disabled"
+                            else:
+                                new_state = "unknown"
+                        result["new_state"] = new_state
+                    except Exception:
+                        result["new_state"] = "unknown"
+                else:
+                    result["new_state"] = current_state
+
+                result["status"] = "success"
+
+            except Exception as e:
+                result["gemini_reason"] = f"Failed to execute selector '{selector}': {e}"
+                return result
+
+        elif mode == "coordinates" and x is not None and y is not None:
+            try:
+                page.mouse.click(int(x), int(y))
+                time.sleep(0.5)
+
+                # Try to infer new state by re-locating element
+                # This is best-effort; coordinates mode is less reliable
+                result["new_state"] = "unknown"
+                result["status"] = "success"
+            except Exception as e:
+                result["gemini_reason"] = f"Failed to click coordinates ({x}, {y}): {e}"
+                return result
+        else:
+            result["gemini_reason"] = f"Invalid mode '{mode}' or missing selector/coordinates"
+            return result
+
+        # e) Save button handling
+        if save_after:
+            # Only skip Save if we're confident the state didn't change
+            should_skip_save = (
+                result["previous_state"] in {"enabled", "disabled"} and
+                result["new_state"] in {"enabled", "disabled"} and
+                result["previous_state"] == result["new_state"]
+            )
+
+            if not should_skip_save:
+                time.sleep(1)  # Wait for page to update after toggle
+                result["save_clicked"] = click_save_if_present(page, timeout=5000)
+                if result["save_clicked"]:
+                    print("   💾 Save button: ✅ clicked")
+                else:
+                    print("   💾 Save button: ⚠️  not found")
+            else:
+                print(f"   💾 Save button: ℹ️  skipped (state unchanged: {result['previous_state']} → {result['new_state']})")
+
+        return result
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        result["gemini_reason"] = f"Exception: {str(e)}"
+        return result
+
+
 class URLNavigator:
     """Navigate to URLs from JSON data for any service."""
     
@@ -157,77 +576,6 @@ class URLNavigator:
         
         with open(self.json_file, 'r', encoding='utf-8') as f:
             return json.load(f)
-    
-    def get_all_urls(self) -> Dict[str, List[str]]:
-        """
-        Extract all URLs from the JSON data.
-        
-        Returns:
-            Dictionary with different URL categories
-        """
-        urls = {
-            "visited_urls": self.data.get("state", {}).get("visited_urls", []),
-            "section_urls": [sec.get("url") for sec in self.data.get("sections", []) if sec.get("url")],
-            "action_urls": []
-        }
-        
-        # Extract URLs from actions
-        for action in self.data.get("actions", []):
-            if "url" in action:
-                url = action["url"]
-                if url and url not in urls["action_urls"]:
-                    urls["action_urls"].append(url)
-        
-        # Get unique URLs
-        all_urls = set()
-        for url_list in urls.values():
-            all_urls.update(url_list)
-        
-        urls["all_unique"] = sorted(list(all_urls))
-        
-        return urls
-    
-    def extract_page_name(self, url: str) -> str:
-        """Extract a readable page name from a URL."""
-        try:
-            if not url:
-                return ""
-            u = url.replace("https://", "").replace("http://", "")
-            parts = u.split("/")
-            if len(parts) > 1:
-                tail = parts[-1].split("?")[0]
-                if tail:
-                    return tail.replace("-", " ").replace("_", " ").strip().lower()
-            return parts[0].lower()
-        except Exception:
-            return ""
-    
-    def find_urls_by_text(self, text: str, url_category: str = "all_unique") -> List[str]:
-        """
-        Find URLs whose URL or page name contains the given text (case-insensitive).
-        Returns candidates sorted by a simple relevance score.
-        """
-        urls = self.get_all_urls()
-        haystack = urls.get(url_category, [])
-        q = (text or "").strip().lower()
-        if not q:
-            return []
-        
-        scored = []
-        for u in haystack:
-            u_lower = u.lower()
-            page_name = self.extract_page_name(u)
-            score = 0
-            if q in u_lower:
-                score += 2
-            if q in page_name:
-                score += 3
-            # prefer shorter URLs when scores tie (more specific)
-            if score > 0:
-                scored.append((score, len(u), u))
-        # sort by score desc, then length asc
-        scored.sort(key=lambda t: (-t[0], t[1]))
-        return [u for _, __, u in scored]
     
     def start_browser(self):
         """Start Playwright browser."""
@@ -467,7 +815,7 @@ class URLNavigator:
                 "message": f"Login failed: {str(e)}"
             }
     
-    def navigate_to_url(self, url: str, wait_time: float = 2.0, auto_login: bool = True, auto_list_links: bool = False) -> Dict[str, any]:
+    def navigate_to_url(self, url: str, wait_time: float = 2.0, auto_login: bool = True) -> Dict[str, any]:
         """
         Navigate to a specific URL.
         
@@ -475,7 +823,6 @@ class URLNavigator:
             url: URL to navigate to
             wait_time: Time to wait after page load (seconds)
             auto_login: Whether to automatically log in if login page is detected
-            auto_list_links: Whether to automatically list links after navigation
         
         Returns:
             Dictionary with navigation result
@@ -509,10 +856,6 @@ class URLNavigator:
                 "timestamp": time.time()
             }
             
-            # Auto-list links if requested
-            if auto_list_links and result["status"] == "success":
-                self._display_links_after_navigation()
-            
             return result
         except Exception as e:
             return {
@@ -521,119 +864,6 @@ class URLNavigator:
                 "error": str(e),
                 "timestamp": time.time()
             }
-    
-    def navigate_all_urls(self, url_category: str = "all_unique", wait_between: float = 2.0, auto_login: bool = True) -> List[Dict]:
-        """
-        Navigate to all URLs in a category.
-        
-        Args:
-            url_category: Which URL category to navigate ("visited_urls", "section_urls", "all_unique", etc.)
-            wait_between: Time to wait between navigations (seconds)
-            auto_login: Whether to automatically log in if login page is detected
-        
-        Returns:
-            List of navigation results
-        """
-        urls = self.get_all_urls()
-        
-        if url_category not in urls:
-            raise ValueError(f"Invalid URL category: {url_category}. Available: {list(urls.keys())}")
-        
-        url_list = urls[url_category]
-        results = []
-        
-        print(f"\n📋 Navigating to {len(url_list)} URLs from category: {url_category}")
-        print("=" * 60)
-        
-        for i, url in enumerate(url_list, 1):
-            print(f"\n[{i}/{len(url_list)}]")
-            result = self.navigate_to_url(url, wait_time=wait_between, auto_login=auto_login)
-            results.append(result)
-            
-            if result["status"] == "success":
-                print(f"   ✅ Success: {result['title']}")
-                if result.get("logged_in"):
-                    print(f"   🔐 Logged in: Yes")
-            else:
-                print(f"   ❌ Error: {result.get('error', 'Unknown error')}")
-        
-        return results
-    
-    def get_page_info(self) -> Dict:
-        """Get information about the current page."""
-        if not self.page:
-            raise RuntimeError("Browser not started. Call start_browser() first.")
-        
-        return {
-            "url": self.page.url,
-            "title": self.page.title(),
-            "viewport": self.page.viewport_size
-        }
-    
-    def take_screenshot(self, filename: Optional[str] = None) -> str:
-        """
-        Take a screenshot of the current page.
-        
-        Args:
-            filename: Optional filename. If None, generates from URL.
-        
-        Returns:
-            Path to screenshot file
-        """
-        if not self.page:
-            raise RuntimeError("Browser not started. Call start_browser() first.")
-        
-        if not filename:
-            # Generate filename from URL
-            url = self.page.url
-            safe_name = url.replace("https://", "").replace("http://", "").replace("/", "_").replace("?", "_")
-            filename = f"screenshots/{safe_name}.png"
-        
-        screenshot_path = Path(filename)
-        screenshot_path.parent.mkdir(parents=True, exist_ok=True)
-        
-        self.page.screenshot(path=str(screenshot_path), full_page=True)
-        print(f"📸 Screenshot saved: {screenshot_path}")
-        return str(screenshot_path)
-    
-    def navigate_to_ads_page(self, auto_login: bool = True, auto_list_links: bool = False) -> Dict[str, any]:
-        """
-        Navigate to the ads preferences page.
-        
-        Args:
-            auto_login: Whether to automatically log in if login page is detected
-            auto_list_links: Whether to automatically list links after navigation
-        
-        Returns:
-            Dictionary with navigation result
-        """
-        if not self.page:
-            raise RuntimeError("Browser not started. Call start_browser() first.")
-        
-        # Try to find ads URL from JSON data first
-        urls = self.get_all_urls()
-        ads_url = None
-        
-        # Look for ads URL in the data
-        for url in urls.get("all_unique", []):
-            if "/ads" in url.lower() or "ad" in url.lower():
-                ads_url = url
-                break
-        
-        # Fallback to common Facebook ads URL
-        if not ads_url and self.service_name == "facebook":
-            ads_url = "https://accountscenter.facebook.com/ads"
-        elif not ads_url:
-            # Generic fallback - try to construct from service
-            ads_url = f"https://accountscenter.{self.service_name}.com/ads"
-        
-        if not ads_url:
-            return {
-                "status": "error",
-                "message": "Could not find ads URL. Please navigate manually or provide URL."
-            }
-        
-        return self.navigate_to_url(ads_url, auto_login=auto_login, auto_list_links=auto_list_links)
     
     def find_toggle_by_label(self, label_text: str, partial_match: bool = True) -> Optional[any]:
         """
@@ -1148,118 +1378,6 @@ class URLNavigator:
                 "status": "error",
                 "message": f"Failed to change birthday: {str(e)}"
             }
-    
-    def list_toggles(self) -> List[Dict[str, any]]:
-        """
-        List all available toggles/switches on the current page.
-        
-        Returns:
-            List of dictionaries with toggle information
-        """
-        if not self.page:
-            raise RuntimeError("Browser not started. Call start_browser() first.")
-        
-        try:
-            self.page.wait_for_load_state("domcontentloaded", timeout=30000)
-            time.sleep(1)
-            
-            toggles_list = []
-            
-            # Find all toggles/switches - simple selector-based approach
-            toggle_selectors = [
-                '[role="switch"]',
-                'input[type="checkbox"]',
-                'input[type="radio"]',
-                '[class*="toggle" i]',
-                '[class*="switch" i]',
-            ]
-            
-            all_toggles = []
-            for selector in toggle_selectors:
-                try:
-                    toggles = self.page.locator(selector).all()
-                    all_toggles.extend(toggles[:50])  # Limit per selector
-                except:
-                    continue
-            
-            # Remove duplicates
-            seen_elements = set()
-            unique_toggles = []
-            for toggle in all_toggles:
-                try:
-                    toggle_id = toggle.get_attribute("id") or ""
-                    toggle_name = toggle.get_attribute("name") or ""
-                    key = f"{toggle_id}:{toggle_name}"
-                    if key and key not in seen_elements:
-                        seen_elements.add(key)
-                        unique_toggles.append(toggle)
-                    elif not key:
-                        try:
-                            box = toggle.bounding_box()
-                            pos_key = f"{box['x']}:{box['y']}"
-                            if pos_key not in seen_elements:
-                                seen_elements.add(pos_key)
-                                unique_toggles.append(toggle)
-                        except:
-                            unique_toggles.append(toggle)
-                except:
-                    continue
-            
-            for toggle in unique_toggles[:100]:  # Limit to first 100
-                try:
-                    # Scroll toggle into view
-                    toggle.scroll_into_view_if_needed()
-                    time.sleep(0.1)
-                    
-                    # Get label
-                    label = None
-                    try:
-                        label = toggle.get_attribute("aria-label")
-                    except:
-                        pass
-                    
-                    if not label:
-                        try:
-                            toggle_id = toggle.get_attribute("id")
-                            if toggle_id:
-                                label_elem = self.page.locator(f"label[for='{toggle_id}']")
-                                if label_elem.count() > 0:
-                                    label = label_elem.inner_text()
-                        except:
-                            pass
-                    
-                    if not label:
-                        try:
-                            parent = toggle.locator("xpath=..")
-                            label = parent.inner_text()[:100]
-                        except:
-                            pass
-                    
-                    # Get state
-                    state = "unknown"
-                    try:
-                        if toggle.get_attribute("type") == "checkbox":
-                            state = "checked" if toggle.is_checked() else "unchecked"
-                        else:
-                            aria_checked = toggle.get_attribute("aria-checked")
-                            state = "on" if aria_checked == "true" else "off"
-                    except:
-                        pass
-                    
-                    if label:
-                        label = ' '.join(label.split())[:150]
-                        toggles_list.append({
-                            "label": label.strip(),
-                            "state": state,
-                            "selector": str(toggle)
-                        })
-                except:
-                    continue
-            
-            return toggles_list
-        except Exception as e:
-            print(f"⚠️  Error listing toggles: {e}")
-            return []
     
     def check_checkbox(self, checkbox_label: str, check: bool = True, wait_time: float = 2.0) -> Dict[str, any]:
         """
@@ -1799,6 +1917,92 @@ Output ONLY JSON in this exact format:
                 "raw_response": None
             }
     
+    def _call_gemini_for_element_location_with_prompt(self, current_screenshot_path: str, reference_screenshot_path: str, text_elements_json: str, prompt: str) -> Dict[str, Any]:
+        """
+        Helper function to call Gemini API to locate an element with a custom prompt.
+        
+        Args:
+            current_screenshot_path: Path to current page screenshot
+            reference_screenshot_path: Path to reference screenshot
+            text_elements_json: JSON string of text elements from DOM
+            prompt: Custom prompt text for Gemini
+            
+        Returns:
+            Dictionary with Gemini's response or error
+        """
+        if not GEMINI_AVAILABLE:
+            return {
+                "status": "error",
+                "reason": "Gemini API not available. Install google-genai package.",
+                "raw_response": None
+            }
+        
+        api_key = os.environ.get("GEMINI_API_KEY")
+        if not api_key:
+            return {
+                "status": "error",
+                "reason": "GEMINI_API_KEY environment variable not set",
+                "raw_response": None
+            }
+        
+        try:
+            client = genai.Client(api_key=api_key)
+            model_id = 'gemini-2.5-pro'
+            
+            # Read image files
+            with open(reference_screenshot_path, 'rb') as f:
+                reference_image = f.read()
+            
+            with open(current_screenshot_path, 'rb') as f:
+                current_image = f.read()
+            
+            # Create content with images and text
+            contents = Content(
+                role="user",
+                parts=[
+                    Part(text=prompt),
+                    Part(text=f"\n\nText elements from DOM:\n{text_elements_json}"),
+                    Part.from_bytes(data=reference_image, mime_type='image/png'),
+                    Part.from_bytes(data=current_image, mime_type='image/png')
+                ]
+            )
+            
+            # Call Gemini
+            response = client.models.generate_content(
+                model=model_id,
+                contents=[contents]
+            )
+            
+            # Extract text response
+            response_text = response.candidates[0].content.parts[0].text.strip()
+            
+            # Try to parse JSON from response (might be wrapped in markdown code blocks)
+            json_text = response_text
+            if "```json" in response_text:
+                json_text = response_text.split("```json")[1].split("```")[0].strip()
+            elif "```" in response_text:
+                json_text = response_text.split("```")[1].split("```")[0].strip()
+            
+            result = json.loads(json_text)
+            return {
+                "status": "success",
+                "result": result,
+                "raw_response": response_text
+            }
+            
+        except json.JSONDecodeError as e:
+            return {
+                "status": "error",
+                "reason": f"Failed to parse JSON from Gemini response: {str(e)}",
+                "raw_response": response_text if 'response_text' in locals() else None
+            }
+        except Exception as e:
+            return {
+                "status": "error",
+                "reason": f"Gemini API call failed: {str(e)}",
+                "raw_response": None
+            }
+    
     def _call_gemini_for_save_button(self, current_screenshot_path: str, text_elements_json: str) -> Dict[str, Any]:
         """
         Helper function to call Gemini API to locate the Save button.
@@ -1925,1065 +2129,13 @@ Output ONLY JSON in this exact format:
         if not self.page:
             raise RuntimeError("Browser not started. Call start_browser() first.")
         
-        if not GEMINI_AVAILABLE:
-            return {
-                "status": "error",
-                "target": "Allow users to send text feedback",
-                "previous_state": "unknown",
-                "new_state": "unknown",
-                "selection_mode": "none",
-                "gemini_reason": "Gemini API not available"
-            }
-        
-        try:
-            print(f"🤖 Using Gemini to locate 'Allow users to send text feedback' setting...")
-            
-            # Wait for page to be ready
-            self.page.wait_for_load_state("domcontentloaded", timeout=30000)
-            time.sleep(1)
-            
-            # a) Collect structured text info from the current page
-            print("   📝 Collecting text elements from DOM...")
-            text_elements = self.page.evaluate("""
-                () => {
-                    const elements = [];
-                    const allElements = document.querySelectorAll('*');
-                    
-                    for (const el of allElements) {
-                        try {
-                            const text = (el.innerText || el.textContent || '').trim();
-                            
-                            // Filter to reasonable text length
-                            if (text.length < 2 || text.length > 200) continue;
-                            
-                            // Skip if element is not visible
-                            const rect = el.getBoundingClientRect();
-                            if (rect.width === 0 || rect.height === 0) continue;
-                            
-                            // Get role
-                            const role = el.getAttribute('role') || '';
-                            
-                            elements.push({
-                                text: text,
-                                tag: el.tagName.toLowerCase(),
-                                role: role,
-                                x: rect.x,
-                                y: rect.y,
-                                width: rect.width,
-                                height: rect.height
-                            });
-                        } catch (e) {
-                            // Skip elements that cause errors
-                            continue;
-                        }
-                    }
-                    
-                    return elements;
-                }
-            """)
-            
-            print(f"   ✅ Collected {len(text_elements)} text elements")
-            
-            # b) Capture current screenshot
-            print("   📸 Capturing current page screenshot...")
-            with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp_file:
-                current_screenshot_path = tmp_file.name
-                self.page.screenshot(path=current_screenshot_path, full_page=True)
-            
-            # c) Load reference screenshot
-            # Get the script directory and construct path
-            script_dir = Path(__file__).parent
-            reference_screenshot_path = script_dir.parent / "screenshot-classifier" / "screenshots" / "zoom" / "allow_text_feedback.png"
-            
-            # If the specific file doesn't exist, try to find a similar one
-            if not reference_screenshot_path.exists():
-                # Try to find any zoom screenshot as fallback
-                zoom_screenshots_dir = script_dir.parent / "screenshot-classifier" / "screenshots" / "zoom"
-                if zoom_screenshots_dir.exists():
-                    # Look for a settings-related screenshot
-                    for screenshot_file in zoom_screenshots_dir.glob("*.png"):
-                        if "setting" in screenshot_file.name.lower() or "initial" in screenshot_file.name.lower():
-                            reference_screenshot_path = screenshot_file
-                            print(f"   ⚠️  Using fallback reference: {reference_screenshot_path.name}")
-                            break
-                
-                if not reference_screenshot_path.exists():
-                    return {
-                        "status": "error",
-                        "target": "Allow users to send text feedback",
-                        "previous_state": "unknown",
-                        "new_state": "unknown",
-                        "selection_mode": "none",
-                        "gemini_reason": f"Reference screenshot not found at {reference_screenshot_path}"
-                    }
-            
-            print(f"   📷 Using reference screenshot: {reference_screenshot_path.name}")
-            
-            # d) Call Gemini
-            print("   🤖 Calling Gemini API...")
-            text_elements_json = json.dumps(text_elements, indent=2)
-            gemini_result = self._call_gemini_for_element_location(
-                current_screenshot_path,
-                str(reference_screenshot_path),
-                text_elements_json
-            )
-            
-            # Clean up temp screenshot
-            try:
-                os.unlink(current_screenshot_path)
-            except:
-                pass
-            
-            if gemini_result["status"] != "success":
-                return {
-                    "status": "error",
-                    "target": "Allow users to send text feedback",
-                    "previous_state": "unknown",
-                    "new_state": "unknown",
-                    "selection_mode": "none",
-                    "gemini_reason": gemini_result.get("reason", "Unknown error")
-                }
-            
-            gemini_response = gemini_result["result"]
-            selection_mode = gemini_response.get("mode", "none")
-            gemini_reason = gemini_response.get("reason", "")
-            
-            print(f"   ✅ Gemini found element: {gemini_response.get('label_text', 'N/A')}")
-            print(f"   📍 Mode: {selection_mode}")
-            
-            # e) Parse Gemini's response and toggle
-            previous_state = "unknown"
-            new_state = "unknown"
-            
-            if selection_mode == "selector":
-                selector = gemini_response.get("selector", "")
-                if selector:
-                    try:
-                        element = self.page.locator(selector).first
-                        if element.count() > 0:
-                            element.scroll_into_view_if_needed()
-                            time.sleep(0.3)
-                            
-                            # Get current state
-                            try:
-                                if element.get_attribute("type") == "checkbox":
-                                    is_checked = element.is_checked()
-                                    previous_state = "enabled" if is_checked else "disabled"
-                                else:
-                                    aria_checked = element.get_attribute("aria-checked")
-                                    previous_state = "enabled" if aria_checked == "true" else "disabled"
-                            except:
-                                pass
-                            
-                            # Toggle if needed
-                            current_is_enabled = previous_state == "enabled"
-                            if current_is_enabled != enable:
-                                if element.get_attribute("type") == "checkbox":
-                                    if enable:
-                                        element.check()
-                                    else:
-                                        element.uncheck()
-                                else:
-                                    element.click()
-                                time.sleep(0.5)
-                            
-                            # Get new state
-                            try:
-                                if element.get_attribute("type") == "checkbox":
-                                    is_checked = element.is_checked()
-                                    new_state = "enabled" if is_checked else "disabled"
-                                else:
-                                    aria_checked = element.get_attribute("aria-checked")
-                                    new_state = "enabled" if aria_checked == "true" else "disabled"
-                            except:
-                                pass
-                    except Exception as e:
-                        return {
-                            "status": "error",
-                            "target": "Allow users to send text feedback",
-                            "previous_state": previous_state,
-                            "new_state": new_state,
-                            "selection_mode": "selector",
-                            "gemini_reason": f"Error using selector: {str(e)}"
-                        }
-                else:
-                    return {
-                        "status": "error",
-                        "target": "Allow users to send text feedback",
-                        "previous_state": "unknown",
-                        "new_state": "unknown",
-                        "selection_mode": "selector",
-                        "gemini_reason": "No selector provided by Gemini"
-                    }
-            
-            elif selection_mode == "coordinates":
-                x = gemini_response.get("x")
-                y = gemini_response.get("y")
-                
-                if x is not None and y is not None:
-                    try:
-                        # Get state before clicking by finding nearby element
-                        # Try to find checkbox/toggle near coordinates
-                        nearby_element = self.page.evaluate(f"""
-                            () => {{
-                                const x = {x};
-                                const y = {y};
-                                const allInputs = document.querySelectorAll('input[type="checkbox"], [role="switch"]');
-                                let closest = null;
-                                let minDist = Infinity;
-                                
-                                for (const el of allInputs) {{
-                                    const rect = el.getBoundingClientRect();
-                                    const centerX = rect.x + rect.width / 2;
-                                    const centerY = rect.y + rect.height / 2;
-                                    const dist = Math.sqrt(Math.pow(centerX - x, 2) + Math.pow(centerY - y, 2));
-                                    
-                                    if (dist < minDist && dist < 100) {{
-                                        minDist = dist;
-                                        closest = el;
-                                    }}
-                                }}
-                                
-                                if (closest) {{
-                                    const rect = closest.getBoundingClientRect();
-                                    if (closest.type === 'checkbox') {{
-                                        return {{checked: closest.checked, type: 'checkbox'}};
-                                    }} else {{
-                                        return {{checked: closest.getAttribute('aria-checked') === 'true', type: 'switch'}};
-                                    }}
-                                }}
-                                return null;
-                            }}
-                        """)
-                        
-                        if nearby_element:
-                            previous_state = "enabled" if nearby_element.get("checked") else "disabled"
-                        
-                        # Move mouse and click
-                        self.page.mouse.move(x, y)
-                        time.sleep(0.2)
-                        self.page.mouse.click(x, y)
-                        time.sleep(0.5)
-                        
-                        # Get new state
-                        nearby_element_after = self.page.evaluate(f"""
-                            () => {{
-                                const x = {x};
-                                const y = {y};
-                                const allInputs = document.querySelectorAll('input[type="checkbox"], [role="switch"]');
-                                let closest = null;
-                                let minDist = Infinity;
-                                
-                                for (const el of allInputs) {{
-                                    const rect = el.getBoundingClientRect();
-                                    const centerX = rect.x + rect.width / 2;
-                                    const centerY = rect.y + rect.height / 2;
-                                    const dist = Math.sqrt(Math.pow(centerX - x, 2) + Math.pow(centerY - y, 2));
-                                    
-                                    if (dist < minDist && dist < 100) {{
-                                        minDist = dist;
-                                        closest = el;
-                                    }}
-                                }}
-                                
-                                if (closest) {{
-                                    if (closest.type === 'checkbox') {{
-                                        return {{checked: closest.checked, type: 'checkbox'}};
-                                    }} else {{
-                                        return {{checked: closest.getAttribute('aria-checked') === 'true', type: 'switch'}};
-                                    }}
-                                }}
-                                return null;
-                            }}
-                        """)
-                        
-                        if nearby_element_after:
-                            new_state = "enabled" if nearby_element_after.get("checked") else "disabled"
-                        
-                    except Exception as e:
-                        return {
-                            "status": "error",
-                            "target": "Allow users to send text feedback",
-                            "previous_state": previous_state,
-                            "new_state": new_state,
-                            "selection_mode": "coordinates",
-                            "gemini_reason": f"Error clicking coordinates: {str(e)}"
-                        }
-                else:
-                    return {
-                        "status": "error",
-                        "target": "Allow users to send text feedback",
-                        "previous_state": "unknown",
-                        "new_state": "unknown",
-                        "selection_mode": "coordinates",
-                        "gemini_reason": "No coordinates provided by Gemini"
-                    }
-            else:
-                return {
-                    "status": "error",
-                    "target": "Allow users to send text feedback",
-                    "previous_state": "unknown",
-                    "new_state": "unknown",
-                    "selection_mode": "none",
-                    "gemini_reason": f"Invalid mode from Gemini: {selection_mode}"
-                }
-            
-            # After successful toggle, find and click Save button
-            save_clicked = False
-            
-            # Only skip Save if we're confident the state didn't change
-            # (both states are enabled/disabled and they're equal)
-            should_skip_save = (
-                previous_state in {"enabled", "disabled"} and
-                new_state in {"enabled", "disabled"} and
-                previous_state == new_state
-            )
-            
-            if should_skip_save:
-                print(f"   💾 Save button: ℹ️  skipped (state truly unchanged: {previous_state} → {new_state})")
-            else:
-                # Try to click Save - either states are unknown or they changed
-                print("   💾 Looking for Save button...")
-                time.sleep(1)  # Wait for page to update after toggle
-                
-                save_clicked = click_save_if_present(self.page, timeout=5000)
-                
-                if save_clicked:
-                    print("   💾 Save button: ✅ clicked")
-                else:
-                    print("   💾 Save button: ⚠️  not found")
-            
-            # f) Return result
-            result = {
-                "status": "success",
-                "target": "Allow users to send text feedback",
-                "previous_state": previous_state,
-                "new_state": new_state,
-                "selection_mode": selection_mode,
-                "gemini_reason": gemini_reason,
-                "save_clicked": save_clicked
-            }
-            
-            return result
-            
-        except Exception as e:
-            import traceback
-            traceback.print_exc()
-            return {
-                "status": "error",
-                "target": "Allow users to send text feedback",
-                "previous_state": "unknown",
-                "new_state": "unknown",
-                "selection_mode": "none",
-                "gemini_reason": f"Exception: {str(e)}"
-            }
-    
-    def list_ad_settings(self) -> List[Dict[str, any]]:
-        """
-        List all available ad settings/toggles on the current page.
-        
-        Returns:
-            List of dictionaries with setting information
-        """
-        if not self.page:
-            raise RuntimeError("Browser not started. Call start_browser() first.")
-        
-        try:
-            self.page.wait_for_load_state("domcontentloaded", timeout=30000)
-            time.sleep(1)
-            
-            settings = []
-            
-            # Find all toggles/switches
-            toggles = self.page.locator('[role="switch"], input[type="checkbox"]').all()
-            
-            for toggle in toggles[:50]:  # Limit to first 50
-                try:
-                    # Get label
-                    label = None
-                    try:
-                        label = toggle.get_attribute("aria-label")
-                    except:
-                        pass
-                    
-                    if not label:
-                        # Try to find associated label
-                        try:
-                            toggle_id = toggle.get_attribute("id")
-                            if toggle_id:
-                                label_elem = self.page.locator(f"label[for='{toggle_id}']")
-                                if label_elem.count() > 0:
-                                    label = label_elem.inner_text()
-                        except:
-                            pass
-                    
-                    if not label:
-                        # Try parent or sibling text
-                        try:
-                            parent = toggle.locator("xpath=..")
-                            label = parent.inner_text()[:100]  # Limit length
-                        except:
-                            pass
-                    
-                    # Get state
-                    state = "unknown"
-                    try:
-                        if toggle.get_attribute("type") == "checkbox":
-                            state = "checked" if toggle.is_checked() else "unchecked"
-                        else:
-                            aria_checked = toggle.get_attribute("aria-checked")
-                            state = "on" if aria_checked == "true" else "off"
-                    except:
-                        pass
-                    
-                    if label:
-                        settings.append({
-                            "label": label.strip(),
-                            "state": state,
-                            "selector": str(toggle)
-                        })
-                except:
-                    continue
-            
-            return settings
-        except Exception as e:
-            print(f"⚠️  Error listing ad settings: {e}")
-            return []
-    
-    def list_navigation_links(self) -> List[Dict[str, any]]:
-        """
-        List all available navigation links/buttons on the current page.
-        
-        Returns:
-            List of dictionaries with link/button information (text, href, type, clickable)
-        """
-        if not self.page:
-            raise RuntimeError("Browser not started. Call start_browser() first.")
-        
-        try:
-            self.page.wait_for_load_state("domcontentloaded", timeout=30000)
-            time.sleep(1)
-            
-            links = []
-            
-            # Find all clickable elements: links, buttons, and elements with click handlers
-            selectors = [
-                "a[href]",  # Links with href
-                "button",   # Button elements
-                "[role='button']",  # Elements with button role
-                "[role='link']",   # Elements with link role
-                "[onclick]",       # Elements with onclick handlers
-                "[data-href]",     # Elements with data-href (common in SPAs)
-                "div[tabindex='0']",  # Divs that are focusable (often clickable)
-                "span[tabindex='0']", # Spans that are focusable
-            ]
-            
-            all_elements = []
-            for selector in selectors:
-                try:
-                    elements = self.page.locator(selector).all()
-                    all_elements.extend(elements[:50])  # Limit per selector
-                except:
-                    continue
-            
-            # Also find elements that look clickable (have cursor pointer style) using JavaScript
-            try:
-                clickable_elements_data = self.page.evaluate("""
-                    () => {
-                        const results = [];
-                        const all = Array.from(document.querySelectorAll('*'));
-                        for (const el of all) {
-                            try {
-                                const style = window.getComputedStyle(el);
-                                const tag = el.tagName.toLowerCase();
-                                const hasPointer = style.cursor === 'pointer';
-                                const isClickableTag = ['div', 'span', 'p', 'li', 'td', 'section', 'article'].includes(tag);
-                                const hasClickHandler = el.onclick !== null || el.getAttribute('onclick') !== null;
-                                const hasDataHref = el.getAttribute('data-href') !== null;
-                                const hasTabIndex = el.getAttribute('tabindex') === '0';
-                                const text = (el.innerText || el.textContent || '').trim();
-                                
-                                if ((hasPointer || hasClickHandler || hasDataHref || hasTabIndex) && 
-                                    isClickableTag && 
-                                    text.length > 0 && 
-                                    text.length < 200 &&
-                                    el.offsetParent !== null) { // Element is visible
-                                    results.push({
-                                        tag: tag,
-                                        text: text,
-                                        hasPointer: hasPointer,
-                                        hasClickHandler: hasClickHandler,
-                                        hasDataHref: hasDataHref,
-                                        hasTabIndex: hasTabIndex,
-                                        className: el.className || '',
-                                        id: el.id || ''
-                                    });
-                                }
-                            } catch (e) {}
-                            if (results.length >= 100) break;
-                        }
-                        return results;
-                    }
-                """)
-                
-                # Now find the actual elements using the data we collected
-                for elem_data in clickable_elements_data:
-                    try:
-                        # Try to find element by various means
-                        selectors_to_try = []
-                        if elem_data.get('id'):
-                            selectors_to_try.append(f"#{elem_data['id']}")
-                        if elem_data.get('className'):
-                            classes = elem_data['className'].split()
-                            if classes:
-                                selectors_to_try.append(f".{classes[0]}")
-                        
-                        # Also try finding by text
-                        text = elem_data.get('text', '')
-                        if text and len(text) >= 2:
-                            # Try to find element containing this text
-                            try:
-                                text_elem = self.page.locator(f"text={text}").first
-                                if text_elem.count() > 0:
-                                    # Check if it matches our criteria
-                                    tag = text_elem.evaluate("el => el.tagName.toLowerCase()")
-                                    if tag in ['div', 'span', 'p', 'li', 'td', 'section', 'article']:
-                                        all_elements.append(text_elem)
-                            except:
-                                pass
-                    except:
-                        pass
-            except Exception as e:
-                print(f"   ⚠️  Clickable styled elements search failed: {e}")
-            
-            for elem in all_elements[:150]:  # Limit total to 150
-                try:
-                    # Skip if it's a toggle/switch/checkbox
-                    try:
-                        if elem.locator("input[type='checkbox'], input[type='radio'], [role='switch']").count() > 0:
-                            continue
-                        # Check if element itself is a checkbox/radio
-                        tag = elem.evaluate("el => el.tagName.toLowerCase()")
-                        input_type = elem.get_attribute("type")
-                        if tag == "input" and input_type in ["checkbox", "radio", "submit", "button"]:
-                            # Only include submit/button inputs, not checkboxes
-                            if input_type in ["checkbox", "radio"]:
-                                continue
-                    except:
-                        pass
-                    
-                    text = None
-                    href = None
-                    elem_type = "unknown"
-                    is_clickable = False
-                    
-                    # Get text from multiple sources - be more thorough
-                    try:
-                        # Try inner_text first (gets all text including children)
-                        text = elem.inner_text().strip()
-                        
-                        # If empty, try text_content (includes hidden text)
-                        if not text:
-                            text = elem.evaluate("el => el.textContent || ''").strip()
-                        
-                        # Also check aria-label, title, alt, and data attributes
-                        if not text:
-                            text = (elem.get_attribute("aria-label") or 
-                                   elem.get_attribute("title") or 
-                                   elem.get_attribute("alt") or
-                                   elem.get_attribute("data-label") or
-                                   elem.get_attribute("data-text") or "").strip()
-                        
-                        # If still no text, check if text is split across child elements
-                        if not text:
-                            try:
-                                # Get all text from children
-                                child_text = elem.evaluate("""
-                                    el => {
-                                        const texts = [];
-                                        const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
-                                        let node;
-                                        while (node = walker.nextNode()) {
-                                            const t = node.textContent.trim();
-                                            if (t) texts.push(t);
-                                        }
-                                        return texts.join(' ').trim();
-                                    }
-                                """)
-                                if child_text:
-                                    text = child_text
-                            except:
-                                pass
-                    except:
-                        try:
-                            text = elem.get_attribute("aria-label") or elem.get_attribute("title") or elem.get_attribute("alt") or ""
-                        except:
-                            text = ""
-                    
-                    if not text or len(text) > 200:  # Skip empty or too long
-                        continue
-                    
-                    # Skip very short text (likely icons or separators) but allow "Manage Info" type text
-                    text_clean = text.strip()
-                    if len(text_clean) < 2:
-                        continue
-                    
-                    # Normalize text (remove extra whitespace, newlines)
-                    text = ' '.join(text.split())
-                    
-                    # Determine element type and properties
-                    try:
-                        tag = elem.evaluate("el => el.tagName.toLowerCase()")
-                        role = elem.get_attribute("role") or ""
-                        onclick = elem.get_attribute("onclick")
-                        data_href = elem.get_attribute("data-href")
-                        tabindex = elem.get_attribute("tabindex")
-                        
-                        if tag == "a":
-                            href = elem.get_attribute("href")
-                            elem_type = "link"
-                            is_clickable = True
-                        elif tag == "button" or role == "button":
-                            href = elem.get_attribute("href") or data_href
-                            onclick = onclick or elem.get_attribute("onclick")
-                            if onclick:
-                                elem_type = "button_with_action"
-                            elif href:
-                                elem_type = "link_button"
-                            else:
-                                elem_type = "button"
-                            is_clickable = True
-                        elif role == "link":
-                            href = elem.get_attribute("href") or data_href
-                            elem_type = "link_role"
-                            is_clickable = True
-                        elif onclick or data_href:
-                            href = data_href
-                            elem_type = "clickable_element"
-                            is_clickable = True
-                        elif tabindex == "0" and (tag in ["div", "span", "p", "li", "td"]):
-                            # Focusable elements that might be clickable
-                            elem_type = "focusable_element"
-                            is_clickable = True
-                        else:
-                            # Check if parent is clickable (more comprehensive)
-                            try:
-                                # Check multiple levels of parents
-                                parent = elem.locator("xpath=ancestor::a | ancestor::button | ancestor::*[@onclick] | ancestor::*[@data-href] | ancestor::*[@role='button'] | ancestor::*[@role='link']").first
-                                if parent.count() > 0:
-                                    parent_tag = parent.evaluate("el => el.tagName.toLowerCase()")
-                                    parent_role = parent.get_attribute("role") or ""
-                                    
-                                    if parent_tag == "a":
-                                        href = parent.get_attribute("href")
-                                        elem_type = "link_child"
-                                    elif parent_tag == "button" or parent_role == "button":
-                                        elem_type = "button_child"
-                                    elif parent.get_attribute("onclick") or parent.get_attribute("data-href"):
-                                        elem_type = "clickable_child"
-                                    else:
-                                        elem_type = "clickable_child"
-                                    is_clickable = True
-                                    
-                                    # Update href from parent if available
-                                    if not href:
-                                        href = parent.get_attribute("href") or parent.get_attribute("data-href")
-                            except:
-                                pass
-                            
-                            # Also check if element itself has click handlers via JavaScript
-                            if not is_clickable:
-                                try:
-                                    has_click = elem.evaluate("""
-                                        el => {
-                                            return el.onclick !== null || 
-                                                   el.getAttribute('onclick') !== null ||
-                                                   el.getAttribute('data-href') !== null ||
-                                                   window.getComputedStyle(el).cursor === 'pointer';
-                                        }
-                                    """)
-                                    if has_click:
-                                        elem_type = "js_clickable"
-                                        is_clickable = True
-                                except:
-                                    pass
-                    except:
-                        pass
-                    
-                    # Only include if it's actually clickable
-                    if not is_clickable:
-                        continue
-                    
-                    # Check if element is visible
-                    try:
-                        if not elem.is_visible():
-                            continue
-                    except:
-                        pass
-                    
-                    links.append({
-                        "text": text.strip(),
-                        "href": href,
-                        "type": elem_type,
-                        "clickable": is_clickable
-                    })
-                except:
-                    continue
-            
-            # Remove duplicates (same text)
-            seen = set()
-            unique_links = []
-            for link in links:
-                text_key = link["text"].lower().strip()
-                if text_key and text_key not in seen:
-                    seen.add(text_key)
-                    unique_links.append(link)
-            
-            # Sort by type (links first, then buttons, then other clickable elements)
-            type_order = {"link": 0, "link_role": 1, "link_button": 2, "button": 3, "button_with_action": 4, 
-                         "clickable_element": 5, "js_clickable": 5, "focusable_element": 6, 
-                         "link_child": 7, "button_child": 8, "clickable_child": 9}
-            unique_links.sort(key=lambda x: type_order.get(x["type"], 99))
-            
-            # Debug: Print summary of what we found
-            print(f"   🔍 Found {len(unique_links)} clickable elements (links: {sum(1 for l in unique_links if 'link' in l['type'])}, buttons: {sum(1 for l in unique_links if 'button' in l['type'])}, other: {sum(1 for l in unique_links if 'link' not in l['type'] and 'button' not in l['type'])})")
-            
-            return unique_links
-        except Exception as e:
-            print(f"⚠️  Error listing navigation links: {e}")
-            import traceback
-            traceback.print_exc()
-            return []
-    
-    def navigate_by_link_text(self, link_text: str, partial_match: bool = True, wait_time: float = 2.0, auto_list_links: bool = False) -> Dict[str, any]:
-        """
-        Navigate to another page by clicking on a link/button with matching text.
-        
-        Args:
-            link_text: Text to search for in links/buttons
-            partial_match: Whether to do partial matching (case-insensitive)
-            wait_time: Time to wait after navigation (seconds)
-            auto_list_links: Whether to automatically list links after navigation
-        
-        Returns:
-            Dictionary with navigation result
-        """
-        if not self.page:
-            raise RuntimeError("Browser not started. Call start_browser() first.")
-        
-        try:
-            print(f"🔗 Looking for link/button: '{link_text}'")
-            
-            # Wait for page to be ready
-            self.page.wait_for_load_state("domcontentloaded", timeout=30000)
-            time.sleep(2)  # Give page more time to render
-            
-            current_url = self.page.url
-            print(f"   📍 Current URL: {current_url}")
-            
-            # Try multiple strategies to find and click the link
-            clicked = False
-            click_method = None
-            
-            # Strategy 1: Try get_by_text (most reliable for text matching)
-            try:
-                if partial_match:
-                    # Use filter for partial match - try both links and buttons
-                    all_text_elements = self.page.locator(f"text=/{re.escape(link_text)}/i")
-                    if all_text_elements.count() > 0:
-                        # Find the first clickable one (prioritize links and buttons)
-                        for i in range(min(all_text_elements.count(), 20)):
-                            elem = all_text_elements.nth(i)
-                            try:
-                                tag = elem.evaluate("el => el.tagName.toLowerCase()")
-                                role = elem.get_attribute("role") or ""
-                                onclick = elem.get_attribute("onclick")
-                                data_href = elem.get_attribute("data-href")
-                                tabindex = elem.get_attribute("tabindex")
-                                
-                                # Check if it's clickable
-                                is_clickable = (
-                                    tag in ["a", "button"] or 
-                                    role in ["link", "button"] or
-                                    onclick is not None or
-                                    data_href is not None or
-                                    (tabindex == "0" and tag in ["div", "span", "p", "li"])
-                                )
-                                
-                                # Also check if it's inside a clickable parent
-                                if not is_clickable:
-                                    parent_clickable = elem.locator("xpath=ancestor::a | ancestor::button | ancestor::*[@onclick] | ancestor::*[@data-href]").first
-                                    if parent_clickable.count() > 0:
-                                        is_clickable = True
-                                        elem = parent_clickable.first
-                                
-                                if is_clickable:
-                                    # Scroll into view
-                                    elem.scroll_into_view_if_needed()
-                                    time.sleep(0.5)
-                                    elem.click(timeout=5000)
-                                    clicked = True
-                                    click_method = "text_match"
-                                    print(f"   ✅ Clicked element (text match, index {i}): {link_text}")
-                                    break
-                            except Exception as e:
-                                continue
-                else:
-                    # Exact match - try links first, then buttons
-                    text_elem = self.page.get_by_text(link_text, exact=True).first
-                    if text_elem.count() > 0:
-                        # Check if it's clickable or find clickable parent
-                        tag = text_elem.evaluate("el => el.tagName.toLowerCase()")
-                        role = text_elem.get_attribute("role") or ""
-                        is_clickable = tag in ["a", "button"] or role in ["link", "button"]
-                        
-                        if not is_clickable:
-                            # Try to find clickable parent
-                            parent = text_elem.locator("xpath=ancestor::a | ancestor::button | ancestor::*[@onclick] | ancestor::*[@data-href]").first
-                            if parent.count() > 0:
-                                text_elem = parent.first
-                                is_clickable = True
-                        
-                        if is_clickable:
-                            text_elem.scroll_into_view_if_needed()
-                            time.sleep(0.5)
-                            text_elem.click(timeout=5000)
-                            clicked = True
-                            click_method = "text_exact"
-                            print(f"   ✅ Clicked element (exact text): {link_text}")
-            except Exception as e:
-                print(f"   ⚠️  Text-based search failed: {e}")
-            
-            # Strategy 2: Try role-based locators
-            if not clicked:
-                try:
-                    if partial_match:
-                        # Try link role with partial match
-                        link = self.page.get_by_role("link").filter(has_text=re.compile(link_text, re.I)).first
-                        if link.count() > 0:
-                            link.scroll_into_view_if_needed()
-                            time.sleep(0.5)
-                            link.click(timeout=5000)
-                            clicked = True
-                            click_method = "role_link"
-                            print(f"   ✅ Clicked link (role='link'): {link_text}")
-                    else:
-                        link = self.page.get_by_role("link", name=link_text, exact=True).first
-                        if link.count() > 0:
-                            link.scroll_into_view_if_needed()
-                            time.sleep(0.5)
-                            link.click(timeout=5000)
-                            clicked = True
-                            click_method = "role_link"
-                            print(f"   ✅ Clicked link (role='link', exact): {link_text}")
-                except Exception as e:
-                    print(f"   ⚠️  Role-based link search failed: {e}")
-            
-            if not clicked:
-                try:
-                    if partial_match:
-                        button = self.page.get_by_role("button").filter(has_text=re.compile(link_text, re.I)).first
-                        if button.count() > 0:
-                            button.scroll_into_view_if_needed()
-                            time.sleep(0.5)
-                            button.click(timeout=5000)
-                            clicked = True
-                            click_method = "role_button"
-                            print(f"   ✅ Clicked button (role='button'): {link_text}")
-                    else:
-                        button = self.page.get_by_role("button", name=link_text, exact=True).first
-                        if button.count() > 0:
-                            button.scroll_into_view_if_needed()
-                            time.sleep(0.5)
-                            button.click(timeout=5000)
-                            clicked = True
-                            click_method = "role_button"
-                            print(f"   ✅ Clicked button (role='button', exact): {link_text}")
-                except Exception as e:
-                    print(f"   ⚠️  Role-based button search failed: {e}")
-            
-            # Strategy 3: Try href-based search for links
-            if not clicked:
-                try:
-                    if partial_match:
-                        # Find links containing the text
-                        links = self.page.locator(f'a:has-text("{link_text}")').all()
-                        if len(links) > 0:
-                            for link in links[:5]:  # Try first 5 matches
-                                try:
-                                    link.scroll_into_view_if_needed()
-                                    time.sleep(0.5)
-                                    link.click(timeout=5000)
-                                    clicked = True
-                                    click_method = "href_text"
-                                    print(f"   ✅ Clicked link (href with text): {link_text}")
-                                    break
-                                except:
-                                    continue
-                    else:
-                        link = self.page.locator(f'a:has-text("{link_text}")').first
-                        if link.count() > 0:
-                            link.scroll_into_view_if_needed()
-                            time.sleep(0.5)
-                            link.click(timeout=5000)
-                            clicked = True
-                            click_method = "href_text"
-                            print(f"   ✅ Clicked link (href with exact text): {link_text}")
-                except Exception as e:
-                    print(f"   ⚠️  Href-based search failed: {e}")
-            
-            # Strategy 4: Try finding by aria-label (for both links and buttons)
-            if not clicked:
-                try:
-                    if partial_match:
-                        # Try links and buttons with aria-label
-                        for selector in [f'a[aria-label*="{link_text}" i]', f'button[aria-label*="{link_text}" i]', 
-                                        f'[role="button"][aria-label*="{link_text}" i]', f'[role="link"][aria-label*="{link_text}" i]']:
-                            elem = self.page.locator(selector).first
-                            if elem.count() > 0:
-                                elem.scroll_into_view_if_needed()
-                                time.sleep(0.5)
-                                elem.click(timeout=5000)
-                                clicked = True
-                                click_method = "aria_label"
-                                print(f"   ✅ Clicked element (aria-label): {link_text}")
-                                break
-                    else:
-                        for selector in [f'a[aria-label="{link_text}"]', f'button[aria-label="{link_text}"]',
-                                        f'[role="button"][aria-label="{link_text}"]', f'[role="link"][aria-label="{link_text}"]']:
-                            elem = self.page.locator(selector).first
-                            if elem.count() > 0:
-                                elem.scroll_into_view_if_needed()
-                                time.sleep(0.5)
-                                elem.click(timeout=5000)
-                                clicked = True
-                                click_method = "aria_label"
-                                print(f"   ✅ Clicked element (aria-label, exact): {link_text}")
-                                break
-                except Exception as e:
-                    print(f"   ⚠️  Aria-label search failed: {e}")
-            
-            # Strategy 5: Try finding buttons/clickable divs with onclick or data-href
-            if not clicked:
-                try:
-                    # Look for clickable divs/spans with the text
-                    clickable_selectors = [
-                        f'div[onclick*="{link_text}" i]',
-                        f'span[onclick*="{link_text}" i]',
-                        f'div[data-href*="{link_text}" i]',
-                        f'*[onclick]:has-text("{link_text}")',
-                        f'*[data-href]:has-text("{link_text}")',
-                    ]
-                    for selector in clickable_selectors:
-                        try:
-                            elem = self.page.locator(selector).first
-                            if elem.count() > 0:
-                                elem.scroll_into_view_if_needed()
-                                time.sleep(0.5)
-                                elem.click(timeout=5000)
-                                clicked = True
-                                click_method = "clickable_element"
-                                print(f"   ✅ Clicked clickable element: {link_text}")
-                                break
-                        except:
-                            continue
-                except Exception as e:
-                    print(f"   ⚠️  Clickable element search failed: {e}")
-            
-            if not clicked:
-                # List available links for debugging
-                print(f"   🔍 Debug: Listing available links on page...")
-                available_links = self.list_navigation_links()
-                if available_links:
-                    print(f"   📋 Found {len(available_links)} links/buttons:")
-                    for i, link in enumerate(available_links[:10], 1):
-                        print(f"      {i}. '{link['text']}' ({link['type']})")
-                
-                return {
-                    "status": "error",
-                    "message": f"Could not find link/button with text: '{link_text}'. Use --list-links to see available options.",
-                    "available_links": [l["text"] for l in available_links[:10]] if available_links else []
-                }
-            
-            # Wait for navigation
-            print(f"   ⏳ Waiting for navigation...")
-            time.sleep(wait_time)
-            
-            # Wait for URL change or page load
-            try:
-                # Wait for navigation with timeout
-                self.page.wait_for_url("**", timeout=10000, state="domcontentloaded")
-            except:
-                # If URL didn't change, wait for load anyway
-                self.page.wait_for_load_state("domcontentloaded", timeout=10000)
-            
-            new_url = self.page.url
-            title = self.page.title()
-            
-            print(f"   📍 New URL: {new_url}")
-            
-            result = None
-            if new_url != current_url:
-                result = {
-                    "status": "success",
-                    "message": f"Navigated to new page (method: {click_method})",
-                    "previous_url": current_url,
-                    "new_url": new_url,
-                    "title": title,
-                    "click_method": click_method
-                }
-            else:
-                # Sometimes navigation happens via JavaScript without URL change
-                # Check if page content changed
-                result = {
-                    "status": "warning",
-                    "message": f"Link clicked (method: {click_method}) but URL did not change. Page may have updated via JavaScript.",
-                    "url": new_url,
-                    "title": title,
-                    "click_method": click_method
-                }
-            
-            # Auto-list links if requested and navigation was successful
-            if auto_list_links and result["status"] in ["success", "warning"]:
-                self._display_links_after_navigation()
-            
-            return result
-                
-        except Exception as e:
-            import traceback
-            traceback.print_exc()
-            return {
-                "status": "error",
-                "message": f"Failed to navigate: {str(e)}"
-            }
-    
-    def _display_links_after_navigation(self):
-        """
-        Helper method to display links after navigation.
-        Called automatically when auto_list_links is enabled.
-        """
-        try:
-            print("\n" + "=" * 60)
-            print("🔗 Available Links/Buttons on This Page")
-            print("=" * 60)
-            links = self.list_navigation_links()
-            if links:
-                print(f"\n✅ Found {len(links)} navigation options:")
-                for i, link in enumerate(links, 1):
-                    # Choose icon based on type
-                    if "link" in link["type"].lower():
-                        link_type_icon = "🔗"
-                    elif "button" in link["type"].lower():
-                        link_type_icon = "🔘"
-                    else:
-                        link_type_icon = "👆"
-                    href_info = f" → {link['href']}" if link.get("href") else ""
-                    type_info = f" ({link['type']})" if link.get("type") != "link" else ""
-                    print(f"  {i}. {link_type_icon} {link['text']}{type_info}{href_info}")
-            else:
-                print("   ⚠️  No navigation links found on this page.")
-        except Exception as e:
-            print(f"   ⚠️  Error listing links: {e}")
+        return toggle_setting_with_gemini(
+            page=self.page,
+            setting_label="Allow users to send text feedback",
+            enable=enable,
+            description="Zoom general settings page",
+            save_after=True
+        )
     
     def close_browser(self):
         """Close the browser."""
@@ -2993,225 +2145,12 @@ Output ONLY JSON in this exact format:
             self.playwright.stop()
         print("✅ Browser closed")
     
-    def get_current_settings(self) -> Dict[str, any]:
-        """Get current settings as a dictionary."""
-        return {
-            "json_file": str(self.json_file),
-            "email": self.email,
-            "password": "***" if self.password else None,  # Don't show password
-            "headless": self.headless,
-            "use_persistent_profile": self.use_persistent_profile,
-            "profile_dir": str(self.profile_dir) if self.profile_dir else None,
-            "storage_state_file": str(self.storage_state_file) if self.storage_state_file else None,
-            "save_storage_after_login": self.save_storage_after_login
-        }
-    
-    def reload_with_new_settings(self, new_json_file: Optional[str] = None, 
-                                 new_email: Optional[str] = None,
-                                 new_password: Optional[str] = None,
-                                 new_headless: Optional[bool] = None,
-                                 new_storage_state_file: Optional[str] = None,
-                                 new_profile_dir: Optional[str] = None,
-                                 new_use_persistent_profile: Optional[bool] = None):
-        """
-        Reload navigator with new settings. Browser must be closed first.
-        
-        Args:
-            new_json_file: New JSON file path
-            new_email: New email
-            new_password: New password
-            new_headless: New headless setting
-            new_storage_state_file: New storage state file
-            new_profile_dir: New profile directory
-            new_use_persistent_profile: New persistent profile setting
-        """
-        if self.page or self.context or self.browser:
-            raise RuntimeError("Browser must be closed before reloading settings. Call close_browser() first.")
-        
-        if new_json_file:
-            self.json_file = Path(new_json_file)
-            self.data = self.load_json()
-        
-        if new_email:
-            self.email = new_email
-        
-        if new_password:
-            self.password = new_password
-        
-        if new_headless is not None:
-            self.headless = new_headless
-        
-        if new_storage_state_file:
-            self.storage_state_file = Path(new_storage_state_file) if new_storage_state_file else None
-        
-        if new_profile_dir:
-            self.profile_dir = Path(new_profile_dir) if new_profile_dir else None
-        
-        if new_use_persistent_profile is not None:
-            self.use_persistent_profile = new_use_persistent_profile
-        
-        self.logged_in = False  # Reset login status
-        print("✅ Settings reloaded")
+    # Removed methods: list_ad_settings, list_navigation_links, navigate_by_link_text, 
+    # _display_links_after_navigation, get_current_settings, reload_with_new_settings
+    # These were removed to keep only setting-changing functionality.
 
 
-def prompt_for_settings_switch(navigator: URLNavigator) -> bool:
-    """
-    Prompt user to switch settings interactively.
-    
-    Args:
-        navigator: Current URLNavigator instance
-        
-    Returns:
-        True if settings were changed, False otherwise
-    """
-    print("\n" + "=" * 60)
-    print("⚙️  SETTINGS MENU")
-    print("=" * 60)
-    
-    # Show current settings
-    settings = navigator.get_current_settings()
-    print("\n📋 Current Settings:")
-    print(f"  JSON File: {settings['json_file']}")
-    print(f"  Email: {settings['email']}")
-    print(f"  Headless: {settings['headless']}")
-    print(f"  Storage State: {settings['storage_state_file']}")
-    print(f"  Persistent Profile: {settings['use_persistent_profile']}")
-    
-    print("\n🔄 Available Options:")
-    print("  1. Switch JSON file")
-    print("  2. Change email")
-    print("  3. Change password")
-    print("  4. Toggle headless mode")
-    print("  5. Change storage state file")
-    print("  6. Change profile directory")
-    print("  7. Toggle persistent profile")
-    print("  8. Show all settings")
-    print("  0. Continue without changes")
-    
-    try:
-        choice = input("\n👉 Enter your choice (0-8): ").strip()
-        
-        if choice == "0":
-            return False
-        
-        # Check if browser is open - need to close it first
-        browser_open = navigator.page is not None or navigator.context is not None or navigator.browser is not None
-        
-        if choice == "1":
-            # Switch JSON file
-            print("\n📁 Available JSON files:")
-            # Discover available JSON files in json_data directory
-            json_data_dir = Path("json_data")
-            if json_data_dir.exists():
-                json_files = sorted([f.name for f in json_data_dir.glob("*.json")])
-            else:
-                json_files = ["facebook.json", "linkedin.json", "zoom.json"]
-            
-            if json_files:
-                for i, f in enumerate(json_files, 1):
-                    full_path = f"json_data/{f}"
-                    exists = Path(full_path).exists()
-                    marker = "✅" if exists else "❌"
-                    print(f"  {i}. {marker} {f}")
-            
-            file_choice = input(f"👉 Select JSON file (1-{len(json_files)}) or enter custom path: ").strip()
-            
-            if file_choice.isdigit() and 1 <= int(file_choice) <= len(json_files):
-                new_file = f"json_data/{json_files[int(file_choice) - 1]}"
-            else:
-                new_file = file_choice
-            
-            if browser_open:
-                print("⚠️  Browser is open. Closing browser to apply changes...")
-                navigator.close_browser()
-            
-            # Auto-update storage state file based on new service
-            new_service = extract_service_name(new_file)
-            new_storage = get_default_storage_state_file(new_service)
-            
-            navigator.reload_with_new_settings(new_json_file=new_file, new_storage_state_file=new_storage)
-            print(f"✅ Switched to: {new_file}")
-            print(f"✅ Service: {new_service}")
-            print(f"✅ Storage state: {new_storage}")
-            return True
-        
-        elif choice == "2":
-            new_email = input("👉 Enter new email: ").strip()
-            if new_email:
-                if browser_open:
-                    print("⚠️  Browser is open. Closing browser to apply changes...")
-                    navigator.close_browser()
-                navigator.reload_with_new_settings(new_email=new_email)
-                print(f"✅ Email updated to: {new_email}")
-                return True
-        
-        elif choice == "3":
-            new_password = input("👉 Enter new password: ").strip()
-            if new_password:
-                if browser_open:
-                    print("⚠️  Browser is open. Closing browser to apply changes...")
-                    navigator.close_browser()
-                navigator.reload_with_new_settings(new_password=new_password)
-                print("✅ Password updated")
-                return True
-        
-        elif choice == "4":
-            new_headless = not navigator.headless
-            if browser_open:
-                print("⚠️  Browser is open. Closing browser to apply changes...")
-                navigator.close_browser()
-            navigator.reload_with_new_settings(new_headless=new_headless)
-            print(f"✅ Headless mode: {'ON' if new_headless else 'OFF'}")
-            return True
-        
-        elif choice == "5":
-            new_storage = input("👉 Enter storage state file path (or 'none' to clear): ").strip()
-            if new_storage.lower() == "none":
-                new_storage = None
-            if browser_open:
-                print("⚠️  Browser is open. Closing browser to apply changes...")
-                navigator.close_browser()
-            navigator.reload_with_new_settings(new_storage_state_file=new_storage)
-            print(f"✅ Storage state file: {new_storage or 'None'}")
-            return True
-        
-        elif choice == "6":
-            new_profile = input("👉 Enter profile directory path (or 'none' to clear): ").strip()
-            if new_profile.lower() == "none":
-                new_profile = None
-            if browser_open:
-                print("⚠️  Browser is open. Closing browser to apply changes...")
-                navigator.close_browser()
-            navigator.reload_with_new_settings(new_profile_dir=new_profile)
-            print(f"✅ Profile directory: {new_profile or 'None'}")
-            return True
-        
-        elif choice == "7":
-            new_persistent = not navigator.use_persistent_profile
-            if browser_open:
-                print("⚠️  Browser is open. Closing browser to apply changes...")
-                navigator.close_browser()
-            navigator.reload_with_new_settings(new_use_persistent_profile=new_persistent)
-            print(f"✅ Persistent profile: {'ON' if new_persistent else 'OFF'}")
-            return True
-        
-        elif choice == "8":
-            settings = navigator.get_current_settings()
-            print("\n📋 All Current Settings:")
-            for key, value in settings.items():
-                print(f"  {key}: {value}")
-            return False
-        
-        else:
-            print("❌ Invalid choice")
-            return False
-            
-    except KeyboardInterrupt:
-        print("\n⚠️  Cancelled")
-        return False
-    except Exception as e:
-        print(f"❌ Error: {e}")
-        return False
+# Removed prompt_for_settings_switch - not needed for setting changes
 
 
 def main():
@@ -3221,11 +2160,8 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  %(prog)s facebook --find "Personal Details" --change-birthday 5 15 1990
-  %(prog)s zoom --url "https://zoom.us/profile/setting?tab=general" --list-toggles
-  %(prog)s zoom --url "https://zoom.us/profile/setting?tab=general" --change-toggle "Enable notifications" disable
-  %(prog)s linkedin --ads
-  %(prog)s --json-file custom/path.json --find "settings"
+  %(prog)s zoom --url "https://zoom.us/profile/setting?tab=general" --setting "Allow users to send text feedback" --state enable
+  %(prog)s facebook --url "https://accountscenter.facebook.com/ads" --change-ad-setting "Ad personalization" disable
         """
     )
     parser.add_argument("service", nargs="?", default=None,
@@ -3233,37 +2169,18 @@ Examples:
     parser.add_argument("--json-file",
                         help="Path to JSON file containing URL data (overrides service name if provided)")
     parser.add_argument("--url", help="Navigate directly to this URL (takes precedence).")
-    parser.add_argument("--find", help="Keyword to find a matching URL (e.g., 'ads', 'password').")
-    parser.add_argument("--category", default="all_unique",
-                        choices=["visited_urls", "section_urls", "action_urls", "all_unique"],
-                        help="URL category to search/use when --find is provided.")
     parser.add_argument("--headless", action="store_true", help="Run browser headless.")
     parser.add_argument("--no-headless", action="store_true", help="Force non-headless mode.")
     parser.add_argument("--auto-login", action="store_true", help="Enable auto-login when login page detected.")
     parser.add_argument("--no-auto-login", action="store_true", help="Disable auto-login.")
-    parser.add_argument("--screenshot", help="Save a screenshot to this path after navigation.")
     parser.add_argument("--use-persistent-profile", action="store_true", help="Use a persistent Chromium profile.")
     parser.add_argument("--profile-dir", help="Directory for persistent profile (used with --use-persistent-profile).")
     parser.add_argument("--storage-state-file", default=None,
                         help="Path to Playwright storage state JSON. If not provided, auto-generated from service name.")
-    parser.add_argument("--interactive", action="store_true", 
-                        help="Enable interactive mode to switch settings when prompted.")
-    parser.add_argument("--ads", action="store_true",
-                        help="Navigate to ads preferences page.")
-    parser.add_argument("--list-ads", action="store_true",
-                        help="List all available ad settings on current page.")
     parser.add_argument("--change-ad-setting", nargs=2, metavar=("SETTING_NAME", "STATE"),
                         help="Change an ad setting. STATE should be 'enable' or 'disable'. Example: --change-ad-setting 'Ad personalization' disable")
-    parser.add_argument("--list-links", action="store_true",
-                        help="List all available navigation links/buttons on current page.")
-    parser.add_argument("--auto-list-links", action="store_true",
-                        help="Automatically list all links/buttons after each navigation.")
-    parser.add_argument("--navigate-to", metavar="LINK_TEXT",
-                        help="Navigate to another page by clicking a link/button with this text. Example: --navigate-to 'Ad preferences'")
     parser.add_argument("--change-birthday", nargs=3, metavar=("MONTH", "DAY", "YEAR"),
                         help="Change birthday. Will auto-navigate to Personal Details if needed. Example: facebook --find 'Personal Details' --change-birthday 5 15 1990")
-    parser.add_argument("--list-toggles", action="store_true",
-                        help="List all available toggles/switches on current page.")
     parser.add_argument("--change-toggle", nargs=2, metavar=("TOGGLE_LABEL", "STATE"),
                         help="Change a toggle/switch. STATE should be 'enable' or 'disable'. Example: zoom --url 'https://zoom.us/profile/setting?tab=general' --change-toggle 'Enable notifications' disable")
     parser.add_argument("--check-checkbox", nargs=2, metavar=("CHECKBOX_LABEL", "STATE"),
@@ -3272,6 +2189,12 @@ Examples:
                         help="Physically click a toggle/checkbox using mouse API. STATE should be 'enable' or 'disable'. Example: zoom --url 'https://zoom.us/profile/setting?tab=general' --physical-toggle 'Allow users to send text feedback' enable")
     parser.add_argument("--gemini-toggle-text-feedback", metavar="STATE",
                         help="Use Gemini AI to locate and toggle 'Allow users to send text feedback' setting. STATE should be 'enable' or 'disable'. Example: zoom --url 'https://zoom.us/profile/setting?tab=general' --gemini-toggle-text-feedback enable")
+    parser.add_argument("--setting", metavar="SETTING_LABEL",
+                        help="Generic setting label to toggle using Gemini AI. Use with --state. Example: --setting 'Allow users to send text feedback' --state enable")
+    parser.add_argument("--state", metavar="STATE", choices=["enable", "disable", "on", "off", "check", "uncheck"],
+                        help="Target state for --setting. Should be 'enable' or 'disable'. Example: --setting 'My Setting' --state enable")
+    parser.add_argument("--description", metavar="DESCRIPTION",
+                        help="Optional description/hint for Gemini when using --setting. Example: --setting 'My Setting' --state enable --description 'Zoom general settings page'")
     args, unknown = parser.parse_known_args()
     
     # Determine JSON file path
@@ -3327,84 +2250,21 @@ Examples:
         if navigator.storage_state_file:
             print(f"💾 Storage state: {navigator.storage_state_file}")
         
-        # Interactive settings switch if enabled
-        if args.interactive:
-            while True:
-                settings_changed = prompt_for_settings_switch(navigator)
-                if settings_changed:
-                    # Ask if user wants to change more settings
-                    continue_choice = input("\n👉 Change more settings? (y/n): ").strip().lower()
-                    if continue_choice != 'y':
-                        break
-                else:
-                    break
-        
-        # Show available URLs
-        print("\n📋 Available URLs:")
-        urls = navigator.get_all_urls()
-        for category, url_list in urls.items():
-            print(f"\n  {category}: {len(url_list)} URLs")
-            for url in url_list[:3]:  # Show first 3
-                print(f"    • {url}")
-            if len(url_list) > 3:
-                print(f"    ... and {len(url_list) - 3} more")
-        
         # Start browser
         print("\n🚀 Starting browser...")
         navigator.start_browser()
         
-        # Determine if we should auto-list links
-        auto_list_links_flag = args.auto_list_links or args.list_links
-        
-        target_url = None
-        if args.ads:
-            # Navigate to ads page
-            print("\n📢 Navigating to ads preferences page...")
-            result = navigator.navigate_to_ads_page(auto_login=auto_login_flag, auto_list_links=auto_list_links_flag)
-            if result["status"] == "success":
-                print(f"   ✅ Successfully navigated to ads page: {result['title']}")
-                print(f"   📍 Current URL: {result['actual_url']}")
-            else:
-                print(f"   ❌ Failed: {result.get('error')}")
-        elif args.url:
-            target_url = args.url if args.url.startswith("http") else f"https://{args.url}"
-        elif args.find:
-            candidates = navigator.find_urls_by_text(args.find, url_category=args.category)
-            if not candidates:
-                print(f"\n❌ No URLs matched '{args.find}' in category '{args.category}'.")
-                return
-            print(f"\n🔎 Matches for '{args.find}' ({len(candidates)}):")
-            for i, u in enumerate(candidates[:5], 1):
-                print(f"  {i}. {u}")
-            target_url = candidates[0]
-            print(f"\n➡️  Choosing best match: {target_url}")
-        else:
-            # Default: first URL in all_unique
-            print("\n🌐 Navigating to first URL as example...")
-            target_url = urls["all_unique"][0] if urls["all_unique"] else None
-        
-        if target_url:
-            result = navigator.navigate_to_url(target_url, auto_login=auto_login_flag, auto_list_links=auto_list_links_flag)
+        # Navigate to URL if provided
+        if args.url:
+            print(f"\n🌐 Navigating to: {args.url}")
+            result = navigator.navigate_to_url(args.url, auto_login=auto_login_flag)
             if result["status"] == "success":
                 print(f"   ✅ Successfully navigated to: {result['title']}")
                 print(f"   📍 Current URL: {result['actual_url']}")
-                if args.screenshot:
-                    navigator.take_screenshot(args.screenshot)
             else:
-                print(f"   ❌ Failed: {result.get('error')}")
+                print(f"   ❌ Error: {result.get('error', 'Unknown error')}")
         
-        # Handle ad settings operations
-        if args.list_ads:
-            print("\n📋 Listing available ad settings...")
-            settings = navigator.list_ad_settings()
-            if settings:
-                print(f"\n✅ Found {len(settings)} ad settings:")
-                for i, setting in enumerate(settings, 1):
-                    state_icon = "✅" if setting["state"] in ["checked", "on"] else "❌"
-                    print(f"  {i}. {state_icon} {setting['label']} ({setting['state']})")
-            else:
-                print("   ⚠️  No ad settings found. Make sure you're on the ads preferences page.")
-        
+        # Handle setting changes
         if args.change_ad_setting:
             setting_name, state_str = args.change_ad_setting
             enable = state_str.lower() in ["enable", "on", "true", "1", "yes"]
@@ -3414,51 +2274,6 @@ Examples:
                 print(f"   ✅ {result['message']}")
             else:
                 print(f"   ❌ {result.get('message', 'Unknown error')}")
-        
-        # Handle birthday change operation
-        if args.change_birthday:
-            month_str, day_str, year_str = args.change_birthday
-            try:
-                month = int(month_str)
-                day = int(day_str)
-                year = int(year_str)
-                
-                # If --find was used, we should already be on the Personal Details page
-                # But if not, try to navigate there
-                if args.find and "personal" in args.find.lower() and "detail" in args.find.lower():
-                    print(f"\n🎂 Birthday change requested. Already navigating to Personal Details via --find...")
-                else:
-                    # Try to navigate to Personal Details if not already there
-                    print(f"\n🎂 Birthday change requested. Navigating to Personal Details...")
-                    personal_details_result = navigator.navigate_by_link_text("Personal details", partial_match=True, wait_time=2.0)
-                    if personal_details_result["status"] not in ["success", "warning"]:
-                        print(f"   ⚠️  Could not navigate to Personal Details. Attempting to change birthday on current page anyway...")
-                
-                print(f"\n🎂 Changing birthday to: {month}/{day}/{year}")
-                result = navigator.change_birthday(month, day, year)
-                if result["status"] == "success":
-                    print(f"   ✅ {result['message']}")
-                    if result.get("saved"):
-                        print(f"   💾 Changes saved")
-                    else:
-                        print(f"   ⚠️  Changes made but save button not found/clicked. Please verify manually.")
-                else:
-                    print(f"   ❌ {result.get('message', 'Unknown error')}")
-            except ValueError:
-                print(f"   ❌ Invalid birthday format. Please provide three integers: MONTH DAY YEAR")
-                print(f"   Example: --change-birthday 5 15 1990")
-        
-        # Handle toggle operations
-        if args.list_toggles:
-            print("\n🔘 Listing available toggles/switches...")
-            toggles = navigator.list_toggles()
-            if toggles:
-                print(f"\n✅ Found {len(toggles)} toggles/switches:")
-                for i, toggle in enumerate(toggles, 1):
-                    state_icon = "✅" if toggle["state"] in ["checked", "on"] else "❌"
-                    print(f"  {i}. {state_icon} {toggle['label']} ({toggle['state']})")
-            else:
-                print("   ⚠️  No toggles found on this page.")
         
         if args.change_toggle:
             toggle_label, state_str = args.change_toggle
@@ -3517,138 +2332,45 @@ Examples:
                 print(f"   ❌ Error: {result.get('gemini_reason', 'Unknown error')}")
                 print(f"   📊 Selection mode: {result.get('selection_mode', 'none')}")
         
-        # Handle navigation operations
-        if args.list_links:
-            print("\n🔗 Listing available navigation links/buttons...")
-            links = navigator.list_navigation_links()
-            if links:
-                print(f"\n✅ Found {len(links)} navigation options:")
-                for i, link in enumerate(links, 1):
-                    # Choose icon based on type
-                    if "link" in link["type"].lower():
-                        link_type_icon = "🔗"
-                    elif "button" in link["type"].lower():
-                        link_type_icon = "🔘"
-                    else:
-                        link_type_icon = "👆"
-                    href_info = f" → {link['href']}" if link.get("href") else ""
-                    type_info = f" ({link['type']})" if link.get("type") != "link" else ""
-                    print(f"  {i}. {link_type_icon} {link['text']}{type_info}{href_info}")
-                
-                # Interactive navigation prompt
-                print("\n" + "=" * 60)
-                print("🎯 INTERACTIVE NAVIGATION")
-                print("=" * 60)
-                print("You can navigate to any of the links above.")
-                print("Enter a number (1-{}) to navigate, or type the link text.".format(len(links)))
-                print("Press Enter without input to skip navigation.")
-                
-                try:
-                    user_input = input("\n👉 Enter your choice: ").strip()
-                    
-                    if user_input:
-                        selected_link = None
-                        
-                        # Try to parse as number
-                        try:
-                            link_num = int(user_input)
-                            if 1 <= link_num <= len(links):
-                                selected_link = links[link_num - 1]
-                            else:
-                                print(f"❌ Invalid number. Please enter a number between 1 and {len(links)}.")
-                        except ValueError:
-                            # Not a number, try to find by text (partial match)
-                            matching_links = [l for l in links if user_input.lower() in l["text"].lower()]
-                            if len(matching_links) == 1:
-                                selected_link = matching_links[0]
-                            elif len(matching_links) > 1:
-                                print(f"\n⚠️  Found {len(matching_links)} matches:")
-                                for i, link in enumerate(matching_links, 1):
-                                    print(f"  {i}. {link['text']}")
-                                try:
-                                    choice = input("👉 Select which one (enter number): ").strip()
-                                    choice_num = int(choice)
-                                    if 1 <= choice_num <= len(matching_links):
-                                        selected_link = matching_links[choice_num - 1]
-                                    else:
-                                        print("❌ Invalid selection.")
-                                except (ValueError, KeyboardInterrupt):
-                                    print("⚠️  Navigation cancelled.")
-                            else:
-                                print(f"❌ No link found matching '{user_input}'. Use --list-links to see available options.")
-                        
-                        if selected_link:
-                            print(f"\n🚀 Navigating to: {selected_link['text']}")
-                            # Use auto_list_links if the flag is set
-                            result = navigator.navigate_by_link_text(
-                                selected_link['text'], 
-                                partial_match=False, 
-                                wait_time=2.0,
-                                auto_list_links=args.auto_list_links
-                            )
-                            if result["status"] == "success":
-                                print(f"   ✅ {result['message']}")
-                                print(f"   📍 New URL: {result.get('new_url', result.get('url'))}")
-                                print(f"   📄 Title: {result.get('title', 'N/A')}")
-                            elif result["status"] == "warning":
-                                print(f"   ⚠️  {result['message']}")
-                                print(f"   📍 URL: {result.get('url')}")
-                            else:
-                                print(f"   ❌ {result.get('message', 'Unknown error')}")
-                except KeyboardInterrupt:
-                    print("\n⚠️  Navigation cancelled by user.")
-                except Exception as e:
-                    print(f"\n❌ Error during navigation: {e}")
+        if args.setting:
+            if not args.state:
+                print("❌ Error: --setting requires --state to be specified")
+                print("   Example: --setting 'My Setting' --state enable")
             else:
-                print("   ⚠️  No navigation links found.")
+                enable = args.state.lower() in ["enable", "on", "check"]
+                print(f"\n🤖 Using Gemini to toggle '{args.setting}' to {'enabled' if enable else 'disabled'}")
+                result = toggle_setting_with_gemini(
+                    page=navigator.page,
+                    setting_label=args.setting,
+                    enable=enable,
+                    description=args.description,
+                    save_after=True
+                )
+                if result["status"] == "success":
+                    print(f"   ✅ Success!")
+                    print(f"   📊 Target: {result.get('target', 'N/A')}")
+                    print(f"   📊 Previous state: {result.get('previous_state', 'unknown')}")
+                    print(f"   📊 New state: {result.get('new_state', 'unknown')}")
+                    print(f"   📊 Selection mode: {result.get('selection_mode', 'none')}")
+                    if result.get("gemini_reason"):
+                        print(f"   💡 Gemini reason: {result.get('gemini_reason')}")
+                    if result.get("save_clicked") is not None:
+                        if result.get("save_clicked"):
+                            print(f"   💾 Save button: ✅ clicked")
+                        else:
+                            print(f"   💾 Save button: ⚠️  not found")
+                else:
+                    print(f"   ❌ Error: {result.get('gemini_reason', 'Unknown error')}")
+                    print(f"   📊 Selection mode: {result.get('selection_mode', 'none')}")
         
-        if args.navigate_to:
-            print(f"\n🔗 Navigating to page: '{args.navigate_to}'")
-            result = navigator.navigate_by_link_text(args.navigate_to, partial_match=True, auto_list_links=auto_list_links_flag)
+        if args.change_birthday:
+            month, day, year = args.change_birthday
+            print(f"\n🎂 Changing birthday to: {month}/{day}/{year}")
+            result = navigator.change_birthday(int(month), int(day), int(year))
             if result["status"] == "success":
                 print(f"   ✅ {result['message']}")
-                print(f"   📍 New URL: {result.get('new_url', result.get('url'))}")
-                print(f"   📄 Title: {result.get('title', 'N/A')}")
-            elif result["status"] == "warning":
-                print(f"   ⚠️  {result['message']}")
-                print(f"   📍 URL: {result.get('url')}")
             else:
                 print(f"   ❌ {result.get('message', 'Unknown error')}")
-        
-        # Interactive settings switch after navigation (if enabled)
-        if args.interactive:
-            while True:
-                switch_choice = input("\n👉 Switch settings? (y/n): ").strip().lower()
-                if switch_choice == 'y':
-                    settings_changed = prompt_for_settings_switch(navigator)
-                    if settings_changed:
-                        # Restart browser with new settings
-                        print("\n🚀 Restarting browser with new settings...")
-                        navigator.start_browser()
-                        # Optionally navigate again
-                        nav_choice = input("👉 Navigate to a URL with new settings? (y/n): ").strip().lower()
-                        if nav_choice == 'y':
-                            url_input = input("👉 Enter URL or keyword to find: ").strip()
-                            if url_input:
-                                if url_input.startswith("http"):
-                                    target_url = url_input
-                                else:
-                                    candidates = navigator.find_urls_by_text(url_input, url_category=args.category)
-                                    if candidates:
-                                        target_url = candidates[0]
-                                        print(f"➡️  Using: {target_url}")
-                                    else:
-                                        print(f"❌ No matches found for '{url_input}'")
-                                        continue
-                                
-                                if target_url:
-                                    result = navigator.navigate_to_url(target_url, auto_login=auto_login_flag)
-                                    if result["status"] == "success":
-                                        print(f"   ✅ Successfully navigated to: {result['title']}")
-                                    else:
-                                        print(f"   ❌ Failed: {result.get('error')}")
-                else:
-                    break
         
         # Keep browser open until user chooses to exit
         print("\n" + "=" * 60)
@@ -3682,5 +2404,3 @@ Examples:
 
 if __name__ == "__main__":
     main()
-
-
