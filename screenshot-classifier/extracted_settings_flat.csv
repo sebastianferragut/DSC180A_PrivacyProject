@@ -1,0 +1,468 @@
+platform,setting,description,state,image_path
+chatgbt,Improve the model for everyone,This setting likely controls whether your data is used to train and improve the service's model for all users.,On,Profile-icon_Settings_Data-controls.png
+chatgbt,Shared links,An action to manage links that have been shared.,Action: Manage,Profile-icon_Settings_Data-controls.png
+chatgbt,Archived chats,An action to manage chats that have been archived.,Action: Manage,Profile-icon_Settings_Data-controls.png
+chatgbt,Archive all chats,An action to archive all chat history.,Action: Archive all,Profile-icon_Settings_Data-controls.png
+chatgbt,Delete all chats,An action to permanently delete all chat history.,Action: Delete all,Profile-icon_Settings_Data-controls.png
+chatgbt,Export data,An action to export a copy of your data.,Action: Export,Profile-icon_Settings_Data-controls.png
+chatgbt,Nickname,What should ChatGPT call you?,not set,Profile-icon_Settings_Personalization_1.png
+chatgbt,Occupation,A field to provide your occupation.,Interior designer,Profile-icon_Settings_Personalization_1.png
+chatgbt,More about you,"Interests, values, or preferences to keep in mind",not set,Profile-icon_Settings_Personalization_1.png
+chatgbt,Reference saved memories,Let ChatGPT save and use memories when responding.,enabled,Profile-icon_Settings_Personalization_1.png
+chatgbt,Reference chat history,Let ChatGPT reference recent conversations when responding.,enabled,Profile-icon_Settings_Personalization_1.png
+chatgbt,Web search,Let ChatGPT automatically search the web for answers.,enabled,Profile-icon_Settings_Personalization_Advanced.png
+chatgbt,Code,Let ChatGPT execute code using Code Interpreter.,enabled,Profile-icon_Settings_Personalization_Advanced.png
+chatgbt,Canvas,Collaborate with ChatGPT on text and code.,enabled,Profile-icon_Settings_Personalization_Advanced.png
+chatgbt,ChatGPT Voice,Enable voice mode in ChatGPT.,enabled,Profile-icon_Settings_Personalization_Advanced.png
+chatgbt,Separate mode,Enable ChatGPT Voice in full screen mode without real time transcripts and visuals.,disabled,Profile-icon_Settings_Personalization_Advanced.png
+chatgbt,Advanced voice,Have more natural conversations in voice mode.,enabled,Profile-icon_Settings_Personalization_Advanced.png
+chatgbt,Connector search,Let ChatGPT automatically search connected sources for answers.,disabled,Profile-icon_Settings_Personalization_Advanced.png
+chatgbt,Authenticator App,Use one-time codes from an authenticator app.,disabled,Profile-icon_Settings_Security.png
+chatgbt,Log out of this device,An action to log out of the current device.,action button,Profile-icon_Settings_Security.png
+chatgbt,Log out of all devices,"Log out of all active sessions across all devices, including your current session. It may take up to 30 minutes for other devices to be logged out.",action button,Profile-icon_Settings_Security.png
+facebook,Change password,"Manage your passwords, login preferences and recovery methods. This option allows you to change your password.",navigation,Password-and-security.png
+facebook,Two-factor authentication,"Manage your passwords, login preferences and recovery methods. This option allows you to set up two-factor authentication.",navigation,Password-and-security.png
+facebook,Saved login,"Manage your passwords, login preferences and recovery methods. This option allows you to manage saved login information.",navigation,Password-and-security.png
+facebook,Passkey,"Manage your passwords, login preferences and recovery methods. This option allows you to manage passkeys.",navigation,Password-and-security.png
+facebook,Where you're logged in,"Review security issues by running checks across apps, devices and emails sent. This option shows where your account is currently logged in.",navigation,Password-and-security.png
+facebook,Login alerts,"Review security issues by running checks across apps, devices and emails sent. This option allows you to manage login alerts.",navigation,Password-and-security.png
+facebook,Recent emails,"Review security issues by running checks across apps, devices and emails sent. This option shows recent security-related emails from Meta.",navigation,Password-and-security.png
+facebook,Security Checkup,"Review security issues by running checks across apps, devices and emails sent. This option initiates a security checkup for your account.",navigation,Password-and-security.png
+facebook,Contact info,Manage your contact information. Meta uses this information to verify your identity and to keep our community safe.,zoomaitester10@gmail.com,Personal-details.png
+facebook,Birthday,Manage your date of birth. Meta uses this information to verify your identity and to keep our community safe.,"January 10, 2000",Personal-details.png
+facebook,Identity confirmation,Confirm your identity to help keep your account secure.,navigation link,Personal-details.png
+facebook,Account ownership and control,"Manage your data, modify your legacy contact, deactivate or delete your accounts and profiles.",navigation link,Personal-details.png
+facebook,Memorialization,Decide what happens to your main Facebook profile after you pass away.,navigational,Personal-details_Account-ownership-and-control.png
+facebook,Deactivation or deletion,Temporarily deactivate or permanently delete your accounts and profiles,navigational,Personal-details_Account-ownership-and-control.png
+facebook,Contact info,Manages contact information. Meta uses this information to verify your identity and to keep our community safe. You decide what personal details you make visible to others.,zoomatester10@gmail.com,Personal-details_Account-ownership-and-control.png
+facebook,Birthday,Manages birthday information. Meta uses this information to verify your identity and to keep our community safe. You decide what personal details you make visible to others.,navigational,Personal-details_Account-ownership-and-control.png
+facebook,Identity confirmation,Confirm your identity on Meta platforms.,navigational,Personal-details_Account-ownership-and-control.png
+facebook,Account ownership and control,"Manage your data, modify your legacy contact, delete your accounts and profiles.",navigational,Personal-details_Account-ownership-and-control.png
+facebook,Contact info,Manage the contact information associated with your Meta accounts.,zoomatester10@gmail.com,personal_details_20251112T172305Z.png
+facebook,Birthday,Manage the birthday information associated with your Meta accounts.,Not visible,personal_details_20251112T172305Z.png
+facebook,Identity confirmation,Confirm your identity on Facebook.,Not specified,personal_details_20251112T172305Z.png
+facebook,Account ownership and control,"Manage your data, modify your legacy contact, delete your accounts and profiles.",Selected,personal_details_20251112T172305Z.png
+facebook,Memorialization,Decide what happens to your main Facebook profile after you pass away.,Not specified,personal_details_20251112T172305Z.png
+facebook,Deactivation or deletion,Temporarily deactivate or permanently delete your accounts and profiles.,Not specified,personal_details_20251112T172305Z.png
+facebook,Export your information,"Allows you to download or transfer a copy of your information. Part of viewing, exporting your information and activity on Meta's apps.",navigation_link,Your-information-and-permissions.png
+facebook,Access your information,Allows you to view your information and activity on Meta's apps.,navigation_link,Your-information-and-permissions.png
+facebook,Search history,Allows you to view and manage your search history on Meta's apps.,navigation_link,Your-information-and-permissions.png
+facebook,Your activity off Meta technologies,Control what information Meta technologies can use to influence your experiences.,navigation_link,Your-information-and-permissions.png
+facebook,Specific ad partners,"Control what information Meta technologies can use to influence your experiences, specifically related to ad partners.",navigation_link,Your-information-and-permissions.png
+gmail,Web & App Activity,"Choose whether to save the things you do and places you go to get more relevant results, personalized maps, recommendations, and more.",On,Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_1.png
+gmail,Timeline,"Choose whether to save the things you do and places you go to get more relevant results, personalized maps, recommendations, and more.",Paused,Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_1.png
+gmail,YouTube History,"Choose whether to save the things you do and places you go to get more relevant results, personalized maps, recommendations, and more.",On,Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_1.png
+gmail,My Ad Center,Personalized ads on Google,On,Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_2.png
+gmail,Partner ads settings,Options for ads on sites that partner with Google,Not applicable,Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_2.png
+gmail,Search personalization,Choose whether Search can show you personalized experiences based on data saved in your Google account,On,Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_2.png
+gmail,Manage Google Fit privacy,Manage Fit data saved in your Google Account and see privacy settings for connected devices and services,Not applicable,Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_2.png
+gmail,Profile,Your info and who can see it,Not applicable,Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_2.png
+gmail,Location Sharing,Controls how your location information is shared with others through Google services.,Not sharing with anyone,Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_2.png
+gmail,Content saved from Google services,A summary of your services and data,navigates to settings page,Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_3.png
+gmail,Third-party apps & services,Keep track of your connections with third-party apps and services,navigates to settings page,Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_3.png
+gmail,Manage email preferences,"See and unsubscribe from emails you get from Google services, such as newsletters, product tips, and more",navigates to settings page,Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_3.png
+gmail,Voice Match,Lets Google recognize your voice across Google products,Off,Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_3.png
+gmail,Download your data,Make a copy of your data to back it up,navigates to settings page,Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_3.png
+gmail,Delete a Google service,Remove a service you no longer use,navigates to settings page,Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_3.png
+gmail,Make a plan for your digital legacy,"Plan what happens to your data. Other options to manage your data, like choosing what happens to it when your account becomes inactive.",not applicable,Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_4.png
+gmail,Delete your Google Account,Delete your entire account and data.,not applicable,Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_4.png
+gmail,Search Google Account,A link to search for settings within your Google Account.,not applicable,Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_4.png
+gmail,See help options,A link to access help options for your Google Account.,not applicable,Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_4.png
+gmail,Send feedback,A link to send feedback about your Google Account settings.,not applicable,Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_4.png
+gmail,Contact info saved from interactions,Saves contact info for people you interact with across Google services.,On,Gmail-icon_Manage-your-Google-Account_People-&-sharing.png
+gmail,Contact info from your devices,Saves contact info from your signed-in devices to your Google Account.,Off,Gmail-icon_Manage-your-Google-Account_People-&-sharing.png
+gmail,Blocked,Manage users you have blocked.,No blocked users,Gmail-icon_Manage-your-Google-Account_People-&-sharing.png
+gmail,Location sharing,Control if you share your real-time location with anyone on Google.,You aren't sharing your real-time location with anyone on Google,Gmail-icon_Manage-your-Google-Account_People-&-sharing.png
+gmail,About me,What personal info you make visible to others across Google services.,Not specified,Gmail-icon_Manage-your-Google-Account_People-&-sharing.png
+gmail,Business personalization,You can add your business and products to Google and get recommendations that will help you connect with customers.,Off,Gmail-icon_Manage-your-Google-Account_People-&-sharing.png
+gmail,Shared endorsements in ads,"You can choose to show your name, profile photo, and activity in shared endorsements in ads to help others find things you're interested in.",Off,Gmail-icon_Manage-your-Google-Account_People-&-sharing.png
+instagram,Private account,"When your account is public, your profile and posts can be seen by anyone, on or off Instagram, even if they don't have an Instagram account. When your account is private, only the followers you approve can see what you share, including your photos or videos on hashtag and location pages, and your followers and following lists.",disabled,Settings_Account-Privacy.png
+instagram,Save story to archive,Automatically save photos and videos to your archive so you don't have to save them to your phone. Only you can see your archive.,disabled,Settings_Archiving-and-downloading.png
+instagram,Allow comments from,"Controls which group of people can comment on your posts. Options include Everyone, People you follow, Your followers, People you follow and your followers, or Off.",Everyone,Settings_Comments.png
+instagram,Allow GIF comments,People will be able to comment GIFs on your posts and reels.,enabled,Settings_Comments.png
+instagram,Personal details,"Manage your connected experiences and account settings across Meta technologies, specifically personal details.",navigation link,Settings_Content-Prefences.png
+instagram,Password and security,"Manage your connected experiences and account settings across Meta technologies, specifically password and security.",navigation link,Settings_Content-Prefences.png
+instagram,Ad preferences,"Manage your connected experiences and account settings across Meta technologies, specifically ad preferences.",navigation link,Settings_Content-Prefences.png
+instagram,Account privacy,Controls who can see your content.,navigation link,Settings_Content-Prefences.png
+instagram,Close Friends,Manage your list of close friends.,navigation link,Settings_Content-Prefences.png
+instagram,Blocked,Manage accounts you have blocked.,navigation link,Settings_Content-Prefences.png
+instagram,Story and location,Controls settings for your story and location.,navigation link,Settings_Content-Prefences.png
+instagram,Messages and story replies,Controls how others can interact with you via messages and story replies.,navigation link,Settings_Content-Prefences.png
+instagram,Tags and mentions,Controls how others can interact with you via tags and mentions.,navigation link,Settings_Content-Prefences.png
+instagram,Comments,Controls how others can interact with you via comments.,navigation link,Settings_Content-Prefences.png
+instagram,Sensitive content,Controls the amount of sensitive content you see from accounts you don't follow.,navigation link,Settings_Content-Prefences.png
+instagram,Hide comments,"Comments that are potentially offensive, misleading or spam will be moved to a separate section. Anyone can see these comments, and you can unhide comments on your own posts at anytime.",enabled,Settings_Hidden-Words.png
+instagram,Advanced comment filtering,Even more comments that meet our criteria will automatically be hidden.,disabled,Settings_Hidden-Words.png
+instagram,Hide message requests,"Message requests that may be offensive, spam or scams will be moved to the Hidden requests folder. We'll also filter notifications for these messages. This feature is not currently supported on web or Meta Quest.",disabled,Settings_Hidden-Words.png
+instagram,Manage custom words and phrases,"Navigate to a page to manage a custom list of words, phrases, or emojis to hide.",navigational,Settings_Hidden-Words.png
+instagram,Hide comments,"Comments that contain words, phrases or emojis on your custom list and similar misspellings will be filtered out so they are only visible to the authors.",disabled,Settings_Hidden-Words.png
+instagram,Hide message requests,Message requests that contain words from your list will be hidden. This feature is not currently supported on web or Meta Quest.,disabled,Settings_Hidden-Words.png
+instagram,Hide story and live from,Allows you to select people to hide your story and live videos from.,navigates to another screen,Settings_Hide-story-and-live.png
+instagram,Account privacy,"Controls who can see your content, such as making your account private.",navigates to another screen,Settings_Hide-story-and-live.png
+instagram,Close Friends,Manage your list of close friends for sharing stories.,navigates to another screen,Settings_Hide-story-and-live.png
+instagram,Blocked,View and manage accounts you have blocked.,navigates to another screen,Settings_Hide-story-and-live.png
+instagram,Story and location,Controls settings related to your stories and location sharing.,selected,Settings_Hide-story-and-live.png
+instagram,Messages and story replies,Controls who can send you messages and reply to your stories.,navigates to another screen,Settings_Hide-story-and-live.png
+instagram,Tags and mentions,Controls who can tag you in photos or mention you in comments and captions.,navigates to another screen,Settings_Hide-story-and-live.png
+instagram,Comments,Controls who can comment on your posts and other comment-related settings.,navigates to another screen,Settings_Hide-story-and-live.png
+instagram,Message controls,Navigates to a page to control who can send you message requests.,navigates to another page,Settings_Messages-and-story-replies.png
+instagram,Story replies,Navigates to a page to control who can reply to your stories.,navigates to another page,Settings_Messages-and-story-replies.png
+instagram,Show activity status,Navigates to a page to control whether others can see when you're online.,navigates to another page,Settings_Messages-and-story-replies.png
+instagram,Account privacy,"Navigates to a page to control who can see your content (e.g., set account to private).",navigates to another page,Settings_Messages-and-story-replies.png
+instagram,Close Friends,Navigates to a page to manage your list of close friends for sharing content.,navigates to another page,Settings_Messages-and-story-replies.png
+instagram,Blocked,Navigates to a page to manage accounts you have blocked.,navigates to another page,Settings_Messages-and-story-replies.png
+instagram,Story and location,Navigates to a page to manage settings for stories and location.,navigates to another page,Settings_Messages-and-story-replies.png
+instagram,Tags and mentions,Navigates to a page to control who can tag or mention you.,navigates to another page,Settings_Messages-and-story-replies.png
+instagram,Comments,Navigates to a page to control who can comment on your posts.,navigates to another page,Settings_Messages-and-story-replies.png
+instagram,Personal details,Manage personal details within Meta Accounts Center.,not applicable,Settings_Muted-accounts.png
+instagram,Password and security,Manage password and security settings within Meta Accounts Center.,not applicable,Settings_Muted-accounts.png
+instagram,Ad preferences,Manage ad preferences within Meta Accounts Center.,not applicable,Settings_Muted-accounts.png
+instagram,See more in Accounts Center,Navigate to the full Meta Accounts Center to manage connected experiences and account settings across Meta technologies.,not applicable,Settings_Muted-accounts.png
+instagram,Edit profile,A setting under 'How you use Instagram' to edit your profile.,not applicable,Settings_Muted-accounts.png
+instagram,Notifications,A setting under 'How you use Instagram' to manage notifications.,not applicable,Settings_Muted-accounts.png
+instagram,Account privacy,A setting under 'Who can see your content' to manage account privacy.,not applicable,Settings_Muted-accounts.png
+instagram,Close Friends,A setting under 'Who can see your content' to manage your Close Friends list.,not applicable,Settings_Muted-accounts.png
+instagram,Blocked,A setting under 'Who can see your content' to manage blocked accounts.,not applicable,Settings_Muted-accounts.png
+instagram,Story and location,A setting under 'Who can see your content' to manage story and location sharing.,not applicable,Settings_Muted-accounts.png
+instagram,Messages and story replies,A setting under 'How others can interact with you' to manage who can send you messages and reply to your stories.,not applicable,Settings_Muted-accounts.png
+instagram,Tags and mentions,A setting under 'How others can interact with you' to manage who can tag and mention you.,not applicable,Settings_Muted-accounts.png
+instagram,Comments,A setting under 'How others can interact with you' to manage who can comment on your posts.,not applicable,Settings_Muted-accounts.png
+instagram,Muted accounts,View and manage accounts you have muted.,You haven't muted anyone.,Settings_Muted-accounts.png
+instagram,Language,Select the display language for the application.,English,Settings_Muted-accounts.png
+instagram,Accounts Center,"Manage your connected experiences and account settings across Meta technologies. Includes Personal details, Password and security, and Ad preferences.",navigation link,Settings_Restricted-accounts.png
+instagram,Account privacy,A link to settings that control who can see your content.,navigation link,Settings_Restricted-accounts.png
+instagram,Close Friends,A link to manage your Close Friends list.,navigation link,Settings_Restricted-accounts.png
+instagram,Blocked,A link to manage blocked accounts.,navigation link,Settings_Restricted-accounts.png
+instagram,Story and location,A link to manage story and location settings.,navigation link,Settings_Restricted-accounts.png
+instagram,Messages and story replies,A link to settings that control how others can interact with you via messages and story replies.,navigation link,Settings_Restricted-accounts.png
+instagram,Tags and mentions,A link to settings that control who can tag and mention you.,navigation link,Settings_Restricted-accounts.png
+instagram,Comments,A link to settings that control comments on your posts.,navigation link,Settings_Restricted-accounts.png
+instagram,Restricted accounts,Protect yourself from unwanted interactions without having to block or unfollow people you know. You can restrict them anytime from their profiles.,You haven't restricted anyone.,Settings_Restricted-accounts.png
+instagram,Story shares,"When this is on, people can send your stories in messages.",enabled,Settings_Sharing-and-reuse.png
+instagram,Posts and reels to stories,Allow people to share your posts and reels to stories.,enabled,Settings_Sharing-and-reuse.png
+instagram,Reposts on posts and reels,Allow people to repost your posts and reels.,enabled,Settings_Sharing-and-reuse.png
+instagram,Website embeds,"When this is on, your public posts or profile can be shown outside of Instagram, including articles and blogs.",On,Settings_Sharing-and-reuse.png
+instagram,Who can tag you,"Choose who can tag you in their photos and videos. When people try to tag you, they'll see if you don't allow tags from everyone. You currently have Limited interactions turned on, which means some people can't tag or mention you.",Allow tags from everyone,Settings_Tags-and-mentions.png
+instagram,Manually approve tags,A navigation link to a page for manually approving tags.,navigation link,Settings_Tags-and-mentions.png
+instagram,Who can @mention you,"Choose who can @mention you to link your account in their stories, notes, comments, live videos, bio, and captions. When people try to @mention you, they'll see if you don't allow @mentions.",Allow mentions from everyone,Settings_Tags-and-mentions.png
+instagram,Accounts Center,"Manage your connected experiences and account settings across Meta technologies. Includes Personal details, Password and security, and Ad preferences.",navigation link,Settings_Website-permissions.png
+instagram,Edit profile,Settings under the 'How you use Instagram' category to edit your profile.,navigation link,Settings_Website-permissions.png
+instagram,Notifications,Settings under the 'How you use Instagram' category to manage notifications.,navigation link,Settings_Website-permissions.png
+instagram,Account privacy,Settings under the 'Who can see your content' category to manage account privacy.,navigation link,Settings_Website-permissions.png
+instagram,Close Friends,Settings under the 'Who can see your content' category to manage your Close Friends list.,navigation link,Settings_Website-permissions.png
+instagram,Blocked,Settings under the 'Who can see your content' category to manage blocked accounts.,navigation link,Settings_Website-permissions.png
+instagram,Story and location,Settings under the 'Who can see your content' category to manage story and location settings.,navigation link,Settings_Website-permissions.png
+instagram,Messages and story replies,Settings under the 'How others can interact with you' category to manage messages and story replies.,navigation link,Settings_Website-permissions.png
+instagram,Tags and mentions,Settings under the 'How others can interact with you' category to manage tags and mentions.,navigation link,Settings_Website-permissions.png
+instagram,Comments,Settings under the 'How others can interact with you' category to manage comments.,navigation link,Settings_Website-permissions.png
+instagram,Apps and websites,Settings under 'Website permissions' to manage connected apps and websites.,navigation link,Settings_Website-permissions.png
+linkedin,Connections,Controls the use of your connections data for advertising.,On,Me-icon_Settings-&-Privacy_Advertising-data.png
+linkedin,Companies you follow,Controls the use of data about companies you follow for advertising.,On,Me-icon_Settings-&-Privacy_Advertising-data.png
+linkedin,Groups,Controls the use of your group membership data for advertising.,On,Me-icon_Settings-&-Privacy_Advertising-data.png
+linkedin,Education and skills,Controls the use of your education and skills data for advertising.,Schools & 4 more,Me-icon_Settings-&-Privacy_Advertising-data.png
+linkedin,Job information,Controls the use of your job information for advertising.,Current job & 1 more,Me-icon_Settings-&-Privacy_Advertising-data.png
+linkedin,Employer,Controls the use of your employer data for advertising.,Current company & 1 more,Me-icon_Settings-&-Privacy_Advertising-data.png
+linkedin,Customized display format,Controls the use of a customized display format for advertising.,On,Me-icon_Settings-&-Privacy_Advertising-data.png
+linkedin,Profile location,Controls the use of your profile location for advertising.,On,Me-icon_Settings-&-Privacy_Advertising-data.png
+linkedin,Inferred city location,Controls the use of your inferred city location for advertising.,On,Me-icon_Settings-&-Privacy_Advertising-data.png
+linkedin,Interests and traits,Controls the use of your inferred interests and traits for advertising.,Not specified,Me-icon_Settings-&-Privacy_Advertising-data.png
+linkedin,Age range,Controls the use of your age range for advertising.,On,Me-icon_Settings-&-Privacy_Advertising-data.png
+linkedin,Gender,Controls the use of your gender for advertising.,On,Me-icon_Settings-&-Privacy_Advertising-data.png
+linkedin,Ads off LinkedIn,Controls showing you ads on third-party sites and apps.,On,Me-icon_Settings-&-Privacy_Advertising-data.png
+linkedin,Data from others for ads,Controls using data from partners to personalize ads.,On,Me-icon_Settings-&-Privacy_Advertising-data.png
+linkedin,Measure ad success,Controls using your data to measure ad performance.,On,Me-icon_Settings-&-Privacy_Advertising-data.png
+linkedin,Share data with affiliates and partners,Controls sharing your data with affiliates and partners.,On,Me-icon_Settings-&-Privacy_Advertising-data.png
+linkedin,Manage your data and activity,Navigates to a page to manage your data and activity.,Not applicable (navigation link),Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,Get a copy of your data,Navigates to a page to download a copy of your data.,Not applicable (navigation link),Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,Search history,Navigates to a page to manage your search history.,Not applicable (navigation link),Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,Personal demographic information,Navigates to a page to manage your personal demographic information.,Not applicable (navigation link),Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,"Social, economic, and workplace research","Controls participation in social, economic, and workplace research.",On,Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,Data for Generative AI Improvement,Controls the use of your data for Generative AI improvement.,On,Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,Invitations to connect,Navigates to a page to manage who can send you connection invitations.,Not applicable (navigation link),Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,Invitations from your network,Navigates to a page to manage invitations from your network.,Not applicable (navigation link),Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,Messages,Navigates to a page to manage message settings.,Not applicable (navigation link),Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,Research invites,Controls whether you receive research invites.,On,Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,LinkedIn promotions,Navigates to a page to manage LinkedIn promotions.,Not applicable (navigation link),Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,Focused Inbox,Controls the Focused Inbox feature in messaging.,On,Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,Read receipts and typing indicators,Navigates to a page to manage read receipts and typing indicators.,Not applicable (navigation link),Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,Messaging suggestions,Controls whether you receive messaging suggestions.,On,Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,Message nudges,Controls whether you receive message nudges.,On,Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,Automated detection of harmful content,Controls the automated detection of harmful content.,On,Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,Job application settings,Navigates to a page to manage job application settings.,Not applicable (navigation link),Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,Share your profile when you click Apply for a job,Controls whether your profile is shared when you apply for a job.,Off,Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,Signal your interest to recruiters at companies you've created job alerts for,Controls signaling your interest to recruiters at companies where you have job alerts.,Off,Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,Stored job applicant accounts,Navigates to a page to manage stored job applicant accounts.,Not applicable (navigation link),Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,Permitted services,Navigates to a page to manage services permitted to access your account.,Not applicable (navigation link),Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,Microsoft Word,Controls the integration with Microsoft Word.,On,Me-icon_Settings-&-Privacy_Data-privacy.png
+linkedin,Searching for a job,Navigates to a page to manage notifications related to job searching.,navigation link,Me-icon_Settings-&-Privacy_Notifications.png
+linkedin,Hiring someone,Navigates to a page to manage notifications related to hiring.,navigation link,Me-icon_Settings-&-Privacy_Notifications.png
+linkedin,Connecting with others,Navigates to a page to manage notifications related to connections and networking.,navigation link,Me-icon_Settings-&-Privacy_Notifications.png
+linkedin,Network catch-up updates,Navigates to a page to manage notifications about updates from your network.,navigation link,Me-icon_Settings-&-Privacy_Notifications.png
+linkedin,Posting and commenting,Navigates to a page to manage notifications about your posts and comments.,navigation link,Me-icon_Settings-&-Privacy_Notifications.png
+linkedin,Messaging,Navigates to a page to manage notifications for messages.,navigation link,Me-icon_Settings-&-Privacy_Notifications.png
+linkedin,Groups,Navigates to a page to manage notifications from your groups.,navigation link,Me-icon_Settings-&-Privacy_Notifications.png
+linkedin,Pages,Navigates to a page to manage notifications from pages you follow.,navigation link,Me-icon_Settings-&-Privacy_Notifications.png
+linkedin,Attending events,Navigates to a page to manage notifications for events.,navigation link,Me-icon_Settings-&-Privacy_Notifications.png
+linkedin,News and reports,Navigates to a page to manage notifications for news and reports.,navigation link,Me-icon_Settings-&-Privacy_Notifications.png
+linkedin,Updating your profile,Navigates to a page to manage notifications related to your profile.,navigation link,Me-icon_Settings-&-Privacy_Notifications.png
+linkedin,Verifications,Navigates to a page to manage notifications about verifications.,navigation link,Me-icon_Settings-&-Privacy_Notifications.png
+linkedin,Games,Navigates to a page to manage notifications related to games.,navigation link,Me-icon_Settings-&-Privacy_Notifications.png
+linkedin,Email addresses,Manage the email addresses associated with your account.,zoomaltester10@gmail.com,Me-icon_Settings-&-Privacy_Sign-in-&-security.png
+linkedin,Phone numbers,Manage the phone numbers associated with your account.,navigation link,Me-icon_Settings-&-Privacy_Sign-in-&-security.png
+linkedin,Passkeys,Manage passkeys for signing in to your account.,navigation link,Me-icon_Settings-&-Privacy_Sign-in-&-security.png
+linkedin,Where you're signed in,View and manage your active sessions.,navigation link,Me-icon_Settings-&-Privacy_Sign-in-&-security.png
+linkedin,Devices that remember your password,Manage devices that have saved your password for easier login.,navigation link,Me-icon_Settings-&-Privacy_Sign-in-&-security.png
+linkedin,Two-factor authentication,Add an extra layer of security to your account.,Off,Me-icon_Settings-&-Privacy_Sign-in-&-security.png
+linkedin,Profile viewing options,Controls how you appear to others when you view their profile.,Your name and headline,Me-icon_Settings-&-Privacy_Visibility.png
+linkedin,Page visit visibility,"Controls the visibility of your visits to company, school, or other pages on LinkedIn.",Off,Me-icon_Settings-&-Privacy_Visibility.png
+linkedin,Edit your public profile,Manage your public profile's visibility to people not signed in to LinkedIn.,not specified,Me-icon_Settings-&-Privacy_Visibility.png
+linkedin,Who can see or download your email address,Controls who is allowed to see or download your email address.,not specified,Me-icon_Settings-&-Privacy_Visibility.png
+linkedin,Who can see your connections,Controls who can see your list of connections.,On,Me-icon_Settings-&-Privacy_Visibility.png
+linkedin,Who can see members you follow,Controls who can see the list of members you follow.,Anyone on LinkedIn,Me-icon_Settings-&-Privacy_Visibility.png
+linkedin,Who can see your last name,Controls who can see your last name.,not specified,Me-icon_Settings-&-Privacy_Visibility.png
+linkedin,Representing your organizations and interests,Controls if you can be featured on the pages of organizations and interests you follow or are a part of.,On,Me-icon_Settings-&-Privacy_Visibility.png
+linkedin,Page owners exporting your data,Controls if page owners can export your data when you follow their page.,Off,Me-icon_Settings-&-Privacy_Visibility.png
+linkedin,Profile discovery and visibility off LinkedIn,Controls if your profile is visible to search engines outside of LinkedIn.,not specified,Me-icon_Settings-&-Privacy_Visibility.png
+linkedin,Profile discovery using email address,Controls who can find your profile using your email address.,Anyone,Me-icon_Settings-&-Privacy_Visibility.png
+linkedin,Profile discovery using phone number,Controls who can find your profile using your phone number.,Everyone,Me-icon_Settings-&-Privacy_Visibility.png
+linkedin,Blocked members,Manage the list of members you have blocked.,not specified,Me-icon_Settings-&-Privacy_Visibility.png
+linkedin,Manage active status,Controls who can see when you are active on LinkedIn.,No one,Me-icon_Settings-&-Privacy_Visibility.png
+linkedin,"Share job changes, education changes, and work anniversaries from profile","Controls whether your network is notified about your job changes, education changes, and work anniversaries.",On,Me-icon_Settings-&-Privacy_Visibility.png
+linkedin,Notify connections when you're in the news,Controls whether your connections are notified when you are mentioned in the news.,On,Me-icon_Settings-&-Privacy_Visibility.png
+linkedin,Mentioned by others,Controls whether other members can mention you.,On,Me-icon_Settings-&-Privacy_Visibility.png
+linkedin,Followers,Manage settings related to your followers.,not specified,Me-icon_Settings-&-Privacy_Visibility.png
+reddit,Email address,The email address associated with the account.,zoomaltester10@gmail.com,Settings_Account.png
+reddit,Birthday,The user's date of birth.,"January 1, 2000",Settings_Account.png
+reddit,Gender,The user's gender identity.,I prefer not to say,Settings_Account.png
+reddit,Location customization,Controls how Reddit uses location to customize the user experience.,Use approximate location (based on IP),Settings_Account.png
+reddit,Google,Connect to log in to Reddit with your Google account.,Connected,Settings_Account.png
+reddit,Apple,Connect to log in to Reddit with your Apple account.,Not Connected,Settings_Account.png
+reddit,Two-factor authentication,Enables two-factor authentication for added account security.,disabled,Settings_Account.png
+reddit,Delete account,Option to permanently delete the account.,not applicable,Settings_Account.png
+reddit,Display language,Controls the language of the Reddit user interface.,English (US),Settings_Preferences.png
+reddit,Content languages,Controls the languages for content you see on Reddit.,not specified,Settings_Preferences.png
+reddit,Show mature content (I'm over 18),See Not Safe for Work mature and adult content in your feeds and search results,disabled,Settings_Preferences.png
+reddit,Blur mature (18+) images and media,Controls whether mature images and media are blurred by default.,enabled,Settings_Preferences.png
+reddit,Show recommendations in home feed,Controls whether recommendations are shown in the home feed.,enabled,Settings_Preferences.png
+reddit,Muted communities,Manage communities that you have muted.,not specified,Settings_Preferences.png
+reddit,Autoplay media,Controls whether media (like videos and GIFs) plays automatically.,enabled,Settings_Preferences.png
+reddit,Reduce Motion,Reduces animations and motion effects on the site.,disabled,Settings_Preferences.png
+reddit,Sync with computer's motion settings,Synchronizes Reddit's motion settings with the operating system's settings.,enabled,Settings_Preferences.png
+reddit,Use community themes,Controls whether custom subreddit themes are displayed.,enabled,Settings_Preferences.png
+reddit,Open posts in new tab,Controls whether clicking on a post opens it in a new browser tab.,disabled,Settings_Preferences.png
+reddit,Default feed view,Sets the default layout for viewing feeds.,Card,Settings_Preferences.png
+reddit,Default to markdown editor,Sets the default text editor to Markdown.,disabled,Settings_Preferences.png
+reddit,Keyboard shortcuts,View or manage keyboard shortcuts.,not specified,Settings_Preferences.png
+reddit,Default to old Reddit,Sets the old Reddit interface as the default experience.,disabled,Settings_Preferences.png
+reddit,Limit ads in selected categories,Allows limiting ads from sensitive advertising categories.,not specified,Settings_Preferences.png
+reddit,Allow people to follow you,Let people follow you to see your profile posts in their home feed,enabled,Settings_Privacy.png
+reddit,Who can send you chat requests,Controls which users are able to send you chat requests.,Everyone,Settings_Privacy.png
+reddit,Blocked accounts,Manage the accounts you have blocked.,navigation link,Settings_Privacy.png
+reddit,List your profile on old.reddit.com/users,List your profile on old.reddit.com/users and allow posts to your profile to appear in r/all,enabled,Settings_Privacy.png
+reddit,Show up in search results,Allow search engines like Google to link to your profile in their search results,enabled,Settings_Privacy.png
+reddit,Personalize ads on Reddit based on information and activity from our partners,Allow us to use information from our partners to show you better ads on Reddit,enabled,Settings_Privacy.png
+reddit,Third-party app authorizations,Manage third-party applications that have access to your account.,navigation link,Settings_Privacy.png
+reddit,Clear history,Delete your post views history,action button (Clear),Settings_Privacy.png
+reddit,Mark as mature (18+),Label your profile as Not Safe for Work (NSFW) and ensure it's inaccessible to people under 18,disabled,Settings_Profile.png
+reddit,NSFW,Show all NSFW posts and comments,enabled,Settings_Profile.png
+reddit,Followers,Show your follower count,disabled,Settings_Profile.png
+spotify,Edit personal info,"Navigates to a page to edit personal information such as email, gender, date of birth, and country.",navigational link,Profile-Picture_Settings-and-privacy_slice_0.png
+spotify,Address,Navigates to a page to manage your physical address.,navigational link,Profile-Picture_Settings-and-privacy_slice_0.png
+spotify,Order history,Navigates to a page to view your past orders and transactions.,navigational link,Profile-Picture_Settings-and-privacy_slice_0.png
+spotify,Saved payment cards,Navigates to a page to manage your saved payment methods.,navigational link,Profile-Picture_Settings-and-privacy_slice_0.png
+spotify,Manage apps,Navigates to a page to manage third-party applications that have access to your Spotify account.,navigational link,Profile-Picture_Settings-and-privacy_slice_0.png
+spotify,Notification settings,Navigates to a page to control what notifications you receive from Spotify.,navigational link,Profile-Picture_Settings-and-privacy_slice_0.png
+spotify,Account privacy,Navigates to a page with specific privacy settings for your account.,navigational link,Profile-Picture_Settings-and-privacy_slice_0.png
+spotify,Edit login methods,Navigates to a page to manage how you log in to your account.,navigational link,Profile-Picture_Settings-and-privacy_slice_0.png
+spotify,Set device password,Navigates to a page to set a password for specific devices.,navigational link,Profile-Picture_Settings-and-privacy_slice_0.png
+spotify,Close account,Navigates to a page to permanently close your account and delete your data.,navigational link,Profile-Picture_Settings-and-privacy_slice_0.png
+spotify,Sign out everywhere,Navigates to a page to sign out of your Spotify account on all devices.,navigational link,Profile-Picture_Settings-and-privacy_slice_0.png
+spotify,Ad preferences,Navigates to a page to manage your advertising preferences.,navigational link,Profile-Picture_Settings-and-privacy_slice_0.png
+spotify,Your Privacy Choices,"A link to manage privacy choices, likely related to opting out of the sale or sharing of personal information as indicated by the CCPA icon.",Link to settings page,Profile-Picture_Settings-and-privacy_slice_2200.png
+twitterX,"Audience, media and tagging",Manage what information you allow other people on X to see.,navigation,Profile-Picture_Settings_Privacy-and-safety.png
+twitterX,Your posts,Manage the information associated with your posts.,navigation,Profile-Picture_Settings_Privacy-and-safety.png
+twitterX,Content you see,Decide what you see on X based on your preferences like Topics and interests.,navigation,Profile-Picture_Settings_Privacy-and-safety.png
+twitterX,Mute and block,"Manage the accounts, words, and notifications that you've muted or blocked.",navigation,Profile-Picture_Settings_Privacy-and-safety.png
+twitterX,Direct Messages,Manage who can message you directly.,navigation,Profile-Picture_Settings_Privacy-and-safety.png
+twitterX,Spaces,Manage who can see your Spaces listening activity.,navigation,Profile-Picture_Settings_Privacy-and-safety.png
+twitterX,Discoverability and contacts,Control your discoverability settings and manage contacts you've imported.,navigation,Profile-Picture_Settings_Privacy-and-safety.png
+twitterX,About your account,Manage the location associated with your account.,navigation,Profile-Picture_Settings_Privacy-and-safety.png
+twitterX,Ads preferences,Manage your ads experience on X.,navigation,Profile-Picture_Settings_Privacy-and-safety.png
+twitterX,Inferred identity,"Allow X to personalize your experience with your inferred activity, e.g. activity on devices you haven't used to log in to X.",navigation,Profile-Picture_Settings_Privacy-and-safety.png
+twitterX,Data sharing with business partners,Allow sharing of additional information with X's business partners.,navigation,Profile-Picture_Settings_Privacy-and-safety.png
+twitterX,Location information,Manage the location information X uses to personalize your experience.,navigation,Profile-Picture_Settings_Privacy-and-safety.png
+twitterX,Grok & Third-party Collaborators,"Allow your public data as well as your interactions, inputs, and results with Grok and xAI to be used for training and fine-tuning.",navigation,Profile-Picture_Settings_Privacy-and-safety.png
+twitterX,Privacy center,Link to the Privacy center.,navigation,Profile-Picture_Settings_Privacy-and-safety.png
+twitterX,Privacy policy,Link to the Privacy policy.,navigation,Profile-Picture_Settings_Privacy-and-safety.png
+twitterX,Contact us,Link to the Contact us page.,navigation,Profile-Picture_Settings_Privacy-and-safety.png
+twitterX,Security,Manage your account's security.,navigation link,Profile-Picture_Settings_Security-and-account-access.png
+twitterX,Apps and sessions,See information about when you logged into your account and the apps you connected to your account.,navigation link,Profile-Picture_Settings_Security-and-account-access.png
+twitterX,Connected accounts,Manage Google or Apple accounts connected to X to log in.,navigation link,Profile-Picture_Settings_Security-and-account-access.png
+twitterX,Delegate,Manage your shared accounts.,navigation link,Profile-Picture_Settings_Security-and-account-access.png
+zoom,Optional Diagnostic Data,"Allow collection of additional data that helps Zoom make product improvements and provide enhanced information to help Zoom detect, diagnose, and remediate issues.",enabled,MyAccount_Data&Privacy.png
+zoom,Language,Selects the display language for the website.,English,MyAccount_Data&Privacy.png
+zoom,Currency,Selects the currency for displaying prices.,US Dollars $,MyAccount_Data&Privacy.png
+zoom,Use full display names for meeting assets generated by AI Companion,"By enabling this setting, you can override the display name that AI Companion detects for you with the full display name set in your profile.",disabled,MyAccount_Settings_AICompanion.png
+zoom,Create with avatars,Create clips that uses your user's chosen avatar to read the script they enter.,enabled,MyAccount_Settings_AICompanion.png
+zoom,Create custom avatars,Allow users to create custom avatars for clips that would read the script they enter.,enabled,MyAccount_Settings_AICompanion.png
+zoom,Show international numbers link on the invitation email,Show the link for Zoom International Dial-in Numbers on email invitations,enabled,MyAccount_Settings_AudioConferencing.png
+zoom,Mask phone number in the participant list,Phone numbers of users dialing into a meeting will be masked in the participant list.,disabled,MyAccount_Settings_AudioConferencing.png
+zoom,Create Clips,"Enabling this setting will display Zoom Clips and allow users to create clips. If turning it off, users won't be able to create new clips, but they can still access and manage existing clips.",enabled,MyAccount_Settings_Clips_1.png
+zoom,Viewers can view comments,"If it is disabled, only admin and clip owners can view and post comments. This setting only applies to newly generated clips after enabling this setting.",enabled,MyAccount_Settings_Clips_1.png
+zoom,Allow signed-in viewers to add comments,A sub-setting of 'Viewers can view comments' that allows signed-in viewers to add comments.,enabled,MyAccount_Settings_Clips_1.png
+zoom,Shareable link access default setting for clips and playlists,Sets the default access level for shared links to clips and playlists.,Anyone with the link,MyAccount_Settings_Clips_1.png
+zoom,Require guests register their email before they can view the clip,"When turned off, we won't capture guest identities; their activity will be shown as 'Guest'.",disabled,MyAccount_Settings_Clips_1.png
+zoom,Require passcode to access shared clips,"Once enabled, a random passcode will be required to access shared clips. Account admins can customize the passcode rule. This setting only applies to newly generated clips after enabling this setting.",disabled,MyAccount_Settings_Clips_1.png
+zoom,"Display the shared clip's and playlist's thumbnail, title, and description","People can preview the thumbnail, title, and description of a clip or playlist shared by link when this clip doesn't have passcode protection, the sharer allows ""anyone with the link"" to access the clip; and the platform where sharing this link supports the preview feature.",enabled,MyAccount_Settings_Clips_1.png
+zoom,Notify me when there is the first viewer,Controls whether an email notification is sent when there is the first viewer.,enabled,MyAccount_Settings_Clips_2.png
+zoom,Notify me when receiving a new comment,Controls whether an email notification is sent when receiving a new comment.,disabled,MyAccount_Settings_Clips_2.png
+zoom,Notify me or viewer when receiving a reply,Controls whether an email notification is sent to the user or viewer when receiving a reply.,disabled,MyAccount_Settings_Clips_2.png
+zoom,Notify me when mentioning me,Controls whether an email notification is sent when the user is mentioned.,enabled,MyAccount_Settings_Clips_2.png
+zoom,Auto-delete clips after a specified amount of time,Clips will be moved to Trash in specified number of days. Deleted clips will stay in Trash for an additional 30 days before being deleted permanently.,disabled,MyAccount_Settings_Clips_2.png
+zoom,Detailed crash dumps (Windows),Generate crash dumps with more information in the event of an application crash on Zoom Workplace for Windows. Those information can assist Zoom with troubleshooting issues. The dumps are not automatically shared or uploaded to Zoom.,enabled,MyAccount_Settings_General.png
+zoom,Feedback to Zoom,Users can provide satisfaction scores and other preset feedback to Zoom.,enabled,MyAccount_Settings_General.png
+zoom,Allow users to send text feedback,A sub-setting of 'Feedback to Zoom' that allows users to provide text feedback in addition to scores.,checked,MyAccount_Settings_General.png
+zoom,"Show ""Join from a room"" feature on Zoom meetings in the Zoom client",Users can easily start a meeting on a Zoom Room from their Zoom client,enabled,MyAccount_Settings_General.png
+zoom,Allow automatic direct sharing and pairing to Zoom Rooms using ultrasonic proximity signal,"Enable users to share their screen, start a meeting, switch a meeting in progress, open a whiteboard or send a phone call from their laptop or mobile device to Zoom Rooms, without entering a meeting ID or sharing key.",enabled,MyAccount_Settings_General.png
+zoom,Hide potentially sensitive information on mobile task switcher,"By enable this option, iOS will blur the screenshot in the task switcher when multiple apps are open, and Android will hide the screenshot in the system-level recent apps list.",enabled,MyAccount_Settings_General.png
+zoom,Change my status to away when screen saver begins,"While a user's presence status is in a calendar event and the computer screen saver begins, their presence status on Zoom changes to away.",disabled,MyAccount_Settings_General.png
+zoom,Track billable hours,"When enabled, your account will have the ability to track and manage billable hours for phone calls and meetings. Users can assign client codes and add billing notes during or after a call or a meeting, and download billable hours reports directly from Contacts.",enabled,MyAccount_Settings_General.png
+zoom,Enable manual control to start and stop billable hours tracking for calls and meetings.,A sub-setting of 'Track billable hours' to manually control tracking.,selected,MyAccount_Settings_General.png
+zoom,Enable automatic tracking of billable hours for calls and meetings.,A sub-setting of 'Track billable hours' to automatically track hours.,not selected,MyAccount_Settings_General.png
+zoom,Show educational onboarding assistant for new features,"By enabling this setting, users will periodically see pop ups showing them how to set up new features in the Zoom Workplace app.",enabled,MyAccount_Settings_General.png
+zoom,Calendar and contacts integration,"We support the following services: Google Calendar, Microsoft Exchange, and Microsoft Office 365. If you want to add your contacts by importing a CSV file, go to Personal Contacts.",Actionable via 'Configure Calendar and Contacts Service' button,MyAccount_Settings_Mail&Calendar.png
+zoom,Authentication expiry email alerts,Receive an email alert when your calendar authentication expires,enabled,MyAccount_Settings_Mail&Calendar.png
+zoom,Insert link to meeting insights with Zoom AI Companion in meeting invitation,"When enabled, a link to meeting insights will be added to the invitation.",enabled,MyAccount_Settings_Mail&Calendar.png
+zoom,Bidirectional sync for Zoom meeting data between Zoom web portal and calendars,"When turned on, newly created meetings or updates to existing meetings on Zoom web portal or calendars (including Zoom Calendar and other calendars) will automatically sync with each other.",disabled,MyAccount_Settings_Mail&Calendar.png
+zoom,Show invited Zoom meetings without linked third-party calendar,"Invited meetings created in Zoom's web portal that aren't linked to a user's third-party calendar (e.g., Google, Exchange, Office 365) will still appear in their Zoom Calendar, allowing them to view the meetings as an attendee. Once a calendar is connected, this setting will be disabled, and invited meetings will always sync to your Zoom client.",enabled,MyAccount_Settings_Mail&Calendar.png
+zoom,Hide meeting invites from users external to my account.,A sub-setting to hide meeting invites from external users.,disabled,MyAccount_Settings_Mail&Calendar.png
+zoom,Enable auto-calling,"Automatically call all accepted participants (those who replied with Yes, Maybe, or No reply) at the scheduled time, regardless of whether the host has joined the meeting.",disabled,MyAccount_Settings_Meeting_1.png
+zoom,Require that all meetings are secured with one security option,"Require that all meetings are secured with one of the following security options: a passcode, Waiting Room, or ""Only authenticated users can join meetings"". If no security option is enabled, Zoom will secure all meetings with Waiting Room.",enabled,MyAccount_Settings_Meeting_1.png
+zoom,Enable waiting room,"When participants join a meeting, place them in a waiting room and require the host to admit them individually. Enabling the waiting room automatically disables the setting for allowing participants to join before host.",enabled,MyAccount_Settings_Meeting_1.png
+zoom,Meeting Passcode,"All instant, and scheduled meetings that users can join via client, or room systems will be passcode-protected. The Personal Meeting ID (PMI) meetings are not included.",disabled,MyAccount_Settings_Meeting_1.png
+zoom,Require a passcode for meetings which have already been scheduled,A sub-setting under Meeting Passcode to apply passcodes to previously scheduled meetings.,enabled,MyAccount_Settings_Meeting_1.png
+zoom,Passcode for already scheduled meetings,The passcode to be applied to already scheduled meetings.,v3A63y,MyAccount_Settings_Meeting_1.png
+zoom,Personal Meeting ID (PMI) Passcode,"All Personal Meeting ID (PMI) meetings that users can join via client, or room systems will be passcode-protected.",disabled,MyAccount_Settings_Meeting_1.png
+zoom,Passcode (for PMI),The passcode for Personal Meeting ID meetings.,******,MyAccount_Settings_Meeting_1.png
+zoom,Require passcode for participants joining by phone,"A numeric passcode will be required for participants joining by phone if your meeting has a passcode. For meeting with an alphanumeric passcode, a numeric version will be generated.",disabled,MyAccount_Settings_Meeting_1.png
+zoom,Embed passcode in invite link for one-click join,Meeting passcode will be encrypted and included in the invite link to allow participants to join with just one click without having to enter the passcode.,enabled,MyAccount_Settings_Meeting_1.png
+zoom,Allow Zoom Rooms to become the host if they join before meeting host and other participants,"When this option is enabled, Zoom Rooms configured to 'Make Zoom Rooms the host if it joins before meeting host and other participants' will be permitted to assume the host role if they join before the meeting host and other participants.",enabled,MyAccount_Settings_Meeting_1.png
+zoom,Only authenticated users can join meetings from Web client,The participants need to authenticate prior to joining meetings from web client.,disabled,MyAccount_Settings_Meeting_1.png
+zoom,Approve or block entry for users from specific countries/regions,"Determine whether users from specific regions or countries can join meetings/webinars on your account by adding them to your Approved List or Blocked List. Blocking regions may limit CRC, Dial-in, Call Me, and Invite by Phone options for participants joining from those regions.",disabled,MyAccount_Settings_Meeting_1.png
+zoom,Default encryption type,"If the admin locks this setting, users will not be able to change the encryption type for meetings (i.e. scheduled, instant, PMI).",Enhanced encryption,MyAccount_Settings_Meeting_2.png
+zoom,Host video,Start meetings with host video on,enabled,MyAccount_Settings_Meeting_2.png
+zoom,Participants video,Start meetings with participant video on. Participants can change this when joining or in the meeting.,enabled,MyAccount_Settings_Meeting_2.png
+zoom,Audio Type,Determine how participants can join the audio portion of the meeting.,Computer Audio,MyAccount_Settings_Meeting_2.png
+zoom,Allow participants to join before host,"Allow participants to join before the host arrives. If participants are not allowed to join before the host, or the host has another meeting running, participants will see a dialog that notifies them that the meeting has not started.",enabled,MyAccount_Settings_Meeting_2.png
+zoom,Participants can join [time] before start time,A sub-setting of 'Allow participants to join before host' that specifies how early they can join.,disabled,MyAccount_Settings_Meeting_2.png
+zoom,Enable Personal Meeting ID,A Personal Meeting ID (PMI) is a 9 to 11 digit number that is assigned to your account.,enabled,MyAccount_Settings_Meeting_2.png
+zoom,Use Personal Meeting ID (PMI) when scheduling a meeting,You can visit Personal Meeting Room to change your Personal Meeting settings.,disabled,MyAccount_Settings_Meeting_2.png
+zoom,Use Personal Meeting ID (PMI) when starting an instant meeting,Use your Personal Meeting ID for instant meetings.,disabled,MyAccount_Settings_Meeting_2.png
+zoom,Mute all participants when they join a meeting,Automatically mute all participants when they join the meeting. The host controls whether participants can unmute themselves.,disabled,MyAccount_Settings_Meeting_2.png
+zoom,Upcoming meeting reminder,Receive desktop notification for upcoming meetings. Reminder time can be configured in the Zoom Desktop Client.,enabled,MyAccount_Settings_Meeting_2.png
+zoom,Don't allow agendas to be shared with external users,"By default, the meeting agenda is automatically shared with all invitees. When this setting is enabled, the agenda will be shared only with invitees in your organization.",disabled,MyAccount_Settings_Meeting_2.png
+zoom,Require media encryption for 3rd party endpoints (SIP/H.323),"By default, Zoom requires encryption for all data transferred between the Zoom cloud, Zoom client, and Zoom Room. Turn on this setting to require media encryption for 3rd party endpoints (SIP/H.323) as well.",disabled,MyAccount_Settings_Meeting_2.png
+zoom,Chat,Allow meeting and webinar participants to send chat messages.,enabled,MyAccount_Settings_Meeting_2.png
+zoom,"By default, allow participants to chat with",Controls who participants can chat with by default in a meeting.,Everyone and anyone directly,MyAccount_Settings_Meeting_2.png
+zoom,Allow users to copy or save chats from the meeting,Controls who can copy or save the meeting chat.,enabled (Everyone),MyAccount_Settings_Meeting_3.png
+zoom,Enable continuous meeting chat,"Chat will continue before, during, and after the meeting in Team Chat for signed in users.",enabled,MyAccount_Settings_Meeting_3.png
+zoom,"Default enabled Continuous Meeting Chat for ""Schedule meetings""",A sub-setting to enable continuous chat by default for scheduled meetings.,enabled,MyAccount_Settings_Meeting_3.png
+zoom,"Enable Continuous Meeting Chat for ""Instant meetings""",A sub-setting to enable continuous chat for instant meetings.,enabled,MyAccount_Settings_Meeting_3.png
+zoom,Allow participants to delete messages in meeting chat,"When this setting is enabled, participants can delete their own messages and hosts (and co-hosts) can delete any messages sent during the meeting.",enabled,MyAccount_Settings_Meeting_3.png
+zoom,Allow participants to edit messages in meeting chat,"When this setting is enabled, participants can edit their own messages sent during the meeting.",enabled,MyAccount_Settings_Meeting_3.png
+zoom,Enable the Screenshot feature in meeting chat,"When this setting is enabled, participants can send screenshots during the meeting.",enabled,MyAccount_Settings_Meeting_3.png
+zoom,Allow participants to use emojis in meeting chat,"Allow participants to use the emoji library in meeting chat. Choose between allowing participants to use any emoji in the library, or choose to allow only pre-selected emojis.",enabled (All emojis),MyAccount_Settings_Meeting_3.png
+zoom,Private chat,Allow meeting participants to send direct messages to other participants and allow webinar panelists to send direct messages to other panelists.,enabled,MyAccount_Settings_Meeting_3.png
+zoom,Auto saving chats,Automatically save all in-meeting chats so that hosts do not need to manually save the text of the chat after the meeting starts.,disabled,MyAccount_Settings_Meeting_3.png
+zoom,Allow hyperlinks in Meeting and Webinar Chat,Allow users to send and click on hyperlinks in Meeting and Webinar Chat.,enabled,MyAccount_Settings_Meeting_3.png
+zoom,Send files via meeting chat,Hosts and participants can send files through the in-meeting chat.,enabled,MyAccount_Settings_Meeting_3.png
+zoom,Only allow specified file types,A sub-setting to restrict file sharing to specific file types.,disabled,MyAccount_Settings_Meeting_3.png
+zoom,Maximum file size,A sub-setting to set a maximum file size for shared files.,disabled,MyAccount_Settings_Meeting_3.png
+zoom,Sound notification when someone joins or leaves,Plays a sound notification when a participant joins or leaves the meeting.,disabled,MyAccount_Settings_Meeting_3.png
+zoom,Announce number of participants for dial-in participants,Announces the number of participants to dial-in users.,enabled,MyAccount_Settings_Meeting_3.png
+zoom,Display end-of-meeting experience feedback survey,"Display a thumbs up/down survey at the end of each meeting. If participants respond with thumbs down, they can provide additional information about what went wrong.",enabled,MyAccount_Settings_Meeting_4.png
+zoom,End-of-meeting experience feedback survey display frequency,Determines when the end-of-meeting feedback survey is displayed.,Display for every meeting,MyAccount_Settings_Meeting_4.png
+zoom,Show Zoom windows during screen share,Controls whether Zoom windows are visible during a screen share.,enabled,MyAccount_Settings_Meeting_4.png
+zoom,Screen sharing,Allow host and participants to share their screen or content during meetings and webinars,enabled,MyAccount_Settings_Meeting_4.png
+zoom,How many participants can share at the same time?,Controls how many participants can share their screen simultaneously.,Multiple participants can share simultaneously (dual monitors recommended),MyAccount_Settings_Meeting_4.png
+zoom,Who can share?,Controls who is permitted to start sharing their screen.,All Participants,MyAccount_Settings_Meeting_4.png
+zoom,Who can start sharing when someone else is sharing?,Controls who can interrupt an ongoing screen share to start their own.,All Participants,MyAccount_Settings_Meeting_4.png
+zoom,Screen Sharing Presenter View,Allow host and participants to use presenter view while screen sharing,enabled,MyAccount_Settings_Meeting_4.png
+zoom,Disable desktop screen sharing for meetings you host,"When this option is on, users can only share selected applications and files. This option may not be applicable to users using web clients.",disabled,MyAccount_Settings_Meeting_4.png
+zoom,Disable screen sharing when guests are in the meeting,Guests include users who are not signed in or not in the same account. Participants who dial-in via phone or join with SIP/H.323 devices will still be able to screen share.,disabled,MyAccount_Settings_Meeting_4.png
+zoom,Prevent my screen from being controlled by an external user,"When this setting is on, users will not be able to give remote control to an external user, and external users cannot request control of the user.",disabled,MyAccount_Settings_Meeting_4.png
+zoom,Prevent guest user's screen from being controlled in your meeting,"When this setting is on, users will not be able to give remote control to an external user, and external users cannot request control of the user.",disabled,MyAccount_Settings_Meeting_4.png
+zoom,Annotation,Allow host and participants to use annotation tools to add information to shared screens,enabled,MyAccount_Settings_Meeting_4.png
+zoom,Allow saving of shared screens with annotations,Allows users to save shared screens that have annotations on them.,enabled,MyAccount_Settings_Meeting_4.png
+zoom,Only the user who is sharing can annotate,Restricts annotation capabilities to only the person who is currently sharing their screen.,disabled,MyAccount_Settings_Meeting_4.png
+zoom,Enable Clips in meetings,Allow users to play clips in meetings. Meeting screen sharing controls this setting; Configure the details in screen sharing.,enabled,MyAccount_Settings_Meeting_4.png
+zoom,Whiteboard (Classic),Allow host and participants to share whiteboard during a meeting,enabled,MyAccount_Settings_Meeting_4.png
+zoom,Use Whiteboard by default if available,The new Zoom Whiteboard will open by default when screen sharing. Unselect this setting if you prefer to open the classic Whiteboard instead.,enabled,MyAccount_Settings_Meeting_4.png
+zoom,Allow to save the whiteboard content,Allows participants to save the content of the whiteboard.,enabled,MyAccount_Settings_Meeting_4.png
+zoom,Automatically create local export when sharing is stopped,Automatically saves a local copy of the whiteboard when the sharing session ends.,disabled,MyAccount_Settings_Meeting_4.png
+zoom,Remote control,"During screen sharing, the person who is sharing can allow others to control the shared content",enabled,MyAccount_Settings_Meeting_4.png
+zoom,Allow remote controlling user to share clipboard,Allows the user who is remotely controlling a screen to also share the clipboard content.,enabled,MyAccount_Settings_Meeting_4.png
+zoom,Slide Control,"During a presentation, the person who is sharing can allow others to control the PowerPoint or Keynote slide presentation",enabled,MyAccount_Settings_Meeting_4.png
+zoom,Meeting reactions,Allows participants to use reactions during a meeting.,enabled,MyAccount_Settings_Meeting_4.png
+zoom,Meeting reactions,"Allow meeting participants to communicate without interrupting by reacting with emojis (e.g. clap, heart, laugh). These emojis are found in the Reactions menu in the toolbar, and when selected, they display on the participant's video and in the participants list for 10 seconds. Participants can change their emoji skin tone in Settings.",All emojis,MyAccount_Settings_Meeting_5.png
+zoom,Allow removed participants to rejoin,Allow previously removed meeting participants and webinar panelists to rejoin,enabled,MyAccount_Settings_Meeting_5.png
+zoom,Show invitee list in the Participants panel,"Users invited to meetings on other platforms (e.g. Google, Outlook, or Exchange) will also be shown on this list",enabled,MyAccount_Settings_Meeting_5.png
+zoom,Allow users to change their name when joining a meeting,"By disabling this setting, users will always use their name on profile page to join a meeting",enabled,MyAccount_Settings_Meeting_5.png
+zoom,Allow participants to rename themselves,Allow meeting participants and webinar panelists to rename themselves.,enabled,MyAccount_Settings_Meeting_5.png
+zoom,Allow host or co-host to rename participants in the waiting room,Participants will be notified of name change,enabled,MyAccount_Settings_Meeting_5.png
+zoom,Hide participant profile pictures in a meeting,All participant profile pictures will be hidden and only the names of participants will be displayed on the video screen. Participants will not be able to update their profile pictures in the meeting.,disabled,MyAccount_Settings_Meeting_5.png
+zoom,Meeting timers,Allow participants to set meeting timers that can be seen and heard by everyone.,enabled,MyAccount_Settings_Meeting_5.png
+zoom,Default meeting wallpaper,Select a default meeting wallpaper to be used for all meetings in your organization.,disabled,MyAccount_Settings_Meeting_5.png
+zoom,"Allow users to join external meetings, webinars and events through mesh in the local area network","If the external account has allowed mesh for any participants to join, some devices might be available as Zoom Mesh parents to distribute audio and video data in the local area network. This will provide a better experience and save bandwidth.",disabled,MyAccount_Settings_Meeting_5.png
+zoom,Report to Zoom,Allow users to report meeting participants for inappropriate behavior to Zoom's Trust and Safety team for review. This setting can be found on the meeting information panel.,enabled,MyAccount_Settings_Meeting_5.png
+zoom,Breakout room - Meetings,"Allow host to split meeting participants into separate, smaller rooms",enabled,MyAccount_Settings_Meeting_5.png
+zoom,Assign participants to breakout rooms when scheduling,Allows host to assign participants to breakout rooms when scheduling a meeting.,unchecked,MyAccount_Settings_Meeting_5.png
+zoom,Broadcast message to participants,Allows host to broadcast a message to all participants in breakout rooms.,checked,MyAccount_Settings_Meeting_5.png
+zoom,Broadcast voice to breakout rooms,Allows host to broadcast their voice to all participants in breakout rooms.,checked,MyAccount_Settings_Meeting_5.png
+zoom,Allow host to view activity statuses of participants in breakout rooms,"Allows host to view activity statuses of participants in breakout rooms (e.g. share screen, reactions)",unchecked,MyAccount_Settings_Meeting_5.png
+zoom,Set default breakout room behaviors,Allows host to set default behaviors for breakout rooms.,unchecked,MyAccount_Settings_Meeting_5.png
+zoom,Remote support,Allow meeting host to provide 1:1 remote support to another participant,disabled,MyAccount_Settings_Meeting_5.png
+zoom,Manual captions,Allow host to type closed captions or assign a participant/3rd-party service to add closed captions,disabled,MyAccount_Settings_Meeting_5.png
+zoom,Automated captions,Allow users to enable automated captions in these languages in meetings and webinars.,enabled,MyAccount_Settings_Meeting_5.png
+zoom,Automated captions languages,Select languages for automated captions in meetings and webinars.,"Selected: Afrikaans, Arabic, Arabic (Gulf), Bengali, Cantonese, Catalan, Chinese (Simplified), Chinese (Traditional), Croatian, Czech, Danish, Dutch, English, Estonian, Finnish, French (Canada), French (France), Galician, German, German (Switzerland), Greek, Hebrew, Hindi, Hungarian, Indonesian, Italian, Japanese, Korean, Latvian, Malay, Norwegian, Persian, Polish, Portuguese, Romanian, Russian, Serbian",MyAccount_Settings_Meeting_5.png
+zoom,Allow only the following users to enable captions for the meeting or webinar,A checkbox to restrict which users can enable captions.,disabled,MyAccount_Settings_Meeting_6.png
+zoom,Automated captions on device,"Allow users to process automated captions on their device in meetings. To use this feature, the device must meet minimum requirements.",enabled,MyAccount_Settings_Meeting_6.png
+zoom,Full transcript,Allow viewing of full transcript in the in-meeting side panel,disabled,MyAccount_Settings_Meeting_6.png
+zoom,Save Captions,Allow participants to save fully closed captions or transcripts,disabled,MyAccount_Settings_Meeting_6.png
+zoom,Sign Language interpretation view,Allow host to assign participants as sign language interpreters who can interpret one language into sign language in real-time. Host can assign interpreters when scheduling or during the meeting.,enabled,MyAccount_Settings_Meeting_6.png
+zoom,Enable sign language interpretation view by default in scheduler,A sub-setting to enable sign language interpretation view by default in the scheduler.,disabled,MyAccount_Settings_Meeting_6.png
+zoom,Far end camera control,Allow another user to take control of your camera during a meeting. Both users (the one requesting control and the one giving control) must have this option turned on.,disabled,MyAccount_Settings_Meeting_6.png
+zoom,Auto-accept far end camera control,"Allow users to add others to their Camera Control Group. When a member of the group requests camera control, they will automatically take control of the user's camera. Group members can be added or removed in Team Chat or Contacts.",disabled,MyAccount_Settings_Meeting_6.png
+zoom,Virtual background,Customize your background to keep your environment private from others in a meeting. This can be used with or without a green screen.,enabled,MyAccount_Settings_Meeting_6.png
+zoom,Allow use of videos as virtual backgrounds,A sub-setting to permit using videos as virtual backgrounds.,enabled,MyAccount_Settings_Meeting_6.png
+zoom,Immersive View,"Allow hosts to curate case-specific scenes, such as a classroom or boardroom for their meetings or webinars.",enabled,MyAccount_Settings_Meeting_6.png
+zoom,Turn off custom background,A sub-setting to turn off custom backgrounds.,disabled,MyAccount_Settings_Meeting_6.png
+zoom,Focus Mode,A mode that shows only hosts and co-hosts' videos and profile pictures during a meeting. Focus Mode can be found in the 'More' menu in the in-meeting toolbar.,disabled,MyAccount_Settings_Meeting_6.png
+zoom,Identify guest participants in the meeting/webinar,Participants who belong to your account can see that a guest (someone who does not belong to your account) is participating in the meeting/webinar. The Participants list indicates which attendees are guests. The guests themselves do not see that they are listed as guests.,enabled,MyAccount_Settings_Meeting_6.png
+zoom,Auto-answer group in chat,Allow user to add others to an 'Auto Answer Group'. Calls from members of a user's 'Auto Answer Group' will be automatically answered for that user.,disabled,MyAccount_Settings_Meeting_6.png
+zoom,Only show default email when sending email invites,Allow users to invite participants by email only by using the default email program selected on their computer,disabled,MyAccount_Settings_Meeting_6.png
+zoom,Use HTML format email for Outlook add-in and plug-in,Use HTML formatting instead of plain text for meeting invitations scheduled with the Outlook plugin,disabled,MyAccount_Settings_Meeting_6.png
+zoom,Override Zoom Outlook add-in local setting,"When enabled, the settings you set below will override users' local add-in settings.",disabled,MyAccount_Settings_Meeting_6.png
+zoom,"Show a ""Join from your browser"" link","Allow participants to bypass the Zoom application download process,",enabled,MyAccount_Settings_Meeting_6.png
+zoom,On desktop browser,"Allow participants to bypass the Zoom application and join a meeting directly from their browser. This is a workaround for participants who are unable to download, install, or run the Zoom application. Note that the meeting experience from the browser is limited.",enabled,MyAccount_Settings_Meeting_7.png
+zoom,On mobile browser,Allow participants to bypass the Zoom application and join a meeting directly from their browser. Note that the meeting experience from the mobile browser is more limited than the desktop browser.,enabled,MyAccount_Settings_Meeting_7.png
+zoom,"Show ""Always join from browser"" option when joining from join.zoom.us","Allow account members to enable ""Always join from browser"" when they join meetings from join.zoom.us.",enabled,MyAccount_Settings_Meeting_7.png
+zoom,Show a custom disclaimer when starting or joining a meeting,Create your own disclaimer that will be shown at the start of all meetings hosted by your account.,disabled,MyAccount_Settings_Meeting_7.png
+zoom,Request permission to unmute,"Select this option in the scheduler to request permission to unmute meeting participants and webinar panelists. Permissions, once given, will apply in all meetings scheduled by the same person.",disabled,MyAccount_Settings_Meeting_7.png
+zoom,Far end audio control,Allow another user to take control of your audio controls during a meeting. Both users (the one requesting control and the one giving control) must have this option turned on.,disabled,MyAccount_Settings_Meeting_7.png
+zoom,Auto-accept far end audio control,"Allow users to add others to their Audio Control Group. When a member of the group requests audio control, they will automatically take control of the user's audio settings. Group members can be added or removed in Team Chat or Contacts.",disabled,MyAccount_Settings_Meeting_7.png
+zoom,"Enable ""Stop incoming video"" feature","Allows meeting participants to turn off all incoming video feeds on their screen (does not affect other participants' screens). To access this feature, click the view button at the top-right corner of your screen.",enabled,MyAccount_Settings_Meeting_7.png
+zoom,When attendees join meeting before host,Notify host when participants join the meeting before them.,enabled,MyAccount_Settings_Meeting_7.png
+zoom,When a meeting is cancelled,Notify host and participants when the meeting is cancelled.,enabled,MyAccount_Settings_Meeting_7.png
+zoom,Assign scheduling privilege to,You can assign users in your account to schedule meetings on your behalf. You and the assigned scheduler must be on a Paid plan within the same account.,No one,MyAccount_Settings_Meeting_7.png
+zoom,I can schedule for,You can schedule meetings on behalf of someone that has assigned you scheduling privilege.,No one,MyAccount_Settings_Meeting_7.png
+zoom,Record to computer files,"Allow hosts and participants to record the meeting to a computer. The recording will include video and shared content matching the recorder's view options, and an audio-only file.",enabled,MyAccount_Settings_Recording.png
+zoom,Internal meeting participants (can request permission to record),Host can change the permissions for each participant during the meeting. This option allows internal meeting participants to request permission to record.,enabled,MyAccount_Settings_Recording.png
+zoom,Auto approve their permission requests (Internal meeting participants),Automatically approve permission requests from internal meeting participants.,disabled,MyAccount_Settings_Recording.png
+zoom,External meeting participants (can request permission to record),Host can change the permissions for each participant during the meeting. This option allows external meeting participants to request permission to record.,enabled,MyAccount_Settings_Recording.png
+zoom,Auto approve their permission requests (External meeting participants),Automatically approve permission requests from external meeting participants.,disabled,MyAccount_Settings_Recording.png
+zoom,Meeting participants with specified domains (can request permission to record),Host can change the permissions for each participant during the meeting. This option allows participants with specified domains to request permission. Participants matching this option will take the precedence regardless the above two options.,disabled,MyAccount_Settings_Recording.png
+zoom,Automatic recording,Record meetings automatically as they start,disabled,MyAccount_Settings_Recording.png
+zoom,Play voice prompt for,"By default, all users will see a recording disclaimer and hear an audio notification when a recording starts. This setting controls for whom the voice prompt is played.",All participants,MyAccount_Settings_Recording.png
+zoom,Ask host to confirm before starting a recording,A checkbox option under recording notifications for Zoom clients that requires host confirmation to start recording.,disabled,MyAccount_Settings_Recording.png
+zoom,Multiple notifications for phone users,"By default, phone users will hear one audio notification indicating that a recording has started. This setting enables multiple notifications.",disabled,MyAccount_Settings_Recording.png

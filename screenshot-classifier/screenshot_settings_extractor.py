@@ -9,6 +9,7 @@ and their current states.
 import os
 import json
 import re
+import time
 from typing import Dict, List, Optional
 from datetime import datetime
 from pathlib import Path
@@ -194,7 +195,7 @@ class PrivacySettingsExtractor:
 
             all_slice_settings = []
 
-            for slice_path in slice_paths:
+            for idx, slice_path in enumerate(slice_paths):
                 # Load image
                 with open(slice_path, 'rb') as f:
                     image_data = f.read()
@@ -237,6 +238,10 @@ class PrivacySettingsExtractor:
 
                 parsed = self._parse_extraction_response(text, slice_path)
                 all_slice_settings.extend(parsed.get("settings", []))
+
+                # Respect API rate limits between slice uploads
+                if idx < len(slice_paths) - 1:
+                    time.sleep(1)
 
             # Combine slices output
             return {
@@ -325,7 +330,7 @@ class PrivacySettingsExtractor:
             successful_extractions = 0
             failed_image_paths = []
             
-            for image_file in image_files:
+            for i, image_file in enumerate(image_files):
                 print(f"  Processing {image_file.name}...")
                 extraction = self.extract_settings(str(image_file))
                 
@@ -338,6 +343,10 @@ class PrivacySettingsExtractor:
                 else:
                     failed_image_paths.append(str(image_file))
                     print(f"    ⚠️  Failed to extract from {image_file.name}: {extraction.get('message', 'Unknown error')}")
+
+                # Delay between images to avoid hitting rate limits
+                if i < len(image_files) - 1:
+                    time.sleep(1)
             
             # Generate summary for this platform
             platform_results["summary"] = {
