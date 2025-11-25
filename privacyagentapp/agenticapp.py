@@ -937,11 +937,31 @@ def planner_setting_change(
     raw = (text or "").strip()
     if not raw:
         print("[planner_setting_change] Empty model output.")
+        # If we have a leaf_hint (e.g., "Protect your posts"), fall back to a simple
+        # text-based selector so the executor can still try to click it.
+        if leaf_hint:
+            return {
+                "selectors": [
+                    {
+                        "purpose": "change_value",
+                        "type": "text",
+                        "selector": leaf_hint,
+                    }
+                ],
+                "done": False,
+                "notes": (
+                    "model_empty_output: planner received no text; using fallback "
+                    f"text selector on leaf_hint '{leaf_hint}'."
+                ),
+            }
+
+        # No leaf_hint -> nothing actionable, report empty output.
         return {
             "selectors": [],
             "done": False,
             "notes": "model_empty_output: planner received no text from Gemini.",
         }
+
 
     # Try to parse JSON (with fences salvage)
     try:
@@ -967,11 +987,31 @@ def planner_setting_change(
                 data = json.loads(json_str)
         except Exception as e2:
             print("[planner_setting_change] JSON parse error:", e2, "raw:", raw[:200])
+
+            # --- NEW: generic fallback when JSON is broken but we have a leaf_hint ---
+            if leaf_hint:
+                return {
+                    "selectors": [
+                        {
+                            "purpose": "change_value",
+                            "type": "text",
+                            "selector": leaf_hint,
+                        }
+                    ],
+                    "done": False,
+                    "notes": (
+                        "Failed to parse JSON from Gemini; using fallback text selector "
+                        f"on leaf_hint '{leaf_hint}'. Original parse error: {e2}"
+                    ),
+                }
+
+            # No leaf_hint -> we really have nothing actionable.
             return {
                 "selectors": [],
                 "done": False,
-                "notes": f"Failed to parse JSON from Gemini: {e2}; raw: {raw[:200]}",
+                "notes": f"Failed to parse JSON from Gemini: {e2}; raw: {raw[:200]}"
             }
+
 
     if not isinstance(data, dict):
         print("[planner_setting_change] Non-dict planner output.")
@@ -1122,10 +1162,15 @@ def apply_setting_change_sync(
                 done = bool(plan.get("done"))
                 last_notes = str(plan.get("notes") or "")
 
-                # If the planner reported empty model output AFTER its own retries,
-                # treat it as transient unless we're on the last turn.
-                if "model_empty_output" in last_notes or "model_error" in last_notes or "model_text_error" in last_notes:
-                    print(f"[executor] TURN {turn}: planner reported `{last_notes}`.")
+                # Detect model-side issues (empty output, error, etc.)
+                has_model_issue = any(
+                    key in last_notes
+                    for key in ("model_empty_output", "model_error", "model_text_error")
+                )
+
+                if has_model_issue and not selectors:
+                    # True empty / unusable output: retry with feedback or bail on last turn.
+                    print(f"[executor] TURN {turn}: planner reported `{last_notes}` with NO selectors.")
                     if turn < max_turns:
                         executor_state["feedback"] = (
                             "The last planner call produced no usable output. "
@@ -1141,8 +1186,8 @@ def apply_setting_change_sync(
                             f"Last notes: {last_notes}"
                         )
                         break
-
-
+                # If has_model_issue but we *do* have selectors (e.g., leaf_hint fallback),
+                # we proceed and actually apply those selectors.
 
 
                 # 1) If planner explicitly reported JSON parsing failure, treat as "retry with feedback",
@@ -1191,6 +1236,7 @@ def apply_setting_change_sync(
                 # 5) If the planner says done AFTER giving us selectors, verify state visually if we can.
                 if done:
                     verified = verify_setting_state(page, platform, leaf_hint, target_value)
+                    print(f"[executor] TURN {turn}: verifier result={verified!r}")
                     if verified is True:
                         result["status"] = "success"
                         result["details"] = (
@@ -1209,13 +1255,26 @@ def apply_setting_change_sync(
                         # Don't break; go to next turn.
                         continue
                     else:
-                        # verifier None / unknown -> we can't be sure; mark uncertain and stop.
-                        result["status"] = "uncertain"
-                        result["details"] = (
-                            "Planner reported done, but the verifier could not determine the state "
-                            f"with confidence. Notes: {last_notes}"
-                        )
-                        break
+                        # verifier None / unknown -> *do not* bail immediately.
+                        # Ask the planner for a follow-up plan (likely confirmation / save buttons).
+                        if turn < max_turns:
+                            executor_state["feedback"] = (
+                                "After your last plan, a UI is visible but the verifier could not determine "
+                                "whether the setting is in the target state. Look carefully for any "
+                                "confirmation, Save, Apply, or Protect-style buttons and include "
+                                "selectors with purpose='confirm' to finalize the change."
+                            )
+                            last_notes += " | Verifier: state unknown; requesting follow-up plan for confirmations."
+                            continue
+                        else:
+                            # On the final turn, we really have to give up.
+                            result["status"] = "uncertain"
+                            result["details"] = (
+                                "Planner reported done, but even after multiple attempts the verifier "
+                                "could not determine the state with confidence. "
+                                f"Last notes: {last_notes}"
+                            )
+                            break
 
 
                 # 6) If NOTHING was applied successfully from the selectors,
