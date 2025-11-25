@@ -1,156 +1,1870 @@
 {
   "status": "success",
-  "total_images": 4,
+  "total_subdirectories": 4,
+  "total_images": 35,
   "classifications": [
     {
       "status": "success",
-      "image_path": "screenshots\\audio_conferencing_20251022_110156.png",
+      "image_path": "screenshots\\facebook\\after_click__Account_ownership_and_control_20251112T172305Z.png",
       "detected_categories": [
         "personal_information",
-        "sharing_settings",
-        "communication_privacy"
+        "data_retention",
+        "account_security"
       ],
-      "category_scores": {
-        "access_to_device": 0.0,
-        "personal_information": 0.14285714285714285,
-        "sharing_settings": 0.0,
-        "location_privacy": 0.0,
-        "communication_privacy": 0.125,
-        "notification_privacy": 0.0,
-        "third_party_sharing": 0.0,
-        "data_collection": 0.0,
-        "data_retention": 0.0,
-        "account_security": 0.0
-      },
-      "primary_category": "personal_information",
       "confidence": 1.0,
-      "page_type": "Specific category settings page (Audio Conferencing)",
+      "page_type": "Account management",
       "detected_settings": [
-        {
-          "setting": "Show international numbers link on the invitation email",
-          "description": "Show the link for Zoom International Dial-in Numbers on email invitations",
-          "state": "Enabled"
-        },
-        {
-          "setting": "Mask phone number in the participant list",
-          "description": "Phone numbers of users dialing into a meeting will be masked in the participant list.",
-          "state": "Disabled"
-        }
-      ]
+        "Contact info",
+        "Memorialization",
+        "Deactivation or deletion"
+      ],
+      "reasoning": "The page is titled 'Personal details' and displays contact information. The modal provides options for 'Memorialization' and 'Deactivation or deletion', which are direct controls over the long-term retention of user data and the account itself. These settings fall under 'Account ownership and control', which is a fundamental aspect of account security."
     },
     {
       "status": "success",
-      "image_path": "screenshots\\general_20251022_110016.png",
+      "image_path": "screenshots\\facebook\\after_click__Ad_preferences_20251112T172233Z.png",
+      "detected_categories": [
+        "personal_information",
+        "data_collection",
+        "data_retention",
+        "third_party_sharing",
+        "sharing_settings"
+      ],
+      "confidence": 1.0,
+      "page_type": "Data management settings",
+      "detected_settings": [
+        "Export your information",
+        "Access your information",
+        "Search history",
+        "Your activity off Meta technologies",
+        "Specific ad partners"
+      ],
+      "reasoning": "personal_information: The page is titled 'Your information and permissions' and includes options to 'Access your information' and 'Export your information'.\ndata_collection: The 'Your activity off Meta technologies' setting allows users to control data collected about them from other websites and apps.\ndata_retention: The 'Search history' option implies management of retained search data, and the ability to export information confirms data is being retained for user access.\nthird_party_sharing: The 'Your activity off Meta technologies' and 'Specific ad partners' settings directly relate to how user data is shared with or received from third parties.\nsharing_settings: The 'Specific ad partners' option provides controls over how information is shared with advertising partners."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\facebook\\after_click__Deactivation_or_deletion_20251112T172349Z.png",
+      "detected_categories": [
+        "personal_information",
+        "data_retention",
+        "account_security",
+        "data_collection",
+        "sharing_settings"
+      ],
+      "confidence": 1.0,
+      "page_type": "Account Deactivation/Deletion",
+      "detected_settings": [
+        "Deactivation or deletion",
+        "Select account to deactivate or delete (Tester Test Facebook)"
+      ],
+      "reasoning": "personal_information: The background page is explicitly titled 'Personal details' and shows 'Contact info'.\ndata_retention: The pop-up presents the user with the choice to 'temporarily deactivate or permanently delete' their account, which is a direct control over data retention.\naccount_security: The ability to deactivate or delete an account is a fundamental aspect of account security and lifecycle management.\ndata_collection: Permanently deleting an account is the most definitive way for a user to stop future data collection by the service for that account.\nsharing_settings: The descriptive text in the background states, 'You decide what personal details you make visible to others,' which directly pertains to sharing settings."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\facebook\\after_click__Personal_details_20251112T172234Z.png",
+      "detected_categories": [
+        "personal_information",
+        "sharing_settings",
+        "data_retention",
+        "account_security"
+      ],
+      "confidence": 1.0,
+      "page_type": "Personal details",
+      "detected_settings": [
+        "Contact info",
+        "Birthday",
+        "Identity confirmation",
+        "Account ownership and control"
+      ],
+      "reasoning": "personal_information: The page is explicitly titled 'Personal details' and displays the user's contact info and birthday. sharing_settings: The page description states, 'You decide what personal details you make visible to others,' which directly relates to sharing controls. data_retention: The 'Account ownership and control' setting allows users to 'deactivate or delete your accounts,' which is a form of data retention control. account_security: The 'Identity confirmation' option is a feature used to verify a user's identity and secure their account."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\facebook\\after_click__Your_information_and_permissions_20251112T172232Z.png",
+      "detected_categories": [
+        "personal_information",
+        "data_collection",
+        "third_party_sharing",
+        "data_retention",
+        "sharing_settings"
+      ],
+      "confidence": 1.0,
+      "page_type": "Data management",
+      "detected_settings": [
+        "Export your information",
+        "Access your information",
+        "Search history",
+        "Your activity off Meta technologies",
+        "Specific ad partners"
+      ],
+      "reasoning": "personal_information is present as the page allows users to access and export their data. data_collection is indicated by the 'Your activity off Meta technologies' setting, which refers to data gathered from other sites. third_party_sharing and sharing_settings are relevant due to the 'Specific ad partners' option, which controls data use with external advertisers. data_retention is addressed through options to access and export historical data like 'Search history'."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\facebook\\initial_load_20251112T172213Z.png",
+      "detected_categories": [],
+      "confidence": 0.0,
+      "page_type": "",
+      "detected_settings": [],
+      "reasoning": ""
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\facebook\\password_and_security_20251112T172235Z.png",
+      "detected_categories": [
+        "personal_information",
+        "sharing_settings",
+        "data_retention",
+        "account_security"
+      ],
+      "confidence": 1.0,
+      "page_type": "Personal details",
+      "detected_settings": [
+        "Contact info",
+        "Birthday",
+        "Identity confirmation",
+        "Account ownership and control"
+      ],
+      "reasoning": "personal_information: The page is explicitly titled 'Personal details' and displays the user's contact information and birthday.\nsharing_settings: The description states, 'You decide what personal details you make visible to others,' which directly relates to controlling how information is shared.\ndata_retention: The 'Account ownership and control' option allows a user to 'deactivate or delete your accounts and profiles,' which is a method of controlling data retention.\naccount_security: The 'Identity confirmation' setting is a feature used to verify a user's identity and secure their account."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\facebook\\personal_details_20251112T172305Z.png",
+      "detected_categories": [
+        "personal_information",
+        "data_retention",
+        "account_security"
+      ],
+      "confidence": 1.0,
+      "page_type": "Account ownership and control",
+      "detected_settings": [
+        "Memorialization",
+        "Deactivation or deletion"
+      ],
+      "reasoning": "The page is titled 'Personal details' and the modal 'Account ownership and control' deals with the user's profile and associated data. The settings for 'Deactivation or deletion' and 'Memorialization' directly control how long the user's data is kept by the service. The 'Account ownership and control' section allows the user to manage the fundamental state and existence of their account, which is a key aspect of security."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\gmail\\Screenshot 2025-11-18 154217.png",
+      "detected_categories": [
+        "personal_information",
+        "sharing_settings",
+        "location_privacy",
+        "data_collection",
+        "data_retention",
+        "account_security"
+      ],
+      "confidence": 1.0,
+      "page_type": "Main settings",
+      "detected_settings": [
+        "Privacy suggestions available",
+        "Review suggestions (2)",
+        "Things you've done and places you've been",
+        "Info you can share with others",
+        "Data from apps and services you use",
+        "Web & App Activity",
+        "Timeline",
+        "YouTube History",
+        "My Activity",
+        "Maps Timeline",
+        "YouTube watch & search history"
+      ],
+      "reasoning": "The page is the main 'Data & privacy' hub for a Google account, providing a high-level overview and access to various settings.\n- personal_information: The page allows management of saved activity data like web searches and watched videos, which is personal information.\n- sharing_settings: The section 'Info you can share with others' directly pertains to controlling how a user's information is shared.\n- location_privacy: The 'Timeline' setting is explicitly for controlling the collection and storage of the user's location history.\n- data_collection: The 'History settings' section includes toggles like 'Web & App Activity' and 'YouTube History' that directly control the collection of user activity data.\n- data_retention: The page offers options to 'See and delete your history anytime' via links like 'My Activity', which are controls for data retention.\n- account_security: The 'Privacy suggestions available' and 'Privacy Checkup' features are designed to guide users in reviewing and improving their account's privacy and security posture."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\gmail\\Screenshot 2025-11-18 154228.png",
+      "detected_categories": [
+        "personal_information",
+        "sharing_settings",
+        "location_privacy",
+        "third_party_sharing",
+        "data_collection",
+        "access_to_device"
+      ],
+      "confidence": 1.0,
+      "page_type": "Main settings page",
+      "detected_settings": [
+        "Personalized ads on Google (On)",
+        "Partner ads settings",
+        "Search personalization (On)",
+        "Manage Google Fit privacy",
+        "Profile (Your info and who can see it)",
+        "Location Sharing (Not sharing with anyone)"
+      ],
+      "reasoning": "The page contains distinct sections for managing how personal data is used for ads, search, and shared with others, which directly maps to the identified categories. \n- personal_information: The 'Info you can share with others' section explicitly mentions managing personal info like birthday and email address through the 'Profile' setting.\n- sharing_settings: The page has a dedicated section titled 'Info you can share with others' which includes settings for 'Profile' visibility and 'Location Sharing'.\n- location_privacy: A specific 'Location Sharing' setting is present, allowing the user to control whether their location is shared.\n- third_party_sharing: The 'Partner ads settings' option allows users to manage ads on sites that partner with Google, which involves data sharing with third parties.\n- data_collection: Settings like 'Personalized ads', 'Search personalization', and 'Google Fit privacy' allow users to control how their data is collected and used for service personalization.\n- access_to_device: The 'Google Fit privacy' section mentions managing privacy settings for 'connected devices and services'."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\gmail\\Screenshot 2025-11-18 154237.png",
+      "detected_categories": [
+        "personal_information",
+        "third_party_sharing",
+        "communication_privacy",
+        "data_collection",
+        "data_retention"
+      ],
+      "confidence": 1.0,
+      "page_type": "Data management",
+      "detected_settings": [
+        "Content saved from Google services",
+        "Third-party apps & services",
+        "Manage email preferences",
+        "Voice Match",
+        "Download your data",
+        "Delete a Google service"
+      ],
+      "reasoning": "The page allows users to manage data from Google and third-party services. 'Voice Match' is a setting for biometric personal information and a form of data collection. 'Third-party apps & services' directly relates to third-party sharing. 'Emails from Google services' is a communication privacy setting. 'Download or delete your data' provides options for data retention control."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\gmail\\Screenshot 2025-11-18 154245.png",
+      "detected_categories": [
+        "personal_information",
+        "sharing_settings",
+        "third_party_sharing",
+        "data_retention"
+      ],
+      "confidence": 1.0,
+      "page_type": "Data management settings",
+      "detected_settings": [
+        "Make a plan for your digital legacy",
+        "Delete your Google Account"
+      ],
+      "reasoning": "The page offers controls to manage and delete a user's account and the personal data it contains. The 'digital legacy' option allows a user to decide what happens to their data, which can include sharing it after a period of inactivity. Planning a 'digital legacy' implies the potential to grant access to a designated third party (e.g., a family member) after the user is inactive. The options to plan for an inactive account and to delete the account are direct controls over how long the service retains the user's data."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\gmail\\Screenshot 2025-11-18 154446.png",
+      "detected_categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "location_privacy",
+        "communication_privacy",
+        "third_party_sharing",
+        "data_collection"
+      ],
+      "confidence": 1.0,
+      "page_type": "Specific category",
+      "detected_settings": [
+        "Contact info saved from interactions (On)",
+        "Contact info from your devices (Off)",
+        "Blocked",
+        "Location sharing",
+        "About me (What personal info you make visible to others)",
+        "Business personalization (Off)",
+        "Shared endorsements in ads (Off)"
+      ],
+      "reasoning": "The page is explicitly titled 'People & sharing' and contains distinct sections for managing how personal information, contacts, and location are shared with other people and used across Google services. \n- access_to_device: The 'Contact info from your devices' setting directly controls Google's access to data on the user's device.\n- personal_information: The 'Choose what others see' and 'Share recommendations in ads' sections manage the visibility of personal data like name and profile photo.\n- sharing_settings: The entire page is dedicated to managing how information is shared with other people, as indicated by the title and sections like 'Location sharing'.\n- location_privacy: There is a specific section titled 'Location sharing' for managing real-time location data.\n- communication_privacy: The 'Contacts' and 'Blocked' sections allow users to manage their interactions and communications with other users.\n- third_party_sharing: The 'Share recommendations in ads' setting controls whether a user's profile information and activity are shared with other users in the context of ads.\n- data_collection: Settings like 'Contact info saved from interactions' and 'Contact info from your devices' are explicit controls for Google's collection of contact data."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\linkedin\\account_preferences_20251111T173334Z.png",
+      "detected_categories": [
+        "personal_information",
+        "sharing_settings",
+        "location_privacy",
+        "third_party_sharing",
+        "data_collection"
+      ],
+      "confidence": 1.0,
+      "page_type": "Specific category",
+      "detected_settings": [
+        "Connections",
+        "Companies you follow",
+        "Groups",
+        "Education and skills",
+        "Job information",
+        "Employer",
+        "Customized display format",
+        "Profile location",
+        "Inferred city location",
+        "Interests and traits",
+        "Age range",
+        "Gender",
+        "Ads off LinkedIn",
+        "Data from others for ads",
+        "Measure ad success",
+        "Share data with affiliates and partners"
+      ],
+      "reasoning": "The page is titled 'Advertising data' and explicitly lists categories of user data used for advertising. The presence of 'personal_information' is confirmed by sections like 'Profile data' and 'inferred data' which include details like job information, age, and gender. 'sharing_settings' and 'third_party_sharing' are evident from the option 'Share data with affiliates and partners'. 'location_privacy' is addressed through settings for 'Profile location' and 'Inferred city location'. 'data_collection' is the overarching theme, as the page details what information LinkedIn gathers for advertising, including 'Off LinkedIn data'."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\linkedin\\advertising_data_20251111T173359Z.png",
+      "detected_categories": [
+        "notification_privacy",
+        "communication_privacy",
+        "sharing_settings",
+        "personal_information"
+      ],
+      "confidence": 1.0,
+      "page_type": "Notification settings",
+      "detected_settings": [
+        "Searching for a job",
+        "Hiring someone",
+        "Connecting with others",
+        "Network catch-up updates",
+        "Posting and commenting",
+        "Messaging",
+        "Groups",
+        "Pages",
+        "Attending events",
+        "News and reports",
+        "Updating your profile",
+        "Verifications",
+        "Games"
+      ],
+      "reasoning": "The page is explicitly titled 'Notifications' and provides granular control over the types of notifications a user receives, which is the core of notification_privacy. The 'Messaging' and 'Connecting with others' settings relate to communication_privacy by managing alerts about interactions with other users. Settings like 'Posting and commenting' pertain to sharing_settings as they notify the user about interactions with their shared content. The 'Updating your profile' option is linked to personal_information as it concerns notifications about the user's own profile data."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\linkedin\\after_click__Advertising_data_20251111T173333Z.png",
+      "detected_categories": [
+        "personal_information",
+        "sharing_settings",
+        "location_privacy",
+        "third_party_sharing",
+        "data_collection"
+      ],
+      "confidence": 1.0,
+      "page_type": "Specific category",
+      "detected_settings": [
+        "Connections",
+        "Companies you follow",
+        "Groups",
+        "Education and skills",
+        "Job information",
+        "Employer",
+        "Customized display format",
+        "Profile location",
+        "Inferred city location",
+        "Interests and traits",
+        "Age range",
+        "Gender",
+        "Ads off LinkedIn",
+        "Data from others for ads",
+        "Measure ad success",
+        "Share data with affiliates and partners"
+      ],
+      "reasoning": "The page is titled 'Advertising data' and contains settings that control how various types of data are used for advertising purposes.\n- personal_information: The page lists settings for using personal profile data like job information, education, age, and gender for advertising.\n- sharing_settings: The option 'Share data with affiliates and partners' directly controls the sharing of user data with other entities.\n- location_privacy: Settings for 'Profile location' and 'Inferred city location' control the use of location data for ad targeting.\n- third_party_sharing: The page includes settings for sharing data with 'affiliates and partners' and using 'data from others for ads,' which involves third parties.\n- data_collection: The page details various types of data collected for advertising, including profile data, inferred data, and data from off-LinkedIn sources."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png",
       "detected_categories": [
         "data_collection",
-        "sharing_settings",
         "personal_information",
-        "account_security",
+        "sharing_settings",
+        "communication_privacy",
+        "third_party_sharing",
         "notification_privacy"
       ],
-      "category_scores": {
-        "access_to_device": 0.0,
-        "personal_information": 0.14285714285714285,
-        "sharing_settings": 0.0,
-        "location_privacy": 0.0,
-        "communication_privacy": 0.0,
-        "notification_privacy": 0.0,
-        "third_party_sharing": 0.0,
-        "data_collection": 0.0,
-        "data_retention": 0.0,
-        "account_security": 0.14285714285714285
-      },
-      "primary_category": "personal_information",
       "confidence": 1.0,
-      "page_type": "Specific Category Settings (General)",
+      "page_type": "Data privacy settings",
       "detected_settings": [
-        "Detailed crash dumps (Windows): Generate crash dumps with more information in the event of an application crash.",
-        "Feedback to Zoom: Allow users to provide satisfaction scores and other preset feedback.",
-        "Allow users to send text feedback (sub-setting of Feedback to Zoom).",
-        "Show \"Join from a room\" feature on Zoom meetings in the Zoom client meeting list.",
-        "Allow automatic direct sharing and pairing to Zoom Rooms using ultrasonic proximity signal.",
-        "Hide potentially sensitive information on mobile task switcher: Blurs the screenshot in the task switcher on iOS and Android.",
-        "Change my status to away when screen saver begins.",
-        "Track billable hours.",
-        "Show educational onboarding assistant for new features."
-      ]
+        "Manage your data and activity",
+        "Get a copy of your data",
+        "Search history",
+        "Personal demographic information",
+        "Social, economic, and workplace research",
+        "Data for Generative AI Improvement",
+        "Invitations to connect",
+        "Invitations from your network",
+        "Messages",
+        "Research invites",
+        "LinkedIn promotions",
+        "Focused Inbox",
+        "Read receipts and typing indicators",
+        "Messaging suggestions",
+        "Message nudges",
+        "Automated detection of harmful content",
+        "Job application settings",
+        "Share your profile when you click Apply for a job",
+        "Signal your interest to recruiters at companies you've created job alerts for",
+        "Stored job applicant accounts",
+        "Permitted services",
+        "Microsoft Word"
+      ],
+      "reasoning": "The page is the 'Data privacy' section within LinkedIn's main settings, containing clearly labeled sub-sections and specific controls. The presence of sections like 'How LinkedIn uses your data', 'Who can reach you', 'Job seeking preferences', and 'Other applications' directly corresponds to the identified privacy categories.\n- data_collection: The page has settings like 'Data for Generative AI Improvement' that allow users to control how their data is collected and used for specific purposes.\n- personal_information: The page provides options to manage 'Personal demographic information' and 'Get a copy of your data,' which are core aspects of personal information control.\n- sharing_settings: Settings like 'Share your profile when you click Apply for a job' give users direct control over when and with whom their profile information is shared.\n- communication_privacy: The 'Who can reach you' and 'Messaging experience' sections contain settings to manage incoming messages, invitations, and features like read receipts.\n- third_party_sharing: The 'Other applications' section includes settings for 'Permitted services' and 'Microsoft Word,' which control data sharing with external applications.\n- notification_privacy: Options such as 'Research invites' and 'Message nudges' allow users to manage the types of communications and alerts they receive from the platform."
     },
     {
       "status": "success",
-      "image_path": "screenshots\\security_menu_fullpage_20251022_110816.png",
+      "image_path": "screenshots\\linkedin\\after_click__Notifications_20251111T173359Z.png",
+      "detected_categories": [
+        "notification_privacy",
+        "communication_privacy",
+        "personal_information"
+      ],
+      "confidence": 1.0,
+      "page_type": "Notification settings",
+      "detected_settings": [
+        "Searching for a job",
+        "Hiring someone",
+        "Connecting with others",
+        "Network catch-up updates",
+        "Posting and commenting",
+        "Messaging",
+        "Groups",
+        "Pages",
+        "Attending events",
+        "News and reports",
+        "Updating your profile",
+        "Verifications",
+        "Games"
+      ],
+      "reasoning": "The page is explicitly for managing 'Notifications you receive', making 'notification_privacy' the primary category. The 'Messaging' option allows control over notifications for direct user-to-user communication, which falls under 'communication_privacy'. Several notification types, such as 'Connecting with others' or 'Updating your profile', pertain to alerts about personal data, making 'personal_information' a relevant category."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\linkedin\\after_click__Sign_in_security_20251111T173330Z.png",
+      "detected_categories": [
+        "personal_information",
+        "account_security",
+        "access_to_device",
+        "location_privacy"
+      ],
+      "confidence": 1.0,
+      "page_type": "Sign in & security",
+      "detected_settings": [
+        "Email addresses",
+        "Phone numbers",
+        "Passkeys",
+        "Where you're signed in",
+        "Devices that remember your password",
+        "Two-factor authentication"
+      ],
+      "reasoning": "The page contains settings for managing personal identifiers, securing the account, and reviewing device and location access. 'Email addresses' and 'Phone numbers' are personal information. 'Passkeys' and 'Two-factor authentication' are account security measures. 'Where you're signed in' and 'Devices that remember your password' relate to both access to device and location privacy by showing which devices and from what locations the account has been accessed."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png",
+      "detected_categories": [
+        "personal_information",
+        "sharing_settings",
+        "third_party_sharing"
+      ],
+      "confidence": 1.0,
+      "page_type": "Specific category",
+      "detected_settings": [
+        "Profile viewing options",
+        "Page visit visibility",
+        "Edit your public profile",
+        "Who can see or download your email address",
+        "Who can see your connections",
+        "Who can see members you follow",
+        "Who can see your last name",
+        "Representing your organizations and interests",
+        "Page owners exporting your data",
+        "Profile discovery and visibility off LinkedIn",
+        "Profile discovery using email address",
+        "Profile discovery using phone number",
+        "Blocked members",
+        "Manage active status",
+        "Share job changes, education changes, and work anniversaries from profile",
+        "Notify connections when you're in the news",
+        "Mentioned by others",
+        "Followers"
+      ],
+      "reasoning": "personal_information: The page includes settings that control who can see or find the user based on personal identifiers like their email address, phone number, and last name.\nsharing_settings: The page is primarily composed of options that allow the user to control the visibility of their profile, connections, activity, and network information with other users on the platform.\nthird_party_sharing: The 'Profile discovery and visibility off LinkedIn' setting directly controls whether the user's profile information is shared with services outside of LinkedIn, such as search engines."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\linkedin\\end_of_run_20251111T173412Z.png",
+      "detected_categories": [
+        "notification_privacy",
+        "communication_privacy"
+      ],
+      "confidence": 1.0,
+      "page_type": "Specific category",
+      "detected_settings": [
+        "Searching for a job",
+        "Hiring someone",
+        "Connecting with others",
+        "Network catch-up updates",
+        "Posting and commenting",
+        "Messaging",
+        "Groups",
+        "Pages",
+        "Attending events",
+        "News and reports",
+        "Updating your profile",
+        "Verifications",
+        "Games"
+      ],
+      "reasoning": "The page is explicitly titled 'Notifications' and lists various categories of alerts that the user can manage, which is a core aspect of notification privacy. These settings also control communications the user receives from the platform and other users, such as 'Messaging' and 'Connecting with others' updates, relating to communication privacy."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\linkedin\\initial_load_20251111T173223Z.png",
+      "detected_categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "third_party_sharing",
+        "data_collection",
+        "data_retention"
+      ],
+      "confidence": 1.0,
+      "page_type": "Account settings",
+      "detected_settings": [
+        "Sync calendar",
+        "Sync contacts",
+        "View purchase history",
+        "Microsoft",
+        "Hibernate account",
+        "Close and delete account"
+      ],
+      "reasoning": "The 'Sync calendar' and 'Sync contacts' settings directly relate to access_to_device and data_collection. The 'Partners & services' section with 'Microsoft' is a clear indicator of third_party_sharing and sharing_settings. 'View purchase history' and the synced data fall under personal_information. The 'Account management' options 'Hibernate account' and 'Close and delete account' are explicit controls for data_retention."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\after_click__Data_Privacy_20251111T172742Z.png",
+      "detected_categories": [
+        "data_collection",
+        "personal_information"
+      ],
+      "confidence": 1.0,
+      "page_type": "Data settings",
+      "detected_settings": [
+        "Optional Diagnostic Data"
+      ],
+      "reasoning": "data_collection: The page provides a user-configurable toggle to allow or disallow the collection of \"Optional Diagnostic Data\" for product improvement.\npersonal_information: The settings control the collection of service-generated diagnostic data, which is information related to the user's interaction with the service and is thus considered personal information."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z.png",
+      "detected_categories": [],
+      "confidence": 0.0,
+      "page_type": "",
+      "detected_settings": [],
+      "reasoning": ""
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_0.png",
+      "detected_categories": [
+        "sharing_settings",
+        "location_privacy",
+        "communication_privacy",
+        "account_security"
+      ],
+      "confidence": 1.0,
+      "page_type": "Specific category",
+      "detected_settings": [
+        "Enable auto-calling",
+        "Require that all meetings are secured with one security option",
+        "Enable waiting room",
+        "Meeting Passcode",
+        "Require a passcode for meetings which have already been scheduled",
+        "Personal Meeting ID (PMI) Passcode",
+        "Require passcode for participants joining by phone",
+        "Embed passcode in invite link for one-click join",
+        "Allow Zoom Rooms to become the host if they join before meeting host and other participants",
+        "Only authenticated users can join meetings from Web client",
+        "Approve or block entry for users from specific countries/regions"
+      ],
+      "reasoning": "sharing_settings: The page includes multiple options like passcodes and waiting rooms that control who can access and join a meeting, thereby managing the sharing of the meeting space.\nlocation_privacy: The setting 'Approve or block entry for users from specific countries/regions' directly uses location information to grant or deny access to a meeting.\ncommunication_privacy: The settings are designed to secure the meeting environment (e.g., passcodes, authenticated users) to ensure that communications remain private to the intended participants.\naccount_security: Features like requiring passcodes and authenticating users are fundamental security measures to protect meetings associated with the user's account from unauthorized access."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_11000.png",
+      "detected_categories": [],
+      "confidence": 0.0,
+      "page_type": "",
+      "detected_settings": [],
+      "reasoning": ""
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_13200.png",
       "detected_categories": [
         "access_to_device",
         "personal_information",
         "sharing_settings",
         "communication_privacy",
+        "notification_privacy",
+        "data_collection",
         "account_security"
       ],
-      "category_scores": {
-        "access_to_device": 0.1111111111111111,
-        "personal_information": 0.14285714285714285,
-        "sharing_settings": 0.0,
-        "location_privacy": 0.0,
-        "communication_privacy": 0.125,
-        "notification_privacy": 0.0,
-        "third_party_sharing": 0.0,
-        "data_collection": 0.0,
-        "data_retention": 0.0,
-        "account_security": 0.14285714285714285
-      },
-      "primary_category": "personal_information",
       "confidence": 1.0,
-      "page_type": "In-Meeting Security Settings Menu",
+      "page_type": "Meeting settings",
       "detected_settings": [
-        "Banner prompt: 'Please enable access to your microphone and camera for the best experience.'",
-        "Lock Meeting",
-        "Enable Waiting Room",
-        "Hide Profile Pictures",
-        "Allow participants to: Share Screen (Enabled)",
-        "Allow participants to: Chat (Enabled)",
-        "Allow participants to: Rename Themselves (Enabled)",
-        "Allow participants to: Unmute Themselves (Enabled)",
-        "Allow participants to: Start Video (Enabled)",
-        "Allow participants to: Share Whiteboards (Enabled)",
-        "Suspend Participant Activities",
-        "Audio (Muted)",
-        "Video (Off)"
-      ]
+        "On desktop browser",
+        "On mobile browser",
+        "Show \"Always join from browser\" option when joining from join.zoom.us",
+        "Show a custom disclaimer when starting or joining a meeting",
+        "Request permission to unmute",
+        "Far end audio control",
+        "Auto-accept far end audio control",
+        "Enable \"Stop incoming video\" feature",
+        "When attendees join meeting before host",
+        "When a meeting is cancelled",
+        "Schedule Privilege"
+      ],
+      "reasoning": "The \"Far end audio control\" and \"Request permission to unmute\" settings grant or request control over a user's microphone and audio hardware, which falls under access_to_device. The \"Schedule Privilege\" setting allows one user to manage another's meeting schedule, which is considered personal_information and also an aspect of account_security. Settings like \"Enable 'Stop incoming video' feature\" and audio controls are sharing_settings that manage the flow of data between participants. The core purpose of these options is to manage communication_privacy within a meeting. The \"Email Notification\" section explicitly controls notifications, making it notification_privacy. The \"Show a custom disclaimer\" setting can be used to inform users about data_collection practices like meeting recordings."
     },
     {
       "status": "success",
-      "image_path": "screenshots\\whiteboard_20251022_110201.png",
+      "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_2200.png",
       "detected_categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "notification_privacy",
         "third_party_sharing",
+        "data_collection",
         "account_security"
       ],
-      "category_scores": {
-        "access_to_device": 0.0,
-        "personal_information": 0.0,
-        "sharing_settings": 0.0,
-        "location_privacy": 0.0,
-        "communication_privacy": 0.0,
-        "notification_privacy": 0.0,
-        "third_party_sharing": 0.0,
-        "data_collection": 0.0,
-        "data_retention": 0.0,
-        "account_security": 0.14285714285714285
-      },
-      "primary_category": "account_security",
       "confidence": 1.0,
-      "page_type": "Specific settings category (Zoom Apps)",
+      "page_type": "Meeting Settings",
       "detected_settings": [
-        "Zoom Apps Quick Launch Button: A toggle to show or hide the 'Zoom Apps' button in the interface. It is currently enabled.",
-        "Enable Developer Mode on mobile clients: A toggle to allow debugging of Zoom Apps on mobile devices using web inspector tools. It is currently disabled."
-      ]
+        "Default encryption type (Enhanced encryption, End-to-end encryption)",
+        "Host video",
+        "Participants video",
+        "Audio Type (Computer Audio)",
+        "Allow participants to join before host",
+        "Participants can join [x] minutes before start time",
+        "Enable Personal Meeting ID",
+        "Use Personal Meeting ID (PMI) when scheduling a meeting",
+        "Use Personal Meeting ID (PMI) when starting an instant meeting",
+        "Mute all participants when they join a meeting",
+        "Upcoming meeting reminder",
+        "Don't allow agendas to be shared with external users",
+        "Require media encryption for 3rd party endpoints (SIP/H.323)",
+        "Chat",
+        "By default, allow participants to chat with: Everyone and anyone directly"
+      ],
+      "reasoning": "access_to_device: Settings control default access to the user's and participants' cameras and microphones.\npersonal_information: The page includes settings for a \"Personal Meeting ID,\" which is a persistent identifier assigned to the user's account.\nsharing_settings: Options exist to control the sharing of meeting agendas with external users and to define who participants can chat with.\ncommunication_privacy: The user can set the level of encryption for meetings and control communication channels like video, audio, and chat.\nnotification_privacy: A setting is available to enable or disable desktop notifications for upcoming meetings.\nthird_party_sharing: There is a specific setting to enforce encryption for third-party endpoints connecting to the meeting.\ndata_collection: Toggles for video, audio, and chat directly determine what types of data are collected during a meeting.\naccount_security: The \"Default encryption type\" setting directly impacts the security and confidentiality of all meetings associated with the account."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_4400.png",
+      "detected_categories": [
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "notification_privacy",
+        "data_collection",
+        "data_retention"
+      ],
+      "confidence": 1.0,
+      "page_type": "Specific category",
+      "detected_settings": [
+        "Allow users to copy or save chats from the meeting",
+        "Host",
+        "Everyone",
+        "Only users in your account",
+        "Only users in your account can chat",
+        "Enable continuous meeting chat",
+        "Default enabled Continuous Meeting Chat for \"Schedule meetings\"",
+        "Enable Continuous Meeting Chat for \"Instant meetings\"",
+        "Allow participants to delete messages in meeting chat",
+        "Allow participants to edit messages in meeting chat",
+        "Enable the Screenshot feature in meeting chat",
+        "Allow participants to use emojis in meeting chat",
+        "All emojis",
+        "Selected emojis",
+        "Private chat",
+        "Auto saving chats",
+        "Allow hyperlinks in Meeting and Webinar Chat",
+        "Send files via meeting chat",
+        "Only allow specified file types",
+        "Maximum file size",
+        "Sound notification when someone joins or leaves",
+        "Announce number of participants for dial-in participants"
+      ],
+      "reasoning": "The screenshot displays a detailed settings page for in-meeting chat functionalities, which directly impacts user privacy.\n- personal_information: Settings control the management (editing, deleting, saving) of chat messages, which are a form of personal information.\n- sharing_settings: The page includes multiple options for controlling how information like messages, files, and screenshots are shared among meeting participants.\n- communication_privacy: Options like \"Private chat\" and who can save chats directly manage the privacy and confidentiality of communications between users.\n- notification_privacy: The settings for sound notifications and participant announcements control what information about user activity is broadcast to others.\n- data_collection: The \"Auto saving chats\" feature is a direct form of data collection, as it automatically gathers and stores the entire chat log.\n- data_retention: The \"Enable continuous meeting chat\" setting determines if chat data is retained and accessible after the meeting has concluded."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_6600.png",
+      "detected_categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "data_collection"
+      ],
+      "confidence": 1.0,
+      "page_type": "Meeting settings",
+      "detected_settings": [
+        "Display end-of-meeting experience feedback survey",
+        "Display for every meeting",
+        "Display for meetings randomly",
+        "Display when quality issues are detected",
+        "Show Zoom windows during screen share",
+        "Screen sharing",
+        "How many participants can share at the same time?",
+        "Who can share?",
+        "Who can start sharing when someone else is sharing?",
+        "Screen Sharing Presenter View",
+        "Disable desktop screen sharing for meetings you host",
+        "Disable screen sharing when guests are in the meeting",
+        "Restrict external users from using remote control and remote support in a meeting",
+        "Prevent my screen from being controlled by an external user",
+        "Prevent guest user's screen from being controlled in your meeting",
+        "Annotation",
+        "Allow saving of shared screens with annotations",
+        "Only the user who is sharing can annotate",
+        "Enable Clips in meetings",
+        "Whiteboard (Classic)",
+        "Use Whiteboard by default if available",
+        "Allow to save the whiteboard content",
+        "Automatically create local export when sharing is stopped",
+        "Remote control",
+        "Allow remote controlling user to share clipboard",
+        "Slide Control",
+        "Meeting reactions"
+      ],
+      "reasoning": "The page contains numerous settings that control how users interact and share information within a meeting. 'Remote control' and 'Slide Control' settings grant other users control over a user's device, falling under access_to_device. Screen sharing can expose sensitive data on a user's screen, making it a personal_information concern. The majority of the page is dedicated to who can share content and when, which are explicit sharing_settings. These controls over information flow between participants are a form of communication_privacy. Finally, options like saving whiteboard content, annotations, and displaying feedback surveys are direct forms of data_collection."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_8800.png",
+      "detected_categories": [
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "notification_privacy",
+        "third_party_sharing",
+        "data_collection",
+        "account_security",
+        "access_to_device"
+      ],
+      "confidence": 1.0,
+      "page_type": "Meeting settings",
+      "detected_settings": [
+        "Meeting reactions (All emojis / Selected emojis)",
+        "Allow removed participants to rejoin",
+        "Show invitee list in the Participants panel",
+        "Allow users to change their name when joining a meeting",
+        "Allow participants to rename themselves",
+        "Allow host or co-host to rename participants in the waiting room",
+        "Hide participant profile pictures in a meeting",
+        "Meeting timers",
+        "Default meeting wallpaper",
+        "Allow users to join external meetings, webinars and events through mesh in the local area network",
+        "Report to Zoom",
+        "Breakout room - Meetings",
+        "Assign participants to breakout rooms when scheduling",
+        "Broadcast message to participants",
+        "Broadcast voice to breakout rooms",
+        "Allow host to view activity statuses of participants in breakout rooms",
+        "Set default breakout room behaviors",
+        "Remote support",
+        "Manual captions",
+        "Automated captions"
+      ],
+      "reasoning": "personal_information: Settings directly control the display and modification of user identifiers like names and profile pictures.\nsharing_settings: Options control the visibility of information like the invitee list and participant profile pictures among attendees.\ncommunication_privacy: Features like breakout rooms, captions, and reactions manage how participants communicate with each other during a meeting.\nnotification_privacy: The setting to rename participants explicitly states that users will be notified, informing them of a change to their personal data.\nthird_party_sharing: The manual captions setting mentions the ability to assign a third-party service to provide captions.\ndata_collection: The 'Report to Zoom' feature initiates data collection for review, and hosts can be allowed to view participant activity statuses.\naccount_security: Settings like allowing removed participants to rejoin and reporting users for inappropriate behavior directly affect meeting security and integrity.\naccess_to_device: The 'Remote support' feature allows a meeting host to provide 1:1 remote support, which implies accessing another participant's device."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\after_click__Recording_20251111T172741Z.png",
+      "detected_categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "notification_privacy",
+        "data_collection"
+      ],
+      "confidence": 1.0,
+      "page_type": "Specific category",
+      "detected_settings": [
+        "Record to computer files",
+        "Who can request host permission to record?",
+        "Internal meeting participants",
+        "Auto approve their permission requests (for internal participants)",
+        "External meeting participants",
+        "Auto approve their permission requests (for external participants)",
+        "Meeting participants with specified domains",
+        "Automatic recording",
+        "Play voice prompt for All participants",
+        "Play voice prompt for Guest only",
+        "Ask host to confirm before starting a recording",
+        "Multiple notifications for phone users"
+      ],
+      "reasoning": "The page is a dedicated 'Recording' settings page within Zoom, providing granular control over how meeting data is captured and how participants are notified. The 'Record to computer files' setting requires access to the user's device storage. The settings control the recording of meetings, which inherently captures personal information like video and audio. The options under 'Who can request host permission to record?' manage which participants can initiate the recording and sharing of the meeting content. The settings directly manage whether and how communications within a meeting are recorded, impacting the privacy of the conversation. The 'Notification' section provides explicit controls for how users are informed that a recording is taking place. The 'Automatic recording' and 'Record to computer files' toggles are direct controls over the collection of meeting data."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\after_click__Settings_20251111T172904Z.png",
+      "detected_categories": [
+        "personal_information",
+        "data_collection"
+      ],
+      "confidence": 1.0,
+      "page_type": "Specific category",
+      "detected_settings": [
+        "Use full display names for meeting assets generated by AI Companion",
+        "Create with avatars",
+        "Create custom avatars"
+      ],
+      "reasoning": "The settings control the use of a user's display name and avatar, which are forms of personal information, in AI-generated content. Enabling these toggles permits the AI Companion feature to collect and process user data, such as their avatar choice or display name, to generate assets."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\initial_load_20251111T172703Z_slice_0.png",
+      "detected_categories": [
+        "data_collection",
+        "sharing_settings",
+        "personal_information",
+        "access_to_device",
+        "notification_privacy"
+      ],
+      "confidence": 1.0,
+      "page_type": "General settings",
+      "detected_settings": [
+        "Detailed crash dumps (Windows)",
+        "Feedback to Zoom",
+        "Allow users to send text feedback",
+        "Show \"Join from a room\" feature on Zoom meetings in the Zoom client meeting list",
+        "Allow automatic direct sharing and pairing to Zoom Rooms using ultrasonic proximity signal",
+        "Hide potentially sensitive information on mobile task switcher",
+        "Change my status to away when screen saver begins",
+        "Track billable hours",
+        "Enable manual control to start and stop billable hours tracking for calls and meetings.",
+        "Enable automatic tracking of billable hours for calls and meetings.",
+        "Show educational onboarding assistant for new features"
+      ],
+      "reasoning": "data_collection: The page includes options to enable the collection of crash dumps, user feedback, and activity data for billable hours.\nsharing_settings: Settings allow users to share feedback with Zoom and to share their screen with Zoom Rooms.\npersonal_information: A setting controls the user's presence status, which is personal information about their availability.\naccess_to_device: A setting enables the use of ultrasonic signals, which requires access to the device's microphone/speaker for proximity detection.\nnotification_privacy: A setting controls whether the user sees educational pop-up notifications for new features."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\safety_capture_20251111T172904Z.png",
+      "detected_categories": [
+        "personal_information",
+        "data_collection"
+      ],
+      "confidence": 1,
+      "page_type": "Specific category",
+      "detected_settings": [
+        "Use full display names for meeting assets generated by AI Companion",
+        "Create with avatars",
+        "Create custom avatars"
+      ],
+      "reasoning": "The settings control the use of personal identifiers like 'full display names' and 'avatars', which falls under personal_information. These options are for an 'AI Companion' feature, which inherently collects user data to generate assets, making data_collection relevant."
     }
   ],
   "summary": {
-    "category_distribution": {
-      "personal_information": 3,
-      "account_security": 1
+    "category_distribution_counts": {
+      "personal_information": 30,
+      "data_retention": 12,
+      "account_security": 11,
+      "data_collection": 21,
+      "third_party_sharing": 13,
+      "sharing_settings": 23,
+      "location_privacy": 7,
+      "access_to_device": 10,
+      "communication_privacy": 13,
+      "notification_privacy": 10
     },
-    "successful_classifications": 4,
+    "category_distribution": {
+      "personal_information": 0.2,
+      "data_retention": 0.08,
+      "account_security": 0.0733,
+      "data_collection": 0.14,
+      "third_party_sharing": 0.0867,
+      "sharing_settings": 0.1533,
+      "location_privacy": 0.0467,
+      "access_to_device": 0.0667,
+      "communication_privacy": 0.0867,
+      "notification_privacy": 0.0667
+    },
+    "successful_classifications": 35,
     "failed_classifications": 0
   },
-  "timestamp": "2025-11-12T13:17:34.912905"
+  "subdirectory_results": [
+    {
+      "subdirectory": "facebook",
+      "results": {
+        "status": "success",
+        "total_images": 8,
+        "classifications": [
+          {
+            "status": "success",
+            "image_path": "screenshots\\facebook\\after_click__Account_ownership_and_control_20251112T172305Z.png",
+            "detected_categories": [
+              "personal_information",
+              "data_retention",
+              "account_security"
+            ],
+            "confidence": 1.0,
+            "page_type": "Account management",
+            "detected_settings": [
+              "Contact info",
+              "Memorialization",
+              "Deactivation or deletion"
+            ],
+            "reasoning": "The page is titled 'Personal details' and displays contact information. The modal provides options for 'Memorialization' and 'Deactivation or deletion', which are direct controls over the long-term retention of user data and the account itself. These settings fall under 'Account ownership and control', which is a fundamental aspect of account security."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\facebook\\after_click__Ad_preferences_20251112T172233Z.png",
+            "detected_categories": [
+              "personal_information",
+              "data_collection",
+              "data_retention",
+              "third_party_sharing",
+              "sharing_settings"
+            ],
+            "confidence": 1.0,
+            "page_type": "Data management settings",
+            "detected_settings": [
+              "Export your information",
+              "Access your information",
+              "Search history",
+              "Your activity off Meta technologies",
+              "Specific ad partners"
+            ],
+            "reasoning": "personal_information: The page is titled 'Your information and permissions' and includes options to 'Access your information' and 'Export your information'.\ndata_collection: The 'Your activity off Meta technologies' setting allows users to control data collected about them from other websites and apps.\ndata_retention: The 'Search history' option implies management of retained search data, and the ability to export information confirms data is being retained for user access.\nthird_party_sharing: The 'Your activity off Meta technologies' and 'Specific ad partners' settings directly relate to how user data is shared with or received from third parties.\nsharing_settings: The 'Specific ad partners' option provides controls over how information is shared with advertising partners."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\facebook\\after_click__Deactivation_or_deletion_20251112T172349Z.png",
+            "detected_categories": [
+              "personal_information",
+              "data_retention",
+              "account_security",
+              "data_collection",
+              "sharing_settings"
+            ],
+            "confidence": 1.0,
+            "page_type": "Account Deactivation/Deletion",
+            "detected_settings": [
+              "Deactivation or deletion",
+              "Select account to deactivate or delete (Tester Test Facebook)"
+            ],
+            "reasoning": "personal_information: The background page is explicitly titled 'Personal details' and shows 'Contact info'.\ndata_retention: The pop-up presents the user with the choice to 'temporarily deactivate or permanently delete' their account, which is a direct control over data retention.\naccount_security: The ability to deactivate or delete an account is a fundamental aspect of account security and lifecycle management.\ndata_collection: Permanently deleting an account is the most definitive way for a user to stop future data collection by the service for that account.\nsharing_settings: The descriptive text in the background states, 'You decide what personal details you make visible to others,' which directly pertains to sharing settings."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\facebook\\after_click__Personal_details_20251112T172234Z.png",
+            "detected_categories": [
+              "personal_information",
+              "sharing_settings",
+              "data_retention",
+              "account_security"
+            ],
+            "confidence": 1.0,
+            "page_type": "Personal details",
+            "detected_settings": [
+              "Contact info",
+              "Birthday",
+              "Identity confirmation",
+              "Account ownership and control"
+            ],
+            "reasoning": "personal_information: The page is explicitly titled 'Personal details' and displays the user's contact info and birthday. sharing_settings: The page description states, 'You decide what personal details you make visible to others,' which directly relates to sharing controls. data_retention: The 'Account ownership and control' setting allows users to 'deactivate or delete your accounts,' which is a form of data retention control. account_security: The 'Identity confirmation' option is a feature used to verify a user's identity and secure their account."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\facebook\\after_click__Your_information_and_permissions_20251112T172232Z.png",
+            "detected_categories": [
+              "personal_information",
+              "data_collection",
+              "third_party_sharing",
+              "data_retention",
+              "sharing_settings"
+            ],
+            "confidence": 1.0,
+            "page_type": "Data management",
+            "detected_settings": [
+              "Export your information",
+              "Access your information",
+              "Search history",
+              "Your activity off Meta technologies",
+              "Specific ad partners"
+            ],
+            "reasoning": "personal_information is present as the page allows users to access and export their data. data_collection is indicated by the 'Your activity off Meta technologies' setting, which refers to data gathered from other sites. third_party_sharing and sharing_settings are relevant due to the 'Specific ad partners' option, which controls data use with external advertisers. data_retention is addressed through options to access and export historical data like 'Search history'."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\facebook\\initial_load_20251112T172213Z.png",
+            "detected_categories": [],
+            "confidence": 0.0,
+            "page_type": "",
+            "detected_settings": [],
+            "reasoning": ""
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\facebook\\password_and_security_20251112T172235Z.png",
+            "detected_categories": [
+              "personal_information",
+              "sharing_settings",
+              "data_retention",
+              "account_security"
+            ],
+            "confidence": 1.0,
+            "page_type": "Personal details",
+            "detected_settings": [
+              "Contact info",
+              "Birthday",
+              "Identity confirmation",
+              "Account ownership and control"
+            ],
+            "reasoning": "personal_information: The page is explicitly titled 'Personal details' and displays the user's contact information and birthday.\nsharing_settings: The description states, 'You decide what personal details you make visible to others,' which directly relates to controlling how information is shared.\ndata_retention: The 'Account ownership and control' option allows a user to 'deactivate or delete your accounts and profiles,' which is a method of controlling data retention.\naccount_security: The 'Identity confirmation' setting is a feature used to verify a user's identity and secure their account."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\facebook\\personal_details_20251112T172305Z.png",
+            "detected_categories": [
+              "personal_information",
+              "data_retention",
+              "account_security"
+            ],
+            "confidence": 1.0,
+            "page_type": "Account ownership and control",
+            "detected_settings": [
+              "Memorialization",
+              "Deactivation or deletion"
+            ],
+            "reasoning": "The page is titled 'Personal details' and the modal 'Account ownership and control' deals with the user's profile and associated data. The settings for 'Deactivation or deletion' and 'Memorialization' directly control how long the user's data is kept by the service. The 'Account ownership and control' section allows the user to manage the fundamental state and existence of their account, which is a key aspect of security."
+          }
+        ],
+        "summary": {
+          "category_distribution_counts": {
+            "personal_information": 7,
+            "data_retention": 7,
+            "account_security": 5,
+            "data_collection": 3,
+            "third_party_sharing": 2,
+            "sharing_settings": 5
+          },
+          "category_distribution": {
+            "personal_information": 0.2414,
+            "data_retention": 0.2414,
+            "account_security": 0.1724,
+            "data_collection": 0.1034,
+            "third_party_sharing": 0.069,
+            "sharing_settings": 0.1724
+          },
+          "successful_classifications": 8,
+          "failed_classifications": 0
+        },
+        "timestamp": "2025-11-23T13:29:40.214965"
+      }
+    },
+    {
+      "subdirectory": "gmail",
+      "results": {
+        "status": "success",
+        "total_images": 5,
+        "classifications": [
+          {
+            "status": "success",
+            "image_path": "screenshots\\gmail\\Screenshot 2025-11-18 154217.png",
+            "detected_categories": [
+              "personal_information",
+              "sharing_settings",
+              "location_privacy",
+              "data_collection",
+              "data_retention",
+              "account_security"
+            ],
+            "confidence": 1.0,
+            "page_type": "Main settings",
+            "detected_settings": [
+              "Privacy suggestions available",
+              "Review suggestions (2)",
+              "Things you've done and places you've been",
+              "Info you can share with others",
+              "Data from apps and services you use",
+              "Web & App Activity",
+              "Timeline",
+              "YouTube History",
+              "My Activity",
+              "Maps Timeline",
+              "YouTube watch & search history"
+            ],
+            "reasoning": "The page is the main 'Data & privacy' hub for a Google account, providing a high-level overview and access to various settings.\n- personal_information: The page allows management of saved activity data like web searches and watched videos, which is personal information.\n- sharing_settings: The section 'Info you can share with others' directly pertains to controlling how a user's information is shared.\n- location_privacy: The 'Timeline' setting is explicitly for controlling the collection and storage of the user's location history.\n- data_collection: The 'History settings' section includes toggles like 'Web & App Activity' and 'YouTube History' that directly control the collection of user activity data.\n- data_retention: The page offers options to 'See and delete your history anytime' via links like 'My Activity', which are controls for data retention.\n- account_security: The 'Privacy suggestions available' and 'Privacy Checkup' features are designed to guide users in reviewing and improving their account's privacy and security posture."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\gmail\\Screenshot 2025-11-18 154228.png",
+            "detected_categories": [
+              "personal_information",
+              "sharing_settings",
+              "location_privacy",
+              "third_party_sharing",
+              "data_collection",
+              "access_to_device"
+            ],
+            "confidence": 1.0,
+            "page_type": "Main settings page",
+            "detected_settings": [
+              "Personalized ads on Google (On)",
+              "Partner ads settings",
+              "Search personalization (On)",
+              "Manage Google Fit privacy",
+              "Profile (Your info and who can see it)",
+              "Location Sharing (Not sharing with anyone)"
+            ],
+            "reasoning": "The page contains distinct sections for managing how personal data is used for ads, search, and shared with others, which directly maps to the identified categories. \n- personal_information: The 'Info you can share with others' section explicitly mentions managing personal info like birthday and email address through the 'Profile' setting.\n- sharing_settings: The page has a dedicated section titled 'Info you can share with others' which includes settings for 'Profile' visibility and 'Location Sharing'.\n- location_privacy: A specific 'Location Sharing' setting is present, allowing the user to control whether their location is shared.\n- third_party_sharing: The 'Partner ads settings' option allows users to manage ads on sites that partner with Google, which involves data sharing with third parties.\n- data_collection: Settings like 'Personalized ads', 'Search personalization', and 'Google Fit privacy' allow users to control how their data is collected and used for service personalization.\n- access_to_device: The 'Google Fit privacy' section mentions managing privacy settings for 'connected devices and services'."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\gmail\\Screenshot 2025-11-18 154237.png",
+            "detected_categories": [
+              "personal_information",
+              "third_party_sharing",
+              "communication_privacy",
+              "data_collection",
+              "data_retention"
+            ],
+            "confidence": 1.0,
+            "page_type": "Data management",
+            "detected_settings": [
+              "Content saved from Google services",
+              "Third-party apps & services",
+              "Manage email preferences",
+              "Voice Match",
+              "Download your data",
+              "Delete a Google service"
+            ],
+            "reasoning": "The page allows users to manage data from Google and third-party services. 'Voice Match' is a setting for biometric personal information and a form of data collection. 'Third-party apps & services' directly relates to third-party sharing. 'Emails from Google services' is a communication privacy setting. 'Download or delete your data' provides options for data retention control."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\gmail\\Screenshot 2025-11-18 154245.png",
+            "detected_categories": [
+              "personal_information",
+              "sharing_settings",
+              "third_party_sharing",
+              "data_retention"
+            ],
+            "confidence": 1.0,
+            "page_type": "Data management settings",
+            "detected_settings": [
+              "Make a plan for your digital legacy",
+              "Delete your Google Account"
+            ],
+            "reasoning": "The page offers controls to manage and delete a user's account and the personal data it contains. The 'digital legacy' option allows a user to decide what happens to their data, which can include sharing it after a period of inactivity. Planning a 'digital legacy' implies the potential to grant access to a designated third party (e.g., a family member) after the user is inactive. The options to plan for an inactive account and to delete the account are direct controls over how long the service retains the user's data."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\gmail\\Screenshot 2025-11-18 154446.png",
+            "detected_categories": [
+              "access_to_device",
+              "personal_information",
+              "sharing_settings",
+              "location_privacy",
+              "communication_privacy",
+              "third_party_sharing",
+              "data_collection"
+            ],
+            "confidence": 1.0,
+            "page_type": "Specific category",
+            "detected_settings": [
+              "Contact info saved from interactions (On)",
+              "Contact info from your devices (Off)",
+              "Blocked",
+              "Location sharing",
+              "About me (What personal info you make visible to others)",
+              "Business personalization (Off)",
+              "Shared endorsements in ads (Off)"
+            ],
+            "reasoning": "The page is explicitly titled 'People & sharing' and contains distinct sections for managing how personal information, contacts, and location are shared with other people and used across Google services. \n- access_to_device: The 'Contact info from your devices' setting directly controls Google's access to data on the user's device.\n- personal_information: The 'Choose what others see' and 'Share recommendations in ads' sections manage the visibility of personal data like name and profile photo.\n- sharing_settings: The entire page is dedicated to managing how information is shared with other people, as indicated by the title and sections like 'Location sharing'.\n- location_privacy: There is a specific section titled 'Location sharing' for managing real-time location data.\n- communication_privacy: The 'Contacts' and 'Blocked' sections allow users to manage their interactions and communications with other users.\n- third_party_sharing: The 'Share recommendations in ads' setting controls whether a user's profile information and activity are shared with other users in the context of ads.\n- data_collection: Settings like 'Contact info saved from interactions' and 'Contact info from your devices' are explicit controls for Google's collection of contact data."
+          }
+        ],
+        "summary": {
+          "category_distribution_counts": {
+            "personal_information": 5,
+            "sharing_settings": 4,
+            "location_privacy": 3,
+            "data_collection": 4,
+            "data_retention": 3,
+            "account_security": 1,
+            "third_party_sharing": 4,
+            "access_to_device": 2,
+            "communication_privacy": 2
+          },
+          "category_distribution": {
+            "personal_information": 0.1786,
+            "sharing_settings": 0.1429,
+            "location_privacy": 0.1071,
+            "data_collection": 0.1429,
+            "data_retention": 0.1071,
+            "account_security": 0.0357,
+            "third_party_sharing": 0.1429,
+            "access_to_device": 0.0714,
+            "communication_privacy": 0.0714
+          },
+          "successful_classifications": 5,
+          "failed_classifications": 0
+        },
+        "timestamp": "2025-11-23T13:31:23.898376"
+      }
+    },
+    {
+      "subdirectory": "linkedin",
+      "results": {
+        "status": "success",
+        "total_images": 9,
+        "classifications": [
+          {
+            "status": "success",
+            "image_path": "screenshots\\linkedin\\account_preferences_20251111T173334Z.png",
+            "detected_categories": [
+              "personal_information",
+              "sharing_settings",
+              "location_privacy",
+              "third_party_sharing",
+              "data_collection"
+            ],
+            "confidence": 1.0,
+            "page_type": "Specific category",
+            "detected_settings": [
+              "Connections",
+              "Companies you follow",
+              "Groups",
+              "Education and skills",
+              "Job information",
+              "Employer",
+              "Customized display format",
+              "Profile location",
+              "Inferred city location",
+              "Interests and traits",
+              "Age range",
+              "Gender",
+              "Ads off LinkedIn",
+              "Data from others for ads",
+              "Measure ad success",
+              "Share data with affiliates and partners"
+            ],
+            "reasoning": "The page is titled 'Advertising data' and explicitly lists categories of user data used for advertising. The presence of 'personal_information' is confirmed by sections like 'Profile data' and 'inferred data' which include details like job information, age, and gender. 'sharing_settings' and 'third_party_sharing' are evident from the option 'Share data with affiliates and partners'. 'location_privacy' is addressed through settings for 'Profile location' and 'Inferred city location'. 'data_collection' is the overarching theme, as the page details what information LinkedIn gathers for advertising, including 'Off LinkedIn data'."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\linkedin\\advertising_data_20251111T173359Z.png",
+            "detected_categories": [
+              "notification_privacy",
+              "communication_privacy",
+              "sharing_settings",
+              "personal_information"
+            ],
+            "confidence": 1.0,
+            "page_type": "Notification settings",
+            "detected_settings": [
+              "Searching for a job",
+              "Hiring someone",
+              "Connecting with others",
+              "Network catch-up updates",
+              "Posting and commenting",
+              "Messaging",
+              "Groups",
+              "Pages",
+              "Attending events",
+              "News and reports",
+              "Updating your profile",
+              "Verifications",
+              "Games"
+            ],
+            "reasoning": "The page is explicitly titled 'Notifications' and provides granular control over the types of notifications a user receives, which is the core of notification_privacy. The 'Messaging' and 'Connecting with others' settings relate to communication_privacy by managing alerts about interactions with other users. Settings like 'Posting and commenting' pertain to sharing_settings as they notify the user about interactions with their shared content. The 'Updating your profile' option is linked to personal_information as it concerns notifications about the user's own profile data."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\linkedin\\after_click__Advertising_data_20251111T173333Z.png",
+            "detected_categories": [
+              "personal_information",
+              "sharing_settings",
+              "location_privacy",
+              "third_party_sharing",
+              "data_collection"
+            ],
+            "confidence": 1.0,
+            "page_type": "Specific category",
+            "detected_settings": [
+              "Connections",
+              "Companies you follow",
+              "Groups",
+              "Education and skills",
+              "Job information",
+              "Employer",
+              "Customized display format",
+              "Profile location",
+              "Inferred city location",
+              "Interests and traits",
+              "Age range",
+              "Gender",
+              "Ads off LinkedIn",
+              "Data from others for ads",
+              "Measure ad success",
+              "Share data with affiliates and partners"
+            ],
+            "reasoning": "The page is titled 'Advertising data' and contains settings that control how various types of data are used for advertising purposes.\n- personal_information: The page lists settings for using personal profile data like job information, education, age, and gender for advertising.\n- sharing_settings: The option 'Share data with affiliates and partners' directly controls the sharing of user data with other entities.\n- location_privacy: Settings for 'Profile location' and 'Inferred city location' control the use of location data for ad targeting.\n- third_party_sharing: The page includes settings for sharing data with 'affiliates and partners' and using 'data from others for ads,' which involves third parties.\n- data_collection: The page details various types of data collected for advertising, including profile data, inferred data, and data from off-LinkedIn sources."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png",
+            "detected_categories": [
+              "data_collection",
+              "personal_information",
+              "sharing_settings",
+              "communication_privacy",
+              "third_party_sharing",
+              "notification_privacy"
+            ],
+            "confidence": 1.0,
+            "page_type": "Data privacy settings",
+            "detected_settings": [
+              "Manage your data and activity",
+              "Get a copy of your data",
+              "Search history",
+              "Personal demographic information",
+              "Social, economic, and workplace research",
+              "Data for Generative AI Improvement",
+              "Invitations to connect",
+              "Invitations from your network",
+              "Messages",
+              "Research invites",
+              "LinkedIn promotions",
+              "Focused Inbox",
+              "Read receipts and typing indicators",
+              "Messaging suggestions",
+              "Message nudges",
+              "Automated detection of harmful content",
+              "Job application settings",
+              "Share your profile when you click Apply for a job",
+              "Signal your interest to recruiters at companies you've created job alerts for",
+              "Stored job applicant accounts",
+              "Permitted services",
+              "Microsoft Word"
+            ],
+            "reasoning": "The page is the 'Data privacy' section within LinkedIn's main settings, containing clearly labeled sub-sections and specific controls. The presence of sections like 'How LinkedIn uses your data', 'Who can reach you', 'Job seeking preferences', and 'Other applications' directly corresponds to the identified privacy categories.\n- data_collection: The page has settings like 'Data for Generative AI Improvement' that allow users to control how their data is collected and used for specific purposes.\n- personal_information: The page provides options to manage 'Personal demographic information' and 'Get a copy of your data,' which are core aspects of personal information control.\n- sharing_settings: Settings like 'Share your profile when you click Apply for a job' give users direct control over when and with whom their profile information is shared.\n- communication_privacy: The 'Who can reach you' and 'Messaging experience' sections contain settings to manage incoming messages, invitations, and features like read receipts.\n- third_party_sharing: The 'Other applications' section includes settings for 'Permitted services' and 'Microsoft Word,' which control data sharing with external applications.\n- notification_privacy: Options such as 'Research invites' and 'Message nudges' allow users to manage the types of communications and alerts they receive from the platform."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\linkedin\\after_click__Notifications_20251111T173359Z.png",
+            "detected_categories": [
+              "notification_privacy",
+              "communication_privacy",
+              "personal_information"
+            ],
+            "confidence": 1.0,
+            "page_type": "Notification settings",
+            "detected_settings": [
+              "Searching for a job",
+              "Hiring someone",
+              "Connecting with others",
+              "Network catch-up updates",
+              "Posting and commenting",
+              "Messaging",
+              "Groups",
+              "Pages",
+              "Attending events",
+              "News and reports",
+              "Updating your profile",
+              "Verifications",
+              "Games"
+            ],
+            "reasoning": "The page is explicitly for managing 'Notifications you receive', making 'notification_privacy' the primary category. The 'Messaging' option allows control over notifications for direct user-to-user communication, which falls under 'communication_privacy'. Several notification types, such as 'Connecting with others' or 'Updating your profile', pertain to alerts about personal data, making 'personal_information' a relevant category."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\linkedin\\after_click__Sign_in_security_20251111T173330Z.png",
+            "detected_categories": [
+              "personal_information",
+              "account_security",
+              "access_to_device",
+              "location_privacy"
+            ],
+            "confidence": 1.0,
+            "page_type": "Sign in & security",
+            "detected_settings": [
+              "Email addresses",
+              "Phone numbers",
+              "Passkeys",
+              "Where you're signed in",
+              "Devices that remember your password",
+              "Two-factor authentication"
+            ],
+            "reasoning": "The page contains settings for managing personal identifiers, securing the account, and reviewing device and location access. 'Email addresses' and 'Phone numbers' are personal information. 'Passkeys' and 'Two-factor authentication' are account security measures. 'Where you're signed in' and 'Devices that remember your password' relate to both access to device and location privacy by showing which devices and from what locations the account has been accessed."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png",
+            "detected_categories": [
+              "personal_information",
+              "sharing_settings",
+              "third_party_sharing"
+            ],
+            "confidence": 1.0,
+            "page_type": "Specific category",
+            "detected_settings": [
+              "Profile viewing options",
+              "Page visit visibility",
+              "Edit your public profile",
+              "Who can see or download your email address",
+              "Who can see your connections",
+              "Who can see members you follow",
+              "Who can see your last name",
+              "Representing your organizations and interests",
+              "Page owners exporting your data",
+              "Profile discovery and visibility off LinkedIn",
+              "Profile discovery using email address",
+              "Profile discovery using phone number",
+              "Blocked members",
+              "Manage active status",
+              "Share job changes, education changes, and work anniversaries from profile",
+              "Notify connections when you're in the news",
+              "Mentioned by others",
+              "Followers"
+            ],
+            "reasoning": "personal_information: The page includes settings that control who can see or find the user based on personal identifiers like their email address, phone number, and last name.\nsharing_settings: The page is primarily composed of options that allow the user to control the visibility of their profile, connections, activity, and network information with other users on the platform.\nthird_party_sharing: The 'Profile discovery and visibility off LinkedIn' setting directly controls whether the user's profile information is shared with services outside of LinkedIn, such as search engines."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\linkedin\\end_of_run_20251111T173412Z.png",
+            "detected_categories": [
+              "notification_privacy",
+              "communication_privacy"
+            ],
+            "confidence": 1.0,
+            "page_type": "Specific category",
+            "detected_settings": [
+              "Searching for a job",
+              "Hiring someone",
+              "Connecting with others",
+              "Network catch-up updates",
+              "Posting and commenting",
+              "Messaging",
+              "Groups",
+              "Pages",
+              "Attending events",
+              "News and reports",
+              "Updating your profile",
+              "Verifications",
+              "Games"
+            ],
+            "reasoning": "The page is explicitly titled 'Notifications' and lists various categories of alerts that the user can manage, which is a core aspect of notification privacy. These settings also control communications the user receives from the platform and other users, such as 'Messaging' and 'Connecting with others' updates, relating to communication privacy."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\linkedin\\initial_load_20251111T173223Z.png",
+            "detected_categories": [
+              "access_to_device",
+              "personal_information",
+              "sharing_settings",
+              "third_party_sharing",
+              "data_collection",
+              "data_retention"
+            ],
+            "confidence": 1.0,
+            "page_type": "Account settings",
+            "detected_settings": [
+              "Sync calendar",
+              "Sync contacts",
+              "View purchase history",
+              "Microsoft",
+              "Hibernate account",
+              "Close and delete account"
+            ],
+            "reasoning": "The 'Sync calendar' and 'Sync contacts' settings directly relate to access_to_device and data_collection. The 'Partners & services' section with 'Microsoft' is a clear indicator of third_party_sharing and sharing_settings. 'View purchase history' and the synced data fall under personal_information. The 'Account management' options 'Hibernate account' and 'Close and delete account' are explicit controls for data_retention."
+          }
+        ],
+        "summary": {
+          "category_distribution_counts": {
+            "personal_information": 8,
+            "sharing_settings": 6,
+            "location_privacy": 3,
+            "third_party_sharing": 5,
+            "data_collection": 4,
+            "notification_privacy": 4,
+            "communication_privacy": 4,
+            "account_security": 1,
+            "access_to_device": 2,
+            "data_retention": 1
+          },
+          "category_distribution": {
+            "personal_information": 0.2105,
+            "sharing_settings": 0.1579,
+            "location_privacy": 0.0789,
+            "third_party_sharing": 0.1316,
+            "data_collection": 0.1053,
+            "notification_privacy": 0.1053,
+            "communication_privacy": 0.1053,
+            "account_security": 0.0263,
+            "access_to_device": 0.0526,
+            "data_retention": 0.0263
+          },
+          "successful_classifications": 9,
+          "failed_classifications": 0
+        },
+        "timestamp": "2025-11-23T13:32:34.256446"
+      }
+    },
+    {
+      "subdirectory": "zoom",
+      "results": {
+        "status": "success",
+        "total_images": 13,
+        "classifications": [
+          {
+            "status": "success",
+            "image_path": "screenshots\\zoom\\after_click__Data_Privacy_20251111T172742Z.png",
+            "detected_categories": [
+              "data_collection",
+              "personal_information"
+            ],
+            "confidence": 1.0,
+            "page_type": "Data settings",
+            "detected_settings": [
+              "Optional Diagnostic Data"
+            ],
+            "reasoning": "data_collection: The page provides a user-configurable toggle to allow or disallow the collection of \"Optional Diagnostic Data\" for product improvement.\npersonal_information: The settings control the collection of service-generated diagnostic data, which is information related to the user's interaction with the service and is thus considered personal information."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z.png",
+            "detected_categories": [],
+            "confidence": 0.0,
+            "page_type": "",
+            "detected_settings": [],
+            "reasoning": ""
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_0.png",
+            "detected_categories": [
+              "sharing_settings",
+              "location_privacy",
+              "communication_privacy",
+              "account_security"
+            ],
+            "confidence": 1.0,
+            "page_type": "Specific category",
+            "detected_settings": [
+              "Enable auto-calling",
+              "Require that all meetings are secured with one security option",
+              "Enable waiting room",
+              "Meeting Passcode",
+              "Require a passcode for meetings which have already been scheduled",
+              "Personal Meeting ID (PMI) Passcode",
+              "Require passcode for participants joining by phone",
+              "Embed passcode in invite link for one-click join",
+              "Allow Zoom Rooms to become the host if they join before meeting host and other participants",
+              "Only authenticated users can join meetings from Web client",
+              "Approve or block entry for users from specific countries/regions"
+            ],
+            "reasoning": "sharing_settings: The page includes multiple options like passcodes and waiting rooms that control who can access and join a meeting, thereby managing the sharing of the meeting space.\nlocation_privacy: The setting 'Approve or block entry for users from specific countries/regions' directly uses location information to grant or deny access to a meeting.\ncommunication_privacy: The settings are designed to secure the meeting environment (e.g., passcodes, authenticated users) to ensure that communications remain private to the intended participants.\naccount_security: Features like requiring passcodes and authenticating users are fundamental security measures to protect meetings associated with the user's account from unauthorized access."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_11000.png",
+            "detected_categories": [],
+            "confidence": 0.0,
+            "page_type": "",
+            "detected_settings": [],
+            "reasoning": ""
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_13200.png",
+            "detected_categories": [
+              "access_to_device",
+              "personal_information",
+              "sharing_settings",
+              "communication_privacy",
+              "notification_privacy",
+              "data_collection",
+              "account_security"
+            ],
+            "confidence": 1.0,
+            "page_type": "Meeting settings",
+            "detected_settings": [
+              "On desktop browser",
+              "On mobile browser",
+              "Show \"Always join from browser\" option when joining from join.zoom.us",
+              "Show a custom disclaimer when starting or joining a meeting",
+              "Request permission to unmute",
+              "Far end audio control",
+              "Auto-accept far end audio control",
+              "Enable \"Stop incoming video\" feature",
+              "When attendees join meeting before host",
+              "When a meeting is cancelled",
+              "Schedule Privilege"
+            ],
+            "reasoning": "The \"Far end audio control\" and \"Request permission to unmute\" settings grant or request control over a user's microphone and audio hardware, which falls under access_to_device. The \"Schedule Privilege\" setting allows one user to manage another's meeting schedule, which is considered personal_information and also an aspect of account_security. Settings like \"Enable 'Stop incoming video' feature\" and audio controls are sharing_settings that manage the flow of data between participants. The core purpose of these options is to manage communication_privacy within a meeting. The \"Email Notification\" section explicitly controls notifications, making it notification_privacy. The \"Show a custom disclaimer\" setting can be used to inform users about data_collection practices like meeting recordings."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_2200.png",
+            "detected_categories": [
+              "access_to_device",
+              "personal_information",
+              "sharing_settings",
+              "communication_privacy",
+              "notification_privacy",
+              "third_party_sharing",
+              "data_collection",
+              "account_security"
+            ],
+            "confidence": 1.0,
+            "page_type": "Meeting Settings",
+            "detected_settings": [
+              "Default encryption type (Enhanced encryption, End-to-end encryption)",
+              "Host video",
+              "Participants video",
+              "Audio Type (Computer Audio)",
+              "Allow participants to join before host",
+              "Participants can join [x] minutes before start time",
+              "Enable Personal Meeting ID",
+              "Use Personal Meeting ID (PMI) when scheduling a meeting",
+              "Use Personal Meeting ID (PMI) when starting an instant meeting",
+              "Mute all participants when they join a meeting",
+              "Upcoming meeting reminder",
+              "Don't allow agendas to be shared with external users",
+              "Require media encryption for 3rd party endpoints (SIP/H.323)",
+              "Chat",
+              "By default, allow participants to chat with: Everyone and anyone directly"
+            ],
+            "reasoning": "access_to_device: Settings control default access to the user's and participants' cameras and microphones.\npersonal_information: The page includes settings for a \"Personal Meeting ID,\" which is a persistent identifier assigned to the user's account.\nsharing_settings: Options exist to control the sharing of meeting agendas with external users and to define who participants can chat with.\ncommunication_privacy: The user can set the level of encryption for meetings and control communication channels like video, audio, and chat.\nnotification_privacy: A setting is available to enable or disable desktop notifications for upcoming meetings.\nthird_party_sharing: There is a specific setting to enforce encryption for third-party endpoints connecting to the meeting.\ndata_collection: Toggles for video, audio, and chat directly determine what types of data are collected during a meeting.\naccount_security: The \"Default encryption type\" setting directly impacts the security and confidentiality of all meetings associated with the account."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_4400.png",
+            "detected_categories": [
+              "personal_information",
+              "sharing_settings",
+              "communication_privacy",
+              "notification_privacy",
+              "data_collection",
+              "data_retention"
+            ],
+            "confidence": 1.0,
+            "page_type": "Specific category",
+            "detected_settings": [
+              "Allow users to copy or save chats from the meeting",
+              "Host",
+              "Everyone",
+              "Only users in your account",
+              "Only users in your account can chat",
+              "Enable continuous meeting chat",
+              "Default enabled Continuous Meeting Chat for \"Schedule meetings\"",
+              "Enable Continuous Meeting Chat for \"Instant meetings\"",
+              "Allow participants to delete messages in meeting chat",
+              "Allow participants to edit messages in meeting chat",
+              "Enable the Screenshot feature in meeting chat",
+              "Allow participants to use emojis in meeting chat",
+              "All emojis",
+              "Selected emojis",
+              "Private chat",
+              "Auto saving chats",
+              "Allow hyperlinks in Meeting and Webinar Chat",
+              "Send files via meeting chat",
+              "Only allow specified file types",
+              "Maximum file size",
+              "Sound notification when someone joins or leaves",
+              "Announce number of participants for dial-in participants"
+            ],
+            "reasoning": "The screenshot displays a detailed settings page for in-meeting chat functionalities, which directly impacts user privacy.\n- personal_information: Settings control the management (editing, deleting, saving) of chat messages, which are a form of personal information.\n- sharing_settings: The page includes multiple options for controlling how information like messages, files, and screenshots are shared among meeting participants.\n- communication_privacy: Options like \"Private chat\" and who can save chats directly manage the privacy and confidentiality of communications between users.\n- notification_privacy: The settings for sound notifications and participant announcements control what information about user activity is broadcast to others.\n- data_collection: The \"Auto saving chats\" feature is a direct form of data collection, as it automatically gathers and stores the entire chat log.\n- data_retention: The \"Enable continuous meeting chat\" setting determines if chat data is retained and accessible after the meeting has concluded."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_6600.png",
+            "detected_categories": [
+              "access_to_device",
+              "personal_information",
+              "sharing_settings",
+              "communication_privacy",
+              "data_collection"
+            ],
+            "confidence": 1.0,
+            "page_type": "Meeting settings",
+            "detected_settings": [
+              "Display end-of-meeting experience feedback survey",
+              "Display for every meeting",
+              "Display for meetings randomly",
+              "Display when quality issues are detected",
+              "Show Zoom windows during screen share",
+              "Screen sharing",
+              "How many participants can share at the same time?",
+              "Who can share?",
+              "Who can start sharing when someone else is sharing?",
+              "Screen Sharing Presenter View",
+              "Disable desktop screen sharing for meetings you host",
+              "Disable screen sharing when guests are in the meeting",
+              "Restrict external users from using remote control and remote support in a meeting",
+              "Prevent my screen from being controlled by an external user",
+              "Prevent guest user's screen from being controlled in your meeting",
+              "Annotation",
+              "Allow saving of shared screens with annotations",
+              "Only the user who is sharing can annotate",
+              "Enable Clips in meetings",
+              "Whiteboard (Classic)",
+              "Use Whiteboard by default if available",
+              "Allow to save the whiteboard content",
+              "Automatically create local export when sharing is stopped",
+              "Remote control",
+              "Allow remote controlling user to share clipboard",
+              "Slide Control",
+              "Meeting reactions"
+            ],
+            "reasoning": "The page contains numerous settings that control how users interact and share information within a meeting. 'Remote control' and 'Slide Control' settings grant other users control over a user's device, falling under access_to_device. Screen sharing can expose sensitive data on a user's screen, making it a personal_information concern. The majority of the page is dedicated to who can share content and when, which are explicit sharing_settings. These controls over information flow between participants are a form of communication_privacy. Finally, options like saving whiteboard content, annotations, and displaying feedback surveys are direct forms of data_collection."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_8800.png",
+            "detected_categories": [
+              "personal_information",
+              "sharing_settings",
+              "communication_privacy",
+              "notification_privacy",
+              "third_party_sharing",
+              "data_collection",
+              "account_security",
+              "access_to_device"
+            ],
+            "confidence": 1.0,
+            "page_type": "Meeting settings",
+            "detected_settings": [
+              "Meeting reactions (All emojis / Selected emojis)",
+              "Allow removed participants to rejoin",
+              "Show invitee list in the Participants panel",
+              "Allow users to change their name when joining a meeting",
+              "Allow participants to rename themselves",
+              "Allow host or co-host to rename participants in the waiting room",
+              "Hide participant profile pictures in a meeting",
+              "Meeting timers",
+              "Default meeting wallpaper",
+              "Allow users to join external meetings, webinars and events through mesh in the local area network",
+              "Report to Zoom",
+              "Breakout room - Meetings",
+              "Assign participants to breakout rooms when scheduling",
+              "Broadcast message to participants",
+              "Broadcast voice to breakout rooms",
+              "Allow host to view activity statuses of participants in breakout rooms",
+              "Set default breakout room behaviors",
+              "Remote support",
+              "Manual captions",
+              "Automated captions"
+            ],
+            "reasoning": "personal_information: Settings directly control the display and modification of user identifiers like names and profile pictures.\nsharing_settings: Options control the visibility of information like the invitee list and participant profile pictures among attendees.\ncommunication_privacy: Features like breakout rooms, captions, and reactions manage how participants communicate with each other during a meeting.\nnotification_privacy: The setting to rename participants explicitly states that users will be notified, informing them of a change to their personal data.\nthird_party_sharing: The manual captions setting mentions the ability to assign a third-party service to provide captions.\ndata_collection: The 'Report to Zoom' feature initiates data collection for review, and hosts can be allowed to view participant activity statuses.\naccount_security: Settings like allowing removed participants to rejoin and reporting users for inappropriate behavior directly affect meeting security and integrity.\naccess_to_device: The 'Remote support' feature allows a meeting host to provide 1:1 remote support, which implies accessing another participant's device."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\zoom\\after_click__Recording_20251111T172741Z.png",
+            "detected_categories": [
+              "access_to_device",
+              "personal_information",
+              "sharing_settings",
+              "communication_privacy",
+              "notification_privacy",
+              "data_collection"
+            ],
+            "confidence": 1.0,
+            "page_type": "Specific category",
+            "detected_settings": [
+              "Record to computer files",
+              "Who can request host permission to record?",
+              "Internal meeting participants",
+              "Auto approve their permission requests (for internal participants)",
+              "External meeting participants",
+              "Auto approve their permission requests (for external participants)",
+              "Meeting participants with specified domains",
+              "Automatic recording",
+              "Play voice prompt for All participants",
+              "Play voice prompt for Guest only",
+              "Ask host to confirm before starting a recording",
+              "Multiple notifications for phone users"
+            ],
+            "reasoning": "The page is a dedicated 'Recording' settings page within Zoom, providing granular control over how meeting data is captured and how participants are notified. The 'Record to computer files' setting requires access to the user's device storage. The settings control the recording of meetings, which inherently captures personal information like video and audio. The options under 'Who can request host permission to record?' manage which participants can initiate the recording and sharing of the meeting content. The settings directly manage whether and how communications within a meeting are recorded, impacting the privacy of the conversation. The 'Notification' section provides explicit controls for how users are informed that a recording is taking place. The 'Automatic recording' and 'Record to computer files' toggles are direct controls over the collection of meeting data."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\zoom\\after_click__Settings_20251111T172904Z.png",
+            "detected_categories": [
+              "personal_information",
+              "data_collection"
+            ],
+            "confidence": 1.0,
+            "page_type": "Specific category",
+            "detected_settings": [
+              "Use full display names for meeting assets generated by AI Companion",
+              "Create with avatars",
+              "Create custom avatars"
+            ],
+            "reasoning": "The settings control the use of a user's display name and avatar, which are forms of personal information, in AI-generated content. Enabling these toggles permits the AI Companion feature to collect and process user data, such as their avatar choice or display name, to generate assets."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\zoom\\initial_load_20251111T172703Z_slice_0.png",
+            "detected_categories": [
+              "data_collection",
+              "sharing_settings",
+              "personal_information",
+              "access_to_device",
+              "notification_privacy"
+            ],
+            "confidence": 1.0,
+            "page_type": "General settings",
+            "detected_settings": [
+              "Detailed crash dumps (Windows)",
+              "Feedback to Zoom",
+              "Allow users to send text feedback",
+              "Show \"Join from a room\" feature on Zoom meetings in the Zoom client meeting list",
+              "Allow automatic direct sharing and pairing to Zoom Rooms using ultrasonic proximity signal",
+              "Hide potentially sensitive information on mobile task switcher",
+              "Change my status to away when screen saver begins",
+              "Track billable hours",
+              "Enable manual control to start and stop billable hours tracking for calls and meetings.",
+              "Enable automatic tracking of billable hours for calls and meetings.",
+              "Show educational onboarding assistant for new features"
+            ],
+            "reasoning": "data_collection: The page includes options to enable the collection of crash dumps, user feedback, and activity data for billable hours.\nsharing_settings: Settings allow users to share feedback with Zoom and to share their screen with Zoom Rooms.\npersonal_information: A setting controls the user's presence status, which is personal information about their availability.\naccess_to_device: A setting enables the use of ultrasonic signals, which requires access to the device's microphone/speaker for proximity detection.\nnotification_privacy: A setting controls whether the user sees educational pop-up notifications for new features."
+          },
+          {
+            "status": "success",
+            "image_path": "screenshots\\zoom\\safety_capture_20251111T172904Z.png",
+            "detected_categories": [
+              "personal_information",
+              "data_collection"
+            ],
+            "confidence": 1,
+            "page_type": "Specific category",
+            "detected_settings": [
+              "Use full display names for meeting assets generated by AI Companion",
+              "Create with avatars",
+              "Create custom avatars"
+            ],
+            "reasoning": "The settings control the use of personal identifiers like 'full display names' and 'avatars', which falls under personal_information. These options are for an 'AI Companion' feature, which inherently collects user data to generate assets, making data_collection relevant."
+          }
+        ],
+        "summary": {
+          "category_distribution_counts": {
+            "data_collection": 10,
+            "personal_information": 10,
+            "sharing_settings": 8,
+            "location_privacy": 1,
+            "communication_privacy": 7,
+            "account_security": 4,
+            "access_to_device": 6,
+            "notification_privacy": 6,
+            "third_party_sharing": 2,
+            "data_retention": 1
+          },
+          "category_distribution": {
+            "data_collection": 0.1818,
+            "personal_information": 0.1818,
+            "sharing_settings": 0.1455,
+            "location_privacy": 0.0182,
+            "communication_privacy": 0.1273,
+            "account_security": 0.0727,
+            "access_to_device": 0.1091,
+            "notification_privacy": 0.1091,
+            "third_party_sharing": 0.0364,
+            "data_retention": 0.0182
+          },
+          "successful_classifications": 13,
+          "failed_classifications": 0
+        },
+        "timestamp": "2025-11-23T13:34:30.844605"
+      }
+    }
+  ],
+  "timestamp": "2025-11-23T13:37:45.983404"
 }

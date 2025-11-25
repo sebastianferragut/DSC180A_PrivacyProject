@@ -1,0 +1,295 @@
+{
+  "status": "success",
+  "total_images": 9,
+  "classifications": [
+    {
+      "status": "success",
+      "image_path": "screenshots\\linkedin\\account_preferences_20251111T173334Z.png",
+      "detected_categories": [
+        "personal_information",
+        "sharing_settings",
+        "location_privacy",
+        "third_party_sharing",
+        "data_collection"
+      ],
+      "confidence": 1.0,
+      "page_type": "Specific category",
+      "detected_settings": [
+        "Connections",
+        "Companies you follow",
+        "Groups",
+        "Education and skills",
+        "Job information",
+        "Employer",
+        "Customized display format",
+        "Profile location",
+        "Inferred city location",
+        "Interests and traits",
+        "Age range",
+        "Gender",
+        "Ads off LinkedIn",
+        "Data from others for ads",
+        "Measure ad success",
+        "Share data with affiliates and partners"
+      ],
+      "reasoning": "The page is titled 'Advertising data' and explicitly lists categories of user data used for advertising. The presence of 'personal_information' is confirmed by sections like 'Profile data' and 'inferred data' which include details like job information, age, and gender. 'sharing_settings' and 'third_party_sharing' are evident from the option 'Share data with affiliates and partners'. 'location_privacy' is addressed through settings for 'Profile location' and 'Inferred city location'. 'data_collection' is the overarching theme, as the page details what information LinkedIn gathers for advertising, including 'Off LinkedIn data'."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\linkedin\\advertising_data_20251111T173359Z.png",
+      "detected_categories": [
+        "notification_privacy",
+        "communication_privacy",
+        "sharing_settings",
+        "personal_information"
+      ],
+      "confidence": 1.0,
+      "page_type": "Notification settings",
+      "detected_settings": [
+        "Searching for a job",
+        "Hiring someone",
+        "Connecting with others",
+        "Network catch-up updates",
+        "Posting and commenting",
+        "Messaging",
+        "Groups",
+        "Pages",
+        "Attending events",
+        "News and reports",
+        "Updating your profile",
+        "Verifications",
+        "Games"
+      ],
+      "reasoning": "The page is explicitly titled 'Notifications' and provides granular control over the types of notifications a user receives, which is the core of notification_privacy. The 'Messaging' and 'Connecting with others' settings relate to communication_privacy by managing alerts about interactions with other users. Settings like 'Posting and commenting' pertain to sharing_settings as they notify the user about interactions with their shared content. The 'Updating your profile' option is linked to personal_information as it concerns notifications about the user's own profile data."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\linkedin\\after_click__Advertising_data_20251111T173333Z.png",
+      "detected_categories": [
+        "personal_information",
+        "sharing_settings",
+        "location_privacy",
+        "third_party_sharing",
+        "data_collection"
+      ],
+      "confidence": 1.0,
+      "page_type": "Specific category",
+      "detected_settings": [
+        "Connections",
+        "Companies you follow",
+        "Groups",
+        "Education and skills",
+        "Job information",
+        "Employer",
+        "Customized display format",
+        "Profile location",
+        "Inferred city location",
+        "Interests and traits",
+        "Age range",
+        "Gender",
+        "Ads off LinkedIn",
+        "Data from others for ads",
+        "Measure ad success",
+        "Share data with affiliates and partners"
+      ],
+      "reasoning": "The page is titled 'Advertising data' and contains settings that control how various types of data are used for advertising purposes.\n- personal_information: The page lists settings for using personal profile data like job information, education, age, and gender for advertising.\n- sharing_settings: The option 'Share data with affiliates and partners' directly controls the sharing of user data with other entities.\n- location_privacy: Settings for 'Profile location' and 'Inferred city location' control the use of location data for ad targeting.\n- third_party_sharing: The page includes settings for sharing data with 'affiliates and partners' and using 'data from others for ads,' which involves third parties.\n- data_collection: The page details various types of data collected for advertising, including profile data, inferred data, and data from off-LinkedIn sources."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png",
+      "detected_categories": [
+        "data_collection",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "third_party_sharing",
+        "notification_privacy"
+      ],
+      "confidence": 1.0,
+      "page_type": "Data privacy settings",
+      "detected_settings": [
+        "Manage your data and activity",
+        "Get a copy of your data",
+        "Search history",
+        "Personal demographic information",
+        "Social, economic, and workplace research",
+        "Data for Generative AI Improvement",
+        "Invitations to connect",
+        "Invitations from your network",
+        "Messages",
+        "Research invites",
+        "LinkedIn promotions",
+        "Focused Inbox",
+        "Read receipts and typing indicators",
+        "Messaging suggestions",
+        "Message nudges",
+        "Automated detection of harmful content",
+        "Job application settings",
+        "Share your profile when you click Apply for a job",
+        "Signal your interest to recruiters at companies you've created job alerts for",
+        "Stored job applicant accounts",
+        "Permitted services",
+        "Microsoft Word"
+      ],
+      "reasoning": "The page is the 'Data privacy' section within LinkedIn's main settings, containing clearly labeled sub-sections and specific controls. The presence of sections like 'How LinkedIn uses your data', 'Who can reach you', 'Job seeking preferences', and 'Other applications' directly corresponds to the identified privacy categories.\n- data_collection: The page has settings like 'Data for Generative AI Improvement' that allow users to control how their data is collected and used for specific purposes.\n- personal_information: The page provides options to manage 'Personal demographic information' and 'Get a copy of your data,' which are core aspects of personal information control.\n- sharing_settings: Settings like 'Share your profile when you click Apply for a job' give users direct control over when and with whom their profile information is shared.\n- communication_privacy: The 'Who can reach you' and 'Messaging experience' sections contain settings to manage incoming messages, invitations, and features like read receipts.\n- third_party_sharing: The 'Other applications' section includes settings for 'Permitted services' and 'Microsoft Word,' which control data sharing with external applications.\n- notification_privacy: Options such as 'Research invites' and 'Message nudges' allow users to manage the types of communications and alerts they receive from the platform."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\linkedin\\after_click__Notifications_20251111T173359Z.png",
+      "detected_categories": [
+        "notification_privacy",
+        "communication_privacy",
+        "personal_information"
+      ],
+      "confidence": 1.0,
+      "page_type": "Notification settings",
+      "detected_settings": [
+        "Searching for a job",
+        "Hiring someone",
+        "Connecting with others",
+        "Network catch-up updates",
+        "Posting and commenting",
+        "Messaging",
+        "Groups",
+        "Pages",
+        "Attending events",
+        "News and reports",
+        "Updating your profile",
+        "Verifications",
+        "Games"
+      ],
+      "reasoning": "The page is explicitly for managing 'Notifications you receive', making 'notification_privacy' the primary category. The 'Messaging' option allows control over notifications for direct user-to-user communication, which falls under 'communication_privacy'. Several notification types, such as 'Connecting with others' or 'Updating your profile', pertain to alerts about personal data, making 'personal_information' a relevant category."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\linkedin\\after_click__Sign_in_security_20251111T173330Z.png",
+      "detected_categories": [
+        "personal_information",
+        "account_security",
+        "access_to_device",
+        "location_privacy"
+      ],
+      "confidence": 1.0,
+      "page_type": "Sign in & security",
+      "detected_settings": [
+        "Email addresses",
+        "Phone numbers",
+        "Passkeys",
+        "Where you're signed in",
+        "Devices that remember your password",
+        "Two-factor authentication"
+      ],
+      "reasoning": "The page contains settings for managing personal identifiers, securing the account, and reviewing device and location access. 'Email addresses' and 'Phone numbers' are personal information. 'Passkeys' and 'Two-factor authentication' are account security measures. 'Where you're signed in' and 'Devices that remember your password' relate to both access to device and location privacy by showing which devices and from what locations the account has been accessed."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png",
+      "detected_categories": [
+        "personal_information",
+        "sharing_settings",
+        "third_party_sharing"
+      ],
+      "confidence": 1.0,
+      "page_type": "Specific category",
+      "detected_settings": [
+        "Profile viewing options",
+        "Page visit visibility",
+        "Edit your public profile",
+        "Who can see or download your email address",
+        "Who can see your connections",
+        "Who can see members you follow",
+        "Who can see your last name",
+        "Representing your organizations and interests",
+        "Page owners exporting your data",
+        "Profile discovery and visibility off LinkedIn",
+        "Profile discovery using email address",
+        "Profile discovery using phone number",
+        "Blocked members",
+        "Manage active status",
+        "Share job changes, education changes, and work anniversaries from profile",
+        "Notify connections when you're in the news",
+        "Mentioned by others",
+        "Followers"
+      ],
+      "reasoning": "personal_information: The page includes settings that control who can see or find the user based on personal identifiers like their email address, phone number, and last name.\nsharing_settings: The page is primarily composed of options that allow the user to control the visibility of their profile, connections, activity, and network information with other users on the platform.\nthird_party_sharing: The 'Profile discovery and visibility off LinkedIn' setting directly controls whether the user's profile information is shared with services outside of LinkedIn, such as search engines."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\linkedin\\end_of_run_20251111T173412Z.png",
+      "detected_categories": [
+        "notification_privacy",
+        "communication_privacy"
+      ],
+      "confidence": 1.0,
+      "page_type": "Specific category",
+      "detected_settings": [
+        "Searching for a job",
+        "Hiring someone",
+        "Connecting with others",
+        "Network catch-up updates",
+        "Posting and commenting",
+        "Messaging",
+        "Groups",
+        "Pages",
+        "Attending events",
+        "News and reports",
+        "Updating your profile",
+        "Verifications",
+        "Games"
+      ],
+      "reasoning": "The page is explicitly titled 'Notifications' and lists various categories of alerts that the user can manage, which is a core aspect of notification privacy. These settings also control communications the user receives from the platform and other users, such as 'Messaging' and 'Connecting with others' updates, relating to communication privacy."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\linkedin\\initial_load_20251111T173223Z.png",
+      "detected_categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "third_party_sharing",
+        "data_collection",
+        "data_retention"
+      ],
+      "confidence": 1.0,
+      "page_type": "Account settings",
+      "detected_settings": [
+        "Sync calendar",
+        "Sync contacts",
+        "View purchase history",
+        "Microsoft",
+        "Hibernate account",
+        "Close and delete account"
+      ],
+      "reasoning": "The 'Sync calendar' and 'Sync contacts' settings directly relate to access_to_device and data_collection. The 'Partners & services' section with 'Microsoft' is a clear indicator of third_party_sharing and sharing_settings. 'View purchase history' and the synced data fall under personal_information. The 'Account management' options 'Hibernate account' and 'Close and delete account' are explicit controls for data_retention."
+    }
+  ],
+  "summary": {
+    "category_distribution_counts": {
+      "personal_information": 8,
+      "sharing_settings": 6,
+      "location_privacy": 3,
+      "third_party_sharing": 5,
+      "data_collection": 4,
+      "notification_privacy": 4,
+      "communication_privacy": 4,
+      "account_security": 1,
+      "access_to_device": 2,
+      "data_retention": 1
+    },
+    "category_distribution": {
+      "personal_information": 0.2105,
+      "sharing_settings": 0.1579,
+      "location_privacy": 0.0789,
+      "third_party_sharing": 0.1316,
+      "data_collection": 0.1053,
+      "notification_privacy": 0.1053,
+      "communication_privacy": 0.1053,
+      "account_security": 0.0263,
+      "access_to_device": 0.0526,
+      "data_retention": 0.0263
+    },
+    "successful_classifications": 9,
+    "failed_classifications": 0
+  },
+  "timestamp": "2025-11-23T13:32:34.256446"
+}

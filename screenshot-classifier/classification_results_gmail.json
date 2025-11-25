@@ -1,0 +1,148 @@
+{
+  "status": "success",
+  "total_images": 5,
+  "classifications": [
+    {
+      "status": "success",
+      "image_path": "screenshots\\gmail\\Screenshot 2025-11-18 154217.png",
+      "detected_categories": [
+        "personal_information",
+        "sharing_settings",
+        "location_privacy",
+        "data_collection",
+        "data_retention",
+        "account_security"
+      ],
+      "confidence": 1.0,
+      "page_type": "Main settings",
+      "detected_settings": [
+        "Privacy suggestions available",
+        "Review suggestions (2)",
+        "Things you've done and places you've been",
+        "Info you can share with others",
+        "Data from apps and services you use",
+        "Web & App Activity",
+        "Timeline",
+        "YouTube History",
+        "My Activity",
+        "Maps Timeline",
+        "YouTube watch & search history"
+      ],
+      "reasoning": "The page is the main 'Data & privacy' hub for a Google account, providing a high-level overview and access to various settings.\n- personal_information: The page allows management of saved activity data like web searches and watched videos, which is personal information.\n- sharing_settings: The section 'Info you can share with others' directly pertains to controlling how a user's information is shared.\n- location_privacy: The 'Timeline' setting is explicitly for controlling the collection and storage of the user's location history.\n- data_collection: The 'History settings' section includes toggles like 'Web & App Activity' and 'YouTube History' that directly control the collection of user activity data.\n- data_retention: The page offers options to 'See and delete your history anytime' via links like 'My Activity', which are controls for data retention.\n- account_security: The 'Privacy suggestions available' and 'Privacy Checkup' features are designed to guide users in reviewing and improving their account's privacy and security posture."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\gmail\\Screenshot 2025-11-18 154228.png",
+      "detected_categories": [
+        "personal_information",
+        "sharing_settings",
+        "location_privacy",
+        "third_party_sharing",
+        "data_collection",
+        "access_to_device"
+      ],
+      "confidence": 1.0,
+      "page_type": "Main settings page",
+      "detected_settings": [
+        "Personalized ads on Google (On)",
+        "Partner ads settings",
+        "Search personalization (On)",
+        "Manage Google Fit privacy",
+        "Profile (Your info and who can see it)",
+        "Location Sharing (Not sharing with anyone)"
+      ],
+      "reasoning": "The page contains distinct sections for managing how personal data is used for ads, search, and shared with others, which directly maps to the identified categories. \n- personal_information: The 'Info you can share with others' section explicitly mentions managing personal info like birthday and email address through the 'Profile' setting.\n- sharing_settings: The page has a dedicated section titled 'Info you can share with others' which includes settings for 'Profile' visibility and 'Location Sharing'.\n- location_privacy: A specific 'Location Sharing' setting is present, allowing the user to control whether their location is shared.\n- third_party_sharing: The 'Partner ads settings' option allows users to manage ads on sites that partner with Google, which involves data sharing with third parties.\n- data_collection: Settings like 'Personalized ads', 'Search personalization', and 'Google Fit privacy' allow users to control how their data is collected and used for service personalization.\n- access_to_device: The 'Google Fit privacy' section mentions managing privacy settings for 'connected devices and services'."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\gmail\\Screenshot 2025-11-18 154237.png",
+      "detected_categories": [
+        "personal_information",
+        "third_party_sharing",
+        "communication_privacy",
+        "data_collection",
+        "data_retention"
+      ],
+      "confidence": 1.0,
+      "page_type": "Data management",
+      "detected_settings": [
+        "Content saved from Google services",
+        "Third-party apps & services",
+        "Manage email preferences",
+        "Voice Match",
+        "Download your data",
+        "Delete a Google service"
+      ],
+      "reasoning": "The page allows users to manage data from Google and third-party services. 'Voice Match' is a setting for biometric personal information and a form of data collection. 'Third-party apps & services' directly relates to third-party sharing. 'Emails from Google services' is a communication privacy setting. 'Download or delete your data' provides options for data retention control."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\gmail\\Screenshot 2025-11-18 154245.png",
+      "detected_categories": [
+        "personal_information",
+        "sharing_settings",
+        "third_party_sharing",
+        "data_retention"
+      ],
+      "confidence": 1.0,
+      "page_type": "Data management settings",
+      "detected_settings": [
+        "Make a plan for your digital legacy",
+        "Delete your Google Account"
+      ],
+      "reasoning": "The page offers controls to manage and delete a user's account and the personal data it contains. The 'digital legacy' option allows a user to decide what happens to their data, which can include sharing it after a period of inactivity. Planning a 'digital legacy' implies the potential to grant access to a designated third party (e.g., a family member) after the user is inactive. The options to plan for an inactive account and to delete the account are direct controls over how long the service retains the user's data."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\gmail\\Screenshot 2025-11-18 154446.png",
+      "detected_categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "location_privacy",
+        "communication_privacy",
+        "third_party_sharing",
+        "data_collection"
+      ],
+      "confidence": 1.0,
+      "page_type": "Specific category",
+      "detected_settings": [
+        "Contact info saved from interactions (On)",
+        "Contact info from your devices (Off)",
+        "Blocked",
+        "Location sharing",
+        "About me (What personal info you make visible to others)",
+        "Business personalization (Off)",
+        "Shared endorsements in ads (Off)"
+      ],
+      "reasoning": "The page is explicitly titled 'People & sharing' and contains distinct sections for managing how personal information, contacts, and location are shared with other people and used across Google services. \n- access_to_device: The 'Contact info from your devices' setting directly controls Google's access to data on the user's device.\n- personal_information: The 'Choose what others see' and 'Share recommendations in ads' sections manage the visibility of personal data like name and profile photo.\n- sharing_settings: The entire page is dedicated to managing how information is shared with other people, as indicated by the title and sections like 'Location sharing'.\n- location_privacy: There is a specific section titled 'Location sharing' for managing real-time location data.\n- communication_privacy: The 'Contacts' and 'Blocked' sections allow users to manage their interactions and communications with other users.\n- third_party_sharing: The 'Share recommendations in ads' setting controls whether a user's profile information and activity are shared with other users in the context of ads.\n- data_collection: Settings like 'Contact info saved from interactions' and 'Contact info from your devices' are explicit controls for Google's collection of contact data."
+    }
+  ],
+  "summary": {
+    "category_distribution_counts": {
+      "personal_information": 5,
+      "sharing_settings": 4,
+      "location_privacy": 3,
+      "data_collection": 4,
+      "data_retention": 3,
+      "account_security": 1,
+      "third_party_sharing": 4,
+      "access_to_device": 2,
+      "communication_privacy": 2
+    },
+    "category_distribution": {
+      "personal_information": 0.1786,
+      "sharing_settings": 0.1429,
+      "location_privacy": 0.1071,
+      "data_collection": 0.1429,
+      "data_retention": 0.1071,
+      "account_security": 0.0357,
+      "third_party_sharing": 0.1429,
+      "access_to_device": 0.0714,
+      "communication_privacy": 0.0714
+    },
+    "successful_classifications": 5,
+    "failed_classifications": 0
+  },
+  "timestamp": "2025-11-23T13:31:23.898376"
+}

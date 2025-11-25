@@ -7,11 +7,11 @@ and categorize them based on privacy-related content and settings.
 
 import os
 import json
-import base64
+import time
+import io
 from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 from pathlib import Path
-import io
 from PIL import Image
 
 from google import genai
@@ -40,25 +40,32 @@ class PrivacyScreenshotClassifier:
         self.model_id = 'gemini-2.5-pro'
         
         # Gemini API pricing (per 1M tokens) - unsure how accurate this is
-        self.cost_input_per_1m = float(os.environ.get('GEMINI_COST_IN_PER_1M', '1.25'))
+        self.cost_input_per_1m = float(os.environ.get('GEMINI_COST_IN_PER_1M', '1.25')) # this is accurate
         self.cost_output_per_1m = float(os.environ.get('GEMINI_COST_OUT_PER_1M', '10.0'))
+        
+        # API rate limiting: delay between API calls (in seconds) to prevent rate limit errors
+        self.api_delay = float(os.environ.get('API_DELAY_SECONDS', '1.0'))
+        
+        # Image optimization settings for token reduction
+        self.max_image_dimension = int(os.environ.get('MAX_IMAGE_DIMENSION', '2048'))  # Max dimension for resizing
+        self.jpeg_quality = int(os.environ.get('JPEG_QUALITY', '80'))  # JPEG quality (1-95)
         
         # Privacy categories for classification (add to this as domain knowledge expands)
         self.privacy_categories = {
             # Device and Sensor Access
             "access_to_device": {
-                "keywords": ["camera", "microphone", "video", "audio", "record", "recording", "permission", "device", "sensor"],
+                "keywords": ["camera", "microphone", "video", "audio", "record", "recording", "permission", "device", "sensor"], # this current code bypasses the keyword matching because the old logic didn't work, but i think this is important
                 "description": "Camera and microphone access settings"
             },
 
             # Profile and Personal Information
             "personal_information": {
-                "keywords": ["personal", "profile", "name", "email", "phone number", "address", "contact"],
+                "keywords": ["personal", "profile", "name", "email", "phone number", "address", "contact"], # need to tune keywords to be more exhaustive
                 "description": "Personal information and profile settings"
             },
             "sharing_settings": {
+                "description": "Content sharing and visibility settings",
                 "keywords": ["public", "private", "visibility", "audience", "organization-wide"],
-                "description": "Content sharing and visibility settings"
             },
 
             # Location
@@ -72,7 +79,7 @@ class PrivacyScreenshotClassifier:
                 "keywords": ["messages", "chat", "communication", "calls", "meeting", "conversation", "end-to-end encryption", "access controls"], # qiyu and haojian mentioned e2ee
                 "description": "Communication and messaging privacy settings"
             },
-            "notification_privacy": {
+            "notification_privacy": { # "description": "Notification and alert privacy settings"
                 "keywords": ["notifications", "alerts", "reminders", "email notifications", "participant consent/notification"], # qiyu and haojian also mentioned participant consent
                 "description": "Notification and alert privacy settings"
             },
@@ -104,39 +111,35 @@ class PrivacyScreenshotClassifier:
 
     def _create_analysis_prompt(self) -> str:
         """Create the analysis prompt for Gemini."""
-        categories_text = "\n".join([f"- {cat}: {info['description']}" for cat, info in self.privacy_categories.items()])
+        categories_text = "\n".join([f"- {cat}" for cat in self.privacy_categories.keys()])
         
         return f"""
-                You are a privacy settings expert analyzing a screenshot of a privacy settings page. 
+                You are a privacy settings expert analyzing a screenshot of a privacy settings page from the perspective of a user.
 
                 Analyze the screenshot and provide detailed information about:
-                1. **Application/Service**: What application or service is this privacy settings page for?
-                2. **Page Type**: What type of privacy settings page is this (e.g., main settings, specific category, etc.)?
-                3. **Privacy Categories Present**: Which of the following privacy categories, if any, are visible or relevant in this screenshot?
+
+                1. **Page Type**: What type of privacy settings page is this (e.g., main settings, specific category, etc.)? (this should be a single word or phrase.)
+                2. **Privacy Categories Present**: Which of the following privacy categories, if any, are visible or relevant in this screenshot?
 
                 {categories_text}
 
-                4. **Specific Settings**: List any specific privacy settings, toggles, or options visible in the screenshot.
-                5. **User Actions Available**: What privacy-related actions can a user take on this page?
-                6. **Privacy Level**: Rate the overall privacy-friendliness of the visible settings (1-10, where 10 is most privacy-friendly).
-                7. **Key Concerns**: Identify any potential privacy concerns or red flags visible in the settings.
-                8. **Recommendations**: Provide brief recommendations for privacy-conscious users.
-                9. **Confidence**: Rate your confidence in the privacy categories identified (0-1, inclusive), where 1.0 indicates absolute certainty, and lower values indicate less certainty.
+                3. **Specific Settings**: List any specific privacy settings, toggles, or options visible in the screenshot.
+                4. **Confidence**: Rate your confidence in the privacy categories identified (0-1, inclusive), where 1.0 indicates absolute certainty, and lower values indicate less certainty.
+                5. **Reasoning**: Provide a brief explanation as to why you believe the privacy categories are present in the screenshot (this should be concise, to the point, and no more than one sentence per Privacy Categories Present item)
+                    - For example, when a Zoom notification that the host is recording the meeting is visible, this is a notification privacy category because it informs the 
+                    participant that data about them (self) will be recorded and stored. The notification gives the participant the autonomy to opt out of the recording, albeit 
+                    not eqivalent to consent.
 
                 Please respond in JSON format with the following structure:
                 {{
-                    "application": "string",
                     "page_type": "string", 
                     "privacy_categories": ["list", "of", "categories"],
                     "specific_settings": ["list", "of", "visible", "settings"],
-                    "user_actions": ["list", "of", "available", "actions"],
-                    "privacy_level": number,
-                    "key_concerns": ["list", "of", "concerns"],
-                    "recommendations": ["list", "of", "recommendations"],
-                    "confidence": number
+                    "confidence": number,
+                    "reasoning": "string"
                 }}
 
-                Be thorough and accurate in your analysis. Focus on privacy-related content and settings.
+                Be thorough and accurate in your analysis. Focus on privacy-related content and settings, avoid navigation bar and elements that cannot be manipulated by the user.
             """
     
     
@@ -248,9 +251,33 @@ class PrivacyScreenshotClassifier:
             Dictionary containing analysis results
         """
         try:
-            # Load and prepare image
-            with open(image_path, 'rb') as f:
-                image_data = f.read()
+            # Load and optimize image (resize + convert PNG to JPEG) to reduce token usage
+            ext = Path(image_path).suffix.lower()
+            
+            # Load image for processing (both PNG and JPEG need resizing if too large)
+            img = Image.open(image_path)
+            
+            # Resize if image is larger than max dimension (maintains aspect ratio)
+            # This reduces token usage since Gemini tokenizes based on image dimensions
+            if max(img.size) > self.max_image_dimension:
+                img.thumbnail((self.max_image_dimension, self.max_image_dimension), Image.Resampling.LANCZOS)
+            
+            # Convert RGBA/LA/P to RGB if needed (JPEG doesn't support transparency)
+            if img.mode in ('RGBA', 'LA', 'P'):
+                # Create white background for transparent images
+                rgb_img = Image.new('RGB', img.size, (255, 255, 255))
+                if img.mode == 'P':
+                    img = img.convert('RGBA')
+                rgb_img.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
+                img = rgb_img
+            elif img.mode != 'RGB':
+                img = img.convert('RGB')
+            
+            # Save as JPEG at specified quality (converts PNG to JPEG, optimizes JPEG)
+            output = io.BytesIO()
+            img.save(output, format='JPEG', quality=self.jpeg_quality, optimize=True)
+            image_data = output.getvalue()
+            mime_type = 'image/jpeg'
             
             # Create analysis prompt
             analysis_prompt = self._create_analysis_prompt()
@@ -263,7 +290,7 @@ class PrivacyScreenshotClassifier:
                         role="user", # creates a user message
                         parts=[ # multimodal message
                             Part(text=analysis_prompt), # text instructions
-                            Part.from_bytes(data=image_data, mime_type='image/png') # image data
+                            Part.from_bytes(data=image_data, mime_type=mime_type) # image data
                         ]
                     )
                 ],
@@ -319,32 +346,11 @@ class PrivacyScreenshotClassifier:
             "status": "success",
             "image_path": image_path,
             "detected_categories": detected_categories,
-            "category_scores": {},
-            "primary_category": None,
             "confidence": analysis.get("confidence", 0.0),
             "page_type": analysis.get("page_type", ""),
-            "detected_settings": analysis.get("specific_settings", []) # list of specific settings visible in the screenshot (support confidence score)
+            "detected_settings": analysis.get("specific_settings", []), # list of specific settings visible in the screenshot (support confidence score)
+            "reasoning": analysis.get("reasoning", "") # explanation for why privacy categories are present
         }
-        
-        # Calculate category scores based on detected categories
-
-        #  "data_collection": { # from above ^
-        #         "keywords": ["data collection", "collect data", "analytics", "tracking", "telemetry"],
-        #         "description": "Settings related to data collection and analytics"
-        #     },
-
-        for category, info in self.privacy_categories.items(): # score: the number of keywords detected for each category
-            score = 0
-            for detected in detected_categories:
-                if any(keyword in detected.lower() for keyword in info["keywords"]):
-                    score += 1
-            classification["category_scores"][category] = score / len(info["keywords"])
-        
-        # Determine primary category
-        if classification["category_scores"]:
-            primary = max(classification["category_scores"], key=classification["category_scores"].get) # iterates through scores using get method, returning max
-            if classification["category_scores"][primary] > 0:
-                classification["primary_category"] = primary
         
         return classification
     
@@ -380,20 +386,37 @@ class PrivacyScreenshotClassifier:
         }
         
         # Process each image
-        for image_file in image_files:
+        if self.api_delay > 0:
+            print(f"⏱️  Using {self.api_delay}s delay between API calls to prevent rate limiting...")
+        
+        for i, image_file in enumerate(image_files):
             print(f"Processing {image_file.name}...")
             classification = self.classify_screenshot(str(image_file)) # batch_classify depends on classify_screenshot
             results["classifications"].append(classification) # appends dict
+            
+            # Add delay between API calls to prevent rate limiting (skip delay after last image)
+            if i < len(image_files) - 1 and self.api_delay > 0:
+                time.sleep(self.api_delay)
         
-        # Generate summary
-        category_counts = {} # is this really important?
+        # Generate summary - build category distribution from detected_categories
+        category_counts = {}
         for classification in results["classifications"]: 
-            if classification.get("primary_category"):
-                cat = classification["primary_category"]
+            detected_cats = classification.get("detected_categories", [])
+            for cat in detected_cats:
                 category_counts[cat] = category_counts.get(cat, 0) + 1
         
+        # Normalize category distribution (convert counts to proportions 0-1)
+        total_count = sum(category_counts.values())
+        category_distribution = {}
+        if total_count > 0:
+            for cat, count in category_counts.items():
+                category_distribution[cat] = round(count / total_count, 4)
+        else:
+            category_distribution = {}  # Keep empty dict if no counts
+        
         results["summary"] = {
-            "category_distribution": category_counts,
+            "category_distribution_counts": category_counts,  # Raw counts
+            "category_distribution": category_distribution,  # Proportions (0-1)
             "successful_classifications": len([c for c in results["classifications"] if c.get("status") == "success"]),
             "failed_classifications": len([c for c in results["classifications"] if c.get("status") != "success"])
         }
@@ -456,8 +479,6 @@ class PrivacyScreenshotClassifier:
 
 
 def main():
-    """Example usage of the PrivacyScreenshotClassifier."""
-
     # Initialize classifier
     try:
         classifier = PrivacyScreenshotClassifier()
@@ -471,36 +492,66 @@ def main():
     screenshots_dir = "screenshots"
     
     if os.path.exists(screenshots_dir):
-        # Find all image files
+        screenshots_path = Path(screenshots_dir)
         image_extensions = {'.png', '.jpg', '.jpeg', '.bmp', '.tiff', '.webp'}
-        image_files = [f for f in Path(screenshots_dir).iterdir() if f.suffix.lower() in image_extensions]
         
-        if image_files:
-            print(f"\n💰 Calculating token usage for {len(image_files)} screenshot(s)...")
-            all_token_reports = []
-            total_input_tokens = 0
-            total_output_tokens = 0
-            total_cost = 0.0
+        # Find all subdirectories in screenshots directory
+        subdirectories = [d for d in screenshots_path.iterdir() if d.is_dir()]
+        
+        if not subdirectories:
+            print(f"⚠️ No subdirectories found in {screenshots_dir}")
+            print("Please create subdirectories with your screenshot files")
+            return
+        
+        # Process token usage for all screenshots across all subdirectories
+        all_token_reports = []
+        total_input_tokens = 0
+        total_output_tokens = 0
+        total_cost = 0.0
+        total_images = 0
+        
+        # Collect all image files first to track total count
+        all_image_files = []
+        for subdir in subdirectories:
+            image_files = [f for f in subdir.iterdir() if f.is_file() and f.suffix.lower() in image_extensions]
+            for img_file in image_files:
+                all_image_files.append((subdir.name, img_file))
+        
+        total_images = len(all_image_files)
+        
+        if classifier.api_delay > 0:
+            print(f"⏱️  Using {classifier.api_delay}s delay between API calls to prevent rate limiting...")
+        
+        # Process each image with delays
+        for idx, (subdir_name, image_file) in enumerate(all_image_files):
+            if idx == 0 or (idx > 0 and all_image_files[idx-1][0] != subdir_name):
+                print(f"\n💰 Calculating token usage for screenshots in {subdir_name}...")
             
-            for image_file in image_files:
-                image_path = str(image_file)
-                print(f"  Processing: {image_file.name}...")
-                token_report = classifier.calculate_token_usage(image_path)
-                all_token_reports.append(token_report)
-                
-                total_input_tokens += token_report['token_usage']['input_tokens']
-                total_output_tokens += token_report['token_usage']['output_tokens']
-                total_cost += token_report['cost']['cost_usd']
+            image_path = str(image_file)
+            print(f"  Processing: {subdir_name}/{image_file.name}...")
+            token_report = classifier.calculate_token_usage(image_path)
+            all_token_reports.append(token_report)
             
+            total_input_tokens += token_report['token_usage']['input_tokens']
+            total_output_tokens += token_report['token_usage']['output_tokens']
+            total_cost += token_report['cost']['cost_usd']
+            
+            # Add delay between API calls to prevent rate limiting (skip delay after last image)
+            if idx < len(all_image_files) - 1 and classifier.api_delay > 0:
+                time.sleep(classifier.api_delay)
+        
+        if all_token_reports:
             # Create aggregated report
             aggregated_report = {
                 "summary": {
-                    "total_images": len(image_files),
+                    "total_images": total_images,
                     "total_input_tokens": total_input_tokens,
                     "total_output_tokens": total_output_tokens,
                     "total_tokens": total_input_tokens + total_output_tokens,
                     "total_cost_usd": round(total_cost, 8),
-                    "average_cost_per_image": round(total_cost / len(image_files), 8) if image_files else 0.0,
+                    "average_cost_per_image": round(total_cost / total_images, 8) if total_images > 0 else 0.0,
+                    "average_input_tokens_per_image": round(total_input_tokens / total_images, 2) if total_images > 0 else 0.0,
+                    "average_output_tokens_per_image": round(total_output_tokens / total_images, 2) if total_images > 0 else 0.0,
                     "pricing": {
                         "input_cost_per_1m_tokens": classifier.cost_input_per_1m,
                         "output_cost_per_1m_tokens": classifier.cost_output_per_1m
@@ -511,16 +562,69 @@ def main():
             }
             
             # Save aggregated report
-            output_file = "screenshot_classifier_token_usage.json"
+            output_file = "new_screenshot_classifier_token_usage.json"
             with open(output_file, 'w') as f:
                 json.dump(aggregated_report, f, indent=2)
+            print(f"\n✅ Token usage report saved to {output_file}")
         
-        # Batch classification
-        print(f"\n🔍 Batch analyzing screenshots in: {screenshots_dir}")
-        batch_results = classifier.batch_classify(screenshots_dir, "classification_results.json")
-        print(f"📊 Batch Results:")
-        print(json.dumps(batch_results["classifications"], indent=2))
-        print(json.dumps(batch_results["summary"], indent=2))
+        # Batch classification for each subdirectory
+        print(f"\n🔍 Batch analyzing screenshots in subdirectories of: {screenshots_dir}")
+        all_batch_results = []
+        all_classifications = []
+        all_category_counts = {}
+        
+        for subdir in subdirectories:
+            print(f"\n📁 Processing subdirectory: {subdir.name}")
+            output_file = f"classification_results_{subdir.name}.json"
+            batch_results = classifier.batch_classify(str(subdir), output_file)
+            
+            if batch_results.get("status") == "success":
+                all_batch_results.append({
+                    "subdirectory": subdir.name,
+                    "results": batch_results
+                })
+                all_classifications.extend(batch_results.get("classifications", []))
+                
+                # Aggregate category counts (from normalized distributions, need to convert back to counts)
+                # Since distributions are normalized, we'll rebuild counts from detected_categories
+                for classification in batch_results.get("classifications", []):
+                    detected_cats = classification.get("detected_categories", [])
+                    for cat in detected_cats:
+                        all_category_counts[cat] = all_category_counts.get(cat, 0) + 1
+        
+        # Normalize aggregated category distribution
+        total_count = sum(all_category_counts.values())
+        normalized_category_distribution = {}
+        if total_count > 0:
+            for cat, count in all_category_counts.items():
+                normalized_category_distribution[cat] = round(count / total_count, 4)
+        else:
+            normalized_category_distribution = {}
+        
+        # Create aggregated batch results
+        if all_batch_results:
+            aggregated_batch_results = {
+                "status": "success",
+                "total_subdirectories": len(subdirectories),
+                "total_images": sum(r["results"].get("total_images", 0) for r in all_batch_results),
+                "classifications": all_classifications,
+                "summary": {
+                    "category_distribution_counts": all_category_counts,  # Raw counts
+                    "category_distribution": normalized_category_distribution,  # Proportions (0-1)
+                    "successful_classifications": len([c for c in all_classifications if c.get("status") == "success"]),
+                    "failed_classifications": len([c for c in all_classifications if c.get("status") != "success"])
+                },
+                "subdirectory_results": all_batch_results,
+                "timestamp": datetime.now().isoformat()
+            }
+            
+            # Save aggregated batch results
+            aggregated_output_file = "classification_results.json"
+            with open(aggregated_output_file, 'w') as f:
+                json.dump(aggregated_batch_results, f, indent=2)
+            print(f"\n✅ Aggregated batch results saved to {aggregated_output_file}")
+            print(f"\n📊 Aggregated Summary:")
+            print(json.dumps(aggregated_batch_results["summary"], indent=2))
     else:
         print(f"⚠️ Screenshots directory not found: {screenshots_dir}")
         print("Please create a directory with your screenshot files")

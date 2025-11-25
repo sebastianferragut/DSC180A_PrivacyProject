@@ -1,13 +1,13 @@
 {
   "summary": {
-    "total_images": 37,
-    "total_input_tokens": 28872,
-    "total_output_tokens": 17319,
-    "total_tokens": 46191,
-    "total_cost_usd": 0.20928,
-    "average_cost_per_image": 0.00565622,
-    "average_input_tokens_per_image": 780.32,
-    "average_output_tokens_per_image": 468.08,
+    "total_images": 35,
+    "total_input_tokens": 24850,
+    "total_output_tokens": 11345,
+    "total_tokens": 36195,
+    "total_cost_usd": 0.1445125,
+    "average_cost_per_image": 0.00412893,
+    "average_input_tokens_per_image": 710.0,
+    "average_output_tokens_per_image": 324.14,
     "pricing": {
       "input_cost_per_1m_tokens": 1.25,
       "output_cost_per_1m_tokens": 10.0
@@ -17,15 +17,15 @@
     {
       "image_path": "screenshots\\facebook\\after_click__Account_ownership_and_control_20251112T172305Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:10:02.262682",
+      "timestamp": "2025-11-23T13:21:32.880013",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 475,
-        "total_tokens": 1277,
+        "input_tokens": 710,
+        "output_tokens": 189,
+        "total_tokens": 899,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0057525,
+        "cost_usd": 0.0027775,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -36,15 +36,15 @@
     {
       "image_path": "screenshots\\facebook\\after_click__Ad_preferences_20251112T172233Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:10:19.102998",
+      "timestamp": "2025-11-23T13:21:45.111917",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 528,
-        "total_tokens": 1330,
+        "input_tokens": 710,
+        "output_tokens": 277,
+        "total_tokens": 987,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0062825,
+        "cost_usd": 0.0036575,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -55,15 +55,15 @@
     {
       "image_path": "screenshots\\facebook\\after_click__Deactivation_or_deletion_20251112T172349Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:10:37.013140",
+      "timestamp": "2025-11-23T13:22:00.074095",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 567,
-        "total_tokens": 1369,
+        "input_tokens": 710,
+        "output_tokens": 239,
+        "total_tokens": 949,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0066725,
+        "cost_usd": 0.0032775,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -74,15 +74,15 @@
     {
       "image_path": "screenshots\\facebook\\after_click__Personal_details_20251112T172234Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:10:53.822146",
+      "timestamp": "2025-11-23T13:22:11.765286",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 501,
-        "total_tokens": 1303,
+        "input_tokens": 710,
+        "output_tokens": 260,
+        "total_tokens": 970,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0060125,
+        "cost_usd": 0.0034875,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -93,15 +93,15 @@
     {
       "image_path": "screenshots\\facebook\\after_click__Your_information_and_permissions_20251112T172232Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:11:11.019687",
+      "timestamp": "2025-11-23T13:22:25.005691",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 529,
-        "total_tokens": 1331,
+        "input_tokens": 710,
+        "output_tokens": 276,
+        "total_tokens": 986,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0062925,
+        "cost_usd": 0.0036475,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -112,15 +112,15 @@
     {
       "image_path": "screenshots\\facebook\\initial_load_20251112T172213Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:11:27.273710",
+      "timestamp": "2025-11-23T13:22:42.383094",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 454,
-        "total_tokens": 1256,
+        "input_tokens": 710,
+        "output_tokens": 341,
+        "total_tokens": 1051,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0055425,
+        "cost_usd": 0.0042975,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -131,15 +131,15 @@
     {
       "image_path": "screenshots\\facebook\\password_and_security_20251112T172235Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:11:44.398020",
+      "timestamp": "2025-11-23T13:22:53.022846",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 523,
-        "total_tokens": 1325,
+        "input_tokens": 710,
+        "output_tokens": 227,
+        "total_tokens": 937,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0062325,
+        "cost_usd": 0.0031575,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -150,15 +150,15 @@
     {
       "image_path": "screenshots\\facebook\\personal_details_20251112T172305Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:12:01.242314",
+      "timestamp": "2025-11-23T13:23:06.048904",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 499,
-        "total_tokens": 1301,
+        "input_tokens": 710,
+        "output_tokens": 240,
+        "total_tokens": 950,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0059925,
+        "cost_usd": 0.0032875,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -169,15 +169,15 @@
     {
       "image_path": "screenshots\\gmail\\Screenshot 2025-11-18 154217.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:12:18.536767",
+      "timestamp": "2025-11-23T13:23:22.133106",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 554,
-        "total_tokens": 1356,
+        "input_tokens": 710,
+        "output_tokens": 360,
+        "total_tokens": 1070,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0065425,
+        "cost_usd": 0.0044875,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -188,15 +188,15 @@
     {
       "image_path": "screenshots\\gmail\\Screenshot 2025-11-18 154228.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:12:34.147984",
+      "timestamp": "2025-11-23T13:23:42.875690",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 685,
-        "total_tokens": 1487,
+        "input_tokens": 710,
+        "output_tokens": 47,
+        "total_tokens": 757,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0078525,
+        "cost_usd": 0.0013575,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -207,15 +207,15 @@
     {
       "image_path": "screenshots\\gmail\\Screenshot 2025-11-18 154237.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:12:50.724615",
+      "timestamp": "2025-11-23T13:23:55.789234",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 705,
-        "total_tokens": 1507,
+        "input_tokens": 710,
+        "output_tokens": 288,
+        "total_tokens": 998,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0080525,
+        "cost_usd": 0.0037675,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -226,15 +226,15 @@
     {
       "image_path": "screenshots\\gmail\\Screenshot 2025-11-18 154245.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:13:04.927852",
+      "timestamp": "2025-11-23T13:24:09.556596",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 461,
-        "total_tokens": 1263,
+        "input_tokens": 710,
+        "output_tokens": 179,
+        "total_tokens": 889,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0056125,
+        "cost_usd": 0.0026775,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -245,34 +245,34 @@
     {
       "image_path": "screenshots\\gmail\\Screenshot 2025-11-18 154446.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:13:21.874470",
+      "timestamp": "2025-11-23T13:24:23.852902",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 701,
-        "total_tokens": 1503,
+        "input_tokens": 710,
+        "output_tokens": 334,
+        "total_tokens": 1044,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0080125,
+        "cost_usd": 0.0042275,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
         }
       },
-      "analysis_status": "partial_success"
+      "analysis_status": "success"
     },
     {
       "image_path": "screenshots\\linkedin\\account_preferences_20251111T173334Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:13:38.891036",
+      "timestamp": "2025-11-23T13:24:36.113664",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 440,
-        "total_tokens": 1242,
+        "input_tokens": 710,
+        "output_tokens": 387,
+        "total_tokens": 1097,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0054025,
+        "cost_usd": 0.0047575,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -283,15 +283,15 @@
     {
       "image_path": "screenshots\\linkedin\\advertising_data_20251111T173359Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:13:57.014246",
+      "timestamp": "2025-11-23T13:24:46.935160",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 542,
-        "total_tokens": 1344,
+        "input_tokens": 710,
+        "output_tokens": 248,
+        "total_tokens": 958,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0064225,
+        "cost_usd": 0.0033675,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -302,15 +302,15 @@
     {
       "image_path": "screenshots\\linkedin\\after_click__Advertising_data_20251111T173333Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:14:16.392089",
+      "timestamp": "2025-11-23T13:24:58.737807",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 490,
-        "total_tokens": 1292,
+        "input_tokens": 710,
+        "output_tokens": 343,
+        "total_tokens": 1053,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0059025,
+        "cost_usd": 0.0043175,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -321,15 +321,15 @@
     {
       "image_path": "screenshots\\linkedin\\after_click__Data_privacy_20251111T173332Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:14:33.176380",
+      "timestamp": "2025-11-23T13:25:13.091313",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 276,
-        "total_tokens": 1078,
+        "input_tokens": 710,
+        "output_tokens": 459,
+        "total_tokens": 1169,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0037625,
+        "cost_usd": 0.0054775,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -340,15 +340,15 @@
     {
       "image_path": "screenshots\\linkedin\\after_click__Notifications_20251111T173359Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:14:49.777964",
+      "timestamp": "2025-11-23T13:25:24.253196",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 545,
-        "total_tokens": 1347,
+        "input_tokens": 710,
+        "output_tokens": 263,
+        "total_tokens": 973,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0064525,
+        "cost_usd": 0.0035175,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -359,15 +359,15 @@
     {
       "image_path": "screenshots\\linkedin\\after_click__Sign_in_security_20251111T173330Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:15:02.643193",
+      "timestamp": "2025-11-23T13:25:36.680599",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 394,
-        "total_tokens": 1196,
+        "input_tokens": 710,
+        "output_tokens": 237,
+        "total_tokens": 947,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0049425,
+        "cost_usd": 0.0032575,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -378,15 +378,15 @@
     {
       "image_path": "screenshots\\linkedin\\after_click__Visibility_20251111T173331Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:15:20.017542",
+      "timestamp": "2025-11-23T13:25:49.231521",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 476,
-        "total_tokens": 1278,
+        "input_tokens": 710,
+        "output_tokens": 353,
+        "total_tokens": 1063,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0057625,
+        "cost_usd": 0.0044175,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -397,15 +397,15 @@
     {
       "image_path": "screenshots\\linkedin\\end_of_run_20251111T173412Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:15:37.517908",
+      "timestamp": "2025-11-23T13:26:00.574966",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 508,
-        "total_tokens": 1310,
+        "input_tokens": 710,
+        "output_tokens": 266,
+        "total_tokens": 976,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0060825,
+        "cost_usd": 0.0035475,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -416,15 +416,15 @@
     {
       "image_path": "screenshots\\linkedin\\initial_load_20251111T173223Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:15:53.621611",
+      "timestamp": "2025-11-23T13:26:13.090479",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 463,
-        "total_tokens": 1265,
+        "input_tokens": 710,
+        "output_tokens": 222,
+        "total_tokens": 932,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0056325,
+        "cost_usd": 0.0031075,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -435,15 +435,15 @@
     {
       "image_path": "screenshots\\zoom\\after_click__Data_Privacy_20251111T172742Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:16:06.163171",
+      "timestamp": "2025-11-23T13:26:23.965836",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 429,
-        "total_tokens": 1231,
+        "input_tokens": 710,
+        "output_tokens": 137,
+        "total_tokens": 847,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0052925,
+        "cost_usd": 0.0022575,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -454,34 +454,34 @@
     {
       "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:16:25.915710",
+      "timestamp": "2025-11-23T13:26:43.385181",
       "token_usage": {
-        "input_tokens": 0,
-        "output_tokens": 0,
-        "total_tokens": 0,
-        "source": "unknown"
+        "input_tokens": 710,
+        "output_tokens": 617,
+        "total_tokens": 1327,
+        "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0,
+        "cost_usd": 0.0070575,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
         }
       },
-      "analysis_status": "error"
+      "analysis_status": "success"
     },
     {
       "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_0.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:16:45.405600",
+      "timestamp": "2025-11-23T13:26:57.084656",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 595,
-        "total_tokens": 1397,
+        "input_tokens": 710,
+        "output_tokens": 397,
+        "total_tokens": 1107,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0069525,
+        "cost_usd": 0.0048575,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -492,15 +492,15 @@
     {
       "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_11000.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:17:02.125206",
+      "timestamp": "2025-11-23T13:27:16.569024",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 333,
-        "total_tokens": 1135,
+        "input_tokens": 710,
+        "output_tokens": 335,
+        "total_tokens": 1045,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0043325,
+        "cost_usd": 0.0042375,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -511,15 +511,15 @@
     {
       "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_13200.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:17:19.713743",
+      "timestamp": "2025-11-23T13:27:34.238115",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 646,
-        "total_tokens": 1448,
+        "input_tokens": 710,
+        "output_tokens": 430,
+        "total_tokens": 1140,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0074625,
+        "cost_usd": 0.0051875,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -530,34 +530,34 @@
     {
       "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_2200.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:17:37.559165",
+      "timestamp": "2025-11-23T13:27:51.005859",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 226,
-        "total_tokens": 1028,
+        "input_tokens": 710,
+        "output_tokens": 418,
+        "total_tokens": 1128,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0032625,
+        "cost_usd": 0.0050675,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
         }
       },
-      "analysis_status": "partial_success"
+      "analysis_status": "success"
     },
     {
       "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_4400.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:17:55.285475",
+      "timestamp": "2025-11-23T13:28:07.489350",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 277,
-        "total_tokens": 1079,
+        "input_tokens": 710,
+        "output_tokens": 525,
+        "total_tokens": 1235,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0037725,
+        "cost_usd": 0.0061375,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -568,15 +568,15 @@
     {
       "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_6600.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:18:12.676825",
+      "timestamp": "2025-11-23T13:28:25.147165",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 476,
-        "total_tokens": 1278,
+        "input_tokens": 710,
+        "output_tokens": 626,
+        "total_tokens": 1336,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0057625,
+        "cost_usd": 0.0071475,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -587,15 +587,15 @@
     {
       "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_8800.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:18:30.419413",
+      "timestamp": "2025-11-23T13:28:41.639039",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 335,
-        "total_tokens": 1137,
+        "input_tokens": 710,
+        "output_tokens": 542,
+        "total_tokens": 1252,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0043525,
+        "cost_usd": 0.0063075,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -606,15 +606,15 @@
     {
       "image_path": "screenshots\\zoom\\after_click__Recording_20251111T172741Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:18:47.563501",
+      "timestamp": "2025-11-23T13:28:56.387321",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 403,
-        "total_tokens": 1205,
+        "input_tokens": 710,
+        "output_tokens": 446,
+        "total_tokens": 1156,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0050325,
+        "cost_usd": 0.0053475,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -625,34 +625,15 @@
     {
       "image_path": "screenshots\\zoom\\after_click__Settings_20251111T172904Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:19:05.822600",
+      "timestamp": "2025-11-23T13:29:11.607881",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 449,
-        "total_tokens": 1251,
+        "input_tokens": 710,
+        "output_tokens": 193,
+        "total_tokens": 903,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0054925,
-        "pricing": {
-          "input_cost_per_1m_tokens": 1.25,
-          "output_cost_per_1m_tokens": 10.0
-        }
-      },
-      "analysis_status": "partial_success"
-    },
-    {
-      "image_path": "screenshots\\zoom\\initial_load_20251111T172703Z.png",
-      "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:19:22.678187",
-      "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 435,
-        "total_tokens": 1237,
-        "source": "api"
-      },
-      "cost": {
-        "cost_usd": 0.0053525,
+        "cost_usd": 0.0028175,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -663,34 +644,15 @@
     {
       "image_path": "screenshots\\zoom\\initial_load_20251111T172703Z_slice_0.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:19:39.896537",
+      "timestamp": "2025-11-23T13:29:28.296414",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 546,
-        "total_tokens": 1348,
+        "input_tokens": 710,
+        "output_tokens": 399,
+        "total_tokens": 1109,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0064625,
-        "pricing": {
-          "input_cost_per_1m_tokens": 1.25,
-          "output_cost_per_1m_tokens": 10.0
-        }
-      },
-      "analysis_status": "success"
-    },
-    {
-      "image_path": "screenshots\\zoom\\initial_load_20251111T172703Z_slice_2200.png",
-      "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:19:55.231801",
-      "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 326,
-        "total_tokens": 1128,
-        "source": "api"
-      },
-      "cost": {
-        "cost_usd": 0.0042625,
+        "cost_usd": 0.0048775,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
@@ -701,22 +663,22 @@
     {
       "image_path": "screenshots\\zoom\\safety_capture_20251111T172904Z.png",
       "model_used": "gemini-2.5-pro",
-      "timestamp": "2025-11-22T19:20:12.794035",
+      "timestamp": "2025-11-23T13:29:40.204539",
       "token_usage": {
-        "input_tokens": 802,
-        "output_tokens": 527,
-        "total_tokens": 1329,
+        "input_tokens": 710,
+        "output_tokens": 245,
+        "total_tokens": 955,
         "source": "api"
       },
       "cost": {
-        "cost_usd": 0.0062725,
+        "cost_usd": 0.0033375,
         "pricing": {
           "input_cost_per_1m_tokens": 1.25,
           "output_cost_per_1m_tokens": 10.0
         }
       },
-      "analysis_status": "partial_success"
+      "analysis_status": "success"
     }
   ],
-  "timestamp": "2025-11-22T19:20:12.794035"
+  "timestamp": "2025-11-23T13:29:40.204539"
 }

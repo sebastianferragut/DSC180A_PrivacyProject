@@ -1,0 +1,167 @@
+{
+  "status": "success",
+  "total_images": 8,
+  "classifications": [
+    {
+      "status": "success",
+      "image_path": "screenshots\\facebook\\after_click__Account_ownership_and_control_20251112T172305Z.png",
+      "detected_categories": [
+        "personal_information",
+        "data_retention",
+        "account_security"
+      ],
+      "confidence": 1.0,
+      "page_type": "Account management",
+      "detected_settings": [
+        "Contact info",
+        "Memorialization",
+        "Deactivation or deletion"
+      ],
+      "reasoning": "The page is titled 'Personal details' and displays contact information. The modal provides options for 'Memorialization' and 'Deactivation or deletion', which are direct controls over the long-term retention of user data and the account itself. These settings fall under 'Account ownership and control', which is a fundamental aspect of account security."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\facebook\\after_click__Ad_preferences_20251112T172233Z.png",
+      "detected_categories": [
+        "personal_information",
+        "data_collection",
+        "data_retention",
+        "third_party_sharing",
+        "sharing_settings"
+      ],
+      "confidence": 1.0,
+      "page_type": "Data management settings",
+      "detected_settings": [
+        "Export your information",
+        "Access your information",
+        "Search history",
+        "Your activity off Meta technologies",
+        "Specific ad partners"
+      ],
+      "reasoning": "personal_information: The page is titled 'Your information and permissions' and includes options to 'Access your information' and 'Export your information'.\ndata_collection: The 'Your activity off Meta technologies' setting allows users to control data collected about them from other websites and apps.\ndata_retention: The 'Search history' option implies management of retained search data, and the ability to export information confirms data is being retained for user access.\nthird_party_sharing: The 'Your activity off Meta technologies' and 'Specific ad partners' settings directly relate to how user data is shared with or received from third parties.\nsharing_settings: The 'Specific ad partners' option provides controls over how information is shared with advertising partners."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\facebook\\after_click__Deactivation_or_deletion_20251112T172349Z.png",
+      "detected_categories": [
+        "personal_information",
+        "data_retention",
+        "account_security",
+        "data_collection",
+        "sharing_settings"
+      ],
+      "confidence": 1.0,
+      "page_type": "Account Deactivation/Deletion",
+      "detected_settings": [
+        "Deactivation or deletion",
+        "Select account to deactivate or delete (Tester Test Facebook)"
+      ],
+      "reasoning": "personal_information: The background page is explicitly titled 'Personal details' and shows 'Contact info'.\ndata_retention: The pop-up presents the user with the choice to 'temporarily deactivate or permanently delete' their account, which is a direct control over data retention.\naccount_security: The ability to deactivate or delete an account is a fundamental aspect of account security and lifecycle management.\ndata_collection: Permanently deleting an account is the most definitive way for a user to stop future data collection by the service for that account.\nsharing_settings: The descriptive text in the background states, 'You decide what personal details you make visible to others,' which directly pertains to sharing settings."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\facebook\\after_click__Personal_details_20251112T172234Z.png",
+      "detected_categories": [
+        "personal_information",
+        "sharing_settings",
+        "data_retention",
+        "account_security"
+      ],
+      "confidence": 1.0,
+      "page_type": "Personal details",
+      "detected_settings": [
+        "Contact info",
+        "Birthday",
+        "Identity confirmation",
+        "Account ownership and control"
+      ],
+      "reasoning": "personal_information: The page is explicitly titled 'Personal details' and displays the user's contact info and birthday. sharing_settings: The page description states, 'You decide what personal details you make visible to others,' which directly relates to sharing controls. data_retention: The 'Account ownership and control' setting allows users to 'deactivate or delete your accounts,' which is a form of data retention control. account_security: The 'Identity confirmation' option is a feature used to verify a user's identity and secure their account."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\facebook\\after_click__Your_information_and_permissions_20251112T172232Z.png",
+      "detected_categories": [
+        "personal_information",
+        "data_collection",
+        "third_party_sharing",
+        "data_retention",
+        "sharing_settings"
+      ],
+      "confidence": 1.0,
+      "page_type": "Data management",
+      "detected_settings": [
+        "Export your information",
+        "Access your information",
+        "Search history",
+        "Your activity off Meta technologies",
+        "Specific ad partners"
+      ],
+      "reasoning": "personal_information is present as the page allows users to access and export their data. data_collection is indicated by the 'Your activity off Meta technologies' setting, which refers to data gathered from other sites. third_party_sharing and sharing_settings are relevant due to the 'Specific ad partners' option, which controls data use with external advertisers. data_retention is addressed through options to access and export historical data like 'Search history'."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\facebook\\initial_load_20251112T172213Z.png",
+      "detected_categories": [],
+      "confidence": 0.0,
+      "page_type": "",
+      "detected_settings": [],
+      "reasoning": ""
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\facebook\\password_and_security_20251112T172235Z.png",
+      "detected_categories": [
+        "personal_information",
+        "sharing_settings",
+        "data_retention",
+        "account_security"
+      ],
+      "confidence": 1.0,
+      "page_type": "Personal details",
+      "detected_settings": [
+        "Contact info",
+        "Birthday",
+        "Identity confirmation",
+        "Account ownership and control"
+      ],
+      "reasoning": "personal_information: The page is explicitly titled 'Personal details' and displays the user's contact information and birthday.\nsharing_settings: The description states, 'You decide what personal details you make visible to others,' which directly relates to controlling how information is shared.\ndata_retention: The 'Account ownership and control' option allows a user to 'deactivate or delete your accounts and profiles,' which is a method of controlling data retention.\naccount_security: The 'Identity confirmation' setting is a feature used to verify a user's identity and secure their account."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\facebook\\personal_details_20251112T172305Z.png",
+      "detected_categories": [
+        "personal_information",
+        "data_retention",
+        "account_security"
+      ],
+      "confidence": 1.0,
+      "page_type": "Account ownership and control",
+      "detected_settings": [
+        "Memorialization",
+        "Deactivation or deletion"
+      ],
+      "reasoning": "The page is titled 'Personal details' and the modal 'Account ownership and control' deals with the user's profile and associated data. The settings for 'Deactivation or deletion' and 'Memorialization' directly control how long the user's data is kept by the service. The 'Account ownership and control' section allows the user to manage the fundamental state and existence of their account, which is a key aspect of security."
+    }
+  ],
+  "summary": {
+    "category_distribution_counts": {
+      "personal_information": 7,
+      "data_retention": 7,
+      "account_security": 5,
+      "data_collection": 3,
+      "third_party_sharing": 2,
+      "sharing_settings": 5
+    },
+    "category_distribution": {
+      "personal_information": 0.2414,
+      "data_retention": 0.2414,
+      "account_security": 0.1724,
+      "data_collection": 0.1034,
+      "third_party_sharing": 0.069,
+      "sharing_settings": 0.1724
+    },
+    "successful_classifications": 8,
+    "failed_classifications": 0
+  },
+  "timestamp": "2025-11-23T13:29:40.214965"
+}
