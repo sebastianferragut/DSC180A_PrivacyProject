@@ -712,33 +712,151 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
     sval = sel.get("selector") or ""
     if not sval:
         return False
+
     try:
         if stype == "css":
             loc = page.locator(sval)
-            if loc.count():
+            count = loc.count()
+            print(f"[apply_selector] CSS '{sval}' -> {count} matches")
+            if count:
                 loc.first.click(timeout=3500)
                 return True
+
         elif stype == "text":
-            # First try exact text selector
-            loc = page.locator(f'text="{sval}"')
-            if loc.count():
-                loc.first.click(timeout=3500)
+            print(f"[apply_selector] Trying stype='text' {sval!r}")
+            label_loc = page.get_by_text(sval, exact=True)
+            if not label_loc.count():
+                label_loc = page.get_by_text(sval, exact=False)
+
+            count = label_loc.count()
+            print(f"[apply_selector] text locator matched {count} element(s)")
+
+            if count:
+                label_loc.first.click(timeout=3500)
                 return True
-            # Fallback: partial text match
-            loc2 = page.get_by_text(sval, exact=False)
-            if loc2.count():
-                loc2.first.click(timeout=3500)
-                return True
+
         elif stype == "role":
             loc = page.locator(sval)
-            if loc.count():
+            count = loc.count()
+            print(f"[apply_selector] role '{sval}' -> {count} matches")
+            if count:
                 loc.first.click(timeout=3500)
                 return True
+
+        elif stype == "coord":
+            # Two modes:
+            #  1) "label:<text>"  -> click the control associated with that label,
+            #     using DOM geometry to find the nearest clickable element.
+            #  2) "x,y"           -> raw viewport coordinates.
+            if sval.startswith("label:"):
+                label_text = sval[len("label:"):].strip()
+                print(f"[apply_selector] coord label-mode for {label_text!r}")
+
+                # 1) Find the label node by visible text.
+                label_loc = page.get_by_text(label_text, exact=True)
+                if not label_loc.count():
+                    label_loc = page.get_by_text(label_text, exact=False)
+
+                count = label_loc.count()
+                print(f"[apply_selector] label '{label_text}' -> {count} matches")
+                if not count:
+                    print(f"[apply_selector] No label found for {label_text!r}")
+                    return False
+
+                label = label_loc.first
+                label_box = label.bounding_box()
+                if not label_box:
+                    print("[apply_selector] No bounding_box for label, cannot click coords.")
+                    return False
+
+                label_right = label_box["x"] + label_box["width"]
+                label_center_y = label_box["y"] + label_box["height"] / 2.0
+
+                # 2) Search for likely controls (inputs, buttons, switches, etc.)
+                #    and choose the one in the same row, just to the right of the label.
+                candidates_selector = (
+                    "input,button,"
+                    "[role='switch'],[role='checkbox'],[role='radio'],"
+                    "[role='button'],[aria-checked]"
+                )
+                cand_loc = page.locator(candidates_selector)
+                total = cand_loc.count()
+                print(f"[apply_selector] searching {total} candidate controls near label '{label_text}'")
+
+                best_box = None
+                best_dx = float("inf")
+
+                max_to_check = min(total, 60)  # safety bound
+                for i in range(max_to_check):
+                    el = cand_loc.nth(i)
+                    try:
+                        box = el.bounding_box()
+                    except Exception:
+                        continue
+                    if not box:
+                        continue
+
+                    # Require the control to be to the RIGHT of the label.
+                    dx = box["x"] - label_right
+                    if dx < 0:
+                        continue
+
+                    # Require some vertical overlap with the label row.
+                    ctrl_top = box["y"]
+                    ctrl_bottom = box["y"] + box["height"]
+                    if not (ctrl_top <= label_center_y <= ctrl_bottom):
+                        continue
+
+                    # Choose the closest control horizontally.
+                    if dx < best_dx:
+                        best_dx = dx
+                        best_box = box
+
+                if best_box:
+                    cx = best_box["x"] + best_box["width"] / 2.0
+                    cy = best_box["y"] + best_box["height"] / 2.0
+                    print(
+                        "[apply_selector] Clicking center of nearest control at "
+                        f"({cx}, {cy}) for label {label_text!r}"
+                    )
+                    page.mouse.click(cx, cy)
+                    return True
+
+                # 3) Fallback: if we didn't find a control, fall back to the simple
+                #    "to-the-right-of-label" click so we don't regress behavior.
+                x = label_right + min(40, label_box["width"])
+                y = label_center_y
+                print(
+                    "[apply_selector] No specific control found; falling back to "
+                    f"approx ({x}, {y}) for label {label_text!r}"
+                )
+                page.mouse.click(x, y)
+                return True
+
+            else:
+                # Raw numeric coords "x,y"
+                try:
+                    x_str, y_str = sval.split(",", 1)
+                    x = float(x_str.strip())
+                    y = float(y_str.strip())
+                    print(f"[apply_selector] Clicking raw coordinates ({x}, {y})")
+                    page.mouse.click(x, y)
+                    return True
+                except Exception as e:
+                    print(f"[apply_selector] coord parse failed for {sval!r}: {e}")
+                    return False
+
+
     except PwTimeout:
+        print(f"[apply_selector] Timeout while applying selector {stype!r} {sval!r}")
         return False
-    except Exception:
+    except Exception as e:
+        print(f"[apply_selector] Error while applying selector {stype!r} {sval!r}: {e}")
         return False
+
     return False
+
+
 
 def try_click_leaf_hint(page: Page, leaf_hint: Optional[str]) -> bool:
     """
@@ -904,11 +1022,31 @@ def planner_setting_change(
             print("[planner_setting_change] Could not introspect resp:", repr(dbg_e))
     except Exception as e:
         print("[planner_setting_change] Gemini error:", e)
+
+        # If we have a leaf_hint, fall back to a coord selector around that label
+        if leaf_hint:
+            return {
+                "selectors": [
+                    {
+                        "purpose": "change_value",
+                        "type": "coord",
+                        "selector": f"label:{leaf_hint}",
+                    }
+                ],
+                "done": False,
+                "notes": (
+                    f"model_error: {e}; using fallback coord selector around label "
+                    f"'{leaf_hint}'."
+                ),
+            }
+
+        # No leaf_hint -> nothing actionable
         return {
             "selectors": [],
             "done": False,
             "notes": f"model_error: {e}",
         }
+
 
     # Extract text
     text = ""
@@ -937,30 +1075,31 @@ def planner_setting_change(
     raw = (text or "").strip()
     if not raw:
         print("[planner_setting_change] Empty model output.")
-        # If we have a leaf_hint (e.g., "Protect your posts"), fall back to a simple
-        # text-based selector so the executor can still try to click it.
+
         if leaf_hint:
+            # Fallback coord selector around the label text
             return {
                 "selectors": [
                     {
                         "purpose": "change_value",
-                        "type": "text",
-                        "selector": leaf_hint,
+                        "type": "coord",
+                        "selector": f"label:{leaf_hint}",
                     }
                 ],
                 "done": False,
                 "notes": (
-                    "model_empty_output: planner received no text; using fallback "
-                    f"text selector on leaf_hint '{leaf_hint}'."
+                    "model_empty_output: planner received no text; using fallback coord "
+                    f"selector around label '{leaf_hint}'."
                 ),
             }
 
-        # No leaf_hint -> nothing actionable, report empty output.
+        # No leaf_hint -> nothing we can synthesize
         return {
             "selectors": [],
             "done": False,
             "notes": "model_empty_output: planner received no text from Gemini.",
         }
+
 
 
     # Try to parse JSON (with fences salvage)
@@ -990,18 +1129,20 @@ def planner_setting_change(
 
             # --- NEW: generic fallback when JSON is broken but we have a leaf_hint ---
             if leaf_hint:
+                # Use a synthetic coord selector that our executor understands as:
+                # "click near the control associated with this label text".
                 return {
                     "selectors": [
                         {
                             "purpose": "change_value",
-                            "type": "text",
-                            "selector": leaf_hint,
+                            "type": "coord",
+                            "selector": f"label:{leaf_hint}", 
                         }
                     ],
                     "done": False,
                     "notes": (
-                        "Failed to parse JSON from Gemini; using fallback text selector "
-                        f"on leaf_hint '{leaf_hint}'. Original parse error: {e2}"
+                        "Failed to parse JSON from Gemini; using fallback coord selector "
+                        f"around label '{leaf_hint}'. Original parse error: {e2}"
                     ),
                 }
 
@@ -1011,7 +1152,6 @@ def planner_setting_change(
                 "done": False,
                 "notes": f"Failed to parse JSON from Gemini: {e2}; raw: {raw[:200]}"
             }
-
 
     if not isinstance(data, dict):
         print("[planner_setting_change] Non-dict planner output.")
@@ -1142,13 +1282,26 @@ def apply_setting_change_sync(
                 # Give the UI a moment to stabilize before each planner call
                 page.wait_for_timeout(1000)
 
+                # Decide what hint string to give the planner / fallback for DOM clicking
+                leaf_hint_for_ui = leaf_hint
+                if leaf_hint and getattr(setting, "setting_id", None):
+                    # If the user-provided leaf_hint is basically just the slug of this setting
+                    # (e.g., 'private_account') then use the human-facing name instead
+                    if _norm(leaf_hint) == _norm(setting.setting_id):
+                        leaf_hint_for_ui = setting.name
+
+                executor_state["leaf_hint"] = leaf_hint_for_ui  # keep state consistent
+
+                # label we will use for visual verification
+                verify_label = leaf_hint_for_ui or leaf_hint or setting.name
+
                 plan = planner_setting_change(
                     page,
                     platform,
                     setting,
                     target_value,
                     executor_state,
-                    leaf_hint=leaf_hint,
+                    leaf_hint=leaf_hint_for_ui,
                 )
 
                 print(
@@ -1161,6 +1314,12 @@ def apply_setting_change_sync(
                 selectors = plan.get("selectors") or []
                 done = bool(plan.get("done"))
                 last_notes = str(plan.get("notes") or "")
+
+                # did this plan include an explicit confirmation step?
+                had_confirm = any(
+                    (s.get("purpose") or "").lower() == "confirm"
+                    for s in selectors
+                )
 
                 # Detect model-side issues (empty output, error, etc.)
                 has_model_issue = any(
@@ -1229,21 +1388,94 @@ def apply_setting_change_sync(
 
                 # 4) Apply selectors.
                 applied_any = False
+                applied_confirm = False  # track if we actually clicked a confirm control
                 for sel in selectors[:8]:
+                    purpose = (sel.get("purpose") or "").lower()
                     ok = apply_selector(page, sel)
-                    applied_any = applied_any or ok
+                    if ok:
+                        applied_any = True
+                        if purpose == "confirm":
+                            applied_confirm = True
 
-                # 5) If the planner says done AFTER giving us selectors, verify state visually if we can.
-                if done:
-                    verified = verify_setting_state(page, platform, leaf_hint, target_value)
-                    print(f"[executor] TURN {turn}: verifier result={verified!r}")
+
+                # Give the UI a moment to visually update after any clicks.
+                if applied_any:
+                    try:
+                        page.wait_for_timeout(2000)
+                    except Exception:
+                        pass
+
+                # 4b) PROACTIVE VERIFY: if we did click something and have some label to key on,
+                #     but the planner didn't set done=True, we can still ask the verifier.
+                if not done and applied_any and verify_label:
+                    verified = verify_setting_state(page, platform, verify_label, target_value)
                     if verified is True:
                         result["status"] = "success"
                         result["details"] = (
-                            f"Planner reports done after applying actions, and verifier agrees the "
+                            "Executor verified the setting visually after applying selectors, "
+                            f"even though the planner did not set done=true. Notes: {last_notes}"
+                        )
+                        break
+                    elif verified is False:
+                        executor_state["feedback"] = (
+                            "After applying your last selectors, the setting still does not appear "
+                            "to be in the requested state. Please try a different way to toggle it "
+                            "and confirm if needed."
+                        )
+                        last_notes += " | Executor (proactive verify): state != target; requesting another plan."
+                        continue
+                    # verified is None -> can't tell; continue with normal logic
+
+
+                # 5) If the planner says done AFTER giving us selectors...
+                if done:
+                    # 5a) If we definitely just clicked a confirmation control on this turn,
+                    # trust that flow and stop immediately. This avoids re-toggling the setting
+                    # when the verifier is flaky or the model is overloaded.
+                    if applied_confirm:
+                        result["status"] = "success"
+                        result["details"] = (
+                            "Planner reported done and a confirmation control was clicked; "
+                            "skipping verifier and assuming the setting change succeeded. "
+                            f"Notes: {last_notes}"
+                        )
+                        break
+
+                    # 5b) If we have no leaf_hint, we can't do a meaningful visual verification.
+                    #     If we actually clicked something, trust the planner and stop.
+                    if not leaf_hint:
+                        if applied_any:
+                            result["status"] = "success"
+                            result["details"] = (
+                                "Planner reported done and at least one selector was applied, "
+                                "but no leaf_hint was provided for visual verification. "
+                                "Assuming the setting change succeeded based on planner + click. "
+                                f"Notes: {last_notes}"
+                            )
+                            break
+                        else:
+                            # Weird: done==true but nothing was actually clicked.
+                            # Ask the planner for a more concrete plan.
+                            executor_state["feedback"] = (
+                                "You set done=true but none of your selectors actually matched "
+                                "clickable elements. Please provide selectors that directly "
+                                "toggle the target control."
+                            )
+                            last_notes += " | Executor: done=true but no selectors applied; requesting new plan."
+                            continue
+
+                    # 5c) If we *do* have a leaf_hint, try a single verification.
+                    verified = verify_setting_state(page, platform, leaf_hint, target_value)
+                    print(f"[executor] TURN {turn}: verifier result={verified!r}")
+
+                    if verified is True:
+                        result["status"] = "success"
+                        result["details"] = (
+                            "Planner reports done after applying actions, and verifier agrees the "
                             f"setting matches the target value. Notes: {last_notes}"
                         )
                         break
+
                     elif verified is False:
                         # Verifier says it's NOT in the desired state: tell planner to try again.
                         executor_state["feedback"] = (
@@ -1254,28 +1486,17 @@ def apply_setting_change_sync(
                         last_notes += " | Verifier: state does NOT match target; requesting another plan."
                         # Don't break; go to next turn.
                         continue
-                    else:
-                        # verifier None / unknown -> *do not* bail immediately.
-                        # Ask the planner for a follow-up plan (likely confirmation / save buttons).
-                        if turn < max_turns:
-                            executor_state["feedback"] = (
-                                "After your last plan, a UI is visible but the verifier could not determine "
-                                "whether the setting is in the target state. Look carefully for any "
-                                "confirmation, Save, Apply, or Protect-style buttons and include "
-                                "selectors with purpose='confirm' to finalize the change."
-                            )
-                            last_notes += " | Verifier: state unknown; requesting follow-up plan for confirmations."
-                            continue
-                        else:
-                            # On the final turn, we really have to give up.
-                            result["status"] = "uncertain"
-                            result["details"] = (
-                                "Planner reported done, but even after multiple attempts the verifier "
-                                "could not determine the state with confidence. "
-                                f"Last notes: {last_notes}"
-                            )
-                            break
 
+                    else:
+                        # verifier None / unknown -> STOP instead of looping forever.
+                        result["status"] = "uncertain"
+                        result["details"] = (
+                            "Planner reported done and selectors were applied, but the verifier "
+                            "could not determine the final state (or no verification was possible). "
+                            "Stopping after a single verification attempt. "
+                            f"Notes: {last_notes}"
+                        )
+                        break
 
                 # 6) If NOTHING was applied successfully from the selectors,
                 #    try giving feedback and another planning turn (unless we're out of turns).
