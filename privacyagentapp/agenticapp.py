@@ -31,13 +31,25 @@ from google.genai.types import Content, Part
 # Paths & Config
 # =========================
 
-# This file is expected to live in: DSC180A_PrivacyProject/privacyagentapp/agenticapp.py
-# Repo root is therefore one level up from this file.
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
-SETTINGS_JSON_PATH = REPO_ROOT / "graphdata" / "data" / "all_platforms_classified.json"
-GENERAL_OUTPUT_DIR = REPO_ROOT / "gemini-team" / "general_output"
-STORAGE_STATE_DIR = REPO_ROOT / "gemini-team" / "profiles" / "storage"
+try:
+    SETTINGS_JSON_PATH = REPO_ROOT / "database" / "data" / "all_platforms_classified.json"
+except Exception as e:
+    print(f"Warning: could not construct SETTINGS_JSON_PATH from REPO_ROOT ({REPO_ROOT}): {e}")
+    SETTINGS_JSON_PATH = Path("all_platforms_classified.json")
+
+try:
+    GENERAL_OUTPUT_DIR = REPO_ROOT / "gemini-team" / "general_output"
+except Exception as e:
+    print(f"Warning: could not construct GENERAL_OUTPUT_DIR from REPO_ROOT ({REPO_ROOT}): {e}")
+    GENERAL_OUTPUT_DIR = Path("general_output")
+
+try:
+    STORAGE_STATE_DIR = REPO_ROOT / "gemini-team" / "profiles" / "storage"
+except Exception as e:
+    print(f"Warning: could not construct STORAGE_STATE_DIR from REPO_ROOT ({REPO_ROOT}): {e}")
+    STORAGE_STATE_DIR = Path("storage")
 
 SESSION_CHANGES_KEY = "changed_settings"
 
