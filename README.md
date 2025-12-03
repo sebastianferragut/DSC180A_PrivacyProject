@@ -279,7 +279,7 @@ export GEMINI_API_KEY="your_key_here"
 ---
 
 ## 5. Folder Structure 
-
+```
 DSC180A_PrivacyProject/
 ├── gemini-team/
 │   ├── generalssagent.py
@@ -305,7 +305,7 @@ DSC180A_PrivacyProject/
 │   └── database/
 │
 └── ANY OTHER FILES/FOLDERS
-
+```
 ---
 
 ## 6. Runtime Behavior Notes
