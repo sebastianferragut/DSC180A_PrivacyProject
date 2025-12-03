@@ -1,4 +1,28 @@
-#!/usr/bin/env python3
+
+# Save browser storage state after manual sign-in.
+
+# This script launches a visible Chromium browser via Playwright, navigates to the provided START_URL,
+# and lets the user complete an interactive sign-in. After the user confirms by pressing Enter in the
+# terminal, the
+# script saves the browser context's storage state (cookies, localStorage, sessionStorage) to
+# profiles/storage/<hostname>.json (relative to this file).
+
+# Usage:
+#     python save_state.py <START_URL>
+
+# Example:
+#     python save_state.py https://example.com
+
+# Prerequisites:
+#     - Python 3.8+
+#     - Install Playwright: pip install playwright
+#     - Install Playwright browsers: playwright install
+
+# Behavior:
+#     - Browser runs with headless=False so you can interact.
+#     - The storage state file is created under profiles/storage and named by the start URL's hostname.
+#     - The script waits for you to complete sign-in and press Enter before saving.
+
 import os
 import sys
 from urllib.parse import urlparse
