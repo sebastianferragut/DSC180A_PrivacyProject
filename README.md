@@ -16,10 +16,6 @@ The following are relevant scripts:
 - `gemini-team/save_state.py`  
 - `privacyagentapp/agenticapp.py`  
 
-# REMOVE
-# ADD CLASSIFICATION AGENTS HERE
-# REMOVE
-
 ---
 
 ## 1. Accessing and Storing Data  
@@ -171,6 +167,87 @@ $env:PLATFORM_NAME="zoom"
 
 ---
 
+## 4.3 Generalized Privacy Setting Classification
+
+This stage extracts structured text from screenshots, merges it with harvesting metadata, and classifies each screenshot into a privacy-setting category.
+
+---
+
+## 4.3.1 Screenshot Settings Extraction  
+**File:** `screenshot-classifier/screenshot_settings_extractor.py`
+
+This script processes all screenshots captured by the scraping agent and uses Gemini to extract:  
+- setting names  
+- descriptions  
+- current states (if visible)
+
+The extracted output is saved to:  
+`screenshot-classifier/extracted_settings.json`
+
+### Run Command
+```bash
+python screenshot-classifier/screenshot_settings_extractor.py
+```
+
+**Behavior:**
+- Loads all screenshots from the platform folders  
+- Sends each image to Gemini for OCR + semantic parsing  
+- Saves structured setting objects
+
+---
+
+## 4.3.2 Merge Harvest Metadata + Extracted Text  
+**File:** `database/merge_harvest_text.py`
+
+This script merges:  
+- `harvest_report.json` (from each platform’s crawling run)  
+- `screenshot-classifier/extracted_settings.json`
+
+It links each screenshot to:  
+- the URL where it was captured  
+- extracted setting text  
+- metadata recorded during navigation (DOM node, screenshot type, etc.)
+
+### Run Command
+```bash
+python database/merge_harvest_text.py
+```
+
+**Output:**  
+`database/data/all_platforms_images.json`
+
+**Behavior:**  
+Produces a unified mapping of each screenshot → URL → extracted text.
+
+---
+
+## 4.3.3 Category Classification  
+**File:** `database/classify_categories.py`
+
+This script classifies each screenshot entry into a high-level privacy-setting category (e.g., Account Security, Data Sharing, Visibility, Ads/Personalization, Location, etc.).  
+A `category` field is added to each screenshot entry.
+
+### Run Command
+```bash
+python database/classify_categories.py
+```
+
+**Input:**  
+`database/data/all_platforms_images.json`
+
+**Output:**  
+`database/data/all_platforms_classified.json`
+
+**Behavior:**  
+Each screenshot entry now contains:  
+- platform  
+- image
+- full_image_path
+- url  
+- **category**
+
+---
+
 ## 4.3 Chainlit Privacy Automation App  
 **File:** `privacyagentapp/agenticapp.py`
 
@@ -203,20 +280,31 @@ export GEMINI_API_KEY="your_key_here"
 
 ## 5. Folder Structure 
 
-DSC180A_PrivacyProject/\
-├── gemini-team/\
-│ ├── generalssagent.py\
-│ ├── save_state.py\
-│ ├── generaloutput/\
-│ ├── profiles/\
-│ │ └── storage/\
-│ └── environment.yml\
-├── privacyagentapp/\
-│ ├── agenticapp.py\
-│ └── database/\
+DSC180A_PrivacyProject/
+├── gemini-team/
+│   ├── generalssagent.py
+│   ├── save_state.py
+│   ├── generaloutput/
+│   ├── profiles/
+│   │   └── storage/
+│   └── environment.yml
+│
+├── screenshot-classifier/
+│   ├── screenshot_settings_extractor.py
+│   └── extracted_settings.json
+│
+├── database/
+│   ├── merge_harvest_text.py
+│   ├── classify_categories.py
+│   └── data/
+│       ├── all_platforms_images.json
+│       └── all_platforms_classified.json
+│
+├── privacyagentapp/
+│   ├── agenticapp.py
+│   └── database/
+│
 └── ANY OTHER FILES/FOLDERS
-
-# BE SURE TO UPDATE WITH DATABASE
 
 ---
 
