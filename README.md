@@ -203,17 +203,17 @@ export GEMINI_API_KEY="your_key_here"
 
 ## 5. Folder Structure 
 
-DSC180A_PrivacyProject/
-├── gemini-team/
-│ ├── generalssagent.py
-│ ├── save_state.py
-│ ├── generaloutput/
-│ ├── profiles/
-│ │ └── storage/
-│ └── environment.yml
-├── privacyagentapp/
-│ ├── agenticapp.py
-│ └── database/
+DSC180A_PrivacyProject/\
+├── gemini-team/\
+│ ├── generalssagent.py\
+│ ├── save_state.py\
+│ ├── generaloutput/\
+│ ├── profiles/\
+│ │ └── storage/\
+│ └── environment.yml\
+├── privacyagentapp/\
+│ ├── agenticapp.py\
+│ └── database/\
 └── ANY OTHER FILES/FOLDERS
 
 # BE SURE TO UPDATE WITH DATABASE
