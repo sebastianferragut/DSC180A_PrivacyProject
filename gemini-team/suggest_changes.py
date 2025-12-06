@@ -6,7 +6,9 @@ against the privacy settings catalog.
 Usage:
     python suggest_changes.py <privacy_map_file> [--catalog <catalog_file>] [--output <output_file>]
     Example:
-        python suggest_changes.py outputs/privacy_map_20251104_100756.json --catalog privacy_settings_catalog.json --format json --output suggestions/recommendations.json
+        python suggest_changes.py outputs/privacy_map_20251029_131608.json --catalog privacy_settings_catalog.json --format json --output suggestions/recommendations20251029_131608.json
+        python suggest_changes.py outputs/privacy_map_20251029_131753.json --catalog privacy_settings_catalog.json --format json --output suggestions/recommendations20251029_131753.json
+        python suggest_changes.py outputs/privacy_map_20251104_100756.json --catalog privacy_settings_catalog.json --format json --output suggestions/recommendations20251104_100756.json
 
 """
 
@@ -367,4 +369,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

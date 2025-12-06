@@ -1,23 +1,23 @@
 {
-  "privacy_map_file": "privacy_map_20251104_100756.json",
+  "privacy_map_file": "privacy_map_20251029_131608.json",
   "host": "zoom.us",
-  "generated_at": "2025-12-02T13:41:16.782852",
+  "generated_at": "2025-12-05T17:53:50.039333",
   "summary": {
-    "total_recommendations": 88,
+    "total_recommendations": 94,
     "by_status": {
-      "should_disable": 76,
+      "should_disable": 81,
       "should_enable": 5,
       "review_needed": 3,
-      "unknown": 4
+      "unknown": 5
     },
     "by_priority": {
-      "high": 68,
+      "high": 73,
       "medium": 16,
-      "low": 4
+      "low": 5
     },
     "by_category": {
-      "data_collection": 65,
-      "cookie_consent": 65,
+      "data_collection": 70,
+      "cookie_consent": 70,
       "camera_microphone": 7,
       "account_security": 3,
       "sharing_settings": 8,
@@ -38,7 +38,7 @@
         "data_collection",
         "cookie_consent"
       ],
-      "page": "https://zoom.us/profile/setting?tab=general"
+      "page": "https://zoom.us/signin"
     },
     {
       "setting": "Accept All Cookies",
@@ -52,6 +52,19 @@
         "cookie_consent"
       ],
       "page": "https://zoom.us/profile/setting?tab=aicompanion"
+    },
+    {
+      "setting": "Accept All Cookies",
+      "type": "button",
+      "status": "should_disable",
+      "recommendation": "disable",
+      "reason": "Privacy-reducing setting in categories: data_collection, cookie_consent",
+      "priority": "high",
+      "categories": [
+        "data_collection",
+        "cookie_consent"
+      ],
+      "page": "https://zoom.us/profile/setting?tab=general"
     },
     {
       "setting": "Accept All Cookies",
@@ -207,7 +220,7 @@
         "data_collection",
         "cookie_consent"
       ],
-      "page": "https://zoom.us/profile/setting?tab=general"
+      "page": "https://zoom.us/signin"
     },
     {
       "setting": "Cookies Details Cookie Details button opens Cookie List menu",
@@ -221,6 +234,19 @@
         "cookie_consent"
       ],
       "page": "https://zoom.us/profile/setting?tab=aicompanion"
+    },
+    {
+      "setting": "Cookies Details Cookie Details button opens Cookie List menu",
+      "type": "button",
+      "status": "should_disable",
+      "recommendation": "disable",
+      "reason": "Privacy-reducing setting in categories: data_collection, cookie_consent",
+      "priority": "high",
+      "categories": [
+        "data_collection",
+        "cookie_consent"
+      ],
+      "page": "https://zoom.us/profile/setting?tab=general"
     },
     {
       "setting": "Cookies Details Cookie Details button opens Cookie List menu",
@@ -376,7 +402,7 @@
         "data_collection",
         "cookie_consent"
       ],
-      "page": "https://zoom.us/profile/setting?tab=general"
+      "page": "https://zoom.us/signin"
     },
     {
       "setting": "Functional Cookies",
@@ -390,6 +416,19 @@
         "cookie_consent"
       ],
       "page": "https://zoom.us/profile/setting?tab=aicompanion"
+    },
+    {
+      "setting": "Functional Cookies",
+      "type": "button",
+      "status": "should_disable",
+      "recommendation": "disable",
+      "reason": "Privacy-reducing setting in categories: data_collection, cookie_consent",
+      "priority": "high",
+      "categories": [
+        "data_collection",
+        "cookie_consent"
+      ],
+      "page": "https://zoom.us/profile/setting?tab=general"
     },
     {
       "setting": "Functional Cookies",
@@ -545,7 +584,7 @@
         "data_collection",
         "cookie_consent"
       ],
-      "page": "https://zoom.us/profile/setting?tab=general"
+      "page": "https://zoom.us/signin"
     },
     {
       "setting": "Performance Cookies",
@@ -559,6 +598,19 @@
         "cookie_consent"
       ],
       "page": "https://zoom.us/profile/setting?tab=aicompanion"
+    },
+    {
+      "setting": "Performance Cookies",
+      "type": "button",
+      "status": "should_disable",
+      "recommendation": "disable",
+      "reason": "Privacy-reducing setting in categories: data_collection, cookie_consent",
+      "priority": "high",
+      "categories": [
+        "data_collection",
+        "cookie_consent"
+      ],
+      "page": "https://zoom.us/profile/setting?tab=general"
     },
     {
       "setting": "Performance Cookies",
@@ -755,7 +807,7 @@
         "data_collection",
         "cookie_consent"
       ],
-      "page": "https://zoom.us/profile/setting?tab=general"
+      "page": "https://zoom.us/signin"
     },
     {
       "setting": "Targeting Cookies",
@@ -769,6 +821,19 @@
         "cookie_consent"
       ],
       "page": "https://zoom.us/profile/setting?tab=aicompanion"
+    },
+    {
+      "setting": "Targeting Cookies",
+      "type": "button",
+      "status": "should_disable",
+      "recommendation": "disable",
+      "reason": "Privacy-reducing setting in categories: data_collection, cookie_consent",
+      "priority": "high",
+      "categories": [
+        "data_collection",
+        "cookie_consent"
+      ],
+      "page": "https://zoom.us/profile/setting?tab=general"
     },
     {
       "setting": "Targeting Cookies",
@@ -1124,6 +1189,15 @@
       "reason": "Setting not found in catalog - manual review recommended",
       "priority": "low",
       "page": "https://zoom.us/profile/setting?tab=whiteboard"
+    },
+    {
+      "setting": "Detailed crash dumps (Windows)",
+      "type": "checkbox",
+      "status": "unknown",
+      "recommendation": "review",
+      "reason": "Setting not found in catalog - manual review recommended",
+      "priority": "low",
+      "page": "https://zoom.us/signin"
     },
     {
       "setting": "Detailed crash dumps (Windows)",
