@@ -7,7 +7,6 @@ dependencies:
   - pip
   # Native libs that help screenshots/UI libs behave well
   - pillow>=10.0
-  # (Optional but nice) CLI/json utils you might use while debugging
   - jq
   - psutil
   - pip:
@@ -19,6 +18,7 @@ dependencies:
       - pygetwindow>=0.0.9
       - pyscreeze>=0.1.30
       - pymsgbox>=1.0.9
+      - chainlit>=2.9.2
 
       # HTML parsing / utilities
       - beautifulsoup4>=4.12.0
