@@ -52,6 +52,9 @@ except Exception as e:
     STORAGE_STATE_DIR = Path("storage")
 
 SESSION_CHANGES_KEY = "changed_settings"
+SESSION_PENDING_KEY = "pending_setting_choice"
+SESSION_PENDING_PLATFORM_KEY = "pending_platform"
+SESSION_PENDING_VALUE_KEY = "pending_target_value"
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
@@ -273,6 +276,197 @@ def _entry_settings(entry) -> list:
         "description": getattr(entry, "description", ""),
     }]
 
+VALUE_SYNONYMS = {
+    "on": {"on", "enable", "enabled", "turn on", "set to on", "yes", "true", "allow"},
+    "off": {"off", "disable", "disabled", "turn off", "set to off", "no", "false", "deny"},
+    "private": {"private", "make private", "switch to private"},
+    "public": {"public", "make public", "switch to public"},
+}
+
+def normalize_target_value(text: str) -> Optional[str]:
+    t = (text or "").strip().lower()
+    if not t:
+        return None
+    # direct
+    for canon, alts in VALUE_SYNONYMS.items():
+        if t == canon or t in alts:
+            return canon
+    # phrase containment
+    for canon, alts in VALUE_SYNONYMS.items():
+        for a in alts:
+            if a in t:
+                return canon
+    return None
+
+
+def parse_nl_request(user_text: str) -> Dict[str, Optional[str]]:
+    """
+    Extract platform, target_value, setting_query from a natural language message.
+    """
+    text = (user_text or "").strip()
+    lower = text.lower()
+
+    # target_value: look for "to X", "set X", "enable/disable", etc.
+    target_value = None
+
+    m = re.search(r"\bto\s+(on|off|private|public|enabled|disabled)\b", lower)
+    if m:
+        target_value = normalize_target_value(m.group(1))
+        # remove the "to X" part from query
+        lower_wo = re.sub(r"\bto\s+" + re.escape(m.group(1)) + r"\b", " ", lower)
+    else:
+        lower_wo = lower
+
+    if not target_value:
+        target_value = normalize_target_value(lower)
+
+    # platform: if user types "on instagram", "for reddit", etc.
+    platform_hint = None
+    m2 = re.search(r"\b(on|in|for)\s+([a-zA-Z0-9_]+)\b", lower)
+    if m2:
+        platform_hint = m2.group(2)
+
+    # setting_query: remove leading verbs that are noise
+    setting_query = lower_wo
+    setting_query = re.sub(r"^(please\s+)?(change|set|turn|make|update|enable|disable)\s+", "", setting_query).strip()
+    setting_query = re.sub(r"\b(my|the)\b", " ", setting_query)
+    setting_query = re.sub(r"\s+", " ", setting_query).strip()
+
+    return {
+        "platform_hint": platform_hint,
+        "target_value": target_value,
+        "setting_query": setting_query or None,
+    }
+
+def score_setting_candidate(entry: SettingEntry, query: str) -> float:
+    q = _norm(query)
+    name = _norm(entry.name)
+    desc = _norm(entry.description or "")
+
+    score = 0.0
+
+    # strong matches
+    if q == name:
+        score += 50
+    if q and q in name:
+        score += 25
+    if q and q in desc:
+        score += 10
+
+    # token overlap
+    score += 15 * _token_overlap(q, name)
+    score += 5 * _token_overlap(q, desc)
+
+    # keyword boosts (optional, you can expand)
+    boosts = ["follow", "private", "public", "ads", "tracking", "tag", "mention", "message", "email", "location"]
+    for b in boosts:
+        if b in q and b in name:
+            score += 3
+
+    return score
+
+
+def find_setting_candidates(platform: str, query: str, limit: int = 8) -> List[SettingEntry]:
+    settings = list_settings_for_platform(platform) or []
+    if not settings or not query:
+        return []
+
+    scored = []
+    for s in settings:
+        sc = score_setting_candidate(s, query)
+        if sc > 0:
+            scored.append((sc, s))
+
+    scored.sort(key=lambda x: x[0], reverse=True)
+    return [s for _, s in scored[:limit]]
+
+async def present_candidates(platform: str, query: str, candidates: List[SettingEntry], target_value: Optional[str]):
+    if not candidates:
+        await cl.Message(
+            content=(
+                f"I couldn’t find likely matches for **{query}** on `{platform}`.\n\n"
+                f"Try rephrasing, or run `settings {platform}` and choose an ID."
+            )
+        ).send()
+        return
+
+    # store pending value so we can reuse after user clicks a candidate
+    cl.user_session.set(SESSION_PENDING_PLATFORM_KEY, platform)
+    cl.user_session.set(SESSION_PENDING_VALUE_KEY, target_value)
+
+    actions = []
+    for i, c in enumerate(candidates, start=1):
+        actions.append(
+            cl.Action(
+                name="pick_setting",
+                payload={
+                    "setting_id": c.setting_id,
+                    "platform": platform,
+                },
+                label=f"{i}. {c.name}",
+            )
+        )
+
+
+    # Store the candidate list in session so selection can resolve quickly
+    cl.user_session.set(
+        SESSION_PENDING_KEY,
+        {c.setting_id: {"name": c.name, "category": c.category, "description": c.description} for c in candidates}
+    )
+
+    preview_lines = []
+    for i, c in enumerate(candidates, start=1):
+        preview_lines.append(f"{i}) **{c.name}**  \n   _{(c.description or '')[:140]}_  \n   `id: {c.setting_id}`")
+
+    await cl.Message(
+        content=(
+            f"On `{platform}`, I found these possible matches for: **{query}**\n\n"
+            + "\n\n".join(preview_lines)
+            + "\n\nClick the correct one:"
+        ),
+        actions=actions
+    ).send()
+
+@cl.action_callback("pick_setting")
+@cl.action_callback("pick_setting")
+async def on_pick_setting(action: cl.Action):
+    payload = action.payload or {}
+    setting_id = payload.get("setting_id")
+    platform = payload.get("platform") or cl.user_session.get(SESSION_PENDING_PLATFORM_KEY)
+
+    if not setting_id or not platform:
+        await cl.Message(content="Missing selection context (setting_id/platform). Please try again.").send()
+        return
+
+    pending_map = cl.user_session.get(SESSION_PENDING_KEY, {}) or {}
+    target_value = cl.user_session.get(SESSION_PENDING_VALUE_KEY)
+
+    if not platform:
+        await cl.Message(content="No pending platform found. Please try again.").send()
+        return
+
+    setting = resolve_setting(platform, setting_id)
+    if not setting:
+        await cl.Message(content="Could not resolve that setting in the DB. Please try again.").send()
+        return
+
+    # If user didn't specify a value, ask now.
+    if not target_value:
+        cl.user_session.set("final_setting_to_change", {"platform": platform, "setting_id": setting.setting_id})
+        await cl.Message(content="What value do you want? (e.g., `on`, `off`, `private`, `public`)").send()
+        return
+
+    # Run automation
+    await cl.Message(
+        content=f"Ok — changing **{setting.name}** on `{platform}` to `{target_value}`…"
+    ).send()
+
+    result = await cl.make_async(apply_setting_change_sync)(platform, setting, target_value, leaf_hint=setting.name)
+    append_change(result)
+
+    await cl.Message(
+        content=f"Result: status = `{result.get('status')}`\nDetails: {result.get('details')}"
+    ).send()
 
 def _entry_platform(entry) -> str:
     """Return platform name from either a raw dict or a SettingEntry object."""
@@ -1714,18 +1908,27 @@ async def on_chat_start():
 
     help_text = (
         "Welcome to the Privacy Agent 👋\n\n"
-        "I use your harvested privacy settings to:\n"
-        "1. List platforms and known privacy/data settings from `all_platforms_classified.json`.\n"
-        "2. Attempt to log into those platforms (via stored `storage_state`) and change specific settings\n"
-        "   using Playwright + Gemini.\n"
-        "3. Produce a session report of all requested changes.\n\n"
-        "**Commands (v1):**\n"
-        "- `platforms` — list all platforms from the DB\n"
+        "You can interact with me in two ways:\n\n"
+        "🟢 **Natural language (recommended):**\n"
+        "You can type normally, as long as you mention:\n"
+        "- A **platform** (e.g. Reddit, Instagram, X)\n"
+        "- A **privacy or account setting** you want to change\n"
+        "- The **state** you want to change it to (e.g. on/off, private/public)\n\n"
+        "Examples:\n"
+        "- \"Make my Reddit account private\"\n"
+        "- \"Turn off allowing people to follow me on Reddit\"\n"
+        "- \"Set my Instagram account to private\"\n\n"
+        "If multiple settings could match your request, I’ll ask you to confirm the correct one before making any changes.\n\n"
+        "🔧 **Command-based (advanced):**\n"
+        "- `platforms` — list all supported platforms\n"
         "- `settings <platform>` — list known settings for a platform\n"
-        "- `change <platform> <setting_id_or_name> to <value>` — request a setting change\n"
+        "- `change <platform> <section_id_or_name> to <value>`\n"
+        "- `change <platform> <section_id_or_name>::<leaf_setting_name> to <value>`\n"
         "- `report` — show a summary of this session's changes\n\n"
-        f"Currently loaded platforms:\n{plat_list}"
+        "Supported platforms currently loaded:\n"
+        + "\n".join(f"- `{p}`" for p in plats)
     )
+
 
     await cl.Message(content=help_text).send()
 
@@ -1868,6 +2071,60 @@ async def on_message(message: cl.Message):
             ).send()
             return
 
+    pending = cl.user_session.get("final_setting_to_change")
+    if pending and lower in ("on", "off", "private", "public", "enable", "disable", "enabled", "disabled"):
+        target_value = normalize_target_value(lower)
+        platform = pending["platform"]
+        setting = resolve_setting(platform, pending["setting_id"])
+        cl.user_session.set("final_setting_to_change", None)
+
+        if not setting or not target_value:
+            await cl.Message(content="Sorry — I couldn’t parse that value. Try `on/off/private/public`.").send()
+            return
+
+        await cl.Message(content=f"Ok — changing **{setting.name}** on `{platform}` to `{target_value}`…").send()
+        result = await cl.make_async(apply_setting_change_sync)(platform, setting, target_value, leaf_hint=setting.name)
+        append_change(result)
+        await cl.Message(content=f"Result: status = `{result.get('status')}`\nDetails: {result.get('details')}").send()
+        return
+
+    # Natural language flow: user already chose platform OR mentions it
+    parsed = parse_nl_request(text)
+    platform_hint = parsed["platform_hint"]
+    target_value = parsed["target_value"]
+    setting_query = parsed["setting_query"]
+
+    # Determine platform
+    plat = None
+    if platform_hint:
+        plat = find_platform_alias(platform_hint)
+
+    # If platform still unknown, ask user to pick platform (you can make this a button list)
+    if not plat:
+        await cl.Message(
+            content="Which platform is this for? (Example: `instagram`, `reddit`, `twitterX`)"
+        ).send()
+        # store query in session so next message can use it
+        cl.user_session.set("pending_nl_query", {"setting_query": setting_query, "target_value": target_value})
+        return
+
+    # If we have a platform and a query, present candidates
+    if setting_query:
+        candidates = find_setting_candidates(plat, setting_query, limit=8)
+        await present_candidates(plat, setting_query, candidates, target_value)
+        return
+    
+    pending_nl = cl.user_session.get("pending_nl_query")
+    if pending_nl and not lower.startswith("change "):
+        plat = find_platform_alias(text.strip())
+        if plat:
+            cl.user_session.set("pending_nl_query", None)
+            setting_query = pending_nl.get("setting_query")
+            target_value = pending_nl.get("target_value")
+            candidates = find_setting_candidates(plat, setting_query or "", limit=8)
+            await present_candidates(plat, setting_query or "(unspecified)", candidates, target_value)
+            return
+    
     # Fallback: generic message for now
     await cl.Message(
         content=(
