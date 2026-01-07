@@ -44,24 +44,38 @@ def build_screenshot_entries(harvest_data: dict, platform: str):
 def attach_settings(entries: list, text_blocks: list):
     index = {}
 
+    # build index keyed by screenshot stem
     for block in text_blocks:
         for s in block.get("all_settings", []):
             fname = basename(s.get("image_path", ""))
             if not fname:
                 continue
 
-            index.setdefault(fname, []).append({
+            stem = screenshot_stem(fname)
+
+            index.setdefault(stem, []).append({
                 "setting": s.get("setting"),
                 "description": s.get("description"),
-                "state": s.get("state")
+                "state": s.get("state"),
+                "source_image": fname
             })
 
     # attach to entries
     for e in entries:
-        fname = e["image"]
-        e["settings"] = index.get(fname, [])
+        stem = screenshot_stem(e["image"])
+        e["settings"] = index.get(stem, [])
 
     return entries
+
+def screenshot_stem(fname: str) -> str:
+    """
+    Normalize screenshot names:
+    - initial_load_20251119T201600Z.png
+    - initial_load_20251119T201600Z_slice_0.png
+    → initial_load_20251119T201600Z
+    """
+    base = fname.replace(".png", "")
+    return base.split("_slice_")[0]
 
 
 # ----------------------------------------
