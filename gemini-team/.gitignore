@@ -18,3 +18,8 @@ profiles/chrome/Default/Shortcuts
 profiles/chrome/Default/History*
 
 .DS_Store
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
