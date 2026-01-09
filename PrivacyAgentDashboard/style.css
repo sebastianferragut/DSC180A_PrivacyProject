@@ -69,7 +69,8 @@ body {
 
 .settings {
   /* No grid positioning needed - handled by combined-section */
-  min-height: 300px;
+  display: flex;
+  flex-direction: column;
 }
 
 .detail {
@@ -91,6 +92,28 @@ h2 {
   list-style: none;
   padding: 0;
   margin: 0;
+  overflow-y: auto;
+  max-height: 400px;
+  flex: 1;
+}
+
+/* Scrollbar styling for settings list */
+#settingsList::-webkit-scrollbar {
+  width: 8px;
+}
+
+#settingsList::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+#settingsList::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+#settingsList::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 #settingsList li {
