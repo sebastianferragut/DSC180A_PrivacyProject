@@ -101,3 +101,24 @@ function updateSummary() {
 
   d3.select("#statSuccess").text(`${successRate}%`);
 }
+
+function renderSettingDetail() {
+  const detail = d3.select("#settingDetail");
+  
+  if (!state.selectedSetting) {
+    detail.html("<p>Select a setting to view details.</p>");
+    return;
+  }
+
+  const s = state.selectedSetting;
+  detail.html(`
+    <h3>${s.title}</h3>
+    <p><strong>Platform:</strong> ${s.platform}</p>
+    <p><strong>Category:</strong> ${s.category}</p>
+    <p><strong>Current Value:</strong> ${s.current || "N/A"}</p>
+    <p><strong>Recommended:</strong> ${s.recommended || "N/A"}</p>
+    ${s.flagged ? "<p><strong>⚠️ Flagged as high-risk</strong></p>" : ""}
+    ${s.clicks ? `<p><strong>Navigation clicks:</strong> ${s.clicks}</p>` : ""}
+    ${s.description ? `<p><strong>Description:</strong> ${s.description}</p>` : ""}
+  `);
+}
