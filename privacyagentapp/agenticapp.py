@@ -1134,36 +1134,29 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                 return True
 
         elif stype == "coord":
-            # Two modes:
-            #  1) "label:<text>"  -> click the control associated with that label,
-            #     using DOM geometry to find the nearest clickable element.
-            #  2) "x,y"           -> raw viewport coordinates.
             if sval.startswith("label:"):
                 label_text = sval[len("label:"):].strip()
                 print(f"[apply_selector] coord label-mode for {label_text!r}")
 
-                # 1) Find the label node by visible text.
+                # 1) Find the label by visible text
                 label_loc = page.get_by_text(label_text, exact=True)
                 if not label_loc.count():
                     label_loc = page.get_by_text(label_text, exact=False)
 
-                count = label_loc.count()
-                print(f"[apply_selector] label '{label_text}' -> {count} matches")
-                if not count:
+                if not label_loc.count():
                     print(f"[apply_selector] No label found for {label_text!r}")
                     return False
 
                 label = label_loc.first
                 label_box = label.bounding_box()
                 if not label_box:
-                    print("[apply_selector] No bounding_box for label, cannot click coords.")
+                    print("[apply_selector] No bounding_box for label")
                     return False
 
                 label_right = label_box["x"] + label_box["width"]
                 label_center_y = label_box["y"] + label_box["height"] / 2.0
 
-                # 2) Search for likely controls (inputs, buttons, switches, etc.)
-                #    and choose the one in the same row, just to the right of the label.
+                # 2) Find candidate controls
                 candidates_selector = (
                     "input,button,"
                     "[role='switch'],[role='checkbox'],[role='radio'],"
@@ -1171,33 +1164,28 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                 )
                 cand_loc = page.locator(candidates_selector)
                 total = cand_loc.count()
-                print(f"[apply_selector] searching {total} candidate controls near label '{label_text}'")
+                print(f"[apply_selector] searching {total} candidate controls near label {label_text!r}")
 
                 best_box = None
                 best_dx = float("inf")
+                max_to_check = min(total, 60)
 
-                max_to_check = min(total, 60)  # safety bound
                 for i in range(max_to_check):
                     el = cand_loc.nth(i)
-                    try:
-                        box = el.bounding_box()
-                    except Exception:
-                        continue
+                    box = el.bounding_box()
                     if not box:
                         continue
 
-                    # Require the control to be to the RIGHT of the label.
+                    # Must be to the right of the label
                     dx = box["x"] - label_right
                     if dx < 0:
                         continue
 
-                    # Require some vertical overlap with the label row.
-                    ctrl_top = box["y"]
-                    ctrl_bottom = box["y"] + box["height"]
-                    if not (ctrl_top <= label_center_y <= ctrl_bottom):
+                    # Must overlap vertically with label row
+                    if not (box["y"] <= label_center_y <= (box["y"] + box["height"])):
                         continue
 
-                    # Choose the closest control horizontally.
+                    # Choose nearest to the right
                     if dx < best_dx:
                         best_dx = dx
                         best_box = box
@@ -1205,23 +1193,15 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                 if best_box:
                     cx = best_box["x"] + best_box["width"] / 2.0
                     cy = best_box["y"] + best_box["height"] / 2.0
-                    print(
-                        "[apply_selector] Clicking center of nearest control at "
-                        f"({cx}, {cy}) for label {label_text!r}"
-                    )
+                    print(f"[apply_selector] Clicking center of nearest control at ({cx}, {cy})")
                     page.mouse.click(cx, cy)
                     return True
 
-                # 3) Fallback: if we didn't find a control, fall back to the simple
-                #    "to-the-right-of-label" click so we don't regress behavior.
-                x = label_right + min(40, label_box["width"])
-                y = label_center_y
-                print(
-                    "[apply_selector] No specific control found; falling back to "
-                    f"approx ({x}, {y}) for label {label_text!r}"
-                )
-                page.mouse.click(x, y)
-                return True
+                print("[apply_selector] No suitable control found near label.")
+                return False
+
+            # else: raw numeric "x,y"
+
 
             else:
                 # Raw numeric coords "x,y"
@@ -2090,7 +2070,7 @@ async def on_chat_start():
     plat_list = "\n".join(f"- `{p}`" for p in plats) if plats else "_None loaded_"
 
     help_text = (
-        "Welcome to the Agentic Privacy Control Center 👋\n\n"
+        "Welcome to the Agentic Privacy Control Center! \n\n"
         "You can interact with this chatbot in two ways:\n\n"
         "🟢 **Natural language:**\n"
         "You can type normally, as long as you mention:\n"
