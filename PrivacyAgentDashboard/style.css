@@ -126,6 +126,15 @@ h2 {
   background: #f1f3ff;
 }
 
+.controls button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 4px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
 .quick-actions button {
   width: 100%;
   margin-top: 8px;

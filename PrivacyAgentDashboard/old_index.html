@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Privacy Agent Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+  <header class="header">
+    <h1>Privacy Agent Dashboard</h1>
+
+    <div class="controls">
+      <label>
+        Platform
+        <select id="platformSelect">
+          <option value="all">All</option>
+        </select>
+      </label>
+
+      <label>
+        Category
+        <select id="categorySelect">
+          <option value="all">All</option>
+        </select>
+      </label>
+
+      <button id="syncBtn">Sync</button>
+      <button id="exportBtn">Export</button>
+    </div>
+  </header>
+
+  <main class="dashboard">
+
+    <!-- Combined Summary and Compare -->
+    <div class="combined-section">
+      <!-- LEFT: Summary -->
+      <section class="panel-summary">
+        <h2>Summary</h2>
+        <ul>
+          <li>Settings captured: <span id="statSettings">–</span></li>
+          <li>High-risk flags: <span id="statFlags">–</span></li>
+          <li>Changes applied: <span id="statChanges">–</span></li>
+          <li>Automation success: <span id="statSuccess">–</span></li>
+        </ul>
+
+        <div class="quick-actions">
+          <button>Disable ad personalization</button>
+          <button>Limit data sharing</button>
+          <button>Tighten visibility</button>
+        </div>
+      </section>
+
+      <!-- RIGHT: Compare Across Platforms -->
+      <section class="panel compare">
+        <h2>Compare Across Platforms</h2>
+        <div id="compareChart">
+          <!-- D3 heatmap / slopegraph goes here -->
+        </div>
+      </section>
+    </div>
+
+    <!-- Combined Settings List and Detail -->
+    <div class="combined-section">
+      <!-- LEFT: Settings List -->
+      <section class="panel settings">
+        <h2>Settings</h2>
+        <div class="settings-controls">
+          <label>
+            <input type="checkbox" id="flaggedOnly" checked />
+            Show flagged only
+          </label>
+        </div>
+        <ul id="settingsList">
+          <!-- populated via JS -->
+        </ul>
+      </section>
+
+      <!-- RIGHT: Setting Detail -->
+      <section class="panel detail">
+        <h2>Setting Detail</h2>
+        <div id="settingDetail">
+          <p>Select a setting to view details.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- Combined Recommendations List and Detail -->
+    <div class="combined-section">
+      <!-- LEFT: Recommendation Types -->
+      <section class="panel recommendations">
+        <h2>Recommendations</h2>
+        <ul id="recsList">
+           <!-- <li>
+            <strong>Status</strong>
+           </li>
+           <li>
+            <strong>Priority</strong>
+           </li>
+           <li>
+            <strong>Category</strong>
+           </li>
+           <li>
+            <strong>Frequency</strong>
+           </li> -->
+        </ul>
+      </section>
+
+      <!-- RIGHT: Recommendation Visualization -->
+      <section class="panel vis">
+        <h2>Charts</h2>
+        <div id="recVis">
+          <p>Select a recommendation to visualize.</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- BOTTOM: Execution Timeline -->
+    <section class="panel timeline">
+      <h2>Execution Timeline</h2>
+      <div id="timeline">
+        <!-- execution events -->
+      </div>
+    </section>
+
+  </main>
+
+  <script src="main.js"></script>
+</body>
+</html>

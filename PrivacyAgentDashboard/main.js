@@ -16,6 +16,7 @@ d3.csv("dashboard_data.csv", d => ({
   populateDropdowns();
   updateSummary();
   renderSettingsList();
+  renderRecsList();
 });
 
 function populateDropdowns() {
@@ -69,6 +70,27 @@ function renderSettingsList() {
   const settings = getFilteredSettings();
 
   const list = d3.select("#settingsList");
+  list.selectAll("li").remove();
+
+  list.selectAll("li")
+    .data(settings, d => d.setting_id)
+    .enter()
+    .append("li")
+    .html(d => `
+      <strong>${d.title}</strong><br>
+      <small>${d.platform} • ${d.category}</small>
+      ${d.flagged ? " ⚠️" : ""}
+    `)
+    .on("click", (_, d) => {
+      state.selectedSetting = d;
+      renderSettingDetail();
+    });
+}
+
+function renderRecsList() {
+  const settings = getFilteredSettings();
+
+  const list = d3.select("#recsList");
   list.selectAll("li").remove();
 
   list.selectAll("li")
