@@ -189,6 +189,7 @@ class PrivacySettingsExtractor:
             Dictionary containing extracted settings with image_path for each setting
         """
 
+        slice_paths = []
         try:
             # 1. Slice extremely tall images
             slice_paths = self._slice_vertical(image_path)
@@ -260,15 +261,24 @@ class PrivacySettingsExtractor:
                 "timestamp": datetime.now().isoformat(),
                 "settings": []
             }
+        finally:
+            # Remove generated slice files to avoid cluttering screenshots directory.
+            for slice_path in slice_paths:
+                if slice_path != image_path and os.path.exists(slice_path):
+                    try:
+                        os.remove(slice_path)
+                    except OSError:
+                        pass
 
     def batch_extract(self, image_directory: str, output_file: Optional[str] = None) -> List[Dict]:
         
         """
-        Processes all platform subdirectories, extracts settings from screenshots in each platform folder, and returns results organized by platform.
+        Processes all platform subdirectories, extracts settings from screenshots in each platform's
+        screenshots/sections folder, and returns results organized by platform.
         Optionally saves results to a JSON file.
         
         Args:
-            image_directory: Directory containing platform subdirectories with screenshot images
+            image_directory: Directory containing platform subdirectories, each with screenshots/sections
             output_file: Optional file to save results
             
         Returns:
@@ -279,7 +289,7 @@ class PrivacySettingsExtractor:
         if not image_dir.exists():
             return [{"status": "error", "message": f"Directory {image_directory} does not exist"}]
         
-        # Find platform subdirectories (folders that contain images)
+        # Find platform subdirectories (folders that contain screenshots/sections)
         image_extensions = {'.png', '.jpg', '.jpeg', '.bmp', '.tiff', '.webp'}
         platform_dirs = [d for d in image_dir.iterdir() if d.is_dir()]
         
@@ -293,9 +303,14 @@ class PrivacySettingsExtractor:
             platform_name = platform_dir.name
             print(f"\n📁 Processing platform: {platform_name}")
             
-            # Find image files in this platform directory
-            image_files = [f for f in platform_dir.iterdir() 
-                          if f.is_file() and f.suffix.lower() in image_extensions]
+            # Find image files in this platform's screenshots/sections directory
+            sections_dir = platform_dir / "screenshots" / "sections"
+            image_files = []
+            if sections_dir.exists():
+                image_files = [
+                    f for f in sections_dir.iterdir()
+                    if f.is_file() and f.suffix.lower() in image_extensions
+                ]
             
             if not image_files:
                 print(f"  ⚠️  No image files found in {platform_name}")
@@ -386,7 +401,7 @@ def main():
         return
     
     # Batch extract settings from screenshots
-    screenshots_dir = "screenshots"
+    screenshots_dir = "../gemini-team/generaloutput"
     
     if os.path.exists(screenshots_dir):
         print(f"\n🔍 Extracting settings from screenshots in: {screenshots_dir}")
@@ -427,4 +442,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
