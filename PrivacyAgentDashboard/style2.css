@@ -19,7 +19,7 @@ body {
 /* Top Navigation Bar */
 .navbar {
     background-color: #333;
-    padding: 1rem 2rem;
+    padding: 2rem 3rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -28,7 +28,7 @@ body {
 
 .navbar h1 {
     font-size: 1.5rem;
-    margin-right: 400px;
+    margin-right: 450px;
 }
 
 .navbar a {
@@ -72,6 +72,15 @@ body {
 /* Main Content Area */
 .main-content {
     flex: 1;
-    padding: 2rem;
+    padding: 3rem;
+    padding-left: 10rem;
+    padding-right: 10rem;
     overflow-y: auto;
+    h2 {
+        margin-top: 25px;
+        margin-bottom: 15px;
+    }
+    p {
+        margin-bottom: 10px;
+    }
 }
