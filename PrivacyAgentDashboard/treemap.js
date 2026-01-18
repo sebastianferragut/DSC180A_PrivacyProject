@@ -212,7 +212,7 @@ function getFilteredData() {
 
 /**
  * Build hierarchy from filtered data
- * Structure: Platform → Category → Setting (leaves)
+ * Structure: Category → Setting (leaves) - no platform grouping
  */
 function buildHierarchy() {
   const filtered = getFilteredData();
@@ -222,15 +222,10 @@ function buildHierarchy() {
     d.weight = calculateWeight(d.stateType, d.category, currentSizingMetric);
   });
   
-  // Group by platform
-  const platformMap = new Map();
+  // Group directly by category (skip platform level)
+  const categoryMap = new Map();
   
   filtered.forEach(d => {
-    if (!platformMap.has(d.platform)) {
-      platformMap.set(d.platform, new Map());
-    }
-    const categoryMap = platformMap.get(d.platform);
-    
     if (!categoryMap.has(d.category)) {
       categoryMap.set(d.category, []);
     }
@@ -243,36 +238,25 @@ function buildHierarchy() {
     children: []
   };
   
-  platformMap.forEach((categoryMap, platform) => {
-    const platformNode = {
-      name: platform,
-      children: []
+  categoryMap.forEach((settings, category) => {
+    const categoryNode = {
+      name: category,
+      children: settings.map(setting => ({
+        name: setting.setting,
+        setting: setting,
+        value: setting.weight,
+        url: setting.url,
+        description: setting.description,
+        state: setting.state,
+        stateType: setting.stateType,
+        platform: setting.platform,
+        category: setting.category
+      }))
     };
     
-    categoryMap.forEach((settings, category) => {
-      const categoryNode = {
-        name: category,
-        children: settings.map(setting => ({
-          name: setting.setting,
-          setting: setting,
-          value: setting.weight,
-          url: setting.url,
-          description: setting.description,
-          state: setting.state,
-          stateType: setting.stateType,
-          platform: setting.platform,
-          category: setting.category
-        }))
-      };
-      
-      // Calculate category value as sum of children
-      categoryNode.value = d3.sum(categoryNode.children, d => d.value);
-      platformNode.children.push(categoryNode);
-    });
-    
-    // Calculate platform value as sum of children
-    platformNode.value = d3.sum(platformNode.children, d => d.value);
-    root.children.push(platformNode);
+    // Calculate category value as sum of children
+    categoryNode.value = d3.sum(categoryNode.children, d => d.value);
+    root.children.push(categoryNode);
   });
   
   // Calculate root value
@@ -313,12 +297,18 @@ function renderTreemap() {
   
   const g = svg.append("g");
   
-  // Color scale by category
+  // Color scale by platform (not category)
+  const platforms = Array.from(new Set(allData.map(d => d.platform))).sort();
   const categories = Array.from(new Set(allData.map(d => d.category)));
 
-  const colorScale = d3.scaleOrdinal()
-  .domain(categories)
-  .range(d3.quantize(d3.interpolateRainbow, Math.max(categories.length, 3)));
+  const platformColorScale = d3.scaleOrdinal()
+    .domain(platforms)
+    .range(d3.quantize(d3.interpolateRainbow, Math.max(platforms.length, 3)));
+  
+  // Keep category color scale for category nodes (light gray)
+  const categoryColorScale = d3.scaleOrdinal()
+    .domain(categories)
+    .range(d3.schemeCategory10);
 
   
   // Treemap layout
@@ -347,17 +337,21 @@ function renderTreemap() {
       const atRoot = zoomStack.length === 0;
       
       if (atRoot) {
-        if (d.depth === 1) return '#e0e0e0'; // Platform
-        if (d.depth === 2) return colorScale(d.data.name); // Category
+        if (d.depth === 1) {
+          // Category node - use light gray
+          return '#e0e0e0';
+        }
       } else {
         // Zoomed in - depth shifts
-        if (d.depth === 0) return '#e0e0e0'; // Zoomed platform/category
-        if (d.depth === 1) return colorScale(d.data.name); // Zoomed category/setting
+        if (d.depth === 0) {
+          // Zoomed category - use light gray
+          return '#e0e0e0';
+        }
       }
       
-      // Leaf node: category color with state type overlay
-      const category = d.data.category || (d.parent ? d.parent.data.name : 'unknown');
-      const baseColor = colorScale(category);
+      // Leaf node (depth 2 at root, depth 1 when zoomed): platform color with state type overlay
+      const platform = d.data.platform || 'unknown';
+      const baseColor = platformColorScale(platform);
       if (d.data.stateType === 'navigational') {
         return d3.color(baseColor).brighter(0.5);
       } else if (d.data.stateType === 'actionable') {
@@ -427,32 +421,38 @@ function renderTreemap() {
     .attr("fill", d => {
       // Ensure text is visible - use white on dark backgrounds, black on light
       const isRoot = d.depth === 0;
-      const isPlatform = !zoomStack.length && d.depth === 1;
+      const isCategory = !zoomStack.length && d.depth === 1;
       
-      if (isRoot || isPlatform) {
+      if (isRoot) {
         // Light background - use dark text
         return "#333";
       }
       
-      // For category and leaf nodes, check background color brightness
-      // Categories are colored, so use white text with stroke for visibility
+      if (isCategory || (zoomStack.length > 0 && d.depth === 0)) {
+        // Category background (light gray) - use dark text
+        return "#333";
+      }
+      
+      // Leaf nodes (depth 2 at root, depth 1 when zoomed) - platform colored background, use white text
       return "#ffffff";
     })
     .attr("stroke", d => {
       // Add stroke to make text more visible on colored backgrounds
       const isRoot = d.depth === 0;
-      const isPlatform = !zoomStack.length && d.depth === 1;
+      const isCategory = !zoomStack.length && d.depth === 1;
       
-      if (isRoot || isPlatform) {
+      if (isRoot || isCategory || (zoomStack.length > 0 && d.depth === 0)) {
+        // Root or category (light background) - no stroke needed
         return "none";
       }
-      // White stroke on colored backgrounds for better visibility
+      // Leaf nodes (platform colored background) - black stroke for visibility
       return "#000000";
     })
     .attr("stroke-width", d => {
       const isRoot = d.depth === 0;
-      const isPlatform = !zoomStack.length && d.depth === 1;
-      return (isRoot || isPlatform) ? 0 : "0.5px";
+      const isCategory = !zoomStack.length && d.depth === 1;
+      // Only add stroke to leaf nodes (colored by platform)
+      return (isRoot || isCategory || (zoomStack.length > 0 && d.depth === 0)) ? 0 : "0.5px";
     })
     .attr("paint-order", "stroke")
     .style("font-weight", "600")
@@ -507,15 +507,11 @@ function renderTreemap() {
       
       // Try to get from parent chain if not in data
       if (!platform && d.parent) {
-        if (zoomStack.length === 0) {
-          // At root: parent is category, parent.parent is platform
-          platform = d.parent.parent ? d.parent.parent.data.name : 'unknown';
-          category = d.parent.data.name;
-        } else {
-          // Zoomed in: need to trace back
-          platform = zoomStack[0]?.root?.data?.name || 'unknown';
-          category = currentRoot.data.name;
-        }
+        // At root: depth 2 means parent (depth 1) is category
+        // When zoomed: depth 1 means parent (depth 0) is the zoomed category
+        category = d.parent.data.name;
+        // Platform info is stored in the setting data itself
+        platform = d.data.platform || 'unknown';
       }
       
       content = `<strong>${d.data.setting || d.data.name}</strong>
@@ -526,7 +522,7 @@ function renderTreemap() {
          <p><strong>Description:</strong> ${truncate(d.data.description || '', 200)}</p>
          ${d.data.url ? `<p><strong>URL:</strong> ${d.data.url}</p>` : ''}`;
     } else {
-      // Non-leaf node (platform or category)
+      // Non-leaf node (category)
       content = `<strong>${d.data.name}</strong>
          <p><strong>Value:</strong> ${d.value ? d.value.toFixed(2) : 0}</p>
          <p><strong>Children:</strong> ${d.children ? d.children.length : 0}</p>
@@ -591,6 +587,95 @@ function renderTreemap() {
   });
   
   updateBreadcrumbs();
+  renderLegend(platforms, platformColorScale, categories);
+}
+
+/**
+ * Render legend showing platforms (with colors) and categories
+ */
+function renderLegend(platforms, platformColorScale, categories) {
+  const legendContainer = d3.select("#treemapLegend");
+  legendContainer.selectAll("*").remove();
+  
+  // Create legend wrapper
+  const legend = legendContainer.append("div")
+    .attr("class", "legend-wrapper")
+    .style("display", "flex")
+    .style("gap", "30px")
+    .style("margin-top", "15px")
+    .style("padding", "15px")
+    .style("background", "#f9f9f9")
+    .style("border-radius", "6px")
+    .style("border", "1px solid #e0e0e0");
+  
+  // Platforms section (with colors)
+  const platformsSection = legend.append("div")
+    .attr("class", "legend-section platforms-section");
+  
+  platformsSection.append("div")
+    .attr("class", "legend-title")
+    .style("font-weight", "600")
+    .style("margin-bottom", "8px")
+    .style("font-size", "14px")
+    .style("color", "#333")
+    .text("Platforms (colors)");
+  
+  const platformsList = platformsSection.append("div")
+    .attr("class", "legend-items")
+    .style("display", "flex")
+    .style("flex-wrap", "wrap")
+    .style("gap", "12px");
+  
+  platforms.forEach(platform => {
+    const item = platformsList.append("div")
+      .attr("class", "legend-item")
+      .style("display", "flex")
+      .style("align-items", "center")
+      .style("gap", "6px")
+      .style("font-size", "12px");
+    
+    item.append("div")
+      .attr("class", "legend-color")
+      .style("width", "16px")
+      .style("height", "16px")
+      .style("background", platformColorScale(platform))
+      .style("border", "1px solid #ccc")
+      .style("border-radius", "3px")
+      .style("flex-shrink", "0");
+    
+    item.append("span")
+      .text(platform.charAt(0).toUpperCase() + platform.slice(1));
+  });
+  
+  // Categories section (grouping info, no colors)
+  const categoriesSection = legend.append("div")
+    .attr("class", "legend-section categories-section");
+  
+  categoriesSection.append("div")
+    .attr("class", "legend-title")
+    .style("font-weight", "600")
+    .style("margin-bottom", "8px")
+    .style("font-size", "14px")
+    .style("color", "#333")
+    .text("Categories (grouping)");
+  
+  const categoriesList = categoriesSection.append("div")
+    .attr("class", "legend-items")
+    .style("display", "flex")
+    .style("flex-wrap", "wrap")
+    .style("gap", "8px");
+  
+  categories.forEach(category => {
+    categoriesList.append("div")
+      .attr("class", "legend-platform-item")
+      .style("padding", "4px 10px")
+      .style("background", "#fff")
+      .style("border", "1px solid #ddd")
+      .style("border-radius", "4px")
+      .style("font-size", "12px")
+      .style("color", "#666")
+      .text(category.replace(/_/g, ' '));
+  });
 }
 
 /**

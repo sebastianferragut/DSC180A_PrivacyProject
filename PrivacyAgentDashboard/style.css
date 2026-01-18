@@ -287,6 +287,60 @@ body {
   font-size: 12px;
 }
 
+/* Treemap Legend Styles */
+#treemapLegend {
+  margin-top: 10px;
+}
+
+.legend-wrapper {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.legend-section {
+  flex: 1;
+  min-width: 200px;
+}
+
+.legend-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #333;
+}
+
+.legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #555;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.legend-platform-item {
+  padding: 4px 10px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #666;
+}
+
 h2 {
   margin-top: 0;
   font-size: 1rem;
