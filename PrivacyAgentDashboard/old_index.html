@@ -109,23 +109,60 @@
 
       <!-- RIGHT: Recommendation Visualization -->
       <section class="panel vis">
-        <h2>Charts</h2>
+        <h2>Navigation Network Graph</h2>
+        <div style="margin-bottom: 10px;">
+          <label>
+            Platform:
+            <select id="networkPlatformSelect">
+              <option value="all">All Platforms</option>
+            </select>
+          </label>
+        </div>
         <div id="recVis">
-          <p>Select a recommendation to visualize.</p>
+          <p>Select a platform to view navigation network.</p>
         </div>
       </section>
     </div>
 
-    <!-- BOTTOM: Execution Timeline -->
-    <section class="panel timeline">
-      <h2>Execution Timeline</h2>
-      <div id="timeline">
-        <!-- execution events -->
+    <!-- BOTTOM: Treemap Visualization -->
+    <section class="panel treemap-section">
+      <div class="treemap-controls">
+        <div class="treemap-control-row">
+          <label>
+            Sizing Metric:
+            <select id="sizingMetric">
+              <option value="count">Count (1 per setting)</option>
+              <option value="actionable">Actionable only</option>
+              <option value="risk-weighted">Risk-weighted</option>
+            </select>
+          </label>
+          <label>
+            State Type:
+            <select id="stateTypeFilter">
+              <option value="all">All</option>
+              <option value="actionable">Actionable</option>
+              <option value="navigational">Navigational</option>
+              <option value="unknown">Unknown</option>
+            </select>
+          </label>
+          <label>
+            Search:
+            <input type="text" id="searchBox" placeholder="Search settings..." />
+          </label>
+          <button id="resetView">Reset View</button>
+        </div>
+        <div class="breadcrumbs" id="breadcrumbs">
+          <span class="breadcrumb-item active" data-path="">All</span>
+        </div>
+      </div>
+      <div id="treemapContainer">
+        <p>Loading treemap visualization...</p>
       </div>
     </section>
 
   </main>
 
   <script src="main.js"></script>
+  <script src="treemap.js"></script>
 </body>
 </html>

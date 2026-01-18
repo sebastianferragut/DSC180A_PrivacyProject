@@ -67,6 +67,61 @@ body {
   /* No grid positioning needed - handled by combined-section */
 }
 
+#compareChart {
+  width: 100%;
+  min-height: 400px;
+  overflow-x: auto;
+}
+
+#compareChart svg {
+  display: block;
+  margin: 0 auto;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 1000;
+}
+
+#recVis {
+  width: 100%;
+  min-height: 500px;
+  overflow: visible;
+}
+
+#recVis svg {
+  display: block;
+  margin: 0 auto;
+}
+
+.network-controls {
+  margin-bottom: 10px;
+}
+
+.network-controls select {
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.links line {
+  stroke-opacity: 0.3;
+}
+
+.nodes circle {
+  cursor: pointer;
+}
+
+.nodes circle:hover {
+  stroke-width: 3;
+}
+
+.labels text {
+  fill: #333;
+  font-weight: 500;
+  pointer-events: none;
+}
+
 .settings {
   /* No grid positioning needed - handled by combined-section */
   display: flex;
@@ -80,6 +135,156 @@ body {
 
 .timeline {
   grid-column: 1;
+}
+
+/* Treemap Styles */
+.treemap-section {
+  grid-column: 1 / -1;
+  min-height: 600px;
+}
+
+.treemap-controls {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #f9f9f9;
+  border-radius: 4px;
+}
+
+.treemap-control-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.treemap-control-row label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.treemap-control-row select,
+.treemap-control-row input {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.treemap-control-row #searchBox {
+  flex: 1;
+  min-width: 200px;
+}
+
+.treemap-control-row button {
+  padding: 6px 16px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.treemap-control-row button:hover {
+  opacity: 0.9;
+}
+
+.breadcrumbs {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+  color: #666;
+}
+
+.breadcrumb-item {
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.breadcrumb-item:hover {
+  background: #e9e9e9;
+}
+
+.breadcrumb-item.active {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.breadcrumb-separator {
+  color: #999;
+}
+
+#treemapContainer {
+  width: 100%;
+  min-height: 500px;
+  position: relative;
+  overflow: hidden;
+}
+
+#treemapContainer svg {
+  display: block;
+  width: 100%;
+  height: 500px;
+}
+
+.treemap-cell {
+  cursor: pointer;
+  stroke: #fff;
+  stroke-width: 1.5;
+  transition: opacity 0.2s;
+}
+
+.treemap-cell:hover {
+  opacity: 0.8;
+  stroke-width: 2;
+}
+
+.treemap-label {
+  pointer-events: none;
+  font-size: 13px;
+  font-weight: 600;
+  fill: #ffffff;
+  text-anchor: middle;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  stroke: #000000;
+  stroke-width: 0.5px;
+  paint-order: stroke;
+}
+
+.treemap-label-small {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.treemap-tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  pointer-events: none;
+  z-index: 1000;
+  max-width: 300px;
+  line-height: 1.5;
+}
+
+.treemap-tooltip strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+  color: #fff;
+}
+
+.treemap-tooltip p {
+  margin: 2px 0;
+  font-size: 12px;
 }
 
 h2 {
