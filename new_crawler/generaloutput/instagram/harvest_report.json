@@ -1,0 +1,875 @@
+{
+  "site": "www.instagram.com",
+  "ts_iso": "2025-11-19T20:24:45.520762Z",
+  "actions": [
+    {
+      "ts": "20251119T202447Z",
+      "kind": "auto_fullpage",
+      "url": "https://www.instagram.com/accounts/notifications",
+      "path": "/generaloutput/instagram/screenshots/sections/initial_load_20251119T202447Z.png",
+      "label": "initial_load",
+      "nav_path": [],
+      "nav_path_desc": ""
+    },
+    {
+      "ts": "20251119T202503Z",
+      "kind": "planner_usage",
+      "turn": 1,
+      "input_tokens": 124,
+      "output_tokens": 0,
+      "latency_sec": 16.424283981323242,
+      "cost_usd": 0.000155,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251119T202503Z",
+      "kind": "planner_plan",
+      "turn": 1,
+      "plan": {
+        "on_settings_page": false,
+        "selectors": [],
+        "capture": {
+          "fullpage": false,
+          "section_name": null,
+          "elements": []
+        },
+        "notes": "empty_text",
+        "_usage": {
+          "input_tokens": 124,
+          "output_tokens": 0,
+          "source": "estimate",
+          "latency_sec": 16.424283981323242
+        }
+      }
+    },
+    {
+      "ts": "20251119T202514Z",
+      "kind": "planner_usage",
+      "turn": 2,
+      "input_tokens": 400,
+      "output_tokens": 33,
+      "latency_sec": 9.925671815872192,
+      "cost_usd": 0.00083,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251119T202514Z",
+      "kind": "planner_plan",
+      "turn": 2,
+      "plan": {
+        "on_settings_page": null,
+        "selectors": [],
+        "capture": {
+          "fullpage": false,
+          "section_name": null,
+          "elements": []
+        },
+        "batch": {
+          "clicks": [
+            {
+              "type": "text",
+              "selector": "Account privacy"
+            },
+            {
+              "type": "text",
+              "selector": "Blocked"
+            },
+            {
+              "type": "text",
+              "selector": "Story and location"
+            },
+            {
+              "type": "text",
+              "selector": "Messages and story replies"
+            }
+          ],
+          "screenshots": [
+            {
+              "fullpage": true,
+              "section_name": "Notifications"
+            }
+          ]
+        },
+        "notes": "parsed_from_script",
+        "_usage": {
+          "input_tokens": 400,
+          "output_tokens": 33,
+          "source": "estimate",
+          "latency_sec": 9.925671815872192
+        }
+      }
+    },
+    {
+      "ts": "20251119T202515Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Account privacy"
+      },
+      "url": "https://www.instagram.com/accounts/settings/v2/account_privacy/"
+    },
+    {
+      "ts": "20251119T202515Z",
+      "kind": "auto_fullpage",
+      "url": "https://www.instagram.com/accounts/settings/v2/account_privacy/",
+      "path": "/generaloutput/instagram/screenshots/sections/after_click__Account_privacy_20251119T202515Z.png",
+      "label": "after_click__Account_privacy",
+      "nav_path": [
+        "Account privacy"
+      ],
+      "nav_path_desc": "Account privacy"
+    },
+    {
+      "ts": "20251119T202516Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Blocked"
+      },
+      "url": "https://www.instagram.com/accounts/blocked_accounts/"
+    },
+    {
+      "ts": "20251119T202517Z",
+      "kind": "auto_fullpage",
+      "url": "https://www.instagram.com/accounts/blocked_accounts/",
+      "path": "/generaloutput/instagram/screenshots/sections/after_click__Blocked_20251119T202517Z.png",
+      "label": "after_click__Blocked",
+      "nav_path": [
+        "Account privacy",
+        "Blocked"
+      ],
+      "nav_path_desc": "Account privacy > Blocked"
+    },
+    {
+      "ts": "20251119T202517Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Story and location"
+      },
+      "url": "https://www.instagram.com/accounts/hide_story_and_live/"
+    },
+    {
+      "ts": "20251119T202518Z",
+      "kind": "auto_fullpage",
+      "url": "https://www.instagram.com/accounts/hide_story_and_live/",
+      "path": "/generaloutput/instagram/screenshots/sections/after_click__Story_and_location_20251119T202518Z.png",
+      "label": "after_click__Story_and_location",
+      "nav_path": [
+        "Account privacy",
+        "Blocked",
+        "Story and location"
+      ],
+      "nav_path_desc": "Account privacy > Blocked > Story and location"
+    },
+    {
+      "ts": "20251119T202519Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Messages and story replies"
+      },
+      "url": "https://www.instagram.com/accounts/messages_and_story_replies/"
+    },
+    {
+      "ts": "20251119T202519Z",
+      "kind": "auto_fullpage",
+      "url": "https://www.instagram.com/accounts/messages_and_story_replies/",
+      "path": "/generaloutput/instagram/screenshots/sections/after_click__Messages_and_story_replies_20251119T202519Z.png",
+      "label": "after_click__Messages_and_story_replies",
+      "nav_path": [
+        "Account privacy",
+        "Blocked",
+        "Story and location",
+        "Messages and story replies"
+      ],
+      "nav_path_desc": "Account privacy > Blocked > Story and location > Messages and story replies"
+    },
+    {
+      "ts": "20251119T202519Z",
+      "kind": "capture_fullpage",
+      "url": "https://www.instagram.com/accounts/messages_and_story_replies/",
+      "path": "/generaloutput/instagram/screenshots/sections/notifications_20251119T202519Z.png",
+      "section": "Notifications",
+      "nav_path": [
+        "Account privacy",
+        "Blocked",
+        "Story and location",
+        "Messages and story replies"
+      ],
+      "nav_path_desc": "Account privacy > Blocked > Story and location > Messages and story replies"
+    },
+    {
+      "ts": "20251119T202537Z",
+      "kind": "planner_usage",
+      "turn": 3,
+      "input_tokens": 623,
+      "output_tokens": 0,
+      "latency_sec": 16.53419780731201,
+      "cost_usd": 0.000779,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251119T202537Z",
+      "kind": "planner_plan",
+      "turn": 3,
+      "plan": {
+        "on_settings_page": false,
+        "selectors": [],
+        "capture": {
+          "fullpage": false,
+          "section_name": null,
+          "elements": []
+        },
+        "notes": "empty_text",
+        "_usage": {
+          "input_tokens": 623,
+          "output_tokens": 0,
+          "source": "estimate",
+          "latency_sec": 16.53419780731201
+        }
+      }
+    },
+    {
+      "ts": "20251119T202548Z",
+      "kind": "planner_usage",
+      "turn": 4,
+      "input_tokens": 623,
+      "output_tokens": 42,
+      "latency_sec": 10.508815050125122,
+      "cost_usd": 0.001199,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251119T202548Z",
+      "kind": "planner_plan",
+      "turn": 4,
+      "plan": {
+        "on_settings_page": null,
+        "selectors": [],
+        "capture": {
+          "fullpage": false,
+          "section_name": null,
+          "elements": []
+        },
+        "batch": {
+          "clicks": [
+            {
+              "type": "text",
+              "selector": "Tags and mentions"
+            },
+            {
+              "type": "text",
+              "selector": "Comments"
+            },
+            {
+              "type": "text",
+              "selector": "Sharing and reuse"
+            },
+            {
+              "type": "text",
+              "selector": "Restricted accounts"
+            }
+          ],
+          "screenshots": [
+            {
+              "fullpage": true,
+              "section_name": "Messages and story replies"
+            }
+          ]
+        },
+        "notes": "parsed_from_script",
+        "_usage": {
+          "input_tokens": 623,
+          "output_tokens": 42,
+          "source": "estimate",
+          "latency_sec": 10.508815050125122
+        }
+      }
+    },
+    {
+      "ts": "20251119T202549Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Tags and mentions"
+      },
+      "url": "https://www.instagram.com/accounts/settings/v2/tags_and_mentions/"
+    },
+    {
+      "ts": "20251119T202550Z",
+      "kind": "auto_fullpage",
+      "url": "https://www.instagram.com/accounts/settings/v2/tags_and_mentions/",
+      "path": "/generaloutput/instagram/screenshots/sections/after_click__Tags_and_mentions_20251119T202550Z.png",
+      "label": "after_click__Tags_and_mentions",
+      "nav_path": [
+        "Account privacy",
+        "Blocked",
+        "Story and location",
+        "Messages and story replies",
+        "Tags and mentions"
+      ],
+      "nav_path_desc": "Account privacy > Blocked > Story and location > Messages and story replies > Tags and mentions"
+    },
+    {
+      "ts": "20251119T202550Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Comments"
+      },
+      "url": "https://www.instagram.com/accounts/comments/"
+    },
+    {
+      "ts": "20251119T202551Z",
+      "kind": "auto_fullpage",
+      "url": "https://www.instagram.com/accounts/comments/",
+      "path": "/generaloutput/instagram/screenshots/sections/after_click__Comments_20251119T202551Z.png",
+      "label": "after_click__Comments",
+      "nav_path": [
+        "Account privacy",
+        "Blocked",
+        "Story and location",
+        "Messages and story replies",
+        "Tags and mentions",
+        "Comments"
+      ],
+      "nav_path_desc": "Account privacy > Blocked > Story and location > Messages and story replies > Tags and mentions > Comments"
+    },
+    {
+      "ts": "20251119T202552Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Sharing and reuse"
+      },
+      "url": "https://www.instagram.com/accounts/settings/v2/sharing_and_reuse/"
+    },
+    {
+      "ts": "20251119T202552Z",
+      "kind": "auto_fullpage",
+      "url": "https://www.instagram.com/accounts/settings/v2/sharing_and_reuse/",
+      "path": "/generaloutput/instagram/screenshots/sections/after_click__Sharing_and_reuse_20251119T202552Z.png",
+      "label": "after_click__Sharing_and_reuse",
+      "nav_path": [
+        "Account privacy",
+        "Blocked",
+        "Story and location",
+        "Messages and story replies",
+        "Tags and mentions",
+        "Comments",
+        "Sharing and reuse"
+      ],
+      "nav_path_desc": "Account privacy > Blocked > Story and location > Messages and story replies > Tags and mentions > Comments > Sharing and reuse"
+    },
+    {
+      "ts": "20251119T202553Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Restricted accounts"
+      },
+      "url": "https://www.instagram.com/accounts/restricted_accounts/"
+    },
+    {
+      "ts": "20251119T202554Z",
+      "kind": "auto_fullpage",
+      "url": "https://www.instagram.com/accounts/restricted_accounts/",
+      "path": "/generaloutput/instagram/screenshots/sections/after_click__Restricted_accounts_20251119T202554Z.png",
+      "label": "after_click__Restricted_accounts",
+      "nav_path": [
+        "Account privacy",
+        "Blocked",
+        "Story and location",
+        "Messages and story replies",
+        "Tags and mentions",
+        "Comments",
+        "Sharing and reuse",
+        "Restricted accounts"
+      ],
+      "nav_path_desc": "Account privacy > Blocked > Story and location > Messages and story replies > Tags and mentions > Comments > Sharing and reuse > Restricted accounts"
+    },
+    {
+      "ts": "20251119T202554Z",
+      "kind": "capture_fullpage",
+      "url": "https://www.instagram.com/accounts/restricted_accounts/",
+      "path": "/generaloutput/instagram/screenshots/sections/messages_and_story_replies_20251119T202554Z.png",
+      "section": "Messages and story replies",
+      "nav_path": [
+        "Account privacy",
+        "Blocked",
+        "Story and location",
+        "Messages and story replies",
+        "Tags and mentions",
+        "Comments",
+        "Sharing and reuse",
+        "Restricted accounts"
+      ],
+      "nav_path_desc": "Account privacy > Blocked > Story and location > Messages and story replies > Tags and mentions > Comments > Sharing and reuse > Restricted accounts"
+    },
+    {
+      "ts": "20251119T202605Z",
+      "kind": "planner_usage",
+      "turn": 5,
+      "input_tokens": 791,
+      "output_tokens": 51,
+      "latency_sec": 10.12987208366394,
+      "cost_usd": 0.001499,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251119T202605Z",
+      "kind": "planner_plan",
+      "turn": 5,
+      "plan": {
+        "on_settings_page": null,
+        "selectors": [],
+        "capture": {
+          "fullpage": false,
+          "section_name": null,
+          "elements": []
+        },
+        "batch": {
+          "clicks": [
+            {
+              "type": "text",
+              "selector": "Hidden Words"
+            },
+            {
+              "type": "text",
+              "selector": "Muted accounts"
+            },
+            {
+              "type": "text",
+              "selector": "Content preferences"
+            },
+            {
+              "type": "text",
+              "selector": "Archiving and downloading"
+            },
+            {
+              "type": "text",
+              "selector": "Website permissions"
+            }
+          ],
+          "screenshots": [
+            {
+              "fullpage": true,
+              "section_name": "Restricted accounts"
+            }
+          ]
+        },
+        "notes": "parsed_from_script",
+        "_usage": {
+          "input_tokens": 791,
+          "output_tokens": 51,
+          "source": "estimate",
+          "latency_sec": 10.12987208366394
+        }
+      }
+    },
+    {
+      "ts": "20251119T202605Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Hidden Words"
+      },
+      "url": "https://www.instagram.com/accounts/settings/v2/hidden_words/"
+    },
+    {
+      "ts": "20251119T202606Z",
+      "kind": "auto_fullpage",
+      "url": "https://www.instagram.com/accounts/settings/v2/hidden_words/",
+      "path": "/generaloutput/instagram/screenshots/sections/after_click__Hidden_Words_20251119T202606Z.png",
+      "label": "after_click__Hidden_Words",
+      "nav_path": [
+        "Account privacy",
+        "Blocked",
+        "Story and location",
+        "Messages and story replies",
+        "Tags and mentions",
+        "Comments",
+        "Sharing and reuse",
+        "Restricted accounts",
+        "Hidden Words"
+      ],
+      "nav_path_desc": "Account privacy > Blocked > Story and location > Messages and story replies > Tags and mentions > Comments > Sharing and reuse > Restricted accounts > Hidden Words"
+    },
+    {
+      "ts": "20251119T202607Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Muted accounts"
+      },
+      "url": "https://www.instagram.com/accounts/muted_accounts/"
+    },
+    {
+      "ts": "20251119T202607Z",
+      "kind": "auto_fullpage",
+      "url": "https://www.instagram.com/accounts/muted_accounts/",
+      "path": "/generaloutput/instagram/screenshots/sections/after_click__Muted_accounts_20251119T202607Z.png",
+      "label": "after_click__Muted_accounts",
+      "nav_path": [
+        "Account privacy",
+        "Blocked",
+        "Story and location",
+        "Messages and story replies",
+        "Tags and mentions",
+        "Comments",
+        "Sharing and reuse",
+        "Restricted accounts",
+        "Hidden Words",
+        "Muted accounts"
+      ],
+      "nav_path_desc": "Account privacy > Blocked > Story and location > Messages and story replies > Tags and mentions > Comments > Sharing and reuse > Restricted accounts > Hidden Words > Muted accounts"
+    },
+    {
+      "ts": "20251119T202608Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Content preferences"
+      },
+      "url": "https://www.instagram.com/accounts/settings/v2/content_preferences/"
+    },
+    {
+      "ts": "20251119T202609Z",
+      "kind": "auto_fullpage",
+      "url": "https://www.instagram.com/accounts/settings/v2/content_preferences/",
+      "path": "/generaloutput/instagram/screenshots/sections/after_click__Content_preferences_20251119T202609Z.png",
+      "label": "after_click__Content_preferences",
+      "nav_path": [
+        "Account privacy",
+        "Blocked",
+        "Story and location",
+        "Messages and story replies",
+        "Tags and mentions",
+        "Comments",
+        "Sharing and reuse",
+        "Restricted accounts",
+        "Hidden Words",
+        "Muted accounts",
+        "Content preferences"
+      ],
+      "nav_path_desc": "Account privacy > Blocked > Story and location > Messages and story replies > Tags and mentions > Comments > Sharing and reuse > Restricted accounts > Hidden Words > Muted accounts > Content preferences"
+    },
+    {
+      "ts": "20251119T202609Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Archiving and downloading"
+      },
+      "url": "https://www.instagram.com/accounts/settings/v2/archiving_and_downloading/"
+    },
+    {
+      "ts": "20251119T202610Z",
+      "kind": "auto_fullpage",
+      "url": "https://www.instagram.com/accounts/settings/v2/archiving_and_downloading/",
+      "path": "/generaloutput/instagram/screenshots/sections/after_click__Archiving_and_downloading_20251119T202610Z.png",
+      "label": "after_click__Archiving_and_downloading",
+      "nav_path": [
+        "Account privacy",
+        "Blocked",
+        "Story and location",
+        "Messages and story replies",
+        "Tags and mentions",
+        "Comments",
+        "Sharing and reuse",
+        "Restricted accounts",
+        "Hidden Words",
+        "Muted accounts",
+        "Content preferences",
+        "Archiving and downloading"
+      ],
+      "nav_path_desc": "Account privacy > Blocked > Story and location > Messages and story replies > Tags and mentions > Comments > Sharing and reuse > Restricted accounts > Hidden Words > Muted accounts > Content preferences > Archiving and downloading"
+    },
+    {
+      "ts": "20251119T202611Z",
+      "kind": "batch_click",
+      "ok": true,
+      "selector": {
+        "type": "text",
+        "selector": "Website permissions"
+      },
+      "url": "https://www.instagram.com/accounts/website_permissions/"
+    },
+    {
+      "ts": "20251119T202611Z",
+      "kind": "auto_fullpage",
+      "url": "https://www.instagram.com/accounts/website_permissions/",
+      "path": "/generaloutput/instagram/screenshots/sections/after_click__Website_permissions_20251119T202611Z.png",
+      "label": "after_click__Website_permissions",
+      "nav_path": [
+        "Account privacy",
+        "Blocked",
+        "Story and location",
+        "Messages and story replies",
+        "Tags and mentions",
+        "Comments",
+        "Sharing and reuse",
+        "Restricted accounts",
+        "Hidden Words",
+        "Muted accounts",
+        "Content preferences",
+        "Archiving and downloading",
+        "Website permissions"
+      ],
+      "nav_path_desc": "Account privacy > Blocked > Story and location > Messages and story replies > Tags and mentions > Comments > Sharing and reuse > Restricted accounts > Hidden Words > Muted accounts > Content preferences > Archiving and downloading > Website permissions"
+    },
+    {
+      "ts": "20251119T202611Z",
+      "kind": "capture_fullpage",
+      "url": "https://www.instagram.com/accounts/website_permissions/",
+      "path": "/generaloutput/instagram/screenshots/sections/restricted_accounts_20251119T202611Z.png",
+      "section": "Restricted accounts",
+      "nav_path": [
+        "Account privacy",
+        "Blocked",
+        "Story and location",
+        "Messages and story replies",
+        "Tags and mentions",
+        "Comments",
+        "Sharing and reuse",
+        "Restricted accounts",
+        "Hidden Words",
+        "Muted accounts",
+        "Content preferences",
+        "Archiving and downloading",
+        "Website permissions"
+      ],
+      "nav_path_desc": "Account privacy > Blocked > Story and location > Messages and story replies > Tags and mentions > Comments > Sharing and reuse > Restricted accounts > Hidden Words > Muted accounts > Content preferences > Archiving and downloading > Website permissions"
+    }
+  ],
+  "sections": [
+    {
+      "name": "Notifications",
+      "path": [
+        "Notifications"
+      ],
+      "url": "https://www.instagram.com/accounts/messages_and_story_replies/",
+      "evidence_fullpage": "/generaloutput/instagram/screenshots/sections/notifications_20251119T202519Z.png",
+      "items": [],
+      "nav_path": [
+        "Account privacy",
+        "Blocked",
+        "Story and location",
+        "Messages and story replies"
+      ],
+      "nav_path_desc": "Account privacy > Blocked > Story and location > Messages and story replies"
+    },
+    {
+      "name": "Messages and story replies",
+      "path": [
+        "Messages and story replies"
+      ],
+      "url": "https://www.instagram.com/accounts/restricted_accounts/",
+      "evidence_fullpage": "/generaloutput/instagram/screenshots/sections/messages_and_story_replies_20251119T202554Z.png",
+      "items": [],
+      "nav_path": [
+        "Account privacy",
+        "Blocked",
+        "Story and location",
+        "Messages and story replies",
+        "Tags and mentions",
+        "Comments",
+        "Sharing and reuse",
+        "Restricted accounts"
+      ],
+      "nav_path_desc": "Account privacy > Blocked > Story and location > Messages and story replies > Tags and mentions > Comments > Sharing and reuse > Restricted accounts"
+    },
+    {
+      "name": "Restricted accounts",
+      "path": [
+        "Restricted accounts"
+      ],
+      "url": "https://www.instagram.com/accounts/website_permissions/",
+      "evidence_fullpage": "/generaloutput/instagram/screenshots/sections/restricted_accounts_20251119T202611Z.png",
+      "items": [],
+      "nav_path": [
+        "Account privacy",
+        "Blocked",
+        "Story and location",
+        "Messages and story replies",
+        "Tags and mentions",
+        "Comments",
+        "Sharing and reuse",
+        "Restricted accounts",
+        "Hidden Words",
+        "Muted accounts",
+        "Content preferences",
+        "Archiving and downloading",
+        "Website permissions"
+      ],
+      "nav_path_desc": "Account privacy > Blocked > Story and location > Messages and story replies > Tags and mentions > Comments > Sharing and reuse > Restricted accounts > Hidden Words > Muted accounts > Content preferences > Archiving and downloading > Website permissions"
+    }
+  ],
+  "errors": [],
+  "model_calls": 5,
+  "state": {
+    "visited_urls": [
+      "https://www.instagram.com/accounts/notifications",
+      "https://www.instagram.com/accounts/settings/v2/account_privacy/",
+      "https://www.instagram.com/accounts/blocked_accounts/",
+      "https://www.instagram.com/accounts/hide_story_and_live/",
+      "https://www.instagram.com/accounts/messages_and_story_replies/",
+      "https://www.instagram.com/accounts/settings/v2/tags_and_mentions/",
+      "https://www.instagram.com/accounts/comments/",
+      "https://www.instagram.com/accounts/settings/v2/sharing_and_reuse/",
+      "https://www.instagram.com/accounts/restricted_accounts/",
+      "https://www.instagram.com/accounts/settings/v2/hidden_words/",
+      "https://www.instagram.com/accounts/muted_accounts/",
+      "https://www.instagram.com/accounts/settings/v2/content_preferences/",
+      "https://www.instagram.com/accounts/settings/v2/archiving_and_downloading/",
+      "https://www.instagram.com/accounts/website_permissions/"
+    ],
+    "captured_sections": [
+      "notifications",
+      "messages and story replies",
+      "restricted accounts"
+    ],
+    "last_capture_url": "https://www.instagram.com/accounts/website_permissions/",
+    "nav_trail": [
+      {
+        "ts": "20251119T202515Z",
+        "label": "Account privacy",
+        "url": "https://www.instagram.com/accounts/settings/v2/account_privacy/"
+      },
+      {
+        "ts": "20251119T202516Z",
+        "label": "Blocked",
+        "url": "https://www.instagram.com/accounts/blocked_accounts/"
+      },
+      {
+        "ts": "20251119T202517Z",
+        "label": "Story and location",
+        "url": "https://www.instagram.com/accounts/hide_story_and_live/"
+      },
+      {
+        "ts": "20251119T202519Z",
+        "label": "Messages and story replies",
+        "url": "https://www.instagram.com/accounts/messages_and_story_replies/"
+      },
+      {
+        "ts": "20251119T202549Z",
+        "label": "Tags and mentions",
+        "url": "https://www.instagram.com/accounts/settings/v2/tags_and_mentions/"
+      },
+      {
+        "ts": "20251119T202550Z",
+        "label": "Comments",
+        "url": "https://www.instagram.com/accounts/comments/"
+      },
+      {
+        "ts": "20251119T202552Z",
+        "label": "Sharing and reuse",
+        "url": "https://www.instagram.com/accounts/settings/v2/sharing_and_reuse/"
+      },
+      {
+        "ts": "20251119T202553Z",
+        "label": "Restricted accounts",
+        "url": "https://www.instagram.com/accounts/restricted_accounts/"
+      },
+      {
+        "ts": "20251119T202605Z",
+        "label": "Hidden Words",
+        "url": "https://www.instagram.com/accounts/settings/v2/hidden_words/"
+      },
+      {
+        "ts": "20251119T202607Z",
+        "label": "Muted accounts",
+        "url": "https://www.instagram.com/accounts/muted_accounts/"
+      },
+      {
+        "ts": "20251119T202608Z",
+        "label": "Content preferences",
+        "url": "https://www.instagram.com/accounts/settings/v2/content_preferences/"
+      },
+      {
+        "ts": "20251119T202609Z",
+        "label": "Archiving and downloading",
+        "url": "https://www.instagram.com/accounts/settings/v2/archiving_and_downloading/"
+      },
+      {
+        "ts": "20251119T202611Z",
+        "label": "Website permissions",
+        "url": "https://www.instagram.com/accounts/website_permissions/"
+      }
+    ]
+  },
+  "metrics": {
+    "run_start_ts": "2025-11-19T20:24:45.520852Z",
+    "run_end_ts": "2025-11-19T20:26:11.899288Z",
+    "total_runtime_sec": 86.378436,
+    "turns": 5,
+    "steps": {
+      "batch_clicks": 13,
+      "selectors_applied": 0,
+      "fullpage_screens": 3,
+      "element_screens": 0,
+      "auto_screens": 27
+    },
+    "api": {
+      "calls": 5,
+      "input_tokens": 2561,
+      "output_tokens": 126,
+      "cost_usd": 0.004462,
+      "per_call": [
+        {
+          "turn": 1,
+          "input_tokens": 124,
+          "output_tokens": 0,
+          "latency_sec": 16.424283981323242,
+          "cost_usd": 0.000155,
+          "source": "estimate"
+        },
+        {
+          "turn": 2,
+          "input_tokens": 400,
+          "output_tokens": 33,
+          "latency_sec": 9.925671815872192,
+          "cost_usd": 0.00083,
+          "source": "estimate"
+        },
+        {
+          "turn": 3,
+          "input_tokens": 623,
+          "output_tokens": 0,
+          "latency_sec": 16.53419780731201,
+          "cost_usd": 0.000779,
+          "source": "estimate"
+        },
+        {
+          "turn": 4,
+          "input_tokens": 623,
+          "output_tokens": 42,
+          "latency_sec": 10.508815050125122,
+          "cost_usd": 0.001199,
+          "source": "estimate"
+        },
+        {
+          "turn": 5,
+          "input_tokens": 791,
+          "output_tokens": 51,
+          "latency_sec": 10.12987208366394,
+          "cost_usd": 0.001499,
+          "source": "estimate"
+        }
+      ]
+    }
+  }
+}
