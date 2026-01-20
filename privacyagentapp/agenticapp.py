@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 import math
-import time
+import time, random
 
 
 import chainlit as cl
@@ -68,6 +68,7 @@ if not GEMINI_API_KEY:
     print("Warning: GEMINI_API_KEY not set. Setting changes will fail until it is provided.")
 
 MODEL_PLAN = os.environ.get("MODEL_PLAN", "gemini-2.5-pro")
+MODEL_NLP = os.environ.get("MODEL_NLP", "gemini-2.5-flash")
 
 client = genai.Client(api_key=GEMINI_API_KEY) if GEMINI_API_KEY else None
 
@@ -378,6 +379,23 @@ def record_run_stats(
     data["by_setting"] = by_setting
     _atomic_write_json(RUN_STATS_PATH, data)
 
+def infer_target_value_from_text(user_text: str) -> Optional[str]:
+    """
+    Better intent inference than normalize_target_value() for tricky cases.
+    Priority: "hide/disable/turn off" overrides presence of the word "public".
+    """
+    t = (user_text or "").lower()
+
+    # Strong negative intent -> OFF/PRIVATE
+    if any(w in t for w in ["turn off", "disable", "stop", "hide", "don't show", "do not show", "less visible"]):
+        # If talking about profile visibility/audience, "private" is closer than "off"
+        if "profile" in t or "public" in t or "visibility" in t:
+            return "private"
+        return "off"
+
+    # Otherwise use your existing synonym logic
+    return normalize_target_value(user_text)
+
 def normalize_target_value(text: str) -> Optional[str]:
     t = (text or "").strip().lower()
     if not t:
@@ -413,7 +431,8 @@ def parse_nl_request(user_text: str) -> Dict[str, Optional[str]]:
         lower_wo = lower
 
     if not target_value:
-        target_value = normalize_target_value(lower)
+        target_value = infer_target_value_from_text(user_text)
+
 
     # platform: if user types "on instagram", "for reddit", etc.
     platform_hint = None
@@ -849,33 +868,111 @@ async def on_confirm_value(action: cl.Action):
             actions=[change_platform_action()]
         ).send()
 
+LEAF_STOPWORDS = {
+    # verbs / action words
+    "turn", "set", "make", "change", "stop", "disable", "enable", "allow", "disallow",
+    "hide", "show", "block", "mute", "restrict", "limit", "remove", "delete", "opt", "opt-out",
+    # misc
+    "my", "the", "a", "an", "to", "from", "of", "for", "in", "on", "and", "or", "with", "without",
+    # state words (we use separate state inference)
+    "private", "public", "on", "off", "enabled", "disabled", "everyone", "anyone", "friends", "followers",
+    # common fillers
+    "please", "just", "really", "kindly",
+}
+
+STATE_PHRASES = [
+    "turn on", "turn off", "switch on", "switch off", "enable", "disable",
+    "make it", "make my", "set it", "set my", "change", "stop", "hide", "show",
+    "opt out", "opt-out", "do not", "don't",
+]
+
+def _clean_leaf_candidate(s: str) -> str:
+    s = (s or "").strip()
+    s = re.sub(r"\s+", " ", s)
+    # trim trailing punctuation
+    s = s.strip(" \t\n\r:;,.!?")
+    # drop platform-ish endings like "on <platform>"
+    s = re.sub(r"\bon\s+[a-z0-9_.-]+\b$", "", s, flags=re.I).strip()
+    return s
+
+def _title_case_if_labelish(s: str) -> str:
+    # If it already has mixed case (e.g., "Web & App Activity"), keep it
+    if any(ch.isupper() for ch in s):
+        return s
+    # Title-case short phrases
+    return " ".join(w.capitalize() if w.isalpha() else w for w in s.split())
+
 def derive_leaf_hint_from_text(user_text: str) -> Optional[str]:
     """
-    Cheap deterministic leaf-hint extractor from user text.
-    Goal: return a short UI-like phrase when possible.
+    Platform-agnostic leaf-hint extraction from user text.
+    Returns a UI-like label string or None.
     """
-    t = (user_text or "").strip()
+    if not user_text:
+        return None
 
-    # Common phrasing patterns
-    # e.g. "turn on protected posts" -> "Protect your posts"
-    low = t.lower()
+    text = user_text.strip()
 
-    if "protected" in low and "post" in low:
-        return "Protect your posts"
-    if "private" in low and "account" in low:
-        return "Private account"
-    if "activity status" in low or ("online" in low and "status" in low):
-        return "Active status"
-    if "follow" in low:
-        # this tends to match label text
-        return "Allow people to follow you"
-
-    # If the user quoted a label, prefer that
-    m = re.search(r"['\"]([^'\"]{3,60})['\"]", t)
+    # 1) Prefer quoted labels: "Protect your posts"
+    m = re.search(r"['\"]([^'\"]{3,80})['\"]", text)
     if m:
-        return m.group(1).strip()
+        cand = _clean_leaf_candidate(m.group(1))
+        if cand:
+            return cand[:60]
 
-    return None
+    low = text.lower()
+
+    # 2) Try common action patterns: "turn off X", "enable X", "hide X", "stop X"
+    patterns = [
+        r"\bturn\s+(?:on|off)\s+(.+)$",
+        r"\bswitch\s+(?:on|off)\s+(.+)$",
+        r"\benable\s+(.+)$",
+        r"\bdisable\s+(.+)$",
+        r"\bhide\s+(.+)$",
+        r"\bshow\s+(.+)$",
+        r"\bstop\s+(.+)$",
+        r"\bmake\s+(?:my|it)?\s*(.+)$",
+        r"\bset\s+(?:my|it)?\s*(.+)$",
+    ]
+    for pat in patterns:
+        m = re.search(pat, low, flags=re.I)
+        if m:
+            cand = m.group(1)
+            # remove trailing "to <state>" or "as <state>"
+            cand = re.sub(r"\bto\s+(on|off|private|public)\b.*$", "", cand, flags=re.I).strip()
+            cand = _clean_leaf_candidate(cand)
+            if cand:
+                # remove leading platform phrase fragments like "in audience, media..."
+                cand = re.sub(r"\bin\s+(.+)$", "", cand, flags=re.I).strip() or cand
+                # remove stopwords from ends (not middle)
+                words = cand.split()
+                while words and words[0].lower() in LEAF_STOPWORDS:
+                    words.pop(0)
+                while words and words[-1].lower() in LEAF_STOPWORDS:
+                    words.pop()
+                cand = " ".join(words).strip()
+                if cand:
+                    return _title_case_if_labelish(cand)[:60]
+
+    # 3) If no pattern match, try extracting noun-phrase-ish tail:
+    # Remove state/action phrases from anywhere and keep remaining meaningful tokens.
+    tmp = low
+    for p in STATE_PHRASES:
+        tmp = tmp.replace(p, " ")
+    tmp = re.sub(r"\b(on|off|private|public|enabled|disabled)\b", " ", tmp, flags=re.I)
+    tmp = re.sub(r"\s+", " ", tmp).strip()
+
+    # keep only reasonably meaningful tokens
+    toks = [t for t in tmp.split() if t and t not in LEAF_STOPWORDS]
+    if not toks:
+        return None
+
+    # Heuristic: take last 2–6 tokens as a label-ish phrase
+    phrase = " ".join(toks[-6:])
+    phrase = _clean_leaf_candidate(phrase)
+    if len(phrase) < 3:
+        return None
+
+    return _title_case_if_labelish(phrase)[:60]
 
 def prefilter_platform_settings(platform: str, user_text: str, k: int = 50) -> List[SettingEntry]:
     """
@@ -907,6 +1004,7 @@ def gemini_pick_candidates_for_platform(platform: str, user_text: str, candidate
 
     IMPORTANT: Robust JSON parsing (handles fences / extra text).
     """
+    model=MODEL_NLP
     if not client:
         return {"setting_ids": [], "target_value": None}
 
@@ -964,7 +1062,7 @@ def gemini_pick_candidates_for_platform(platform: str, user_text: str, candidate
         except Exception as e:
             last_err = e
             print(f"[gemini_pick_candidates] model error attempt {attempt+1}: {e}")
-            time.sleep(1.0 * (attempt + 1))
+            sleep_with_jitter(attempt)
             continue
 
         out = ""
@@ -981,12 +1079,12 @@ def gemini_pick_candidates_for_platform(platform: str, user_text: str, candidate
         except Exception as e:
             last_err = e
             print(f"[gemini_pick_candidates] extraction error attempt {attempt+1}: {e}")
-            time.sleep(1.0 * (attempt + 1))
+            sleep_with_jitter(attempt)
             continue
 
         if not out:
             print(f"[gemini_pick_candidates] empty output attempt {attempt+1}; backing off")
-            time.sleep(1.0 * (attempt + 1))
+            sleep_with_jitter(attempt)
             last_err = "empty_output"
             continue
 
@@ -1046,9 +1144,11 @@ async def handle_platform_scoped_nl(platform: str, user_text: str):
 
     # If Gemini didn't infer target_value, infer it deterministically from user text
     if not target_value:
-        target_value = normalize_target_value(user_text)
+        target_value = infer_target_value_from_text(user_text)
 
     inferred_leaf_hint = pick.get("leaf_hint") or derive_leaf_hint_from_text(user_text)
+    if not inferred_leaf_hint:
+        inferred_leaf_hint = candidates[0].name  # best DB label
 
     print("\n[NLP DEBUG]")
     print("  platform:", platform)
@@ -1491,6 +1591,19 @@ def choose_setting_with_gemini(platform: str, user_query: str) -> Optional[Setti
 
     return None
 
+def sleep_with_jitter(
+    attempt: int,
+    base: float = 0.5,
+    cap: float = 6.0,
+    jitter: float = 0.5,
+):
+    """
+    Exponential backoff with jitter.
+    attempt: 0-based retry count
+    """
+    delay = min(cap, base * (2 ** attempt))
+    delay += random.uniform(0, jitter)
+    time.sleep(delay)
 
 def resolve_setting_flexible(platform: str, section_query: str, leaf_hint: str | None = None):
     """
@@ -1784,13 +1897,32 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                 print(f"[apply_selector] coord label-mode for {label_text!r}")
 
                 # 1) Find the label by visible text
-                label_loc = page.get_by_text(label_text, exact=True)
-                if not label_loc.count():
-                    label_loc = page.get_by_text(label_text, exact=False)
+                # Try a few label variants (helps after navigation where the wording changes)
+                variants = [label_text]
 
-                if not label_loc.count():
-                    print(f"[apply_selector] No label found for {label_text!r}")
+                # common transformations
+                lt = label_text.lower().strip()
+                if lt.startswith("edit "):
+                    variants.append(label_text[5:])  # drop "Edit "
+                variants.append(re.sub(r"\byour\b", "", label_text, flags=re.I).strip())
+                variants.append(re.sub(r"\bedit\b", "", label_text, flags=re.I).strip())
+
+                label_loc = None
+                for v in variants:
+                    if not v:
+                        continue
+                    loc = page.get_by_text(v, exact=True)
+                    if not loc.count():
+                        loc = page.get_by_text(v, exact=False)
+                    if loc.count():
+                        label_loc = loc
+                        label_text = v  # use the successful variant for logging
+                        break
+
+                if not label_loc or not label_loc.count():
+                    print(f"[apply_selector] No label found for any variant of {variants!r}")
                     return False
+
 
                 label = label_loc.first
                 label_box = label.bounding_box()
