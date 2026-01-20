@@ -245,6 +245,37 @@ body {
   stroke-width: 2;
 }
 
+/* Category header styles */
+.category-header-bg {
+  fill: #d4d4d4;
+  stroke: #999;
+  stroke-width: 1;
+  pointer-events: none;
+}
+
+.category-header-icon {
+  pointer-events: none;
+  user-select: none;
+}
+
+.category-header-label {
+  fill: #333;
+  font-size: 14px;
+  font-weight: 600;
+  pointer-events: none;
+  user-select: none;
+}
+
+.category-click-overlay {
+  fill: transparent;
+  cursor: pointer;
+  pointer-events: all;
+}
+
+.category-click-overlay:hover {
+  fill: rgba(0, 0, 0, 0.05);
+}
+
 .treemap-label {
   pointer-events: none;
   font-size: 13px;

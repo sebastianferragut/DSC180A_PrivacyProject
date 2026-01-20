@@ -10,7 +10,23 @@
  * Hierarchy: Platform → Category → Setting (leaf nodes)
  */
 
+// Header height for category labels
+const CATEGORY_HEADER_HEIGHT = 32;
+
 let allData = [];
+
+// Category icons mapping (using Unicode symbols)
+const categoryIcons = {
+  'data_collection_tracking': '📊',
+  'security_authentication': '🔒',
+  'visibility_audience': '👁️',
+  'identity_authentication': '🆔',
+  'communication_messaging': '💬',
+  'content_sharing': '📤',
+  'location_privacy': '📍',
+  'advertising_targeting': '📢',
+  'default': '📁'
+};
 let currentRoot = null;
 let zoomStack = [];
 let currentSizingMetric = 'count';
@@ -254,18 +270,24 @@ function buildHierarchy() {
       }))
     };
     
-    // Calculate category value as sum of children
-    categoryNode.value = d3.sum(categoryNode.children, d => d.value);
     root.children.push(categoryNode);
   });
   
-  // Calculate root value
-  root.value = d3.sum(root.children, d => d.value);
-  
   // Use d3.hierarchy to create hierarchy structure
+  // Only leaf nodes contribute value (internal nodes get 0)
   currentRoot = d3.hierarchy(root)
-    .sum(d => d.value || 0)
+    .sum(d => (d.children && d.children.length) ? 0 : (d.value || 0))
     .sort((a, b) => (b.value || 0) - (a.value || 0));
+  
+  // Debug: Check "communication notifications" category
+  const commNotif = currentRoot.descendants().find(d => 
+    d.data.name && d.data.name.toLowerCase().includes('communication')
+  );
+  if (commNotif) {
+    console.log('Debug - Category:', commNotif.data.name, 
+      'Children:', commNotif.children ? commNotif.children.length : 0,
+      'Value:', commNotif.value);
+  }
   
   return currentRoot;
 }
@@ -274,321 +296,332 @@ function buildHierarchy() {
  * Render treemap visualization
  */
 function renderTreemap() {
-  if (!currentRoot) {
-    buildHierarchy();
-  }
+    if (!currentRoot) {
+      buildHierarchy();
+    }
   
-  // Clean up any existing tooltips and clear hover timeouts
-  d3.selectAll(".treemap-tooltip").remove();
-  if (typeof window.treemapHoverTimeout !== 'undefined' && window.treemapHoverTimeout) {
-    clearTimeout(window.treemapHoverTimeout);
-    window.treemapHoverTimeout = null;
-  }
+    // Clean up any existing tooltips and clear hover timeouts
+    d3.selectAll(".treemap-tooltip").remove();
+    if (typeof window.treemapHoverTimeout !== "undefined" && window.treemapHoverTimeout) {
+      clearTimeout(window.treemapHoverTimeout);
+      window.treemapHoverTimeout = null;
+    }
   
-  const container = d3.select("#treemapContainer");
-  container.selectAll("*").remove();
+    const container = d3.select("#treemapContainer");
+    container.selectAll("*").remove();
   
-  const width = container.node().getBoundingClientRect().width || 1200;
-  const height = 500;
+    const width = container.node().getBoundingClientRect().width || 1200;
+    const height = 500;
   
-  const svg = container.append("svg")
-    .attr("width", width)
-    .attr("height", height);
+    const svg = container.append("svg")
+      .attr("width", width)
+      .attr("height", height);
   
-  const g = svg.append("g");
+    const g = svg.append("g");
   
-  // Color scale by platform (not category)
-  const platforms = Array.from(new Set(allData.map(d => d.platform))).sort();
-  const categories = Array.from(new Set(allData.map(d => d.category)));
-
-  const platformColorScale = d3.scaleOrdinal()
-    .domain(platforms)
-    .range(d3.quantize(d3.interpolateRainbow, Math.max(platforms.length, 3)));
+    // Root state for this render pass
+    const atRootNow = zoomStack.length === 0;
   
-  // Keep category color scale for category nodes (light gray)
-  const categoryColorScale = d3.scaleOrdinal()
-    .domain(categories)
-    .range(d3.schemeCategory10);
-
+    // Color scale by platform (not category)
+    const platforms = Array.from(new Set(allData.map(d => d.platform))).sort();
+    const categories = Array.from(new Set(allData.map(d => d.category)));
   
-  // Treemap layout
-  const treemap = d3.treemap()
-    .size([width, height])
-    .padding(2)
-    .round(true);
+    const platformColorScale = d3.scaleOrdinal()
+      .domain(platforms)
+      .range(d3.quantize(d3.interpolateRainbow, Math.max(platforms.length, 3)));
   
-  treemap(currentRoot);
+    // Treemap layout
+    const treemap = d3.treemap()
+      .size([width, height])
+      .paddingInner(2)
+      .paddingOuter(2)
+      .paddingTop(d => {
+        const isCategory = (atRootNow && d.depth === 1) || (!atRootNow && d.depth === 0);
+        return isCategory ? CATEGORY_HEADER_HEIGHT : 0;
+      })
+      .round(true);
   
-  // Draw cells
-  const cells = g.selectAll("g")
-    .data(currentRoot.descendants())
-    .enter()
-    .append("g")
-    .attr("transform", d => `translate(${d.x0},${d.y0})`);
+    treemap(currentRoot);
   
-  cells.append("rect")
-    .attr("class", "treemap-cell")
-    .attr("width", d => d.x1 - d.x0)
-    .attr("height", d => d.y1 - d.y0)
-    .attr("fill", d => {
-      if (d.depth === 0) return '#f0f0f0'; // Root
-      
-      // Determine if we're at root level or zoomed
-      const atRoot = zoomStack.length === 0;
-      
-      if (atRoot) {
-        if (d.depth === 1) {
-          // Category node - use light gray
-          return '#e0e0e0';
-        }
-      } else {
-        // Zoomed in - depth shifts
-        if (d.depth === 0) {
-          // Zoomed category - use light gray
-          return '#e0e0e0';
-        }
-      }
-      
-      // Leaf node (depth 2 at root, depth 1 when zoomed): platform color with state type overlay
-      const platform = d.data.platform || 'unknown';
-      const baseColor = platformColorScale(platform);
-      if (d.data.stateType === 'navigational') {
-        return d3.color(baseColor).brighter(0.5);
-      } else if (d.data.stateType === 'actionable') {
-        return baseColor;
-      } else {
+    // Draw groups (one <g> per node)
+    const cells = g.selectAll("g")
+      .data(currentRoot.descendants())
+      .enter()
+      .append("g")
+      .attr("transform", d => `translate(${d.x0},${d.y0})`);
+  
+    // ===============================
+    // 1) Base rectangles FIRST
+    // ===============================
+    cells.append("rect")
+      .attr("class", "treemap-cell")
+      .attr("width", d => d.x1 - d.x0)
+      .attr("height", d => d.y1 - d.y0)
+      .attr("fill", d => {
+        // Root container
+        if (d.depth === 0) return "#f0f0f0";
+  
+        // Category nodes (light gray)
+        const isCategory = (atRootNow && d.depth === 1) || (!atRootNow && d.depth === 0);
+        if (isCategory) return "#e0e0e0";
+  
+        // Leaf nodes: color by platform and stateType
+        const platform = d.data.platform || "unknown";
+        const baseColor = platformColorScale(platform);
+  
+        if (d.data.stateType === "navigational") return d3.color(baseColor).brighter(0.5);
+        if (d.data.stateType === "actionable") return baseColor;
         return d3.color(baseColor).darker(0.3);
-      }
-    })
-    .attr("stroke", d => {
-      if (d.data.stateType === 'navigational') return '#4CAF50';
-      if (d.data.stateType === 'actionable') return '#2196F3';
-      return '#fff';
-    })
-    .attr("stroke-width", d => {
-      if (d.data.stateType) return 2;
-      return 1.5;
-    })
-    .attr("stroke-dasharray", d => {
-      if (d.data.stateType === 'navigational') return '4,2';
-      return 'none';
-    })
-    .on("click", function(event, d) {
-      event.stopPropagation();
-      event.preventDefault();
-      
-      console.log("Cell clicked:", d.data.name, "depth:", d.depth, "children:", d.children ? d.children.length : 0);
-      
-      // Check if this is a leaf node (setting)
-      const isLeaf = d.data.setting || (!d.children || d.children.length === 0);
-      
-      if (!isLeaf && d.children && d.children.length > 0) {
-        // Has children - zoom in
-        console.log("Zooming into:", d.data.name);
-        zoomInto(d);
-      } else if (isLeaf) {
-        // Leaf node - open URL
-        console.log("Opening URL:", d.data.url);
-        if (d.data.url) {
-          window.open(d.data.url, '_blank');
-        } else {
-          console.warn("No URL found for setting:", d.data.name);
+      })
+      .attr("stroke", d => {
+        if (d.data.stateType === "navigational") return "#4CAF50";
+        if (d.data.stateType === "actionable") return "#2196F3";
+        return "#fff";
+      })
+      .attr("stroke-width", d => (d.data.stateType ? 2 : 1.5))
+      .attr("stroke-dasharray", d => (d.data.stateType === "navigational" ? "4,2" : "none"))
+      .on("click", function(event, d) {
+        event.stopPropagation();
+        event.preventDefault();
+  
+        const isLeaf = d.data.setting || (!d.children || d.children.length === 0);
+        if (!isLeaf && d.children && d.children.length > 0) {
+          zoomInto(d);
+        } else if (isLeaf && d.data.url) {
+          window.open(d.data.url, "_blank");
         }
+      })
+      .style("cursor", d => {
+        const isLeaf = d.data.setting || (!d.children || d.children.length === 0);
+        return (isLeaf && d.data.url)
+          ? "pointer"
+          : (!isLeaf && d.children && d.children.length > 0)
+            ? "pointer"
+            : "default";
+      });
+  
+    // ===============================
+    // 2) Category headers AFTER rects
+    // ===============================
+    const categoryCells = cells.filter(d => {
+      const isCategory = (atRootNow && d.depth === 1) || (!atRootNow && d.depth === 0);
+      return isCategory && d.children && d.children.length > 0;
+    });
+  
+    categoryCells.each(function(d) {
+      const categoryGroup = d3.select(this);
+  
+      // Click overlay (so clicking header area also zooms)
+      categoryGroup.append("rect")
+        .attr("class", "category-click-overlay")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", d.x1 - d.x0)
+        .attr("height", d.y1 - d.y0)
+        .attr("fill", "transparent")
+        .style("cursor", "pointer")
+        .style("pointer-events", "all")
+        .on("click", function(event) {
+          event.stopPropagation();
+          event.preventDefault();
+          zoomInto(d);
+        })
+        .on("mouseover", function() {
+          d3.select(this).attr("fill", "rgba(0,0,0,0.05)");
+        })
+        .on("mouseout", function() {
+          d3.select(this).attr("fill", "transparent");
+        });
+  
+      // Header bar
+      categoryGroup.append("rect")
+        .attr("class", "category-header-bg")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", d.x1 - d.x0)
+        .attr("height", CATEGORY_HEADER_HEIGHT)
+        .attr("fill", "#d4d4d4")
+        .attr("stroke", "#999")
+        .attr("stroke-width", 1)
+        .style("pointer-events", "none");
+  
+      // Icon + label
+      const categoryKey = (d.data.name || "").toLowerCase();
+      const icon = categoryIcons[categoryKey] || categoryIcons.default;
+  
+      categoryGroup.append("text")
+        .attr("class", "category-header-icon")
+        .attr("x", 8)
+        .attr("y", CATEGORY_HEADER_HEIGHT / 2)
+        .attr("dy", "0.35em")
+        .attr("font-size", "18px")
+        .style("pointer-events", "none")
+        .text(icon);
+  
+      categoryGroup.append("text")
+        .attr("class", "category-header-label")
+        .attr("x", 32)
+        .attr("y", CATEGORY_HEADER_HEIGHT / 2)
+        .attr("dy", "0.35em")
+        .attr("fill", "#333")
+        .style("font-size", "14px")
+        .style("font-weight", "600")
+        .style("pointer-events", "none")
+        .text((d.data.name || "").replace(/_/g, " "));
+  
+      // Ensure header stays on top within this group
+      categoryGroup
+        .selectAll(".category-header-bg, .category-header-icon, .category-header-label")
+        .raise();
+    });
+  
+    // ===============================
+    // 3) Leaf labels (exclude categories)
+    // ===============================
+    cells.filter(d => {
+      const isCategory = (atRootNow && d.depth === 1) || (!atRootNow && d.depth === 0);
+      const isLeaf = d.data.setting || (!d.children || d.children.length === 0);
+      const w = d.x1 - d.x0;
+      const h = d.y1 - d.y0;
+      return !isCategory && isLeaf && w > 60 && h > 20;
+    }).append("text")
+      .attr("class", d => {
+        const w = d.x1 - d.x0;
+        const h = d.y1 - d.y0;
+        return w < 100 || h < 30 ? "treemap-label treemap-label-small" : "treemap-label";
+      })
+      .attr("x", d => (d.x1 - d.x0) / 2)
+      .attr("y", d => (d.y1 - d.y0) / 2)
+      .attr("dy", "0.35em")
+      .attr("fill", d => {
+        // Root / category = dark text, leaves = white
+        const isRoot = d.depth === 0;
+        const isCategory = (atRootNow && d.depth === 1) || (!atRootNow && d.depth === 0);
+        if (isRoot || isCategory) return "#333";
+        return "#ffffff";
+      })
+      .attr("stroke", d => {
+        const isRoot = d.depth === 0;
+        const isCategory = (atRootNow && d.depth === 1) || (!atRootNow && d.depth === 0);
+        if (isRoot || isCategory) return "none";
+        return "#000000";
+      })
+      .attr("stroke-width", d => {
+        const isRoot = d.depth === 0;
+        const isCategory = (atRootNow && d.depth === 1) || (!atRootNow && d.depth === 0);
+        return (isRoot || isCategory) ? 0 : "0.5px";
+      })
+      .attr("paint-order", "stroke")
+      .style("font-weight", "600")
+      .text(d => {
+        const name = d.data.name || "";
+        const w = d.x1 - d.x0;
+        const maxChars = Math.floor(w / 6);
+        if (name.length > maxChars && maxChars > 3) {
+          return name.substring(0, maxChars - 3) + "...";
+        }
+        return name;
+      });
+  
+    // ===============================
+    // Tooltip - single instance
+    // ===============================
+    const tooltip = d3.select("body").append("div")
+      .attr("class", "treemap-tooltip")
+      .style("opacity", 0)
+      .style("pointer-events", "none")
+      .style("display", "none");
+  
+    let hoverTimeout = null;
+  
+    cells.on("mouseover", function(event, d) {
+      if (hoverTimeout) {
+        clearTimeout(hoverTimeout);
+        hoverTimeout = null;
+      }
+  
+      tooltip.interrupt();
+      tooltip.style("display", "block");
+  
+      const isLeaf = d.data.setting || (!d.children || d.children.length === 0);
+  
+      let content = "";
+      if (isLeaf) {
+        let platform = d.data.platform;
+        let category = d.data.category;
+  
+        if (!platform && d.parent) {
+          category = d.parent.data.name;
+          platform = d.data.platform || "unknown";
+        }
+  
+        content = `<strong>${d.data.setting || d.data.name}</strong>
+          <p><strong>Platform:</strong> ${platform || "unknown"}</p>
+          <p><strong>Category:</strong> ${category || d.parent?.data?.name || "unknown"}</p>
+          <p><strong>State:</strong> ${d.data.state || "N/A"}</p>
+          <p><strong>Type:</strong> ${d.data.stateType || "unknown"}</p>
+          <p><strong>Description:</strong> ${truncate(d.data.description || "", 200)}</p>
+          ${d.data.url ? `<p><strong>URL:</strong> ${d.data.url}</p>` : ""}`;
       } else {
-        console.log("No action for cell:", d.data.name);
+        content = `<strong>${d.data.name}</strong>
+          <p><strong>Value:</strong> ${d.value ? d.value.toFixed(2) : 0}</p>
+          <p><strong>Children:</strong> ${d.children ? d.children.length : 0}</p>
+          ${d.children && d.children.length > 0 ? "<p><em>Click to zoom in</em></p>" : ""}`;
       }
+  
+      tooltip.html(content)
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 10) + "px")
+        .transition()
+        .duration(150)
+        .style("opacity", 1);
     })
-    .style("cursor", d => {
-      const isLeaf = d.data.setting || (!d.children || d.children.length === 0);
-      return (isLeaf && d.data.url) ? "pointer" : 
-             (!isLeaf && d.children && d.children.length > 0) ? "pointer" : "default";
+    .on("mousemove", function(event) {
+      tooltip
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 10) + "px");
+    })
+    .on("mouseout", function(event) {
+      const relatedTarget = event.relatedTarget;
+      const isMovingToCell = relatedTarget && (
+        relatedTarget.closest("g") ||
+        relatedTarget.tagName === "rect" ||
+        relatedTarget.tagName === "text"
+      );
+  
+      const delay = isMovingToCell ? 100 : 0;
+  
+      if (hoverTimeout) clearTimeout(hoverTimeout);
+  
+      hoverTimeout = setTimeout(() => {
+        tooltip.transition()
+          .duration(150)
+          .style("opacity", 0)
+          .on("end", function() {
+            tooltip.style("display", "none");
+          });
+        hoverTimeout = null;
+      }, delay);
     });
   
-  // Add labels (only if rectangle is large enough)
-  cells.filter(d => {
-    const width = d.x1 - d.x0;
-    const height = d.y1 - d.y0;
-    return width > 60 && height > 20;
-  }).append("text")
-    .attr("class", d => {
-      const width = d.x1 - d.x0;
-      const height = d.y1 - d.y0;
-      return width < 100 || height < 30 ? "treemap-label treemap-label-small" : "treemap-label";
-    })
-    .attr("x", d => (d.x1 - d.x0) / 2)
-    .attr("y", d => (d.y1 - d.y0) / 2)
-    .attr("dy", "0.35em")
-    .attr("fill", d => {
-      // Ensure text is visible - use white on dark backgrounds, black on light
-      const isRoot = d.depth === 0;
-      const isCategory = !zoomStack.length && d.depth === 1;
-      
-      if (isRoot) {
-        // Light background - use dark text
-        return "#333";
+    svg.on("mouseleave", function() {
+      if (hoverTimeout) {
+        clearTimeout(hoverTimeout);
+        hoverTimeout = null;
       }
-      
-      if (isCategory || (zoomStack.length > 0 && d.depth === 0)) {
-        // Category background (light gray) - use dark text
-        return "#333";
-      }
-      
-      // Leaf nodes (depth 2 at root, depth 1 when zoomed) - platform colored background, use white text
-      return "#ffffff";
-    })
-    .attr("stroke", d => {
-      // Add stroke to make text more visible on colored backgrounds
-      const isRoot = d.depth === 0;
-      const isCategory = !zoomStack.length && d.depth === 1;
-      
-      if (isRoot || isCategory || (zoomStack.length > 0 && d.depth === 0)) {
-        // Root or category (light background) - no stroke needed
-        return "none";
-      }
-      // Leaf nodes (platform colored background) - black stroke for visibility
-      return "#000000";
-    })
-    .attr("stroke-width", d => {
-      const isRoot = d.depth === 0;
-      const isCategory = !zoomStack.length && d.depth === 1;
-      // Only add stroke to leaf nodes (colored by platform)
-      return (isRoot || isCategory || (zoomStack.length > 0 && d.depth === 0)) ? 0 : "0.5px";
-    })
-    .attr("paint-order", "stroke")
-    .style("font-weight", "600")
-    .text(d => {
-      const name = d.data.name || '';
-      const width = d.x1 - d.x0;
-      const height = d.y1 - d.y0;
-      
-      // Determine if this is a leaf (setting)
-      const isLeaf = d.data.setting || (!d.children || d.children.length === 0);
-      
-      if (isLeaf || (width > 100 && height > 30)) {
-        // Truncate long names
-        const maxChars = Math.floor(width / 6);
-        if (name.length > maxChars) {
-          return name.substring(0, maxChars - 3) + '...';
-        }
-      }
-      
-      return name;
-    });
-  
-  // Tooltip - create a single tooltip instance
-  const tooltip = d3.select("body").append("div")
-    .attr("class", "treemap-tooltip")
-    .style("opacity", 0)
-    .style("pointer-events", "none") // Ensure tooltip doesn't interfere with mouse events
-    .style("display", "none"); // Start hidden
-  
-  // Track current hovered element to prevent race conditions
-  let hoverTimeout = null;
-  
-  cells.on("mouseover", function(event, d) {
-    // Clear any pending timeout
-    if (hoverTimeout) {
-      clearTimeout(hoverTimeout);
-      hoverTimeout = null;
-    }
-    
-    // Stop any ongoing fade-out transition and show tooltip
-    tooltip.interrupt();
-    tooltip.style("display", "block");
-    
-    // Check if this is a leaf (setting) node
-    const isLeaf = d.data.setting || (!d.children || d.children.length === 0);
-    
-    let content = '';
-    if (isLeaf) {
-      // Leaf node (setting)
-      let platform = d.data.platform;
-      let category = d.data.category;
-      
-      // Try to get from parent chain if not in data
-      if (!platform && d.parent) {
-        // At root: depth 2 means parent (depth 1) is category
-        // When zoomed: depth 1 means parent (depth 0) is the zoomed category
-        category = d.parent.data.name;
-        // Platform info is stored in the setting data itself
-        platform = d.data.platform || 'unknown';
-      }
-      
-      content = `<strong>${d.data.setting || d.data.name}</strong>
-         <p><strong>Platform:</strong> ${platform || 'unknown'}</p>
-         <p><strong>Category:</strong> ${category || d.parent?.data?.name || 'unknown'}</p>
-         <p><strong>State:</strong> ${d.data.state || 'N/A'}</p>
-         <p><strong>Type:</strong> ${d.data.stateType || 'unknown'}</p>
-         <p><strong>Description:</strong> ${truncate(d.data.description || '', 200)}</p>
-         ${d.data.url ? `<p><strong>URL:</strong> ${d.data.url}</p>` : ''}`;
-    } else {
-      // Non-leaf node (category)
-      content = `<strong>${d.data.name}</strong>
-         <p><strong>Value:</strong> ${d.value ? d.value.toFixed(2) : 0}</p>
-         <p><strong>Children:</strong> ${d.children ? d.children.length : 0}</p>
-         ${d.children && d.children.length > 0 ? '<p><em>Click to zoom in</em></p>' : ''}`;
-    }
-    
-    tooltip.html(content)
-      .style("left", (event.pageX + 10) + "px")
-      .style("top", (event.pageY - 10) + "px")
-      .transition()
-      .duration(150)
-      .style("opacity", 1);
-  })
-  .on("mousemove", function(event) {
-    // Update position immediately without transition
-    tooltip
-      .style("left", (event.pageX + 10) + "px")
-      .style("top", (event.pageY - 10) + "px");
-  })
-  .on("mouseout", function(event) {
-    // Check if mouse is moving to another cell (event.relatedTarget should be another cell)
-    const relatedTarget = event.relatedTarget;
-    const isMovingToCell = relatedTarget && (
-      relatedTarget.closest('g') || 
-      relatedTarget.tagName === 'rect' || 
-      relatedTarget.tagName === 'text'
-    );
-    
-    // If moving to another cell, use small delay; otherwise hide immediately
-    const delay = isMovingToCell ? 100 : 0;
-    
-    // Clear any existing timeout
-    if (hoverTimeout) {
-      clearTimeout(hoverTimeout);
-    }
-    
-    hoverTimeout = setTimeout(() => {
+      tooltip.interrupt();
       tooltip.transition()
         .duration(150)
         .style("opacity", 0)
         .on("end", function() {
-          // Ensure tooltip is fully hidden
           tooltip.style("display", "none");
         });
-      hoverTimeout = null;
-    }, delay);
-  });
+    });
   
-  // Clean up tooltip when mouse leaves the SVG entirely
-  svg.on("mouseleave", function() {
-    if (hoverTimeout) {
-      clearTimeout(hoverTimeout);
-      hoverTimeout = null;
-    }
-    tooltip.interrupt();
-    tooltip.transition()
-      .duration(150)
-      .style("opacity", 0)
-      .on("end", function() {
-        tooltip.style("display", "none");
-      });
-  });
+    updateBreadcrumbs();
+    renderLegend(platforms, platformColorScale, categories);
+  }
   
-  updateBreadcrumbs();
-  renderLegend(platforms, platformColorScale, categories);
-}
 
 /**
  * Render legend showing platforms (with colors) and categories
@@ -714,7 +747,7 @@ function zoomInto(d) {
   };
   
   currentRoot = d3.hierarchy(newRoot)
-    .sum(d => d.value || 0)
+    .sum(d => (d.children && d.children.length) ? 0 : (d.value || 0))
     .sort((a, b) => (b.value || 0) - (a.value || 0));
   
   renderTreemap();
