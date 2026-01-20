@@ -169,32 +169,34 @@ function parsePythonDictList(pyStr) {
   
     let s = pyStr.trim();
   
-    // Common cleanup: CSV sometimes doubles quotes in fields
-    // Turn ""something"" into "something"
+    // 1) Fix doubled quotes from CSV export: ""text"" -> "text"
     s = s.replace(/""/g, '"');
   
-    // Convert Python booleans/None to JSON
+    // 2) Python literals -> JSON
     s = s.replace(/\bNone\b/g, "null")
          .replace(/\bTrue\b/g, "true")
          .replace(/\bFalse\b/g, "false");
   
-    // Convert Python-style quotes to JSON-style quotes carefully:
-    // We can't just replace all ' with " because apostrophes appear in text.
-    // Strategy:
-    // - Replace dict keys: 'key':  -> "key":
+    // 3) Convert keys: 'key': -> "key":
     s = s.replace(/'([A-Za-z0-9_]+)'\s*:/g, '"$1":');
   
-    // - Replace string values: : 'value'  -> : "value"
-    // This targets only values wrapped in single quotes after a colon.
-    s = s.replace(/:\s*'([^']*)'/g, (match, val) => {
-      // Escape any internal double quotes
-      const escaped = val.replace(/"/g, '\\"');
-      return `: "${escaped}"`;
+    // 4) Convert single-quoted values: : 'value' -> : "value"
+    s = s.replace(/:\s*'((?:\\'|[^'])*)'/g, (match, val) => {
+      const cleaned = val.replace(/\\'/g, "'").replace(/"/g, '\\"');
+      return `: "${cleaned}"`;
     });
   
-    // Now it should be valid JSON
+    // 5) Convert double-quoted values left over from your data:
+    //    : "value" is already JSON-valid, BUT your strings are currently unescaped
+    //    because they came from Python-ish text. We just ensure internal quotes are escaped.
+    //    (After step 1, "" -> ", so these are normal JSON strings already.)
+    //    Nothing to do here unless there are stray newlines.
+    s = s.replace(/\n/g, "\\n");
+  
+    // 6) Parse
     return JSON.parse(s);
   }
+  
   
 
 /**
@@ -862,7 +864,8 @@ function updateBreadcrumbs() {
           const levelsToPop = path.length - i - 1;
           for (let j = 0; j < levelsToPop; j++) {
             if (zoomStack.length > 0) {
-              currentRoot = zoomStack.pop();
+                const saved = zoomStack.pop();
+                currentRoot = saved.root;
             }
           }
           renderTreemap();
@@ -948,4 +951,3 @@ if (document.readyState === 'loading') {
   // DOM is already ready
   setupEventHandlers();
 }
-
