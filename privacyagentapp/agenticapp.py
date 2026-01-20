@@ -868,111 +868,108 @@ async def on_confirm_value(action: cl.Action):
             actions=[change_platform_action()]
         ).send()
 
-LEAF_STOPWORDS = {
-    # verbs / action words
-    "turn", "set", "make", "change", "stop", "disable", "enable", "allow", "disallow",
-    "hide", "show", "block", "mute", "restrict", "limit", "remove", "delete", "opt", "opt-out",
-    # misc
-    "my", "the", "a", "an", "to", "from", "of", "for", "in", "on", "and", "or", "with", "without",
-    # state words (we use separate state inference)
-    "private", "public", "on", "off", "enabled", "disabled", "everyone", "anyone", "friends", "followers",
-    # common fillers
-    "please", "just", "really", "kindly",
-}
 
-STATE_PHRASES = [
-    "turn on", "turn off", "switch on", "switch off", "enable", "disable",
-    "make it", "make my", "set it", "set my", "change", "stop", "hide", "show",
-    "opt out", "opt-out", "do not", "don't",
+ACTION_PHRASES = [
+    "turn on", "turn off", "switch on", "switch off",
+    "enable", "disable", "make", "set", "change", "stop",
+    "hide", "show", "allow", "disallow", "block", "unblock",
+    "mute", "unmute",
 ]
 
-def _clean_leaf_candidate(s: str) -> str:
-    s = (s or "").strip()
-    s = re.sub(r"\s+", " ", s)
-    # trim trailing punctuation
-    s = s.strip(" \t\n\r:;,.!?")
-    # drop platform-ish endings like "on <platform>"
-    s = re.sub(r"\bon\s+[a-z0-9_.-]+\b$", "", s, flags=re.I).strip()
-    return s
-
-def _title_case_if_labelish(s: str) -> str:
-    # If it already has mixed case (e.g., "Web & App Activity"), keep it
-    if any(ch.isupper() for ch in s):
-        return s
-    # Title-case short phrases
-    return " ".join(w.capitalize() if w.isalpha() else w for w in s.split())
+STATE_WORDS = {"on", "off", "private", "public", "enabled", "disabled", "yes", "no"}
 
 def derive_leaf_hint_from_text(user_text: str) -> Optional[str]:
     """
-    Platform-agnostic leaf-hint extraction from user text.
-    Returns a UI-like label string or None.
+    Platform-agnostic: derive a *hint phrase* from user text.
+    This is NOT expected to exactly match a UI label.
     """
     if not user_text:
         return None
 
-    text = user_text.strip()
+    t = user_text.strip()
 
-    # 1) Prefer quoted labels: "Protect your posts"
-    m = re.search(r"['\"]([^'\"]{3,80})['\"]", text)
+    # Prefer quoted text if present: "Protect your posts"
+    m = re.search(r"['\"]([^'\"]{3,80})['\"]", t)
     if m:
-        cand = _clean_leaf_candidate(m.group(1))
-        if cand:
-            return cand[:60]
+        return m.group(1).strip()
 
-    low = text.lower()
+    low = t.lower()
 
-    # 2) Try common action patterns: "turn off X", "enable X", "hide X", "stop X"
-    patterns = [
-        r"\bturn\s+(?:on|off)\s+(.+)$",
-        r"\bswitch\s+(?:on|off)\s+(.+)$",
-        r"\benable\s+(.+)$",
-        r"\bdisable\s+(.+)$",
-        r"\bhide\s+(.+)$",
-        r"\bshow\s+(.+)$",
-        r"\bstop\s+(.+)$",
-        r"\bmake\s+(?:my|it)?\s*(.+)$",
-        r"\bset\s+(?:my|it)?\s*(.+)$",
-    ]
-    for pat in patterns:
-        m = re.search(pat, low, flags=re.I)
-        if m:
-            cand = m.group(1)
-            # remove trailing "to <state>" or "as <state>"
-            cand = re.sub(r"\bto\s+(on|off|private|public)\b.*$", "", cand, flags=re.I).strip()
-            cand = _clean_leaf_candidate(cand)
-            if cand:
-                # remove leading platform phrase fragments like "in audience, media..."
-                cand = re.sub(r"\bin\s+(.+)$", "", cand, flags=re.I).strip() or cand
-                # remove stopwords from ends (not middle)
-                words = cand.split()
-                while words and words[0].lower() in LEAF_STOPWORDS:
-                    words.pop(0)
-                while words and words[-1].lower() in LEAF_STOPWORDS:
-                    words.pop()
-                cand = " ".join(words).strip()
-                if cand:
-                    return _title_case_if_labelish(cand)[:60]
+    # Remove common leading action phrases
+    for a in ACTION_PHRASES:
+        if low.startswith(a + " "):
+            t = t[len(a):].strip()
+            low = t.lower()
+            break
 
-    # 3) If no pattern match, try extracting noun-phrase-ish tail:
-    # Remove state/action phrases from anywhere and keep remaining meaningful tokens.
-    tmp = low
-    for p in STATE_PHRASES:
-        tmp = tmp.replace(p, " ")
-    tmp = re.sub(r"\b(on|off|private|public|enabled|disabled)\b", " ", tmp, flags=re.I)
-    tmp = re.sub(r"\s+", " ", tmp).strip()
+    # Remove trailing "to <state>"
+    t = re.sub(r"\bto\s+(on|off|private|public|enabled|disabled)\b.*$", "", t, flags=re.I).strip()
 
-    # keep only reasonably meaningful tokens
-    toks = [t for t in tmp.split() if t and t not in LEAF_STOPWORDS]
-    if not toks:
+    # Token cleanup: drop platform-ish and state-ish words
+    toks = re.findall(r"[a-zA-Z0-9]+", t)
+    kept = []
+    for tok in toks:
+        tl = tok.lower()
+        if tl in STATE_WORDS:
+            continue
+        if tl in {"my", "the", "a", "an", "for", "on", "in", "at", "from", "of", "and", "or"}:
+            continue
+        kept.append(tok)
+
+    # Keep a short phrase (2–7 tokens) as the hint
+    if len(kept) >= 2:
+        return " ".join(kept[:7]).strip()
+    if kept:
+        return kept[0].strip()
+    return None
+
+def best_label_match_on_page(page: Page, hint: str, max_scan: int = 120) -> Optional[str]:
+    """
+    Find the best visible label-like text on the page that matches the hint.
+    Returns the matched label text (string) or None.
+    """
+    hint_norm = _norm(hint)
+    if not hint_norm:
         return None
+    hint_tokens = set(hint_norm.split())
 
-    # Heuristic: take last 2–6 tokens as a label-ish phrase
-    phrase = " ".join(toks[-6:])
-    phrase = _clean_leaf_candidate(phrase)
-    if len(phrase) < 3:
-        return None
+    # Scan likely label nodes (headings, labels, spans, divs with text)
+    # Keep it conservative to avoid massive DOM scanning.
+    loc = page.locator("label,span,div,p,button,a,h1,h2,h3")
+    n = min(loc.count(), max_scan)
 
-    return _title_case_if_labelish(phrase)[:60]
+    best = None
+    best_score = 0.0
+
+    for i in range(n):
+        try:
+            txt = loc.nth(i).inner_text().strip()
+        except Exception:
+            continue
+        if not txt or len(txt) > 80:
+            continue
+        txt_norm = _norm(txt)
+        if not txt_norm:
+            continue
+        tokens = set(txt_norm.split())
+        if not tokens:
+            continue
+
+        # Score by token overlap + substring bonus
+        overlap = len(tokens & hint_tokens) / max(1, len(hint_tokens))
+        score = overlap
+        if hint_norm in txt_norm or txt_norm in hint_norm:
+            score += 0.5
+
+        if score > best_score:
+            best_score = score
+            best = txt
+
+    # Require some minimum similarity so we don't click random labels
+    if best_score >= 0.25:
+        return best
+    return None
+
 
 def prefilter_platform_settings(platform: str, user_text: str, k: int = 50) -> List[SettingEntry]:
     """
@@ -1004,7 +1001,6 @@ def gemini_pick_candidates_for_platform(platform: str, user_text: str, candidate
 
     IMPORTANT: Robust JSON parsing (handles fences / extra text).
     """
-    model=MODEL_NLP
     if not client:
         return {"setting_ids": [], "target_value": None}
 
@@ -1055,7 +1051,7 @@ def gemini_pick_candidates_for_platform(platform: str, user_text: str, candidate
     for attempt in range(3):
         try:
             resp = client.models.generate_content(
-                model=MODEL_PLAN,
+                model=MODEL_NLP,
                 contents=[Content(role="user", parts=[Part(text=prompt)])],
                 config=config,
             )
@@ -1455,7 +1451,7 @@ def gemini_interpret_request(user_text: str, known_platforms: List[str]) -> Dict
 
     try:
         resp = client.models.generate_content(
-            model=MODEL_PLAN,
+            model=MODEL_NLP,
             contents=[Content(role="user", parts=[Part(text=prompt)])],
             config=config,
         )
@@ -1551,7 +1547,7 @@ def choose_setting_with_gemini(platform: str, user_query: str) -> Optional[Setti
 
     try:
         resp = client.models.generate_content(
-            model=MODEL_PLAN,
+            model=MODEL_NLP,
             contents=[Content(role="user", parts=[Part(text=user_prompt)])],
             config=config,
         )
@@ -1892,22 +1888,59 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                 return True
 
         elif stype == "coord":
+            if sval.startswith("hint:"):
+                hint = sval[len("hint:"):].strip()
+                print(f"[apply_selector] coord hint-mode for {hint!r}")
+
+                # Find best label match on the page using the hint
+                matched = best_label_match_on_page(page, hint)
+                if not matched:
+                    print(f"[apply_selector] No good label match found for hint {hint!r}")
+                    return False
+
+                # Now reuse existing label-mode by converting to label:<matched>
+                sval = f"label:{matched}"
+                print(f"[apply_selector] hint resolved to label {matched!r}")
+
             if sval.startswith("label:"):
                 label_text = sval[len("label:"):].strip()
                 print(f"[apply_selector] coord label-mode for {label_text!r}")
 
-                # 1) Find the label by visible text
-                # Try a few label variants (helps after navigation where the wording changes)
-                variants = [label_text]
-
-                # common transformations
-                lt = label_text.lower().strip()
-                if lt.startswith("edit "):
-                    variants.append(label_text[5:])  # drop "Edit "
-                variants.append(re.sub(r"\byour\b", "", label_text, flags=re.I).strip())
-                variants.append(re.sub(r"\bedit\b", "", label_text, flags=re.I).strip())
-
+                # Always define label_loc so we never hit "referenced before assignment"
                 label_loc = None
+
+                # Build variants of the label to increase chance of matching UI text
+                variants = []
+                orig = (label_text or "").strip()
+                if orig:
+                    variants.append(orig)
+
+                # Common cleanups
+                v = re.sub(r"^\s*edit\s+", "", orig, flags=re.I).strip()
+                if v and v not in variants:
+                    variants.append(v)
+
+                v2 = re.sub(r"\byour\b", "", v, flags=re.I).strip()
+                if v2 and v2 not in variants:
+                    variants.append(v2)
+
+                # Add tail phrases (last 2–4 words)
+                words = [w for w in re.split(r"\s+", v2) if w]
+                for n in (2, 3, 4):
+                    if len(words) >= n:
+                        tail = " ".join(words[-n:]).strip()
+                        if tail and tail not in variants:
+                            variants.append(tail)
+
+                # Special common rewrites
+                low = v2.lower()
+                if "profile visibility" in low and "Public profile" not in variants:
+                    variants.append("Public profile")
+                if "visibility" in low and "Profile visibility" not in variants:
+                    variants.append("Profile visibility")
+
+                # Try each variant until we find a match
+                matched_text = None
                 for v in variants:
                     if not v:
                         continue
@@ -1916,14 +1949,14 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                         loc = page.get_by_text(v, exact=False)
                     if loc.count():
                         label_loc = loc
-                        label_text = v  # use the successful variant for logging
+                        matched_text = v
                         break
 
                 if not label_loc or not label_loc.count():
                     print(f"[apply_selector] No label found for any variant of {variants!r}")
                     return False
 
-
+                # Use the matched label element
                 label = label_loc.first
                 label_box = label.bounding_box()
                 if not label_box:
@@ -1933,7 +1966,7 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                 label_right = label_box["x"] + label_box["width"]
                 label_center_y = label_box["y"] + label_box["height"] / 2.0
 
-                # 2) Find candidate controls
+                # Find candidate controls to the right in the same row
                 candidates_selector = (
                     "input,button,"
                     "[role='switch'],[role='checkbox'],[role='radio'],"
@@ -1941,11 +1974,11 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                 )
                 cand_loc = page.locator(candidates_selector)
                 total = cand_loc.count()
-                print(f"[apply_selector] searching {total} candidate controls near label {label_text!r}")
+                print(f"[apply_selector] searching {total} candidate controls near label {matched_text!r}")
 
                 best_box = None
                 best_dx = float("inf")
-                max_to_check = min(total, 60)
+                max_to_check = min(total, 80)
 
                 for i in range(max_to_check):
                     el = cand_loc.nth(i)
@@ -1962,23 +1995,19 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                     if not (box["y"] <= label_center_y <= (box["y"] + box["height"])):
                         continue
 
-                    # Choose nearest to the right
                     if dx < best_dx:
                         best_dx = dx
                         best_box = box
 
-                if best_box:
-                    cx = best_box["x"] + best_box["width"] / 2.0
-                    cy = best_box["y"] + best_box["height"] / 2.0
-                    print(f"[apply_selector] Clicking center of nearest control at ({cx}, {cy})")
-                    page.mouse.click(cx, cy)
-                    return True
+                if not best_box:
+                    print("[apply_selector] No suitable control found near label.")
+                    return False
 
-                print("[apply_selector] No suitable control found near label.")
-                return False
-
-            # else: raw numeric "x,y"
-
+                cx = best_box["x"] + best_box["width"] / 2.0
+                cy = best_box["y"] + best_box["height"] / 2.0
+                print(f"[apply_selector] Clicking center of nearest control at ({cx}, {cy})")
+                page.mouse.click(cx, cy)
+                return True
 
             else:
                 # Raw numeric coords "x,y"
@@ -1992,6 +2021,7 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                 except Exception as e:
                     print(f"[apply_selector] coord parse failed for {sval!r}: {e}")
                     return False
+
 
 
     except PwTimeout:
@@ -2177,7 +2207,7 @@ def planner_setting_change(
                     {
                         "purpose": "change_value",
                         "type": "coord",
-                        "selector": f"label:{leaf_hint}",
+                        "selector": f"hint:{leaf_hint}",
                     }
                 ],
                 "done": False,
@@ -2230,7 +2260,7 @@ def planner_setting_change(
                     {
                         "purpose": "change_value",
                         "type": "coord",
-                        "selector": f"label:{leaf_hint}",
+                        "selector": f"hint:{leaf_hint}",
                     }
                 ],
                 "done": False,
@@ -2283,7 +2313,7 @@ def planner_setting_change(
                         {
                             "purpose": "change_value",
                             "type": "coord",
-                            "selector": f"label:{leaf_hint}", 
+                            "selector": f"hint:{leaf_hint}", 
                         }
                     ],
                     "done": False,
@@ -2440,7 +2470,7 @@ def apply_setting_change_sync(
                         return result
 
             click_count = 0
-            max_turns = 6
+            max_turns = 8
             last_notes = ""
             for turn in range(1, max_turns + 1):
                 executor_state["attempts"] = turn
