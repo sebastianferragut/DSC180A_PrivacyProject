@@ -1851,7 +1851,98 @@ def read_control_state_by_label(page: Page, label_text: str) -> Optional[bool]:
     except Exception:
         return None
 
+def best_actionable_label_match_on_page(page: Page, hint: str, max_scan: int = 160) -> Optional[str]:
+    """
+    Find the best visible label-like text that matches `hint` AND has a nearby control
+    (switch/checkbox/button) associated with it.
+
+    Returns the label text to use with label-mode, or None.
+    """
+    hint_norm = _norm(hint)
+    if not hint_norm:
+        return None
+    hint_tokens = set(hint_norm.split())
+
+    # likely "labels"
+    loc = page.locator("label,span,div,p,h1,h2,h3,button,a")
+    n = min(loc.count(), max_scan)
+
+    best_text = None
+    best_score = 0.0
+
+    for i in range(n):
+        try:
+            txt = loc.nth(i).inner_text().strip()
+        except Exception:
+            continue
+        if not txt:
+            continue
+        if len(txt) > 70:
+            continue
+        if "\n" in txt:
+            continue
+        txt_norm = _norm(txt)
+        if not txt_norm:
+            continue
+
+        tokens = set(txt_norm.split())
+        if not tokens:
+            continue
+
+        # similarity score (token overlap)
+        overlap = len(tokens & hint_tokens) / max(1, len(hint_tokens))
+        score = overlap
+
+        # Prefer header-ish elements (often the setting label)
+        try:
+            tag = loc.nth(i).evaluate("el => el.tagName.toLowerCase()")
+            if tag in ("h1", "h2", "h3", "h4", "label"):
+                score += 0.15
+        except Exception:
+            pass
+
+        # modest bonus for substring relationship
+        if hint_norm in txt_norm or txt_norm in hint_norm:
+            score += 0.25
+
+        # Now: must have a nearby actionable control (container search)
+        try:
+            el = loc.nth(i)
+            container = el.locator("xpath=ancestor::*[self::li or self::section or self::div][1]")
+            if not container.count():
+                container = el
+
+            ctrl = container.locator(
+                "[role='switch'],"
+                "input[type='checkbox'],"
+                "[aria-checked],"
+                "button[aria-pressed],"
+                "[role='checkbox'],"
+                "[role='radio']"
+            )
+
+            if not ctrl.count():
+                # no control nearby -> not actionable, skip
+                continue
+
+            # bonus for being actionable
+            score += 0.5
+
+        except Exception:
+            continue
+
+        if score > best_score:
+            best_score = score
+            best_text = txt
+
+    # Require at least some match strength
+    if best_text and best_score >= 0.35:
+        return best_text
+
+    return None
+
 def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
+    desired_value = (sel.get("value") or "").strip().lower()
     stype = (sel.get("type") or "css").lower()
     sval = sel.get("selector") or ""
     if not sval:
@@ -1892,13 +1983,16 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                 hint = sval[len("hint:"):].strip()
                 print(f"[apply_selector] coord hint-mode for {hint!r}")
 
-                # Find best label match on the page using the hint
-                matched = best_label_match_on_page(page, hint)
+                # Prefer labels that have an actual control near them
+                matched = best_actionable_label_match_on_page(page, hint)
+                if not matched:
+                    # fallback: old behavior if nothing actionable is found
+                    matched = best_label_match_on_page(page, hint)
+
                 if not matched:
                     print(f"[apply_selector] No good label match found for hint {hint!r}")
                     return False
 
-                # Now reuse existing label-mode by converting to label:<matched>
                 sval = f"label:{matched}"
                 print(f"[apply_selector] hint resolved to label {matched!r}")
 
@@ -1959,6 +2053,57 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                 # Use the matched label element
                 label = label_loc.first
                 label_box = label.bounding_box()
+                # --- Prefer finding a toggle/control in the same container row/card ---
+                # This solves layouts where the label container spans across the toggle.
+                try:
+                    container = label.locator("xpath=ancestor::*[self::li or self::section or self::div][1]")
+                    if container.count():
+                        # Prefer real checkbox/switch inputs first (most reliable via set_checked)
+                        inp = container.locator("input[type='checkbox'], input[role='switch'], [role='switch'][type='checkbox']")
+                        if inp.count():
+                            el = inp.first
+
+                            # if we know the desired state, set it deterministically
+                            want_on = desired_value in ("on", "enabled", "private")
+                            want_off = desired_value in ("off", "disabled", "public")
+
+                            if want_on or want_off:
+                                try:
+                                    cur = el.is_checked()
+                                    if want_on and not cur:
+                                        el.set_checked(True)
+                                        return True
+                                    if want_off and cur:
+                                        el.set_checked(False)
+                                        return True
+                                    # already correct
+                                    return True
+                                except Exception as e:
+                                    print("[apply_selector] set_checked failed, falling back to click:", e)
+                                    # fall through
+
+                            # Fallback: toggle if we don't know desired state (or set_checked failed)
+                            try:
+                                el.click(timeout=3500, force=True)
+                                return True
+                            except Exception:
+                                try:
+                                    cur = el.is_checked()
+                                    el.set_checked(not cur)
+                                    return True
+                                except Exception:
+                                    pass
+
+
+                        # Fall back to role switch, aria checked, etc.
+                        ctrl = container.locator("[role='switch'],[aria-checked],button[aria-pressed]")
+                        if ctrl.count():
+                            ctrl.first.click(timeout=3500, force=True)
+                            return True
+                except Exception as e:
+                    print("[apply_selector] container-control search failed:", e)
+
+
                 if not label_box:
                     print("[apply_selector] No bounding_box for label")
                     return False
@@ -1988,8 +2133,14 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
 
                     # Must be to the right of the label
                     dx = box["x"] - label_right
+                    # Allow controls that are inside the label container but on the right half.
                     if dx < 0:
-                        continue
+                        # accept if the control is on the right half of the label box
+                        ctrl_center_x = box["x"] + box["width"] / 2.0
+                        label_mid_x = label_box["x"] + label_box["width"] * 0.55
+                        if ctrl_center_x <= label_mid_x:
+                            continue
+
 
                     # Must overlap vertically with label row
                     if not (box["y"] <= label_center_y <= (box["y"] + box["height"])):
@@ -2000,8 +2151,16 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                         best_box = box
 
                 if not best_box:
-                    print("[apply_selector] No suitable control found near label.")
-                    return False
+                    # Very common: the label itself is the control (opens modal / navigates),
+                    # and there is no right-side toggle. Click the label as a safe fallback.
+                    try:
+                        print("[apply_selector] No nearby toggle found; clicking the label itself.")
+                        label.click(timeout=3500)
+                        return True
+                    except Exception as e:
+                        print("[apply_selector] Could not click label fallback:", e)
+                        return False
+
 
                 cx = best_box["x"] + best_box["width"] / 2.0
                 cy = best_box["y"] + best_box["height"] / 2.0
@@ -2208,6 +2367,7 @@ def planner_setting_change(
                         "purpose": "change_value",
                         "type": "coord",
                         "selector": f"hint:{leaf_hint}",
+                        "value": target_value,
                     }
                 ],
                 "done": False,
@@ -2261,6 +2421,7 @@ def planner_setting_change(
                         "purpose": "change_value",
                         "type": "coord",
                         "selector": f"hint:{leaf_hint}",
+                        "value": target_value,
                     }
                 ],
                 "done": False,
@@ -2314,6 +2475,7 @@ def planner_setting_change(
                             "purpose": "change_value",
                             "type": "coord",
                             "selector": f"hint:{leaf_hint}", 
+                            "value": target_value,
                         }
                     ],
                     "done": False,
@@ -2470,7 +2632,7 @@ def apply_setting_change_sync(
                         return result
 
             click_count = 0
-            max_turns = 8
+            max_turns = 6
             last_notes = ""
             for turn in range(1, max_turns + 1):
                 executor_state["attempts"] = turn
@@ -2575,13 +2737,35 @@ def apply_setting_change_sync(
                     if "still loading" in ln or "no interactive elements" in ln:
                         page.wait_for_timeout(2000)
                         continue
-                    # Otherwise, we have no actions and no clear reason: bail out.
+                    # Otherwise, before bailing out, check if the setting is already in the desired state.
+                    # This prevents "uncertain" when the action succeeded or was unnecessary.
+                    try:
+                        tv = target_value.strip().lower()
+                        lbl = (leaf_hint_for_ui or leaf_hint or setting.name)
+
+                        state = read_control_state_by_label(page, lbl)
+                        if state is not None:
+                            want_on = tv in ("on", "enabled", "private")
+                            want_off = tv in ("off", "disabled", "public")
+
+                            if (want_on and state is True) or (want_off and state is False):
+                                result["status"] = "success"
+                                result["details"] = (
+                                    "Planner returned no selectors because the setting already matches the requested value. "
+                                    f"Notes: {last_notes}"
+                                )
+                                break
+                    except Exception:
+                        pass
+
+                    # If we still can't confirm state, bail as uncertain.
                     result["status"] = "uncertain"
                     result["details"] = (
                         f"Planner returned no selectors on turn {turn} with no clear loading message. "
                         f"Notes: {last_notes}"
                     )
                     break
+
 
                 # 4) Apply selectors.
                 applied_any = False

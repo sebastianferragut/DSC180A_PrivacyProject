@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-01-20T22:19:54.504578Z",
+  "updated_at": "2026-01-20T23:55:29.902160Z",
   "by_setting": {
     "reddit::allow_people_to_follow_you": {
       "platform": "reddit",
@@ -82,18 +82,24 @@
       "platform": "linkedin",
       "setting_id": "edit_your_public_profile",
       "name": "Edit your public profile",
-      "runs": 1,
-      "successes": 1,
-      "avg_clicks_success": 2.0,
+      "runs": 2,
+      "successes": 2,
+      "avg_clicks_success": 2.5,
       "min_clicks_success": 2,
-      "max_clicks_success": 2,
-      "last_success_ts": "2026-01-20T22:19:54.504604Z",
+      "max_clicks_success": 3,
+      "last_success_ts": "2026-01-20T23:55:29.902187Z",
       "history": [
         {
           "ts": "2026-01-20T22:19:54.504604Z",
           "status": "success",
           "target_value": "off",
           "click_count": 2
+        },
+        {
+          "ts": "2026-01-20T23:55:29.902187Z",
+          "status": "success",
+          "target_value": "on",
+          "click_count": 3
         }
       ]
     }
