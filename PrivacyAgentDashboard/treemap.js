@@ -308,7 +308,7 @@ function buildHierarchy() {
       name: category,
       children: settings.map(setting => ({
         name: setting.setting,
-        setting: setting,
+        meta: setting,
         value: setting.weight,
         url: setting.url,
         description: setting.description,
@@ -427,7 +427,7 @@ function renderTreemap() {
         event.stopPropagation();
         event.preventDefault();
   
-        const isLeaf = d.data.setting || (!d.children || d.children.length === 0);
+        const isLeaf = !d.children || d.children.length === 0;
         if (!isLeaf && d.children && d.children.length > 0) {
           zoomInto(d);
         } else if (isLeaf && d.data.url) {
@@ -435,7 +435,7 @@ function renderTreemap() {
         }
       })
       .style("cursor", d => {
-        const isLeaf = d.data.setting || (!d.children || d.children.length === 0);
+        const isLeaf = !d.children || d.children.length === 0;
         return (isLeaf && d.data.url)
           ? "pointer"
           : (!isLeaf && d.children && d.children.length > 0)
@@ -523,7 +523,7 @@ function renderTreemap() {
     // ===============================
     cells.filter(d => {
       const isCategory = (atRootNow && d.depth === 1) || (!atRootNow && d.depth === 0);
-      const isLeaf = d.data.setting || (!d.children || d.children.length === 0);
+      const isLeaf = !d.children || d.children.length === 0;
       const w = d.x1 - d.x0;
       const h = d.y1 - d.y0;
       return !isCategory && isLeaf && w > 60 && h > 20;
@@ -586,7 +586,7 @@ function renderTreemap() {
       tooltip.interrupt();
       tooltip.style("display", "block");
   
-      const isLeaf = d.data.setting || (!d.children || d.children.length === 0);
+      const isLeaf = !d.children || d.children.length === 0;
   
       let content = "";
       if (isLeaf) {
@@ -598,7 +598,8 @@ function renderTreemap() {
           platform = d.data.platform || "unknown";
         }
   
-        content = `<strong>${d.data.setting || d.data.name}</strong>
+        content = `<strong>${d.data.name || "N/A"}</strong>
+          <p><strong>Setting:</strong> ${d.data.name || "N/A"}</p>
           <p><strong>Platform:</strong> ${platform || "unknown"}</p>
           <p><strong>Category:</strong> ${category || d.parent?.data?.name || "unknown"}</p>
           <p><strong>State:</strong> ${d.data.state || "N/A"}</p>
@@ -778,7 +779,7 @@ function zoomInto(d) {
       name: child.data.name,
       children: child.children || [],
       value: child.value,
-      setting: child.data.setting,
+      meta: child.data.meta,
       url: child.data.url,
       description: child.data.description,
       state: child.data.state,
