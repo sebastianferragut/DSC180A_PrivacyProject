@@ -27,6 +27,18 @@ const categoryIcons = {
   'advertising_targeting': '📢',
   'default': '📁'
 };
+
+// Platform brand colors
+const PLATFORM_COLORS = {
+  facebook: "#1877F2",      // Facebook blue
+  googleaccount: "#34A853", // Google green
+  instagram: "#E4405F",     // Instagram pink
+  linkedin: "#0A66C2",      // LinkedIn blue
+  reddit: "#FF4500",        // Reddit orange
+  zoom: "#2D8CFF",          // Zoom blue
+  unknown: "#9E9E9E"        // Fallback gray
+};
+
 let currentRoot = null;
 let zoomStack = [];
 let currentSizingMetric = 'count';
@@ -322,13 +334,9 @@ function renderTreemap() {
     // Root state for this render pass
     const atRootNow = zoomStack.length === 0;
   
-    // Color scale by platform (not category)
+    // Get unique platforms and categories
     const platforms = Array.from(new Set(allData.map(d => d.platform))).sort();
     const categories = Array.from(new Set(allData.map(d => d.category)));
-  
-    const platformColorScale = d3.scaleOrdinal()
-      .domain(platforms)
-      .range(d3.quantize(d3.interpolateRainbow, Math.max(platforms.length, 3)));
   
     // Treemap layout
     const treemap = d3.treemap()
@@ -367,11 +375,9 @@ function renderTreemap() {
   
         // Leaf nodes: color by platform and stateType
         const platform = d.data.platform || "unknown";
-        const baseColor = platformColorScale(platform);
+        const baseColor = PLATFORM_COLORS[platform] || PLATFORM_COLORS.unknown;
   
-        if (d.data.stateType === "navigational") return d3.color(baseColor).brighter(0.5);
-        if (d.data.stateType === "actionable") return baseColor;
-        return d3.color(baseColor).darker(0.3);
+        return d3.color(baseColor);
       })
       .attr("stroke", d => {
         if (d.data.stateType === "navigational") return "#4CAF50";
@@ -619,14 +625,14 @@ function renderTreemap() {
     });
   
     updateBreadcrumbs();
-    renderLegend(platforms, platformColorScale, categories);
+    renderLegend(platforms, categories);
   }
   
 
 /**
  * Render legend showing platforms (with colors) and categories
  */
-function renderLegend(platforms, platformColorScale, categories) {
+function renderLegend(platforms, categories) {
   const legendContainer = d3.select("#treemapLegend");
   legendContainer.selectAll("*").remove();
   
@@ -671,7 +677,7 @@ function renderLegend(platforms, platformColorScale, categories) {
       .attr("class", "legend-color")
       .style("width", "16px")
       .style("height", "16px")
-      .style("background", platformColorScale(platform))
+      .style("background", PLATFORM_COLORS[platform] || PLATFORM_COLORS.unknown)
       .style("border", "1px solid #ccc")
       .style("border-radius", "3px")
       .style("flex-shrink", "0");
