@@ -27,11 +27,14 @@ from google import genai
 from google.genai import types
 from google.genai.types import Content, Part
 
+from datetime import datetime
+
 # =========================
 # Paths & Config
 # =========================
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+RUN_STATS_PATH = REPO_ROOT / "privacyagentapp" / "database" / "run_stats.json"
 
 try:
     SETTINGS_JSON_PATH = REPO_ROOT / "database" / "data" / "all_platforms_classified.json"
@@ -55,6 +58,7 @@ SESSION_CHANGES_KEY = "changed_settings"
 SESSION_PENDING_KEY = "pending_setting_choice"
 SESSION_PENDING_PLATFORM_KEY = "pending_platform"
 SESSION_PENDING_VALUE_KEY = "pending_target_value"
+SESSION_PENDING_CONFIRM = "pending_confirm_setting"
 SESSION_ACTIVE_PLATFORM = "active_platform"
 SESSION_PENDING_NL_TEXT = "pending_nl_text"
 
@@ -283,6 +287,95 @@ VALUE_SYNONYMS = {
     "private": {"private", "make private", "switch to private"},
     "public": {"public", "make public", "switch to public"},
 }
+
+def utc_iso() -> str:
+    return datetime.utcnow().isoformat() + "Z"
+
+def _load_json_safely(path: Path) -> dict:
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+def _atomic_write_json(path: Path, obj: dict):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(obj, indent=2, ensure_ascii=False), encoding="utf-8")
+    tmp.replace(path)
+
+def record_run_stats(
+    *,
+    platform: str,
+    setting: SettingEntry,
+    target_value: str,
+    status: str,
+    click_count: int,
+    max_history: int = 50,
+):
+    """
+    Append a run record and update aggregated stats for (platform, setting_id).
+    """
+    # Only persist successful runs
+    if status != "success":
+        return
+    
+    key = f"{platform}::{setting.setting_id}"
+    data = _load_json_safely(RUN_STATS_PATH) or {}
+
+    if "version" not in data:
+        data["version"] = 1
+    data["updated_at"] = utc_iso()
+    by_setting = data.setdefault("by_setting", {})
+
+    rec = by_setting.get(key) or {
+        "platform": platform,
+        "setting_id": setting.setting_id,
+        "name": setting.name,
+        "runs": 0,
+        "successes": 0,
+        "avg_clicks_success": None,
+        "min_clicks_success": None,
+        "max_clicks_success": None,
+        "last_success_ts": None,
+        "history": [],
+    }
+
+    # always append a run record
+    rec["runs"] = int(rec.get("runs", 0)) + 1
+    run_entry = {
+        "ts": utc_iso(),
+        "status": status,
+        "target_value": target_value,
+        "click_count": int(click_count),
+    }
+    hist = rec.get("history") or []
+    hist.append(run_entry)
+    if len(hist) > max_history:
+        hist = hist[-max_history:]
+    rec["history"] = hist
+
+    # update success aggregates
+    if status == "success":
+        rec["successes"] = int(rec.get("successes", 0)) + 1
+        rec["last_success_ts"] = run_entry["ts"]
+
+        # update min/max/avg clicks for successful runs
+        clicks = int(click_count)
+        mn = rec.get("min_clicks_success")
+        mx = rec.get("max_clicks_success")
+        rec["min_clicks_success"] = clicks if mn is None else min(int(mn), clicks)
+        rec["max_clicks_success"] = clicks if mx is None else max(int(mx), clicks)
+
+        # avg update from history of successes (bounded) – simple recompute
+        succ_clicks = [h["click_count"] for h in hist if h.get("status") == "success"]
+        if succ_clicks:
+            rec["avg_clicks_success"] = round(sum(succ_clicks) / len(succ_clicks), 3)
+
+    by_setting[key] = rec
+    data["by_setting"] = by_setting
+    _atomic_write_json(RUN_STATS_PATH, data)
 
 def normalize_target_value(text: str) -> Optional[str]:
     t = (text or "").strip().lower()
@@ -524,31 +617,29 @@ async def on_pick_setting(action: cl.Action):
         await cl.Message(content="Could not resolve that setting in the DB. Please try again.").send()
         return
 
-    # Store the chosen setting for the next step
-    cl.user_session.set("final_setting_to_change", {"platform": platform, "setting_id": setting.setting_id})
+    # Store pending confirmation (setting inferred from user intent)
+    cl.user_session.set(SESSION_PENDING_CONFIRM, {"platform": platform, "setting_id": setting.setting_id})
 
-    # Suggested value (if Gemini inferred one) – show it, but don't auto-run
     suggested = cl.user_session.get(SESSION_PENDING_VALUE_KEY)
 
     actions = [
-        cl.Action(name="pick_value", payload={"value": "on"}, label="On"),
-        cl.Action(name="pick_value", payload={"value": "off"}, label="Off"),
-        cl.Action(name="pick_value", payload={"value": "private"}, label="Private"),
-        cl.Action(name="pick_value", payload={"value": "public"}, label="Public"),
-        cl.Action(name="pick_value", payload={"value": "cancel"}, label="Cancel"),
+        cl.Action(name="confirm_setting", payload={"confirm": True}, label="Confirm"),
+        cl.Action(name="confirm_setting", payload={"confirm": False}, label="Cancel"),
+        change_platform_action(),
     ]
 
-    hint_line = f"\n\nSuggested from your message: `{suggested}`" if suggested else ""
+    hint_line = f"\n\nSuggested state from your message: `{suggested}`" if suggested else ""
 
     await cl.Message(
-        content=(
-            f"Selected setting on `{platform}`:\n"
-            f"**{setting.name}** (`{setting.setting_id}`)"
+        content=active_platform_banner() + (
+            "I think you meant this setting:\n\n"
+            f"**{setting.name}** (`{setting.setting_id}`)\n"
             f"{hint_line}\n\n"
-            "What do you want to change it to?"
+            "Confirm this is correct?"
         ),
         actions=actions
     ).send()
+
 
 async def ask_for_platform(pending_query: str, pending_value: Optional[str]):
     # Store pending intent
@@ -604,8 +695,59 @@ async def on_set_platform(action: cl.Action):
 
     await cl.Message(
         content=active_platform_banner()
-        + f"Platform set to `{plat}`.\n\nNow tell me what setting you want to change (in normal language).",
+        + f"Platform set to `{plat}`.\n\nNow tell me what setting you want to change (in normal language). This works best if you follow the structure: Turn my [setting name] to [desired state].",
         actions=[change_platform_action()],
+    ).send()
+
+@cl.action_callback("confirm_setting")
+async def on_confirm_setting(action: cl.Action):
+    payload = action.payload or {}
+    confirm = payload.get("confirm")
+
+    pending = cl.user_session.get(SESSION_PENDING_CONFIRM)
+    cl.user_session.set(SESSION_PENDING_CONFIRM, None)
+
+    if not pending:
+        await cl.Message(content="No pending setting to confirm. Please try again.").send()
+        return
+
+    platform = pending["platform"]
+    setting = resolve_setting(platform, pending["setting_id"])
+    if not setting:
+        await cl.Message(content="Could not resolve that setting. Please try again.").send()
+        return
+
+    if not confirm:
+        # Cancel: allow selecting a platform again (as requested)
+        await cl.Message(
+            content=active_platform_banner() + "Canceled. Pick a platform to continue.",
+            actions=[change_platform_action()]
+        ).send()
+        await prompt_pick_platform()
+        return
+
+    # If confirmed, proceed to value selection (same as your previous step)
+    actions = [
+        cl.Action(name="pick_value", payload={"value": "on"}, label="On"),
+        cl.Action(name="pick_value", payload={"value": "off"}, label="Off"),
+        cl.Action(name="pick_value", payload={"value": "private"}, label="Private"),
+        cl.Action(name="pick_value", payload={"value": "public"}, label="Public"),
+        cl.Action(name="pick_value", payload={"value": "cancel"}, label="Cancel"),
+        change_platform_action(),
+    ]
+
+    # store final setting for value step
+    cl.user_session.set("final_setting_to_change", {"platform": platform, "setting_id": setting.setting_id})
+
+    suggested = cl.user_session.get(SESSION_PENDING_VALUE_KEY)
+    hint_line = f"\n\nSuggested from your message: `{suggested}`" if suggested else ""
+
+    await cl.Message(
+        content=active_platform_banner()
+        + f"Confirmed: **{setting.name}** (`{setting.setting_id}`)"
+        + hint_line
+        + "\n\nWhat do you want to change it to?",
+        actions=actions
     ).send()
 
 def prefilter_platform_settings(platform: str, user_text: str, k: int = 50) -> List[SettingEntry]:
@@ -635,51 +777,51 @@ def gemini_pick_candidates_for_platform(platform: str, user_text: str, candidate
     """
     Given a platform and a reduced candidate list, ask Gemini to pick the best 1–3 setting_ids
     and infer target_value if present.
+
+    IMPORTANT: Robust JSON parsing (handles fences / extra text).
     """
     if not client:
         return {"setting_ids": [], "target_value": None}
 
-    # Build compact candidate list for prompt
+    # Limit candidates to reduce token load
+    candidates = candidates[:30]
+
+    # Build compact candidate list for prompt (truncate descriptions!)
     cand_payload = [
         {
             "setting_id": c.setting_id,
             "name": c.name,
-            "description": c.description or "",
+            "description": (c.description or "")[:160],
             "category": c.category or "",
         }
         for c in candidates
     ]
 
     system_instruction = (
-        "You are helping map a natural language privacy-setting request to database entries.\n"
-        "You are given:\n"
-        "- A PLATFORM\n"
-        "- USER_TEXT describing what the user wants\n"
-        "- A list of CANDIDATES (setting_id, name, description)\n\n"
-        "Return STRICT JSON ONLY:\n"
+        "You map a natural language privacy-setting request to database entries.\n"
+        "You MUST choose only from the provided CANDIDATES list.\n\n"
+        "Return STRICT JSON ONLY (no markdown fences, no extra text):\n"
         "{\n"
         '  "setting_ids": ["id1","id2","id3"],\n'
-        '  "target_value": "on"|"off"|"private"|"public"|null,\n'
+        '  "target_value": "on"|"off"|null,\n'
         '  "reason": "<short>"\n'
-        "}\n"
+        "}\n\n"
         "Rules:\n"
         "- Choose up to 3 setting_ids from CANDIDATES.\n"
         "- If the user implies enable/disable/private/public, set target_value; else null.\n"
-        "- If nothing matches, return empty setting_ids.\n"
-        "- No markdown fences.\n"
+        "- If nothing matches, return setting_ids: []\n"
     )
 
     prompt = (
         f"PLATFORM: {platform}\n"
         f"USER_TEXT: {user_text}\n\n"
-        "CANDIDATES:\n"
-        + json.dumps(cand_payload, ensure_ascii=False)
+        "CANDIDATES:\n" + json.dumps(cand_payload, ensure_ascii=False)
     )
 
     config = types.GenerateContentConfig(
         system_instruction=system_instruction,
         temperature=0.1,
-        max_output_tokens=400,
+        max_output_tokens=300,
     )
 
     try:
@@ -688,9 +830,11 @@ def gemini_pick_candidates_for_platform(platform: str, user_text: str, candidate
             contents=[Content(role="user", parts=[Part(text=prompt)])],
             config=config,
         )
-    except Exception:
+    except Exception as e:
+        print("[gemini_pick_candidates] model error:", e)
         return {"setting_ids": [], "target_value": None}
 
+    # Extract text
     out = ""
     try:
         cands = getattr(resp, "candidates", None) or []
@@ -702,12 +846,51 @@ def gemini_pick_candidates_for_platform(platform: str, user_text: str, candidate
                     if getattr(part, "text", None):
                         out += part.text
         out = (out or "").strip()
-        data = json.loads(out)
-        ids = data.get("setting_ids") or []
-        tv = data.get("target_value")
-        return {"setting_ids": ids[:3], "target_value": tv}
-    except Exception:
+    except Exception as e:
+        print("[gemini_pick_candidates] extraction error:", e)
+        out = ""
+
+    if not out:
+        print("[gemini_pick_candidates] empty output from model")
         return {"setting_ids": [], "target_value": None}
+
+    print("DEBUG AT LINE 803")
+    print("[gemini_pick_candidates] raw model output (first 300 chars):", out[:300])
+
+    # Robust JSON salvage (handles ```json fences and extra text)
+    raw = out.strip()
+    try:
+        data = json.loads(raw)
+    except Exception:
+        # strip fences
+        if raw.startswith("```"):
+            raw2 = raw.strip("`")
+            # remove leading language tag line if present
+            raw2 = re.sub(r"^\s*json\s*", "", raw2, flags=re.I)
+            raw = raw2.strip()
+
+        # extract first {...} block
+        m = re.search(r"\{.*\}", raw, flags=re.S)
+        if not m:
+            print("[gemini_pick_candidates] could not find JSON object in output:", raw[:200])
+            return {"setting_ids": [], "target_value": None}
+        try:
+            data = json.loads(m.group(0))
+        except Exception as e:
+            print("[gemini_pick_candidates] JSON parse failed:", e, "raw:", raw[:200])
+            return {"setting_ids": [], "target_value": None}
+
+    setting_ids = data.get("setting_ids") or []
+    target_value = data.get("target_value")
+
+    # Dedupe + keep only valid IDs from the candidates list
+    valid_ids = {c["setting_id"] for c in cand_payload}
+    cleaned = []
+    for sid in setting_ids:
+        if sid in valid_ids and sid not in cleaned:
+            cleaned.append(sid)
+
+    return {"setting_ids": cleaned[:3], "target_value": target_value}
     
 async def handle_platform_scoped_nl(platform: str, user_text: str):
     # Prefilter to top ~50 for prompt size
@@ -718,13 +901,21 @@ async def handle_platform_scoped_nl(platform: str, user_text: str):
     target_value = pick.get("target_value")
 
     if not setting_ids:
+        # deterministic fallback if Gemini fails/overloaded
+        fallback = find_setting_candidates(platform, user_text, limit=3)
+        if fallback:
+            await present_candidates(platform, user_text, fallback, target_value=None)
+            return
+
         await cl.Message(
             content=(
                 f"I couldn’t find likely matches for **{user_text}** on `{platform}`.\n\n"
                 "Try rephrasing or use the exact label you see in the settings page."
-            )
+            ),
+            actions=[change_platform_action()],
         ).send()
         return
+
 
     # Resolve SettingEntry objects in the order Gemini returned
     id_map = {s.setting_id: s for s in pre}
@@ -758,7 +949,11 @@ async def on_pick_value(action: cl.Action):
 
     if value == "cancel":
         cl.user_session.set("final_setting_to_change", None)
-        await cl.Message(content="Canceled. You can type a new request anytime.").send()
+        await cl.Message(
+            content=active_platform_banner() + "Canceled. Pick a platform to continue.",
+            actions=[change_platform_action()]
+        ).send()
+        await prompt_pick_platform()
         return
 
     # Normalize (handles enable/disable etc if you ever pass them)
@@ -793,6 +988,14 @@ async def on_pick_value(action: cl.Action):
         content=active_platform_banner() + f"Result: status = `{result.get('status')}`\nDetails: {result.get('details')}",
         actions=[change_platform_action()]
     ).send()
+
+    if result.get("status") == "success":
+        await cl.Message(
+            content=active_platform_banner()
+            + "✅ Success. You can type another setting to change on this platform, or click **Change platform**.",
+            actions=[change_platform_action()]
+        ).send()
+
 
 
 
@@ -1689,7 +1892,7 @@ def planner_setting_change(
         except Exception as e2:
             print("[planner_setting_change] JSON parse error:", e2, "raw:", raw[:200])
 
-            # --- NEW: generic fallback when JSON is broken but we have a leaf_hint ---
+            # ---  fallback when JSON is broken but we have a leaf_hint ---
             if leaf_hint:
                 # Use a synthetic coord selector that our executor understands as:
                 # "click near the control associated with this label text".
@@ -1775,6 +1978,7 @@ def apply_setting_change_sync(
         "details": "",
         "url": None,
         "leaf_hint": leaf_hint,
+        "click_count": 0,
     }
 
 
@@ -1834,7 +2038,7 @@ def apply_setting_change_sync(
             # Small extra pause to let the UI paint fully before we screenshot for Gemini
             page.wait_for_timeout(2000)
 
-
+            click_count = 0
             max_turns = 6
             last_notes = ""
             for turn in range(1, max_turns + 1):
@@ -1955,6 +2159,7 @@ def apply_setting_change_sync(
                     purpose = (sel.get("purpose") or "").lower()
                     ok = apply_selector(page, sel)
                     if ok:
+                        click_count += 1
                         applied_any = True
                         if purpose == "confirm":
                             applied_confirm = True
@@ -2110,6 +2315,19 @@ def apply_setting_change_sync(
     except Exception as e:
         result["status"] = "error"
         result["details"] = f"Playwright/Gemini execution error: {e}"
+    
+    result["click_count"] = click_count
+    # Record stats to disk (success and non-success are both useful)
+    try:
+        record_run_stats(
+            platform=platform,
+            setting=setting,
+            target_value=target_value,
+            status=result.get("status", "unknown"),
+            click_count=int(result.get("click_count", 0)),
+        )
+    except Exception as e:
+        print("[stats] Failed to record run stats:", e)
 
     return result
 
@@ -2462,7 +2680,7 @@ async def on_message(message: cl.Message):
             return
 
     # ---------------------------------------------------------------------
-    # 3) NEW: Platform-first Natural Language flow (platform-scoped Gemini + DB)
+    # 3) Platform-first Natural Language flow (platform-scoped Gemini + DB)
     # ---------------------------------------------------------------------
     
 
