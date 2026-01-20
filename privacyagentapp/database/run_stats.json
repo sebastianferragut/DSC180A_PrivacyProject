@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-01-20T20:19:36.986521Z",
+  "updated_at": "2026-01-20T21:07:52.583634Z",
   "by_setting": {
     "reddit::allow_people_to_follow_you": {
       "platform": "reddit",
@@ -56,6 +56,25 @@
           "status": "success",
           "target_value": "off",
           "click_count": 1
+        }
+      ]
+    },
+    "twitterX::audience__media_and_tagging": {
+      "platform": "twitterX",
+      "setting_id": "audience__media_and_tagging",
+      "name": "Audience, media and tagging",
+      "runs": 1,
+      "successes": 1,
+      "avg_clicks_success": 3.0,
+      "min_clicks_success": 3,
+      "max_clicks_success": 3,
+      "last_success_ts": "2026-01-20T21:07:52.583650Z",
+      "history": [
+        {
+          "ts": "2026-01-20T21:07:52.583650Z",
+          "status": "success",
+          "target_value": "on",
+          "click_count": 3
         }
       ]
     }

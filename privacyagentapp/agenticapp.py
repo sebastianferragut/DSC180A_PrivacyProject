@@ -59,6 +59,7 @@ SESSION_PENDING_KEY = "pending_setting_choice"
 SESSION_PENDING_PLATFORM_KEY = "pending_platform"
 SESSION_PENDING_VALUE_KEY = "pending_target_value"
 SESSION_PENDING_CONFIRM = "pending_confirm_setting"
+SESSION_INFERRED_BY_SETTING = "inferred_by_setting"
 SESSION_ACTIVE_PLATFORM = "active_platform"
 SESSION_PENDING_NL_TEXT = "pending_nl_text"
 
@@ -487,7 +488,7 @@ def find_setting_candidates(platform: str, query: str, limit: int = 8) -> List[S
     scored = []
     for s in settings:
         sc = score_setting_candidate(s, query)
-        if sc > 5.0:
+        if sc > 1.0:
             scored.append((sc, s))
 
     scored.sort(key=lambda x: x[0], reverse=True)
@@ -616,6 +617,16 @@ async def on_pick_setting(action: cl.Action):
     if not setting:
         await cl.Message(content="Could not resolve that setting in the DB. Please try again.").send()
         return
+    
+    infer_map = cl.user_session.get("inferred_by_setting") or {}
+    picked = infer_map.get(setting.setting_id) or {}
+    if picked.get("leaf_hint"):
+        cl.user_session.set("inferred_leaf_hint", picked["leaf_hint"])
+    if picked.get("target_value"):
+        cl.user_session.set("inferred_target_value", picked["target_value"])
+
+    print("[UI DEBUG] after pick_setting -> inferred_leaf_hint:", repr(cl.user_session.get("inferred_leaf_hint")))
+    print("[UI DEBUG] after pick_setting -> inferred_target_value:", repr(cl.user_session.get("inferred_target_value")))
 
     # Store pending confirmation (setting inferred from user intent)
     cl.user_session.set(SESSION_PENDING_CONFIRM, {"platform": platform, "setting_id": setting.setting_id})
@@ -695,7 +706,7 @@ async def on_set_platform(action: cl.Action):
 
     await cl.Message(
         content=active_platform_banner()
-        + f"Platform set to `{plat}`.\n\nNow tell me what setting you want to change (in normal language). This works best if you follow the structure: Turn my [setting name] to [desired state].",
+        + f"Platform set to `{plat}`.\n\nNow tell me what setting you want to change (in normal language). This works best if you follow the structure: Turn [setting name] to [desired state].",
         actions=[change_platform_action()],
     ).send()
 
@@ -716,7 +727,7 @@ async def on_confirm_setting(action: cl.Action):
     if not setting:
         await cl.Message(content="Could not resolve that setting. Please try again.").send()
         return
-
+    
     if not confirm:
         # Cancel: allow selecting a platform again (as requested)
         await cl.Message(
@@ -726,7 +737,29 @@ async def on_confirm_setting(action: cl.Action):
         await prompt_pick_platform()
         return
 
-    # If confirmed, proceed to value selection (same as your previous step)
+    suggested_value = cl.user_session.get("inferred_target_value")
+    print("[UI DEBUG] inferred_target_value in session:", repr(suggested_value))
+    print("[UI DEBUG] inferred_leaf_hint in session:", repr(cl.user_session.get("inferred_leaf_hint")))
+
+    # If Gemini inferred a target state, confirm it first
+    if suggested_value in ("on", "off", "private", "public"):
+        actions = [
+            cl.Action(name="confirm_value", payload={"confirm": True}, label=f"Confirm: {suggested_value}"),
+            cl.Action(name="confirm_value", payload={"confirm": False}, label="Choose different value"),
+            change_platform_action(),
+        ]
+        cl.user_session.set("final_setting_to_change", {"platform": platform, "setting_id": setting.setting_id})
+
+        await cl.Message(
+            content=active_platform_banner()
+            + f"Confirmed setting: **{setting.name}** (`{setting.setting_id}`)\n\n"
+            + f"I think you want to set it to: **{suggested_value}**.\n\n"
+            + "Confirm?",
+            actions=actions
+        ).send()
+        return
+
+    # Otherwise, fall back to full value picker
     actions = [
         cl.Action(name="pick_value", payload={"value": "on"}, label="On"),
         cl.Action(name="pick_value", payload={"value": "off"}, label="Off"),
@@ -735,20 +768,114 @@ async def on_confirm_setting(action: cl.Action):
         cl.Action(name="pick_value", payload={"value": "cancel"}, label="Cancel"),
         change_platform_action(),
     ]
-
-    # store final setting for value step
     cl.user_session.set("final_setting_to_change", {"platform": platform, "setting_id": setting.setting_id})
-
-    suggested = cl.user_session.get(SESSION_PENDING_VALUE_KEY)
-    hint_line = f"\n\nSuggested from your message: `{suggested}`" if suggested else ""
 
     await cl.Message(
         content=active_platform_banner()
-        + f"Confirmed: **{setting.name}** (`{setting.setting_id}`)"
-        + hint_line
-        + "\n\nWhat do you want to change it to?",
+        + f"Confirmed: **{setting.name}** (`{setting.setting_id}`)\n\n"
+        + "What do you want to change it to?",
         actions=actions
     ).send()
+    return
+
+@cl.action_callback("confirm_value")
+async def on_confirm_value(action: cl.Action):
+    payload = action.payload or {}
+    confirm = payload.get("confirm")
+
+    suggested_value = cl.user_session.get("inferred_target_value")
+
+    if not confirm:
+        # Show the full value picker
+        actions = [
+            cl.Action(name="pick_value", payload={"value": "on"}, label="On"),
+            cl.Action(name="pick_value", payload={"value": "off"}, label="Off"),
+            cl.Action(name="pick_value", payload={"value": "private"}, label="Private"),
+            cl.Action(name="pick_value", payload={"value": "public"}, label="Public"),
+            cl.Action(name="pick_value", payload={"value": "cancel"}, label="Cancel"),
+            change_platform_action(),
+        ]
+        await cl.Message(
+            content=active_platform_banner() + "Choose the value you want:",
+            actions=actions
+        ).send()
+        return
+
+    # Confirmed suggested value -> execute
+    if suggested_value not in ("on", "off", "private", "public"):
+        await cl.Message(content="No suggested value found. Please choose manually.").send()
+        return
+
+    pending = cl.user_session.get("final_setting_to_change")
+    if not pending:
+        await cl.Message(content="No pending setting selection found. Please try again.").send()
+        return
+
+    platform = pending["platform"]
+    setting = resolve_setting(platform, pending["setting_id"])
+    cl.user_session.set("final_setting_to_change", None)
+
+    if not setting:
+        await cl.Message(content="Could not resolve the pending setting. Please try again.").send()
+        return
+
+    await cl.Message(
+        content=active_platform_banner()
+        + f"Ok — changing **{setting.name}** on `{platform}` to `{suggested_value}`…"
+    ).send()
+
+    # IMPORTANT: pass leaf_hint inferred from user message if available
+    inferred_leaf_hint = cl.user_session.get("inferred_leaf_hint") or setting.name
+
+    result = await cl.make_async(apply_setting_change_sync)(
+        platform,
+        setting,
+        suggested_value,
+        leaf_hint=inferred_leaf_hint
+    )
+    append_change(result)
+
+    if result.get("status") == "success":
+        await cl.Message(
+            content=active_platform_banner()
+            + f"✅ Success.\n\nResult details: {result.get('details')}\n\n"
+            + "You can type another setting to change on this platform, or click **Change platform**.",
+            actions=[change_platform_action()]
+        ).send()
+    else:
+        await cl.Message(
+            content=active_platform_banner()
+            + f"Result: status = `{result.get('status')}`\nDetails: {result.get('details')}",
+            actions=[change_platform_action()]
+        ).send()
+
+def derive_leaf_hint_from_text(user_text: str) -> Optional[str]:
+    """
+    Cheap deterministic leaf-hint extractor from user text.
+    Goal: return a short UI-like phrase when possible.
+    """
+    t = (user_text or "").strip()
+
+    # Common phrasing patterns
+    # e.g. "turn on protected posts" -> "Protect your posts"
+    low = t.lower()
+
+    if "protected" in low and "post" in low:
+        return "Protect your posts"
+    if "private" in low and "account" in low:
+        return "Private account"
+    if "activity status" in low or ("online" in low and "status" in low):
+        return "Active status"
+    if "follow" in low:
+        # this tends to match label text
+        return "Allow people to follow you"
+
+    # If the user quoted a label, prefer that
+    m = re.search(r"['\"]([^'\"]{3,60})['\"]", t)
+    if m:
+        return m.group(1).strip()
+
+    return None
 
 def prefilter_platform_settings(platform: str, user_text: str, k: int = 50) -> List[SettingEntry]:
     """
@@ -784,14 +911,14 @@ def gemini_pick_candidates_for_platform(platform: str, user_text: str, candidate
         return {"setting_ids": [], "target_value": None}
 
     # Limit candidates to reduce token load
-    candidates = candidates[:30]
+    candidates = candidates[:20]
 
     # Build compact candidate list for prompt (truncate descriptions!)
     cand_payload = [
         {
             "setting_id": c.setting_id,
             "name": c.name,
-            "description": (c.description or "")[:160],
+            "description": (c.description or "")[:80],
             "category": c.category or "",
         }
         for c in candidates
@@ -800,16 +927,18 @@ def gemini_pick_candidates_for_platform(platform: str, user_text: str, candidate
     system_instruction = (
         "You map a natural language privacy-setting request to database entries.\n"
         "You MUST choose only from the provided CANDIDATES list.\n\n"
-        "Return STRICT JSON ONLY (no markdown fences, no extra text):\n"
+        "Return STRICT JSON ONLY (NO markdown, NO extra text, NO code fences):\n"
         "{\n"
         '  "setting_ids": ["id1","id2","id3"],\n'
-        '  "target_value": "on"|"off"|null,\n'
+        '  "leaf_hint": string|null,\n'
+        '  "target_value": "on"|"off"|"private"|"public"|null,\n'
         '  "reason": "<short>"\n'
-        "}\n\n"
+        "}\n"
         "Rules:\n"
         "- Choose up to 3 setting_ids from CANDIDATES.\n"
         "- If the user implies enable/disable/private/public, set target_value; else null.\n"
         "- If nothing matches, return setting_ids: []\n"
+        "- Output MUST start with '{' and end with '}'.\n"
     )
 
     prompt = (
@@ -821,41 +950,53 @@ def gemini_pick_candidates_for_platform(platform: str, user_text: str, candidate
     config = types.GenerateContentConfig(
         system_instruction=system_instruction,
         temperature=0.1,
-        max_output_tokens=300,
+        max_output_tokens=220,
     )
 
-    try:
-        resp = client.models.generate_content(
-            model=MODEL_PLAN,
-            contents=[Content(role="user", parts=[Part(text=prompt)])],
-            config=config,
-        )
-    except Exception as e:
-        print("[gemini_pick_candidates] model error:", e)
-        return {"setting_ids": [], "target_value": None}
+    last_err = None
+    for attempt in range(3):
+        try:
+            resp = client.models.generate_content(
+                model=MODEL_PLAN,
+                contents=[Content(role="user", parts=[Part(text=prompt)])],
+                config=config,
+            )
+        except Exception as e:
+            last_err = e
+            print(f"[gemini_pick_candidates] model error attempt {attempt+1}: {e}")
+            time.sleep(1.0 * (attempt + 1))
+            continue
 
-    # Extract text
-    out = ""
-    try:
-        cands = getattr(resp, "candidates", None) or []
-        if cands:
-            content = getattr(cands[0], "content", None)
-            parts = getattr(content, "parts", None) if content is not None else None
-            if parts:
-                for part in parts:
-                    if getattr(part, "text", None):
-                        out += part.text
-        out = (out or "").strip()
-    except Exception as e:
-        print("[gemini_pick_candidates] extraction error:", e)
         out = ""
+        try:
+            cands = getattr(resp, "candidates", None) or []
+            if cands:
+                content = getattr(cands[0], "content", None)
+                parts = getattr(content, "parts", None) if content is not None else None
+                if parts:
+                    for part in parts:
+                        if getattr(part, "text", None):
+                            out += part.text
+            out = (out or "").strip()
+        except Exception as e:
+            last_err = e
+            print(f"[gemini_pick_candidates] extraction error attempt {attempt+1}: {e}")
+            time.sleep(1.0 * (attempt + 1))
+            continue
 
-    if not out:
-        print("[gemini_pick_candidates] empty output from model")
+        if not out:
+            print(f"[gemini_pick_candidates] empty output attempt {attempt+1}; backing off")
+            time.sleep(1.0 * (attempt + 1))
+            last_err = "empty_output"
+            continue
+
+        # If we got text, break out and parse it
+        break
+    else:
+        # exhausted retries
+        print("[gemini_pick_candidates] exhausted retries; last_err:", last_err)
         return {"setting_ids": [], "target_value": None}
 
-    print("DEBUG AT LINE 803")
-    print("[gemini_pick_candidates] raw model output (first 300 chars):", out[:300])
 
     # Robust JSON salvage (handles ```json fences and extra text)
     raw = out.strip()
@@ -890,7 +1031,10 @@ def gemini_pick_candidates_for_platform(platform: str, user_text: str, candidate
         if sid in valid_ids and sid not in cleaned:
             cleaned.append(sid)
 
-    return {"setting_ids": cleaned[:3], "target_value": target_value}
+    leaf_hint = data.get("leaf_hint")
+
+    return {"setting_ids": cleaned[:3], "leaf_hint": leaf_hint, "target_value": target_value}
+
     
 async def handle_platform_scoped_nl(platform: str, user_text: str):
     # Prefilter to top ~50 for prompt size
@@ -900,21 +1044,52 @@ async def handle_platform_scoped_nl(platform: str, user_text: str):
     setting_ids = pick.get("setting_ids") or []
     target_value = pick.get("target_value")
 
+    # If Gemini didn't infer target_value, infer it deterministically from user text
+    if not target_value:
+        target_value = normalize_target_value(user_text)
+
+    inferred_leaf_hint = pick.get("leaf_hint") or derive_leaf_hint_from_text(user_text)
+
+    print("\n[NLP DEBUG]")
+    print("  platform:", platform)
+    print("  user_text:", repr(user_text))
+    print("  gemini_setting_ids:", setting_ids)
+    print("  gemini_leaf_hint:", repr(pick.get("leaf_hint")))
+    print("  derived_leaf_hint:", repr(inferred_leaf_hint))
+    print("  gemini_target_value:", repr(pick.get("target_value")))
+    print("  derived_target_value:", repr(target_value))
+    print("[/NLP DEBUG]\n")
+
+    cl.user_session.set("inferred_leaf_hint", inferred_leaf_hint)
+    cl.user_session.set("inferred_target_value", target_value)
+
+
+    # Store inferred hints per returned setting_id so selection can pick the right one
+    infer_map = {}
+    for sid in setting_ids:
+        infer_map[sid] = {
+            "leaf_hint": inferred_leaf_hint,
+            "target_value": target_value
+        }
+    cl.user_session.set("inferred_by_setting", infer_map)
+
+
     if not setting_ids:
-        # deterministic fallback if Gemini fails/overloaded
+        # Fallback: deterministic candidate search within this platform
         fallback = find_setting_candidates(platform, user_text, limit=3)
         if fallback:
             await present_candidates(platform, user_text, fallback, target_value=None)
             return
 
         await cl.Message(
-            content=(
+            content=active_platform_banner() + (
                 f"I couldn’t find likely matches for **{user_text}** on `{platform}`.\n\n"
-                "Try rephrasing or use the exact label you see in the settings page."
+                "Try rephrasing or use a more specific phrase from the settings page."
             ),
-            actions=[change_platform_action()],
+            actions=[change_platform_action()]
         ).send()
         return
+
 
 
     # Resolve SettingEntry objects in the order Gemini returned
@@ -980,7 +1155,7 @@ async def on_pick_value(action: cl.Action):
         platform,
         setting,
         target_value,
-        leaf_hint=setting.name
+        leaf_hint=cl.user_session.get("inferred_leaf_hint") or setting.name
     )
     append_change(result)
 
@@ -1491,6 +1666,81 @@ def dom_outline(page: Page, max_nodes: int = 300) -> str:
     except Exception:
         return "[]"
 
+def read_control_state_by_label(page: Page, label_text: str) -> Optional[bool]:
+    """
+    Try to infer on/off state deterministically using DOM attributes near a label.
+    Returns True (on), False (off), or None (unknown).
+    """
+    try:
+        label_loc = page.get_by_text(label_text, exact=True)
+        if not label_loc.count():
+            label_loc = page.get_by_text(label_text, exact=False)
+        if not label_loc.count():
+            return None
+
+        label = label_loc.first
+        label_box = label.bounding_box()
+        if not label_box:
+            return None
+
+        label_right = label_box["x"] + label_box["width"]
+        label_center_y = label_box["y"] + label_box["height"] / 2.0
+
+        cand_loc = page.locator(
+            "input[type='checkbox'],[role='switch'],[role='checkbox'],button[aria-pressed],[aria-checked]"
+        )
+        total = cand_loc.count()
+        max_to_check = min(total, 60)
+
+        best = None
+        best_dx = float("inf")
+
+        for i in range(max_to_check):
+            el = cand_loc.nth(i)
+            box = el.bounding_box()
+            if not box:
+                continue
+
+            dx = box["x"] - label_right
+            if dx < 0:
+                continue
+            if not (box["y"] <= label_center_y <= (box["y"] + box["height"])):
+                continue
+            if dx < best_dx:
+                best_dx = dx
+                best = el
+
+        if not best:
+            return None
+
+        # Try common state attributes
+        for attr in ["aria-checked", "aria-pressed"]:
+            try:
+                v = best.get_attribute(attr)
+                if v is None:
+                    continue
+                v = v.strip().lower()
+                if v in ("true", "1", "yes", "on"):
+                    return True
+                if v in ("false", "0", "no", "off"):
+                    return False
+            except Exception:
+                pass
+
+        # Checkbox checked
+        try:
+            tag = best.evaluate("el => el.tagName.toLowerCase()")
+            if tag == "input":
+                t = best.get_attribute("type") or ""
+                if t.lower() == "checkbox":
+                    checked = best.is_checked()
+                    return True if checked else False
+        except Exception:
+            pass
+
+        return None
+    except Exception:
+        return None
 
 def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
     stype = (sel.get("type") or "css").lower()
@@ -2038,6 +2288,25 @@ def apply_setting_change_sync(
             # Small extra pause to let the UI paint fully before we screenshot for Gemini
             page.wait_for_timeout(2000)
 
+            # Deterministic early-exit: if already in desired state, stop immediately.
+            # (Works even when Gemini verification is overloaded.)
+            verify_label = leaf_hint or setting.name
+            desired = target_value.lower().strip()
+
+            if verify_label and desired in ("on", "off", "private", "public"):
+                state = read_control_state_by_label(page, verify_label)
+                if state is not None:
+                    if desired in ("on", "private") and state is True:
+                        result["status"] = "success"
+                        result["details"] = "Already in desired state; no action needed."
+                        result["click_count"] = 0
+                        return result
+                    if desired in ("off", "public") and state is False:
+                        result["status"] = "success"
+                        result["details"] = "Already in desired state; no action needed."
+                        result["click_count"] = 0
+                        return result
+
             click_count = 0
             max_turns = 6
             last_notes = ""
@@ -2551,7 +2820,7 @@ async def on_message(message: cl.Message):
 
         await cl.Message(content=f"Ok — changing **{setting.name}** on `{platform}` to `{target_value}`…").send()
         result = await cl.make_async(apply_setting_change_sync)(
-            platform, setting, target_value, leaf_hint=setting.name
+            platform, setting, target_value, leaf_hint=cl.user_session.get("inferred_leaf_hint") or setting.name
         )
         append_change(result)
         await cl.Message(
