@@ -28,16 +28,18 @@ const categoryIcons = {
   'default': '📁'
 };
 
-// Platform brand colors
 const PLATFORM_COLORS = {
-  facebook: "#1877F2",      // Facebook blue
-  googleaccount: "#34A853", // Google green
-  instagram: "#E4405F",     // Instagram pink
-  linkedin: "#0A66C2",      // LinkedIn blue
-  reddit: "#FF4500",        // Reddit orange
-  zoom: "#2D8CFF",          // Zoom blue
-  unknown: "#9E9E9E"        // Fallback gray
-};
+    facebook: "#1877F2",
+    googleaccount: "#34A853",
+    instagram: "#E4405F",
+    linkedin: "#0A66C2",
+    reddit: "#FF4500",
+    zoom: "#2D8CFF",
+    spotify: "#1DB954",
+    twitterx: "#111111",
+    unknown: "#9E9E9E"
+  };
+  
 
 let currentRoot = null;
 let zoomStack = [];
@@ -108,21 +110,21 @@ function parseCSVData(csvData) {
   
   csvData.forEach(row => {
     try {
-      const platform = row.platform || 'unknown';
+    const platform = (row.platform || "unknown").trim().toLowerCase();
+
       const url = row.url || '';
       const category = row.category || 'unknown';
       
-      // Parse settings field (Python dict string)
-      let settings = [];
-      try {
-        // Replace single quotes with double quotes for JSON parsing
-        const settingsStr = row.settings || '[]';
-        const jsonStr = settingsStr.replace(/'/g, '"');
-        settings = JSON.parse(jsonStr);
-      } catch (e) {
-        console.warn("Failed to parse settings for row:", row);
-        return;
-      }
+    // Parse settings field (Python dict string) - robust conversion
+    let settings = [];
+    try {
+    const settingsStr = row.settings || "[]";
+    settings = parsePythonDictList(settingsStr);
+    } catch (e) {
+      console.warn("Failed to parse settings for row:", e, row);
+      return;
+    }
+
       
       settings.forEach(setting => {
         const settingName = setting.setting || 'Unknown';
@@ -161,6 +163,39 @@ function parseCSVData(csvData) {
   
   return Array.from(settingsMap.values());
 }
+
+function parsePythonDictList(pyStr) {
+    if (!pyStr || pyStr.trim() === "") return [];
+  
+    let s = pyStr.trim();
+  
+    // Common cleanup: CSV sometimes doubles quotes in fields
+    // Turn ""something"" into "something"
+    s = s.replace(/""/g, '"');
+  
+    // Convert Python booleans/None to JSON
+    s = s.replace(/\bNone\b/g, "null")
+         .replace(/\bTrue\b/g, "true")
+         .replace(/\bFalse\b/g, "false");
+  
+    // Convert Python-style quotes to JSON-style quotes carefully:
+    // We can't just replace all ' with " because apostrophes appear in text.
+    // Strategy:
+    // - Replace dict keys: 'key':  -> "key":
+    s = s.replace(/'([A-Za-z0-9_]+)'\s*:/g, '"$1":');
+  
+    // - Replace string values: : 'value'  -> : "value"
+    // This targets only values wrapped in single quotes after a colon.
+    s = s.replace(/:\s*'([^']*)'/g, (match, val) => {
+      // Escape any internal double quotes
+      const escaped = val.replace(/"/g, '\\"');
+      return `: "${escaped}"`;
+    });
+  
+    // Now it should be valid JSON
+    return JSON.parse(s);
+  }
+  
 
 /**
  * Determine state type from state value
