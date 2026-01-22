@@ -46,6 +46,7 @@ let zoomStack = [];
 let currentSizingMetric = 'count';
 let currentStateFilter = 'all';
 let currentSearchQuery = '';
+let currentPlatformFilter = 'all';
 
 // Load and parse CSV
 // Try local path first (if CSV is in same directory), then relative path
@@ -89,6 +90,7 @@ function loadCSV(pathIndex = 0) {
     }
     allData = parseCSVData(data);
     console.log("Parsed data:", allData.length, "unique settings");
+    populatePlatformFilter();
     buildHierarchy();
     renderTreemap();
   }).catch(err => {
@@ -257,6 +259,11 @@ function calculateWeight(stateType, category, metric) {
  */
 function getFilteredData() {
   let filtered = allData;
+  
+  // Apply platform filter
+  if (currentPlatformFilter !== 'all') {
+    filtered = filtered.filter(d => d.platform === currentPlatformFilter);
+  }
   
   // Apply state type filter
   if (currentStateFilter !== 'all') {
@@ -884,6 +891,42 @@ function truncate(text, maxLength) {
 }
 
 /**
+ * Populate platform filter dropdown with unique platforms from data
+ */
+function populatePlatformFilter() {
+  const platformFilterSelect = document.getElementById("platformFilter");
+  if (!platformFilterSelect) {
+    console.warn("platformFilter element not found");
+    return;
+  }
+  
+  // Get unique platforms and sort them
+  const platforms = Array.from(new Set(allData.map(d => d.platform)))
+    .filter(p => p && p !== 'unknown')
+    .sort();
+  
+  // Preserve current selection if it exists
+  const currentSelection = platformFilterSelect.value;
+  
+  // Build options HTML
+  let optionsHTML = '<option value="all">All</option>';
+  platforms.forEach(platform => {
+    const selected = currentSelection === platform ? ' selected' : '';
+    const displayName = platform.charAt(0).toUpperCase() + platform.slice(1);
+    optionsHTML += `<option value="${platform}"${selected}>${displayName}</option>`;
+  });
+  
+  // Update dropdown
+  platformFilterSelect.innerHTML = optionsHTML;
+  
+  // If previous selection doesn't exist anymore, reset to "all"
+  if (currentSelection !== 'all' && !platforms.includes(currentSelection)) {
+    platformFilterSelect.value = 'all';
+    currentPlatformFilter = 'all';
+  }
+}
+
+/**
  * Setup event handlers - called after DOM is ready
  */
 function setupEventHandlers() {
@@ -891,6 +934,19 @@ function setupEventHandlers() {
   const stateTypeFilterSelect = document.getElementById("stateTypeFilter");
   const searchBox = document.getElementById("searchBox");
   const resetViewBtn = document.getElementById("resetView");
+  const platformFilterSelect = document.getElementById("platformFilter");
+  
+  if (platformFilterSelect) {
+    platformFilterSelect.addEventListener("change", function() {
+      currentPlatformFilter = this.value;
+      currentRoot = null;
+      zoomStack = [];
+      buildHierarchy();
+      renderTreemap();
+    });
+  } else {
+    console.warn("platformFilter element not found");
+  }
   
   if (sizingMetricSelect) {
     sizingMetricSelect.addEventListener("change", function() {
@@ -927,8 +983,12 @@ function setupEventHandlers() {
       currentRoot = null;
       zoomStack = [];
       currentSearchQuery = '';
+      currentPlatformFilter = 'all';
       if (searchBox) {
         searchBox.value = "";
+      }
+      if (platformFilterSelect) {
+        platformFilterSelect.value = 'all';
       }
       buildHierarchy();
       renderTreemap();
