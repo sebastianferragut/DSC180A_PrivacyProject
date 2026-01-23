@@ -1,2939 +1,680 @@
 [
   {
     "status": "success",
-    "total_images": 4,
-    "platform": "chatgbt",
+    "total_images": 9,
+    "platform": "Facebook",
     "all_settings": [
-      {
-        "setting": "Improve the model for everyone",
-        "description": "This setting likely controls whether your data is used to train and improve the service's model for all users.",
-        "state": "On",
-        "image_path": "screenshots\\chatgbt\\Profile-icon_Settings_Data-controls.png"
-      },
-      {
-        "setting": "Shared links",
-        "description": "An action to manage links that have been shared.",
-        "state": "Action: Manage",
-        "image_path": "screenshots\\chatgbt\\Profile-icon_Settings_Data-controls.png"
-      },
-      {
-        "setting": "Archived chats",
-        "description": "An action to manage chats that have been archived.",
-        "state": "Action: Manage",
-        "image_path": "screenshots\\chatgbt\\Profile-icon_Settings_Data-controls.png"
-      },
-      {
-        "setting": "Archive all chats",
-        "description": "An action to archive all chat history.",
-        "state": "Action: Archive all",
-        "image_path": "screenshots\\chatgbt\\Profile-icon_Settings_Data-controls.png"
-      },
-      {
-        "setting": "Delete all chats",
-        "description": "An action to permanently delete all chat history.",
-        "state": "Action: Delete all",
-        "image_path": "screenshots\\chatgbt\\Profile-icon_Settings_Data-controls.png"
-      },
-      {
-        "setting": "Export data",
-        "description": "An action to export a copy of your data.",
-        "state": "Action: Export",
-        "image_path": "screenshots\\chatgbt\\Profile-icon_Settings_Data-controls.png"
-      },
-      {
-        "setting": "Nickname",
-        "description": "What should ChatGPT call you?",
-        "state": "not set",
-        "image_path": "screenshots\\chatgbt\\Profile-icon_Settings_Personalization_1.png"
-      },
-      {
-        "setting": "Occupation",
-        "description": "A field to provide your occupation.",
-        "state": "Interior designer",
-        "image_path": "screenshots\\chatgbt\\Profile-icon_Settings_Personalization_1.png"
-      },
-      {
-        "setting": "More about you",
-        "description": "Interests, values, or preferences to keep in mind",
-        "state": "not set",
-        "image_path": "screenshots\\chatgbt\\Profile-icon_Settings_Personalization_1.png"
-      },
-      {
-        "setting": "Reference saved memories",
-        "description": "Let ChatGPT save and use memories when responding.",
-        "state": "enabled",
-        "image_path": "screenshots\\chatgbt\\Profile-icon_Settings_Personalization_1.png"
-      },
-      {
-        "setting": "Reference chat history",
-        "description": "Let ChatGPT reference recent conversations when responding.",
-        "state": "enabled",
-        "image_path": "screenshots\\chatgbt\\Profile-icon_Settings_Personalization_1.png"
-      },
-      {
-        "setting": "Web search",
-        "description": "Let ChatGPT automatically search the web for answers.",
-        "state": "enabled",
-        "image_path": "screenshots\\chatgbt\\Profile-icon_Settings_Personalization_Advanced.png"
-      },
-      {
-        "setting": "Code",
-        "description": "Let ChatGPT execute code using Code Interpreter.",
-        "state": "enabled",
-        "image_path": "screenshots\\chatgbt\\Profile-icon_Settings_Personalization_Advanced.png"
-      },
-      {
-        "setting": "Canvas",
-        "description": "Collaborate with ChatGPT on text and code.",
-        "state": "enabled",
-        "image_path": "screenshots\\chatgbt\\Profile-icon_Settings_Personalization_Advanced.png"
-      },
-      {
-        "setting": "ChatGPT Voice",
-        "description": "Enable voice mode in ChatGPT.",
-        "state": "enabled",
-        "image_path": "screenshots\\chatgbt\\Profile-icon_Settings_Personalization_Advanced.png"
-      },
-      {
-        "setting": "Separate mode",
-        "description": "Enable ChatGPT Voice in full screen mode without real time transcripts and visuals.",
-        "state": "disabled",
-        "image_path": "screenshots\\chatgbt\\Profile-icon_Settings_Personalization_Advanced.png"
-      },
-      {
-        "setting": "Advanced voice",
-        "description": "Have more natural conversations in voice mode.",
-        "state": "enabled",
-        "image_path": "screenshots\\chatgbt\\Profile-icon_Settings_Personalization_Advanced.png"
-      },
-      {
-        "setting": "Connector search",
-        "description": "Let ChatGPT automatically search connected sources for answers.",
-        "state": "disabled",
-        "image_path": "screenshots\\chatgbt\\Profile-icon_Settings_Personalization_Advanced.png"
-      },
-      {
-        "setting": "Authenticator App",
-        "description": "Use one-time codes from an authenticator app.",
-        "state": "disabled",
-        "image_path": "screenshots\\chatgbt\\Profile-icon_Settings_Security.png"
-      },
-      {
-        "setting": "Log out of this device",
-        "description": "An action to log out of the current device.",
-        "state": "action button",
-        "image_path": "screenshots\\chatgbt\\Profile-icon_Settings_Security.png"
-      },
-      {
-        "setting": "Log out of all devices",
-        "description": "Log out of all active sessions across all devices, including your current session. It may take up to 30 minutes for other devices to be logged out.",
-        "state": "action button",
-        "image_path": "screenshots\\chatgbt\\Profile-icon_Settings_Security.png"
-      }
-    ],
-    "summary": {
-      "total_settings_extracted": 21,
-      "successful_extractions": 4,
-      "failed_extractions": 0,
-      "failed image paths": [],
-      "average_settings_per_image": 5.25
-    },
-    "timestamp": "2025-11-25T03:57:43.907475"
-  },
-  {
-    "status": "success",
-    "total_images": 5,
-    "platform": "facebook",
-    "all_settings": [
-      {
-        "setting": "Change password",
-        "description": "Manage your passwords, login preferences and recovery methods. This option allows you to change your password.",
-        "state": "navigation",
-        "image_path": "screenshots\\facebook\\Password-and-security.png"
-      },
-      {
-        "setting": "Two-factor authentication",
-        "description": "Manage your passwords, login preferences and recovery methods. This option allows you to set up two-factor authentication.",
-        "state": "navigation",
-        "image_path": "screenshots\\facebook\\Password-and-security.png"
-      },
-      {
-        "setting": "Saved login",
-        "description": "Manage your passwords, login preferences and recovery methods. This option allows you to manage saved login information.",
-        "state": "navigation",
-        "image_path": "screenshots\\facebook\\Password-and-security.png"
-      },
-      {
-        "setting": "Passkey",
-        "description": "Manage your passwords, login preferences and recovery methods. This option allows you to manage passkeys.",
-        "state": "navigation",
-        "image_path": "screenshots\\facebook\\Password-and-security.png"
-      },
-      {
-        "setting": "Where you're logged in",
-        "description": "Review security issues by running checks across apps, devices and emails sent. This option shows where your account is currently logged in.",
-        "state": "navigation",
-        "image_path": "screenshots\\facebook\\Password-and-security.png"
-      },
-      {
-        "setting": "Login alerts",
-        "description": "Review security issues by running checks across apps, devices and emails sent. This option allows you to manage login alerts.",
-        "state": "navigation",
-        "image_path": "screenshots\\facebook\\Password-and-security.png"
-      },
-      {
-        "setting": "Recent emails",
-        "description": "Review security issues by running checks across apps, devices and emails sent. This option shows recent security-related emails from Meta.",
-        "state": "navigation",
-        "image_path": "screenshots\\facebook\\Password-and-security.png"
-      },
-      {
-        "setting": "Security Checkup",
-        "description": "Review security issues by running checks across apps, devices and emails sent. This option initiates a security checkup for your account.",
-        "state": "navigation",
-        "image_path": "screenshots\\facebook\\Password-and-security.png"
-      },
       {
         "setting": "Contact info",
-        "description": "Manage your contact information. Meta uses this information to verify your identity and to keep our community safe.",
+        "description": "Meta uses this information to verify your identity and to keep our community safe. You decide what personal details you make visible to others.",
         "state": "zoomaitester10@gmail.com",
-        "image_path": "screenshots\\facebook\\Personal-details.png"
+        "image_path": "screenshots\\Facebook\\Personal-details.png"
       },
       {
         "setting": "Birthday",
-        "description": "Manage your date of birth. Meta uses this information to verify your identity and to keep our community safe.",
+        "description": "Meta uses this information to verify your identity and to keep our community safe. You decide what personal details you make visible to others.",
         "state": "January 10, 2000",
-        "image_path": "screenshots\\facebook\\Personal-details.png"
+        "image_path": "screenshots\\Facebook\\Personal-details.png"
       },
       {
         "setting": "Identity confirmation",
-        "description": "Confirm your identity to help keep your account secure.",
+        "description": "Meta uses this information to verify your identity and to keep our community safe.",
         "state": "navigation link",
-        "image_path": "screenshots\\facebook\\Personal-details.png"
+        "image_path": "screenshots\\Facebook\\Personal-details.png"
       },
       {
         "setting": "Account ownership and control",
         "description": "Manage your data, modify your legacy contact, deactivate or delete your accounts and profiles.",
         "state": "navigation link",
-        "image_path": "screenshots\\facebook\\Personal-details.png"
+        "image_path": "screenshots\\Facebook\\Personal-details.png"
       },
       {
-        "setting": "Memorialization",
-        "description": "Decide what happens to your main Facebook profile after you pass away.",
-        "state": "navigational",
-        "image_path": "screenshots\\facebook\\Personal-details_Account-ownership-and-control.png"
+        "setting": "Create export",
+        "description": "Allows the user to export a copy of their information to an external service or their device. The available information includes content and info you've shared, your activity, and info the service collects. The export does not include information that someone else shared, such as another person's photos that you're tagged in.",
+        "state": "action_button",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 141747.png"
       },
       {
-        "setting": "Deactivation or deletion",
-        "description": "Temporarily deactivate or permanently delete your accounts and profiles",
-        "state": "navigational",
-        "image_path": "screenshots\\facebook\\Personal-details_Account-ownership-and-control.png"
+        "setting": "Recent activity",
+        "description": "View recent activity from businesses and organizations that share information with Meta, such as zillow.com, lithub.com, and more.",
+        "state": "navigational link",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 141930.png"
       },
       {
-        "setting": "Contact info",
-        "description": "Manages contact information. Meta uses this information to verify your identity and to keep our community safe. You decide what personal details you make visible to others.",
-        "state": "zoomatester10@gmail.com",
-        "image_path": "screenshots\\facebook\\Personal-details_Account-ownership-and-control.png"
+        "setting": "Disconnect specific activity",
+        "description": "Allows the user to disconnect specific activity that businesses have shared with Meta.",
+        "state": "navigational link",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 141930.png"
       },
       {
-        "setting": "Birthday",
-        "description": "Manages birthday information. Meta uses this information to verify your identity and to keep our community safe. You decide what personal details you make visible to others.",
-        "state": "navigational",
-        "image_path": "screenshots\\facebook\\Personal-details_Account-ownership-and-control.png"
+        "setting": "Clear previous activity",
+        "description": "Allows the user to clear their history of activity off Meta technologies.",
+        "state": "navigational link",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 141930.png"
       },
       {
-        "setting": "Identity confirmation",
-        "description": "Confirm your identity on Meta platforms.",
-        "state": "navigational",
-        "image_path": "screenshots\\facebook\\Personal-details_Account-ownership-and-control.png"
+        "setting": "Manage future activity",
+        "description": "Allows the user to control or disconnect future information that businesses send to Meta.",
+        "state": "navigational link",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 141930.png"
       },
       {
-        "setting": "Account ownership and control",
-        "description": "Manage your data, modify your legacy contact, delete your accounts and profiles.",
-        "state": "navigational",
-        "image_path": "screenshots\\facebook\\Personal-details_Account-ownership-and-control.png"
-      },
-      {
-        "setting": "Contact info",
-        "description": "Manage the contact information associated with your Meta accounts.",
-        "state": "zoomatester10@gmail.com",
-        "image_path": "screenshots\\facebook\\personal_details_20251112T172305Z.png"
-      },
-      {
-        "setting": "Birthday",
-        "description": "Manage the birthday information associated with your Meta accounts.",
-        "state": "Not visible",
-        "image_path": "screenshots\\facebook\\personal_details_20251112T172305Z.png"
-      },
-      {
-        "setting": "Identity confirmation",
-        "description": "Confirm your identity on Facebook.",
-        "state": "Not specified",
-        "image_path": "screenshots\\facebook\\personal_details_20251112T172305Z.png"
-      },
-      {
-        "setting": "Account ownership and control",
-        "description": "Manage your data, modify your legacy contact, delete your accounts and profiles.",
-        "state": "Selected",
-        "image_path": "screenshots\\facebook\\personal_details_20251112T172305Z.png"
-      },
-      {
-        "setting": "Memorialization",
-        "description": "Decide what happens to your main Facebook profile after you pass away.",
-        "state": "Not specified",
-        "image_path": "screenshots\\facebook\\personal_details_20251112T172305Z.png"
-      },
-      {
-        "setting": "Deactivation or deletion",
-        "description": "Temporarily deactivate or permanently delete your accounts and profiles.",
-        "state": "Not specified",
-        "image_path": "screenshots\\facebook\\personal_details_20251112T172305Z.png"
-      },
-      {
-        "setting": "Export your information",
-        "description": "Allows you to download or transfer a copy of your information. Part of viewing, exporting your information and activity on Meta's apps.",
-        "state": "navigation_link",
-        "image_path": "screenshots\\facebook\\Your-information-and-permissions.png"
-      },
-      {
-        "setting": "Access your information",
-        "description": "Allows you to view your information and activity on Meta's apps.",
-        "state": "navigation_link",
-        "image_path": "screenshots\\facebook\\Your-information-and-permissions.png"
-      },
-      {
-        "setting": "Search history",
-        "description": "Allows you to view and manage your search history on Meta's apps.",
-        "state": "navigation_link",
-        "image_path": "screenshots\\facebook\\Your-information-and-permissions.png"
-      },
-      {
-        "setting": "Your activity off Meta technologies",
-        "description": "Control what information Meta technologies can use to influence your experiences.",
-        "state": "navigation_link",
-        "image_path": "screenshots\\facebook\\Your-information-and-permissions.png"
-      },
-      {
-        "setting": "Specific ad partners",
-        "description": "Control what information Meta technologies can use to influence your experiences, specifically related to ad partners.",
-        "state": "navigation_link",
-        "image_path": "screenshots\\facebook\\Your-information-and-permissions.png"
-      }
-    ],
-    "summary": {
-      "total_settings_extracted": 29,
-      "successful_extractions": 5,
-      "failed_extractions": 0,
-      "failed image paths": [],
-      "average_settings_per_image": 5.8
-    },
-    "timestamp": "2025-11-25T03:59:03.917047"
-  },
-  {
-    "status": "success",
-    "total_images": 5,
-    "platform": "gmail",
-    "all_settings": [
-      {
-        "setting": "Web & App Activity",
-        "description": "Choose whether to save the things you do and places you go to get more relevant results, personalized maps, recommendations, and more.",
-        "state": "On",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_1.png"
-      },
-      {
-        "setting": "Timeline",
-        "description": "Choose whether to save the things you do and places you go to get more relevant results, personalized maps, recommendations, and more.",
-        "state": "Paused",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_1.png"
-      },
-      {
-        "setting": "YouTube History",
-        "description": "Choose whether to save the things you do and places you go to get more relevant results, personalized maps, recommendations, and more.",
-        "state": "On",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_1.png"
-      },
-      {
-        "setting": "My Ad Center",
-        "description": "Personalized ads on Google",
-        "state": "On",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_2.png"
-      },
-      {
-        "setting": "Partner ads settings",
-        "description": "Options for ads on sites that partner with Google",
-        "state": "Not applicable",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_2.png"
-      },
-      {
-        "setting": "Search personalization",
-        "description": "Choose whether Search can show you personalized experiences based on data saved in your Google account",
-        "state": "On",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_2.png"
-      },
-      {
-        "setting": "Manage Google Fit privacy",
-        "description": "Manage Fit data saved in your Google Account and see privacy settings for connected devices and services",
-        "state": "Not applicable",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_2.png"
-      },
-      {
-        "setting": "Profile",
-        "description": "Your info and who can see it",
-        "state": "Not applicable",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_2.png"
-      },
-      {
-        "setting": "Location Sharing",
-        "description": "Controls how your location information is shared with others through Google services.",
-        "state": "Not sharing with anyone",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_2.png"
-      },
-      {
-        "setting": "Content saved from Google services",
-        "description": "A summary of your services and data",
-        "state": "navigates to settings page",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_3.png"
-      },
-      {
-        "setting": "Third-party apps & services",
-        "description": "Keep track of your connections with third-party apps and services",
-        "state": "navigates to settings page",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_3.png"
-      },
-      {
-        "setting": "Manage email preferences",
-        "description": "See and unsubscribe from emails you get from Google services, such as newsletters, product tips, and more",
-        "state": "navigates to settings page",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_3.png"
-      },
-      {
-        "setting": "Voice Match",
-        "description": "Lets Google recognize your voice across Google products",
-        "state": "Off",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_3.png"
-      },
-      {
-        "setting": "Download your data",
-        "description": "Make a copy of your data to back it up",
-        "state": "navigates to settings page",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_3.png"
-      },
-      {
-        "setting": "Delete a Google service",
-        "description": "Remove a service you no longer use",
-        "state": "navigates to settings page",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_3.png"
-      },
-      {
-        "setting": "Make a plan for your digital legacy",
-        "description": "Plan what happens to your data. Other options to manage your data, like choosing what happens to it when your account becomes inactive.",
-        "state": "not applicable",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_4.png"
-      },
-      {
-        "setting": "Delete your Google Account",
-        "description": "Delete your entire account and data.",
-        "state": "not applicable",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_4.png"
-      },
-      {
-        "setting": "Search Google Account",
-        "description": "A link to search for settings within your Google Account.",
-        "state": "not applicable",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_4.png"
-      },
-      {
-        "setting": "See help options",
-        "description": "A link to access help options for your Google Account.",
-        "state": "not applicable",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_4.png"
-      },
-      {
-        "setting": "Send feedback",
-        "description": "A link to send feedback about your Google Account settings.",
-        "state": "not applicable",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_Data-&-Privacy_4.png"
-      },
-      {
-        "setting": "Contact info saved from interactions",
-        "description": "Saves contact info for people you interact with across Google services.",
-        "state": "On",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_People-&-sharing.png"
-      },
-      {
-        "setting": "Contact info from your devices",
-        "description": "Saves contact info from your signed-in devices to your Google Account.",
-        "state": "Off",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_People-&-sharing.png"
-      },
-      {
-        "setting": "Blocked",
-        "description": "Manage users you have blocked.",
-        "state": "No blocked users",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_People-&-sharing.png"
-      },
-      {
-        "setting": "Location sharing",
-        "description": "Control if you share your real-time location with anyone on Google.",
-        "state": "You aren't sharing your real-time location with anyone on Google",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_People-&-sharing.png"
-      },
-      {
-        "setting": "About me",
-        "description": "What personal info you make visible to others across Google services.",
-        "state": "Not specified",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_People-&-sharing.png"
-      },
-      {
-        "setting": "Business personalization",
-        "description": "You can add your business and products to Google and get recommendations that will help you connect with customers.",
-        "state": "Off",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_People-&-sharing.png"
-      },
-      {
-        "setting": "Shared endorsements in ads",
-        "description": "You can choose to show your name, profile photo, and activity in shared endorsements in ads to help others find things you're interested in.",
-        "state": "Off",
-        "image_path": "screenshots\\gmail\\Gmail-icon_Manage-your-Google-Account_People-&-sharing.png"
-      }
-    ],
-    "summary": {
-      "total_settings_extracted": 27,
-      "successful_extractions": 5,
-      "failed_extractions": 0,
-      "failed image paths": [],
-      "average_settings_per_image": 5.4
-    },
-    "timestamp": "2025-11-25T04:01:07.076089"
-  },
-  {
-    "status": "success",
-    "total_images": 12,
-    "platform": "instagram",
-    "all_settings": [
-      {
-        "setting": "Private account",
-        "description": "When your account is public, your profile and posts can be seen by anyone, on or off Instagram, even if they don't have an Instagram account. When your account is private, only the followers you approve can see what you share, including your photos or videos on hashtag and location pages, and your followers and following lists.",
-        "state": "disabled",
-        "image_path": "screenshots\\instagram\\Settings_Account-Privacy.png"
-      },
-      {
-        "setting": "Save story to archive",
-        "description": "Automatically save photos and videos to your archive so you don't have to save them to your phone. Only you can see your archive.",
-        "state": "disabled",
-        "image_path": "screenshots\\instagram\\Settings_Archiving-and-downloading.png"
-      },
-      {
-        "setting": "Allow comments from",
-        "description": "Controls which group of people can comment on your posts. Options include Everyone, People you follow, Your followers, People you follow and your followers, or Off.",
-        "state": "Everyone",
-        "image_path": "screenshots\\instagram\\Settings_Comments.png"
-      },
-      {
-        "setting": "Allow GIF comments",
-        "description": "People will be able to comment GIFs on your posts and reels.",
-        "state": "enabled",
-        "image_path": "screenshots\\instagram\\Settings_Comments.png"
-      },
-      {
-        "setting": "Personal details",
-        "description": "Manage your connected experiences and account settings across Meta technologies, specifically personal details.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Content-Prefences.png"
-      },
-      {
-        "setting": "Password and security",
-        "description": "Manage your connected experiences and account settings across Meta technologies, specifically password and security.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Content-Prefences.png"
-      },
-      {
-        "setting": "Ad preferences",
-        "description": "Manage your connected experiences and account settings across Meta technologies, specifically ad preferences.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Content-Prefences.png"
-      },
-      {
-        "setting": "Account privacy",
-        "description": "Controls who can see your content.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Content-Prefences.png"
-      },
-      {
-        "setting": "Close Friends",
-        "description": "Manage your list of close friends.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Content-Prefences.png"
-      },
-      {
-        "setting": "Blocked",
-        "description": "Manage accounts you have blocked.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Content-Prefences.png"
-      },
-      {
-        "setting": "Story and location",
-        "description": "Controls settings for your story and location.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Content-Prefences.png"
-      },
-      {
-        "setting": "Messages and story replies",
-        "description": "Controls how others can interact with you via messages and story replies.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Content-Prefences.png"
-      },
-      {
-        "setting": "Tags and mentions",
-        "description": "Controls how others can interact with you via tags and mentions.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Content-Prefences.png"
-      },
-      {
-        "setting": "Comments",
-        "description": "Controls how others can interact with you via comments.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Content-Prefences.png"
-      },
-      {
-        "setting": "Sensitive content",
-        "description": "Controls the amount of sensitive content you see from accounts you don't follow.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Content-Prefences.png"
-      },
-      {
-        "setting": "Hide comments",
-        "description": "Comments that are potentially offensive, misleading or spam will be moved to a separate section. Anyone can see these comments, and you can unhide comments on your own posts at anytime.",
-        "state": "enabled",
-        "image_path": "screenshots\\instagram\\Settings_Hidden-Words.png"
-      },
-      {
-        "setting": "Advanced comment filtering",
-        "description": "Even more comments that meet our criteria will automatically be hidden.",
-        "state": "disabled",
-        "image_path": "screenshots\\instagram\\Settings_Hidden-Words.png"
-      },
-      {
-        "setting": "Hide message requests",
-        "description": "Message requests that may be offensive, spam or scams will be moved to the Hidden requests folder. We'll also filter notifications for these messages. This feature is not currently supported on web or Meta Quest.",
-        "state": "disabled",
-        "image_path": "screenshots\\instagram\\Settings_Hidden-Words.png"
-      },
-      {
-        "setting": "Manage custom words and phrases",
-        "description": "Navigate to a page to manage a custom list of words, phrases, or emojis to hide.",
-        "state": "navigational",
-        "image_path": "screenshots\\instagram\\Settings_Hidden-Words.png"
-      },
-      {
-        "setting": "Hide comments",
-        "description": "Comments that contain words, phrases or emojis on your custom list and similar misspellings will be filtered out so they are only visible to the authors.",
-        "state": "disabled",
-        "image_path": "screenshots\\instagram\\Settings_Hidden-Words.png"
-      },
-      {
-        "setting": "Hide message requests",
-        "description": "Message requests that contain words from your list will be hidden. This feature is not currently supported on web or Meta Quest.",
-        "state": "disabled",
-        "image_path": "screenshots\\instagram\\Settings_Hidden-Words.png"
-      },
-      {
-        "setting": "Hide story and live from",
-        "description": "Allows you to select people to hide your story and live videos from.",
-        "state": "navigates to another screen",
-        "image_path": "screenshots\\instagram\\Settings_Hide-story-and-live.png"
-      },
-      {
-        "setting": "Account privacy",
-        "description": "Controls who can see your content, such as making your account private.",
-        "state": "navigates to another screen",
-        "image_path": "screenshots\\instagram\\Settings_Hide-story-and-live.png"
-      },
-      {
-        "setting": "Close Friends",
-        "description": "Manage your list of close friends for sharing stories.",
-        "state": "navigates to another screen",
-        "image_path": "screenshots\\instagram\\Settings_Hide-story-and-live.png"
-      },
-      {
-        "setting": "Blocked",
-        "description": "View and manage accounts you have blocked.",
-        "state": "navigates to another screen",
-        "image_path": "screenshots\\instagram\\Settings_Hide-story-and-live.png"
-      },
-      {
-        "setting": "Story and location",
-        "description": "Controls settings related to your stories and location sharing.",
-        "state": "selected",
-        "image_path": "screenshots\\instagram\\Settings_Hide-story-and-live.png"
-      },
-      {
-        "setting": "Messages and story replies",
-        "description": "Controls who can send you messages and reply to your stories.",
-        "state": "navigates to another screen",
-        "image_path": "screenshots\\instagram\\Settings_Hide-story-and-live.png"
-      },
-      {
-        "setting": "Tags and mentions",
-        "description": "Controls who can tag you in photos or mention you in comments and captions.",
-        "state": "navigates to another screen",
-        "image_path": "screenshots\\instagram\\Settings_Hide-story-and-live.png"
-      },
-      {
-        "setting": "Comments",
-        "description": "Controls who can comment on your posts and other comment-related settings.",
-        "state": "navigates to another screen",
-        "image_path": "screenshots\\instagram\\Settings_Hide-story-and-live.png"
-      },
-      {
-        "setting": "Message controls",
-        "description": "Navigates to a page to control who can send you message requests.",
-        "state": "navigates to another page",
-        "image_path": "screenshots\\instagram\\Settings_Messages-and-story-replies.png"
-      },
-      {
-        "setting": "Story replies",
-        "description": "Navigates to a page to control who can reply to your stories.",
-        "state": "navigates to another page",
-        "image_path": "screenshots\\instagram\\Settings_Messages-and-story-replies.png"
-      },
-      {
-        "setting": "Show activity status",
-        "description": "Navigates to a page to control whether others can see when you're online.",
-        "state": "navigates to another page",
-        "image_path": "screenshots\\instagram\\Settings_Messages-and-story-replies.png"
-      },
-      {
-        "setting": "Account privacy",
-        "description": "Navigates to a page to control who can see your content (e.g., set account to private).",
-        "state": "navigates to another page",
-        "image_path": "screenshots\\instagram\\Settings_Messages-and-story-replies.png"
-      },
-      {
-        "setting": "Close Friends",
-        "description": "Navigates to a page to manage your list of close friends for sharing content.",
-        "state": "navigates to another page",
-        "image_path": "screenshots\\instagram\\Settings_Messages-and-story-replies.png"
-      },
-      {
-        "setting": "Blocked",
-        "description": "Navigates to a page to manage accounts you have blocked.",
-        "state": "navigates to another page",
-        "image_path": "screenshots\\instagram\\Settings_Messages-and-story-replies.png"
-      },
-      {
-        "setting": "Story and location",
-        "description": "Navigates to a page to manage settings for stories and location.",
-        "state": "navigates to another page",
-        "image_path": "screenshots\\instagram\\Settings_Messages-and-story-replies.png"
-      },
-      {
-        "setting": "Tags and mentions",
-        "description": "Navigates to a page to control who can tag or mention you.",
-        "state": "navigates to another page",
-        "image_path": "screenshots\\instagram\\Settings_Messages-and-story-replies.png"
-      },
-      {
-        "setting": "Comments",
-        "description": "Navigates to a page to control who can comment on your posts.",
-        "state": "navigates to another page",
-        "image_path": "screenshots\\instagram\\Settings_Messages-and-story-replies.png"
-      },
-      {
-        "setting": "Personal details",
-        "description": "Manage personal details within Meta Accounts Center.",
-        "state": "not applicable",
-        "image_path": "screenshots\\instagram\\Settings_Muted-accounts.png"
-      },
-      {
-        "setting": "Password and security",
-        "description": "Manage password and security settings within Meta Accounts Center.",
-        "state": "not applicable",
-        "image_path": "screenshots\\instagram\\Settings_Muted-accounts.png"
-      },
-      {
-        "setting": "Ad preferences",
-        "description": "Manage ad preferences within Meta Accounts Center.",
-        "state": "not applicable",
-        "image_path": "screenshots\\instagram\\Settings_Muted-accounts.png"
-      },
-      {
-        "setting": "See more in Accounts Center",
-        "description": "Navigate to the full Meta Accounts Center to manage connected experiences and account settings across Meta technologies.",
-        "state": "not applicable",
-        "image_path": "screenshots\\instagram\\Settings_Muted-accounts.png"
-      },
-      {
-        "setting": "Edit profile",
-        "description": "A setting under 'How you use Instagram' to edit your profile.",
-        "state": "not applicable",
-        "image_path": "screenshots\\instagram\\Settings_Muted-accounts.png"
-      },
-      {
-        "setting": "Notifications",
-        "description": "A setting under 'How you use Instagram' to manage notifications.",
-        "state": "not applicable",
-        "image_path": "screenshots\\instagram\\Settings_Muted-accounts.png"
-      },
-      {
-        "setting": "Account privacy",
-        "description": "A setting under 'Who can see your content' to manage account privacy.",
-        "state": "not applicable",
-        "image_path": "screenshots\\instagram\\Settings_Muted-accounts.png"
-      },
-      {
-        "setting": "Close Friends",
-        "description": "A setting under 'Who can see your content' to manage your Close Friends list.",
-        "state": "not applicable",
-        "image_path": "screenshots\\instagram\\Settings_Muted-accounts.png"
-      },
-      {
-        "setting": "Blocked",
-        "description": "A setting under 'Who can see your content' to manage blocked accounts.",
-        "state": "not applicable",
-        "image_path": "screenshots\\instagram\\Settings_Muted-accounts.png"
-      },
-      {
-        "setting": "Story and location",
-        "description": "A setting under 'Who can see your content' to manage story and location sharing.",
-        "state": "not applicable",
-        "image_path": "screenshots\\instagram\\Settings_Muted-accounts.png"
-      },
-      {
-        "setting": "Messages and story replies",
-        "description": "A setting under 'How others can interact with you' to manage who can send you messages and reply to your stories.",
-        "state": "not applicable",
-        "image_path": "screenshots\\instagram\\Settings_Muted-accounts.png"
-      },
-      {
-        "setting": "Tags and mentions",
-        "description": "A setting under 'How others can interact with you' to manage who can tag and mention you.",
-        "state": "not applicable",
-        "image_path": "screenshots\\instagram\\Settings_Muted-accounts.png"
-      },
-      {
-        "setting": "Comments",
-        "description": "A setting under 'How others can interact with you' to manage who can comment on your posts.",
-        "state": "not applicable",
-        "image_path": "screenshots\\instagram\\Settings_Muted-accounts.png"
-      },
-      {
-        "setting": "Muted accounts",
-        "description": "View and manage accounts you have muted.",
-        "state": "You haven't muted anyone.",
-        "image_path": "screenshots\\instagram\\Settings_Muted-accounts.png"
-      },
-      {
-        "setting": "Language",
-        "description": "Select the display language for the application.",
-        "state": "English",
-        "image_path": "screenshots\\instagram\\Settings_Muted-accounts.png"
-      },
-      {
-        "setting": "Accounts Center",
-        "description": "Manage your connected experiences and account settings across Meta technologies. Includes Personal details, Password and security, and Ad preferences.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Restricted-accounts.png"
-      },
-      {
-        "setting": "Account privacy",
-        "description": "A link to settings that control who can see your content.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Restricted-accounts.png"
-      },
-      {
-        "setting": "Close Friends",
-        "description": "A link to manage your Close Friends list.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Restricted-accounts.png"
-      },
-      {
-        "setting": "Blocked",
-        "description": "A link to manage blocked accounts.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Restricted-accounts.png"
-      },
-      {
-        "setting": "Story and location",
-        "description": "A link to manage story and location settings.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Restricted-accounts.png"
-      },
-      {
-        "setting": "Messages and story replies",
-        "description": "A link to settings that control how others can interact with you via messages and story replies.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Restricted-accounts.png"
-      },
-      {
-        "setting": "Tags and mentions",
-        "description": "A link to settings that control who can tag and mention you.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Restricted-accounts.png"
-      },
-      {
-        "setting": "Comments",
-        "description": "A link to settings that control comments on your posts.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Restricted-accounts.png"
-      },
-      {
-        "setting": "Restricted accounts",
-        "description": "Protect yourself from unwanted interactions without having to block or unfollow people you know. You can restrict them anytime from their profiles.",
-        "state": "You haven't restricted anyone.",
-        "image_path": "screenshots\\instagram\\Settings_Restricted-accounts.png"
-      },
-      {
-        "setting": "Story shares",
-        "description": "When this is on, people can send your stories in messages.",
-        "state": "enabled",
-        "image_path": "screenshots\\instagram\\Settings_Sharing-and-reuse.png"
-      },
-      {
-        "setting": "Posts and reels to stories",
-        "description": "Allow people to share your posts and reels to stories.",
-        "state": "enabled",
-        "image_path": "screenshots\\instagram\\Settings_Sharing-and-reuse.png"
-      },
-      {
-        "setting": "Reposts on posts and reels",
-        "description": "Allow people to repost your posts and reels.",
-        "state": "enabled",
-        "image_path": "screenshots\\instagram\\Settings_Sharing-and-reuse.png"
-      },
-      {
-        "setting": "Website embeds",
-        "description": "When this is on, your public posts or profile can be shown outside of Instagram, including articles and blogs.",
-        "state": "On",
-        "image_path": "screenshots\\instagram\\Settings_Sharing-and-reuse.png"
-      },
-      {
-        "setting": "Who can tag you",
-        "description": "Choose who can tag you in their photos and videos. When people try to tag you, they'll see if you don't allow tags from everyone. You currently have Limited interactions turned on, which means some people can't tag or mention you.",
-        "state": "Allow tags from everyone",
-        "image_path": "screenshots\\instagram\\Settings_Tags-and-mentions.png"
-      },
-      {
-        "setting": "Manually approve tags",
-        "description": "A navigation link to a page for manually approving tags.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Tags-and-mentions.png"
-      },
-      {
-        "setting": "Who can @mention you",
-        "description": "Choose who can @mention you to link your account in their stories, notes, comments, live videos, bio, and captions. When people try to @mention you, they'll see if you don't allow @mentions.",
-        "state": "Allow mentions from everyone",
-        "image_path": "screenshots\\instagram\\Settings_Tags-and-mentions.png"
-      },
-      {
-        "setting": "Accounts Center",
-        "description": "Manage your connected experiences and account settings across Meta technologies. Includes Personal details, Password and security, and Ad preferences.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Website-permissions.png"
-      },
-      {
-        "setting": "Edit profile",
-        "description": "Settings under the 'How you use Instagram' category to edit your profile.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Website-permissions.png"
-      },
-      {
-        "setting": "Notifications",
-        "description": "Settings under the 'How you use Instagram' category to manage notifications.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Website-permissions.png"
-      },
-      {
-        "setting": "Account privacy",
-        "description": "Settings under the 'Who can see your content' category to manage account privacy.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Website-permissions.png"
-      },
-      {
-        "setting": "Close Friends",
-        "description": "Settings under the 'Who can see your content' category to manage your Close Friends list.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Website-permissions.png"
-      },
-      {
-        "setting": "Blocked",
-        "description": "Settings under the 'Who can see your content' category to manage blocked accounts.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Website-permissions.png"
-      },
-      {
-        "setting": "Story and location",
-        "description": "Settings under the 'Who can see your content' category to manage story and location settings.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Website-permissions.png"
-      },
-      {
-        "setting": "Messages and story replies",
-        "description": "Settings under the 'How others can interact with you' category to manage messages and story replies.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Website-permissions.png"
-      },
-      {
-        "setting": "Tags and mentions",
-        "description": "Settings under the 'How others can interact with you' category to manage tags and mentions.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Website-permissions.png"
-      },
-      {
-        "setting": "Comments",
-        "description": "Settings under the 'How others can interact with you' category to manage comments.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Website-permissions.png"
-      },
-      {
-        "setting": "Apps and websites",
-        "description": "Settings under 'Website permissions' to manage connected apps and websites.",
-        "state": "navigation link",
-        "image_path": "screenshots\\instagram\\Settings_Website-permissions.png"
-      }
-    ],
-    "summary": {
-      "total_settings_extracted": 80,
-      "successful_extractions": 12,
-      "failed_extractions": 0,
-      "failed image paths": [],
-      "average_settings_per_image": 6.67
-    },
-    "timestamp": "2025-11-25T04:03:23.518964"
-  },
-  {
-    "status": "success",
-    "total_images": 6,
-    "platform": "linkedin",
-    "all_settings": [
-      {
-        "setting": "Connections",
-        "description": "Controls the use of your connections data for advertising.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Advertising-data.png"
-      },
-      {
-        "setting": "Companies you follow",
-        "description": "Controls the use of data about companies you follow for advertising.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Advertising-data.png"
-      },
-      {
-        "setting": "Groups",
-        "description": "Controls the use of your group membership data for advertising.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Advertising-data.png"
-      },
-      {
-        "setting": "Education and skills",
-        "description": "Controls the use of your education and skills data for advertising.",
-        "state": "Schools & 4 more",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Advertising-data.png"
-      },
-      {
-        "setting": "Job information",
-        "description": "Controls the use of your job information for advertising.",
-        "state": "Current job & 1 more",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Advertising-data.png"
+        "setting": "Do you want us to use your activity information from ad partners to show you ads?",
+        "description": "This setting controls whether your activity information from ad partners is used to personalize the ads you see. Selecting 'Yes' results in more relevant ads based on what you already like. Selecting 'No' means your ads will use less of your information and be more generic.",
+        "state": "Yes, show me ads that are more relevant by using this information",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142107.png"
       },
       {
         "setting": "Employer",
-        "description": "Controls the use of your employer data for advertising.",
-        "state": "Current company & 1 more",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Advertising-data.png"
+        "description": "Profile information about your employer is used to help personalize your ads.",
+        "state": "Used",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142220.png"
       },
       {
-        "setting": "Customized display format",
-        "description": "Controls the use of a customized display format for advertising.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Advertising-data.png"
+        "setting": "Job title",
+        "description": "Profile information about your job title is used to help personalize your ads.",
+        "state": "Used",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142220.png"
       },
       {
-        "setting": "Profile location",
-        "description": "Controls the use of your profile location for advertising.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Advertising-data.png"
+        "setting": "Balboa High School (California)",
+        "description": "Profile information about your education is used to help personalize your ads.",
+        "state": "Used",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142220.png"
       },
       {
-        "setting": "Inferred city location",
-        "description": "Controls the use of your inferred city location for advertising.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Advertising-data.png"
+        "setting": "Unspecified (Relationship status)",
+        "description": "Profile information about your relationship status is used to help personalize your ads.",
+        "state": "Used",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142220.png"
       },
       {
-        "setting": "Interests and traits",
-        "description": "Controls the use of your inferred interests and traits for advertising.",
-        "state": "Not specified",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Advertising-data.png"
+        "setting": "Birthday in July",
+        "description": "Advertisers can reach you based on the category 'People who have a birthday in July'. You can remove yourself from this category.",
+        "state": "Associated",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142220.png"
       },
       {
-        "setting": "Age range",
-        "description": "Controls the use of your age range for advertising.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Advertising-data.png"
+        "setting": "Facebook access (browser): Chrome",
+        "description": "Advertisers can reach you based on the category 'People who primarily access Facebook using Google Chrome'. You can remove yourself from this category.",
+        "state": "Associated",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142220.png"
       },
       {
-        "setting": "Gender",
-        "description": "Controls the use of your gender for advertising.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Advertising-data.png"
+        "setting": "Facebook access (mobile): all mobile devices",
+        "description": "Advertisers can reach you based on the category 'People who primarily access Facebook using mobile devices'. You can remove yourself from this category.",
+        "state": "Associated",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142220.png"
       },
       {
-        "setting": "Ads off LinkedIn",
-        "description": "Controls showing you ads on third-party sites and apps.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Advertising-data.png"
+        "setting": "Ads from ad partners in other apps",
+        "description": "You can choose whether you want to see ads from ad partners in other apps. The information we use to show you these ads is based on your Ad settings. Businesses not owned by Meta may use Meta's ad services to show you ads in other apps.",
+        "state": "Show me ads from ad partners",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142600.png"
       },
       {
-        "setting": "Data from others for ads",
-        "description": "Controls using data from partners to personalize ads.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Advertising-data.png"
+        "setting": "MentR-Me",
+        "description": "Allows the user to manage their inclusion in the advertising audience for MentR-Me (@MentrMe1) and decide whether the platform can show ads from this advertiser based on this data.",
+        "state": "Click to manage",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142627.png"
       },
       {
-        "setting": "Measure ad success",
-        "description": "Controls using your data to measure ad performance.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Advertising-data.png"
+        "setting": "Student Beans",
+        "description": "Allows the user to manage their inclusion in the advertising audience for Student Beans (@StudentBeans) and decide whether the platform can show ads from this advertiser based on this data.",
+        "state": "Click to manage",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142627.png"
       },
       {
-        "setting": "Share data with affiliates and partners",
-        "description": "Controls sharing your data with affiliates and partners.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Advertising-data.png"
+        "setting": "Uniqlo Canada",
+        "description": "Allows the user to manage their inclusion in the advertising audience for Uniqlo Canada (@UNIQLOCanada) and decide whether the platform can show ads from this advertiser based on this data.",
+        "state": "Click to manage",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142627.png"
       },
       {
-        "setting": "Manage your data and activity",
-        "description": "Navigates to a page to manage your data and activity.",
-        "state": "Not applicable (navigation link)",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
+        "setting": "QS Top Universities Latin America",
+        "description": "Allows the user to manage their inclusion in the advertising audience for QS Top Universities Latin America (@QSTopUniversitiesLatinAmerica) and decide whether the platform can show ads from this advertiser based on this data.",
+        "state": "Click to manage",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142627.png"
       },
       {
-        "setting": "Get a copy of your data",
-        "description": "Navigates to a page to download a copy of your data.",
-        "state": "Not applicable (navigation link)",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
+        "setting": "See more",
+        "description": "View more advertisers whose audiences you have been included in.",
+        "state": "Click to view more",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142627.png"
       },
       {
-        "setting": "Search history",
-        "description": "Navigates to a page to manage your search history.",
-        "state": "Not applicable (navigation link)",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
-      },
-      {
-        "setting": "Personal demographic information",
-        "description": "Navigates to a page to manage your personal demographic information.",
-        "state": "Not applicable (navigation link)",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
-      },
-      {
-        "setting": "Social, economic, and workplace research",
-        "description": "Controls participation in social, economic, and workplace research.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
-      },
-      {
-        "setting": "Data for Generative AI Improvement",
-        "description": "Controls the use of your data for Generative AI improvement.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
-      },
-      {
-        "setting": "Invitations to connect",
-        "description": "Navigates to a page to manage who can send you connection invitations.",
-        "state": "Not applicable (navigation link)",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
-      },
-      {
-        "setting": "Invitations from your network",
-        "description": "Navigates to a page to manage invitations from your network.",
-        "state": "Not applicable (navigation link)",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
-      },
-      {
-        "setting": "Messages",
-        "description": "Navigates to a page to manage message settings.",
-        "state": "Not applicable (navigation link)",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
-      },
-      {
-        "setting": "Research invites",
-        "description": "Controls whether you receive research invites.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
-      },
-      {
-        "setting": "LinkedIn promotions",
-        "description": "Navigates to a page to manage LinkedIn promotions.",
-        "state": "Not applicable (navigation link)",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
-      },
-      {
-        "setting": "Focused Inbox",
-        "description": "Controls the Focused Inbox feature in messaging.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
-      },
-      {
-        "setting": "Read receipts and typing indicators",
-        "description": "Navigates to a page to manage read receipts and typing indicators.",
-        "state": "Not applicable (navigation link)",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
-      },
-      {
-        "setting": "Messaging suggestions",
-        "description": "Controls whether you receive messaging suggestions.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
-      },
-      {
-        "setting": "Message nudges",
-        "description": "Controls whether you receive message nudges.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
-      },
-      {
-        "setting": "Automated detection of harmful content",
-        "description": "Controls the automated detection of harmful content.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
-      },
-      {
-        "setting": "Job application settings",
-        "description": "Navigates to a page to manage job application settings.",
-        "state": "Not applicable (navigation link)",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
-      },
-      {
-        "setting": "Share your profile when you click Apply for a job",
-        "description": "Controls whether your profile is shared when you apply for a job.",
-        "state": "Off",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
-      },
-      {
-        "setting": "Signal your interest to recruiters at companies you've created job alerts for",
-        "description": "Controls signaling your interest to recruiters at companies where you have job alerts.",
-        "state": "Off",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
-      },
-      {
-        "setting": "Stored job applicant accounts",
-        "description": "Navigates to a page to manage stored job applicant accounts.",
-        "state": "Not applicable (navigation link)",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
-      },
-      {
-        "setting": "Permitted services",
-        "description": "Navigates to a page to manage services permitted to access your account.",
-        "state": "Not applicable (navigation link)",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
-      },
-      {
-        "setting": "Microsoft Word",
-        "description": "Controls the integration with Microsoft Word.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Data-privacy.png"
-      },
-      {
-        "setting": "Searching for a job",
-        "description": "Navigates to a page to manage notifications related to job searching.",
+        "setting": "Change password",
+        "description": "Manage your passwords, login preferences and recovery methods. This option navigates to the password change screen.",
         "state": "navigation link",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Notifications.png"
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142814.png"
       },
       {
-        "setting": "Hiring someone",
-        "description": "Navigates to a page to manage notifications related to hiring.",
+        "setting": "Two-factor authentication",
+        "description": "Manage your passwords, login preferences and recovery methods. This option navigates to the two-factor authentication setup screen.",
         "state": "navigation link",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Notifications.png"
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142814.png"
       },
       {
-        "setting": "Connecting with others",
-        "description": "Navigates to a page to manage notifications related to connections and networking.",
+        "setting": "Saved login",
+        "description": "Manage your passwords, login preferences and recovery methods. This option navigates to the saved login information screen.",
         "state": "navigation link",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Notifications.png"
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142814.png"
       },
       {
-        "setting": "Network catch-up updates",
-        "description": "Navigates to a page to manage notifications about updates from your network.",
+        "setting": "Passkey",
+        "description": "Manage your passwords, login preferences and recovery methods. This option navigates to the passkey management screen.",
         "state": "navigation link",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Notifications.png"
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142814.png"
       },
       {
-        "setting": "Posting and commenting",
-        "description": "Navigates to a page to manage notifications about your posts and comments.",
+        "setting": "Where you're logged in",
+        "description": "Review security issues by running checks across apps, devices and emails sent. This option shows where your account is currently logged in.",
         "state": "navigation link",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Notifications.png"
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142814.png"
       },
       {
-        "setting": "Messaging",
-        "description": "Navigates to a page to manage notifications for messages.",
+        "setting": "Login alerts",
+        "description": "Review security issues by running checks across apps, devices and emails sent. This option allows you to manage alerts for unrecognized logins.",
         "state": "navigation link",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Notifications.png"
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142814.png"
       },
       {
-        "setting": "Groups",
-        "description": "Navigates to a page to manage notifications from your groups.",
+        "setting": "Recent emails",
+        "description": "Review security issues by running checks across apps, devices and emails sent. This option shows recent security-related emails sent from the service.",
         "state": "navigation link",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Notifications.png"
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142814.png"
       },
       {
-        "setting": "Pages",
-        "description": "Navigates to a page to manage notifications from pages you follow.",
+        "setting": "Security Checkup",
+        "description": "Review security issues by running checks across apps, devices and emails sent. This option starts a guided review of your security settings.",
         "state": "navigation link",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Notifications.png"
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 142814.png"
       },
       {
-        "setting": "Attending events",
-        "description": "Navigates to a page to manage notifications for events.",
-        "state": "navigation link",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Notifications.png"
+        "setting": "Your accounts & profiles",
+        "description": "Select the account or profile for which to manage search history.",
+        "state": "Jesse Huang - Facebook",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 143345.png"
       },
       {
-        "setting": "News and reports",
-        "description": "Navigates to a page to manage notifications for news and reports.",
-        "state": "navigation link",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Notifications.png"
+        "setting": "Keep searches for",
+        "description": "Controls the duration for which search history is retained.",
+        "state": "Default",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 143345.png"
       },
       {
-        "setting": "Updating your profile",
-        "description": "Navigates to a page to manage notifications related to your profile.",
-        "state": "navigation link",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Notifications.png"
-      },
-      {
-        "setting": "Verifications",
-        "description": "Navigates to a page to manage notifications about verifications.",
-        "state": "navigation link",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Notifications.png"
-      },
-      {
-        "setting": "Games",
-        "description": "Navigates to a page to manage notifications related to games.",
-        "state": "navigation link",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Notifications.png"
-      },
+        "setting": "Clear all searches",
+        "description": "An action to delete all of your search history.",
+        "state": "Available action",
+        "image_path": "screenshots\\Facebook\\Screenshot 2026-01-13 143345.png"
+      }
+    ],
+    "summary": {
+      "total_settings_extracted": 34,
+      "successful_extractions": 9,
+      "failed_extractions": 0,
+      "failed image paths": [],
+      "average_settings_per_image": 3.78
+    },
+    "timestamp": "2026-01-13T14:39:37.030235"
+  },
+  {
+    "status": "success",
+    "total_images": 35,
+    "platform": "Linkedin",
+    "all_settings": [
       {
         "setting": "Email addresses",
         "description": "Manage the email addresses associated with your account.",
-        "state": "zoomaltester10@gmail.com",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Sign-in-&-security.png"
+        "state": "zoomaitester10@gmail.com",
+        "image_path": "screenshots\\Linkedin\\Me-icon_Settings-&-Privacy_Sign-in-&-security.png"
       },
       {
         "setting": "Phone numbers",
         "description": "Manage the phone numbers associated with your account.",
-        "state": "navigation link",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Sign-in-&-security.png"
+        "state": "navigational",
+        "image_path": "screenshots\\Linkedin\\Me-icon_Settings-&-Privacy_Sign-in-&-security.png"
       },
       {
         "setting": "Passkeys",
-        "description": "Manage passkeys for signing in to your account.",
-        "state": "navigation link",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Sign-in-&-security.png"
+        "description": "Manage passkeys for signing in.",
+        "state": "navigational",
+        "image_path": "screenshots\\Linkedin\\Me-icon_Settings-&-Privacy_Sign-in-&-security.png"
       },
       {
         "setting": "Where you're signed in",
         "description": "View and manage your active sessions.",
-        "state": "navigation link",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Sign-in-&-security.png"
+        "state": "navigational",
+        "image_path": "screenshots\\Linkedin\\Me-icon_Settings-&-Privacy_Sign-in-&-security.png"
       },
       {
         "setting": "Devices that remember your password",
-        "description": "Manage devices that have saved your password for easier login.",
-        "state": "navigation link",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Sign-in-&-security.png"
+        "description": "View and manage devices that have saved your password.",
+        "state": "navigational",
+        "image_path": "screenshots\\Linkedin\\Me-icon_Settings-&-Privacy_Sign-in-&-security.png"
       },
       {
         "setting": "Two-factor authentication",
         "description": "Add an extra layer of security to your account.",
         "state": "Off",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Sign-in-&-security.png"
+        "image_path": "screenshots\\Linkedin\\Me-icon_Settings-&-Privacy_Sign-in-&-security.png"
       },
       {
-        "setting": "Profile viewing options",
-        "description": "Controls how you appear to others when you view their profile.",
-        "state": "Your name and headline",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Visibility.png"
+        "setting": "Download larger data archive",
+        "description": "Download larger data archive, including connections, verifications, contacts, account history, and information we infer about you based on your profile and activity.",
+        "state": "unselected",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220351.png"
       },
       {
-        "setting": "Page visit visibility",
-        "description": "Controls the visibility of your visits to company, school, or other pages on LinkedIn.",
-        "state": "Off",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Visibility.png"
+        "setting": "Want something in particular?",
+        "description": "Select the data files you're most interested in.",
+        "state": "unselected",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220351.png"
       },
       {
-        "setting": "Edit your public profile",
-        "description": "Manage your public profile's visibility to people not signed in to LinkedIn.",
-        "state": "not specified",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Visibility.png"
+        "setting": "Articles",
+        "description": "Select to include Articles in the data download.",
+        "state": "unchecked",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220351.png"
       },
       {
-        "setting": "Who can see or download your email address",
-        "description": "Controls who is allowed to see or download your email address.",
-        "state": "not specified",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Visibility.png"
+        "setting": "Invitations",
+        "description": "Select to include Invitations in the data download.",
+        "state": "unchecked",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220351.png"
       },
       {
-        "setting": "Who can see your connections",
-        "description": "Controls who can see your list of connections.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Visibility.png"
+        "setting": "Profile",
+        "description": "Select to include Profile data in the data download.",
+        "state": "unchecked",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220351.png"
       },
       {
-        "setting": "Who can see members you follow",
-        "description": "Controls who can see the list of members you follow.",
-        "state": "Anyone on LinkedIn",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Visibility.png"
+        "setting": "Recommendations",
+        "description": "Select to include Recommendations in the data download.",
+        "state": "unchecked",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220351.png"
       },
       {
-        "setting": "Who can see your last name",
-        "description": "Controls who can see your last name.",
-        "state": "not specified",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Visibility.png"
+        "setting": "Registration",
+        "description": "Select to include Registration data in the data download.",
+        "state": "unchecked",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220351.png"
       },
       {
-        "setting": "Representing your organizations and interests",
-        "description": "Controls if you can be featured on the pages of organizations and interests you follow or are a part of.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Visibility.png"
+        "setting": "Clear search history",
+        "description": "Clear all previous searches performed on LinkedIn. Your search history is only visible to you, and it helps us to show you better results.",
+        "state": "action button",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220401.png"
       },
       {
-        "setting": "Page owners exporting your data",
-        "description": "Controls if page owners can export your data when you follow their page.",
-        "state": "Off",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Visibility.png"
+        "setting": "Edit demographics",
+        "description": "Allows the user to provide or edit their demographic information to help promote fairness and diversity on LinkedIn.",
+        "state": "action_button",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220423.png"
       },
       {
-        "setting": "Profile discovery and visibility off LinkedIn",
-        "description": "Controls if your profile is visible to search engines outside of LinkedIn.",
-        "state": "not specified",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Visibility.png"
+        "setting": "Remove all personal demographic information",
+        "description": "Allows the user to remove all personal demographic information they have provided. The button label is 'Remove'.",
+        "state": "action_button",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220423.png"
       },
       {
-        "setting": "Profile discovery using email address",
-        "description": "Controls who can find your profile using your email address.",
-        "state": "Anyone",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Visibility.png"
+        "setting": "Use data for research",
+        "description": "Can we enable trusted third-party partners to use data about you for social, economic, and workplace research?",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220433.png"
       },
       {
-        "setting": "Profile discovery using phone number",
-        "description": "Controls who can find your profile using your phone number.",
-        "state": "Everyone",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Visibility.png"
+        "setting": "Use my data for training content creation AI models",
+        "description": "Can LinkedIn and its affiliates use your personal data and content you create on LinkedIn to train generative AI models that create content? When this setting is on, LinkedIn and its affiliates can use your data and content to train content-generating AI models that are used in product features. The data we use for this purpose does not include your private messages.",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220441.png"
       },
       {
-        "setting": "Blocked members",
-        "description": "Manage the list of members you have blocked.",
-        "state": "not specified",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Visibility.png"
+        "setting": "Who can send you invitations to connect?",
+        "description": "Controls which group of users can send you connection invitations. The available options are: Everyone on LinkedIn, Only people who know your email address or appear in your 'Imported Contacts' list, and Only people who appear in your 'Imported Contacts' list.",
+        "state": "Everyone on LinkedIn (recommended)",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220450.png"
       },
       {
-        "setting": "Manage active status",
-        "description": "Controls who can see when you are active on LinkedIn.",
-        "state": "No one",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Visibility.png"
+        "setting": "Allow page invitations",
+        "description": "Allow your network and pages you engage with to send you invitations to follow pages?",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220546.png"
       },
       {
-        "setting": "Share job changes, education changes, and work anniversaries from profile",
-        "description": "Controls whether your network is notified about your job changes, education changes, and work anniversaries.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Visibility.png"
+        "setting": "Allow event invitations",
+        "description": "Allow your network to send you event invitations?",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220546.png"
       },
       {
-        "setting": "Notify connections when you're in the news",
-        "description": "Controls whether your connections are notified when you are mentioned in the news.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Visibility.png"
+        "setting": "Allow newsletter invitations",
+        "description": "Allow your network to send you invitations to subscribe to newsletters?",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220546.png"
       },
       {
-        "setting": "Mentioned by others",
-        "description": "Controls whether other members can mention you.",
-        "state": "On",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Visibility.png"
+        "setting": "Allow member invitations",
+        "description": "Allow your network to send you invitations to follow them",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220546.png"
       },
       {
-        "setting": "Followers",
-        "description": "Manage settings related to your followers.",
-        "state": "not specified",
-        "image_path": "screenshots\\linkedin\\Me-icon_Settings-&-Privacy_Visibility.png"
-      }
-    ],
-    "summary": {
-      "total_settings_extracted": 75,
-      "successful_extractions": 6,
-      "failed_extractions": 0,
-      "failed image paths": [],
-      "average_settings_per_image": 12.5
-    },
-    "timestamp": "2025-11-25T04:08:06.954785"
-  },
-  {
-    "status": "success",
-    "total_images": 4,
-    "platform": "reddit",
-    "all_settings": [
-      {
-        "setting": "Email address",
-        "description": "The email address associated with the account.",
-        "state": "zoomaltester10@gmail.com",
-        "image_path": "screenshots\\reddit\\Settings_Account.png"
+        "setting": "Message requests",
+        "description": "Allows others to send you message requests notifications?",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220559.png"
       },
       {
-        "setting": "Birthday",
-        "description": "The user's date of birth.",
-        "state": "January 1, 2000",
-        "image_path": "screenshots\\reddit\\Settings_Account.png"
+        "setting": "InMail messages",
+        "description": "Allow others to send you InMail? InMail allows you to directly message another LinkedIn member that you're not connected to.",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220559.png"
       },
       {
-        "setting": "Gender",
-        "description": "The user's gender identity.",
-        "state": "I prefer not to say",
-        "image_path": "screenshots\\reddit\\Settings_Account.png"
+        "setting": "Job invitation messages from recruiters",
+        "description": "Allow recruiters to invite you to apply for jobs? Allow recruiters to send you messages with job card.",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220559.png"
       },
       {
-        "setting": "Location customization",
-        "description": "Controls how Reddit uses location to customize the user experience.",
-        "state": "Use approximate location (based on IP)",
-        "image_path": "screenshots\\reddit\\Settings_Account.png"
+        "setting": "Research invitations",
+        "description": "Allow LinkedIn or third-party partners to send you invitations for participating in product feedback surveys, market research, and other studies?",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220623.png"
       },
       {
-        "setting": "Google",
-        "description": "Connect to log in to Reddit with your Google account.",
-        "state": "Connected",
-        "image_path": "screenshots\\reddit\\Settings_Account.png"
+        "setting": "Personalized promotions of LinkedIn products",
+        "description": "Can LinkedIn personalize how it promotes LinkedIn's own products to you on and off LinkedIn, based on your LinkedIn activity and profile? These promotions help you get the most out of our products.",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220646.png"
       },
       {
-        "setting": "Apple",
-        "description": "Connect to log in to Reddit with your Apple account.",
-        "state": "Not Connected",
-        "image_path": "screenshots\\reddit\\Settings_Account.png"
+        "setting": "LinkedIn promotional emails",
+        "description": "Can LinkedIn send you promotional emails to help you maximize the benefits of LinkedIn's products, based on your LinkedIn activity and profile?",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220646.png"
       },
       {
-        "setting": "Two-factor authentication",
-        "description": "Enables two-factor authentication for added account security.",
-        "state": "disabled",
-        "image_path": "screenshots\\reddit\\Settings_Account.png"
+        "setting": "Use Focused Inbox",
+        "description": "Do you want LinkedIn to sort your messages by relevance into a Focused tab and Other tab? When Focused Inbox is enabled, messages most relevant to you are sorted into the Focused tab while the rest remain easily accessible - but out of the way - in the Other tab.",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220659.png"
       },
       {
-        "setting": "Delete account",
-        "description": "Option to permanently delete the account.",
+        "setting": "Delivery indicators",
+        "description": "When messaging a connection who has it enabled, both of you will be able to see when each other is typing and when the message is read.",
+        "state": "enabled",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220715.png"
+      },
+      {
+        "setting": "Messaging suggestions",
+        "description": "Allow LinkedIn to show you Messaging suggestions, some of which are personalized using automated systems to recognize patterns in messages?",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220741.png"
+      },
+      {
+        "setting": "Message nudges",
+        "description": "Receive reminders about messages you haven't responded to.",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220751.png"
+      },
+      {
+        "setting": "Automated detection of harmful content",
+        "description": "Do you want LinkedIn's automated processes to detect certain policy violations by others, such as harassment, for the messages that are sent to you? When this setting is turned on, our automated processes will attempt to detect harmful content in the messages you receive that violate our Professional Community Policies.",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220806.png"
+      },
+      {
+        "setting": "Share profile with job poster",
+        "description": "Share your profile with the job poster when you click Apply on a job that redirects you outside of LinkedIn? Turning this setting on may increase your chances of being viewed by the job poster.",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220830.png"
+      },
+      {
+        "setting": "Signal interest to recruiters",
+        "description": "Use your job alerts to signal interest to recruiters working at those companies. Opting into this setting sends a signal to recruiters who may want to contact a member, whenever a member creates a job alert for a company the recruiters work for.",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220908.png"
+      },
+      {
+        "setting": "Manage job alerts",
+        "description": "A link to a page for managing job alerts.",
         "state": "not applicable",
-        "image_path": "screenshots\\reddit\\Settings_Account.png"
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 220908.png"
       },
       {
-        "setting": "Display language",
-        "description": "Controls the language of the Reddit user interface.",
-        "state": "English (US)",
-        "image_path": "screenshots\\reddit\\Settings_Preferences.png"
+        "setting": "Use connections data",
+        "description": "Can we use information from your 1st-degree connections to show you more tailored ads on LinkedIn? This setting also applies to Ads outside of LinkedIn if that setting is turned on. Turning this off may make your ads less tailored, but won't reduce the number of ads you see.",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 221615.png"
       },
       {
-        "setting": "Content languages",
-        "description": "Controls the languages for content you see on Reddit.",
-        "state": "not specified",
-        "image_path": "screenshots\\reddit\\Settings_Preferences.png"
-      },
-      {
-        "setting": "Show mature content (I'm over 18)",
-        "description": "See Not Safe for Work mature and adult content in your feeds and search results",
-        "state": "disabled",
-        "image_path": "screenshots\\reddit\\Settings_Preferences.png"
-      },
-      {
-        "setting": "Blur mature (18+) images and media",
-        "description": "Controls whether mature images and media are blurred by default.",
+        "setting": "Use followed companies data",
+        "description": "Can we use the list of companies you follow to show you more tailored ads on LinkedIn? This setting also applies to Ads outside of LinkedIn if that setting is turned on. Turning this off may make your ads less tailored, but won't reduce the number of ads you see.",
         "state": "enabled",
-        "image_path": "screenshots\\reddit\\Settings_Preferences.png"
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 221626.png"
       },
       {
-        "setting": "Show recommendations in home feed",
-        "description": "Controls whether recommendations are shown in the home feed.",
+        "setting": "Use groups data",
+        "description": "Can we use the groups you've joined to show you more tailored ads on LinkedIn? This setting also applies to Ads outside of LinkedIn if that setting is turned on. Turning this off may make your ads less tailored, but won't reduce the number of ads you see.",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 221640.png"
+      },
+      {
+        "setting": "Schools",
+        "description": "Allow LinkedIn to use your schools information to show you more tailored ads.",
         "state": "enabled",
-        "image_path": "screenshots\\reddit\\Settings_Preferences.png"
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 221915.png"
       },
       {
-        "setting": "Muted communities",
-        "description": "Manage communities that you have muted.",
-        "state": "not specified",
-        "image_path": "screenshots\\reddit\\Settings_Preferences.png"
-      },
-      {
-        "setting": "Autoplay media",
-        "description": "Controls whether media (like videos and GIFs) plays automatically.",
+        "setting": "Field of study",
+        "description": "Allow LinkedIn to use your field of study information to show you more tailored ads.",
         "state": "enabled",
-        "image_path": "screenshots\\reddit\\Settings_Preferences.png"
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 221915.png"
       },
       {
-        "setting": "Reduce Motion",
-        "description": "Reduces animations and motion effects on the site.",
-        "state": "disabled",
-        "image_path": "screenshots\\reddit\\Settings_Preferences.png"
-      },
-      {
-        "setting": "Sync with computer's motion settings",
-        "description": "Synchronizes Reddit's motion settings with the operating system's settings.",
+        "setting": "Degrees",
+        "description": "Allow LinkedIn to use your degrees information to show you more tailored ads.",
         "state": "enabled",
-        "image_path": "screenshots\\reddit\\Settings_Preferences.png"
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 221915.png"
       },
       {
-        "setting": "Use community themes",
-        "description": "Controls whether custom subreddit themes are displayed.",
+        "setting": "Skills",
+        "description": "Allow LinkedIn to use your skills information to show you more tailored ads.",
         "state": "enabled",
-        "image_path": "screenshots\\reddit\\Settings_Preferences.png"
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 221915.png"
       },
       {
-        "setting": "Open posts in new tab",
-        "description": "Controls whether clicking on a post opens it in a new browser tab.",
-        "state": "disabled",
-        "image_path": "screenshots\\reddit\\Settings_Preferences.png"
-      },
-      {
-        "setting": "Default feed view",
-        "description": "Sets the default layout for viewing feeds.",
-        "state": "Card",
-        "image_path": "screenshots\\reddit\\Settings_Preferences.png"
-      },
-      {
-        "setting": "Default to markdown editor",
-        "description": "Sets the default text editor to Markdown.",
-        "state": "disabled",
-        "image_path": "screenshots\\reddit\\Settings_Preferences.png"
-      },
-      {
-        "setting": "Keyboard shortcuts",
-        "description": "View or manage keyboard shortcuts.",
-        "state": "not specified",
-        "image_path": "screenshots\\reddit\\Settings_Preferences.png"
-      },
-      {
-        "setting": "Default to old Reddit",
-        "description": "Sets the old Reddit interface as the default experience.",
-        "state": "disabled",
-        "image_path": "screenshots\\reddit\\Settings_Preferences.png"
-      },
-      {
-        "setting": "Limit ads in selected categories",
-        "description": "Allows limiting ads from sensitive advertising categories.",
-        "state": "not specified",
-        "image_path": "screenshots\\reddit\\Settings_Preferences.png"
-      },
-      {
-        "setting": "Allow people to follow you",
-        "description": "Let people follow you to see your profile posts in their home feed",
+        "setting": "Last graduation year",
+        "description": "Allow LinkedIn to use your last graduation year information to show you more tailored ads.",
         "state": "enabled",
-        "image_path": "screenshots\\reddit\\Settings_Privacy.png"
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 221915.png"
       },
       {
-        "setting": "Who can send you chat requests",
-        "description": "Controls which users are able to send you chat requests.",
-        "state": "Everyone",
-        "image_path": "screenshots\\reddit\\Settings_Privacy.png"
-      },
-      {
-        "setting": "Blocked accounts",
-        "description": "Manage the accounts you have blocked.",
-        "state": "navigation link",
-        "image_path": "screenshots\\reddit\\Settings_Privacy.png"
-      },
-      {
-        "setting": "List your profile on old.reddit.com/users",
-        "description": "List your profile on old.reddit.com/users and allow posts to your profile to appear in r/all",
+        "setting": "Current job",
+        "description": "Allow LinkedIn to use your current job information to show you more tailored ads.",
         "state": "enabled",
-        "image_path": "screenshots\\reddit\\Settings_Privacy.png"
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 221935.png"
       },
       {
-        "setting": "Show up in search results",
-        "description": "Allow search engines like Google to link to your profile in their search results",
+        "setting": "Past jobs",
+        "description": "Allow LinkedIn to use your past jobs information to show you more tailored ads.",
         "state": "enabled",
-        "image_path": "screenshots\\reddit\\Settings_Privacy.png"
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 221935.png"
       },
       {
-        "setting": "Personalize ads on Reddit based on information and activity from our partners",
-        "description": "Allow us to use information from our partners to show you better ads on Reddit",
+        "setting": "Current company",
+        "description": "What employer history can we use to show you more tailored ads on LinkedIn? - Current company",
         "state": "enabled",
-        "image_path": "screenshots\\reddit\\Settings_Privacy.png"
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222014.png"
       },
       {
-        "setting": "Third-party app authorizations",
-        "description": "Manage third-party applications that have access to your account.",
-        "state": "navigation link",
-        "image_path": "screenshots\\reddit\\Settings_Privacy.png"
-      },
-      {
-        "setting": "Clear history",
-        "description": "Delete your post views history",
-        "state": "action button (Clear)",
-        "image_path": "screenshots\\reddit\\Settings_Privacy.png"
-      },
-      {
-        "setting": "Mark as mature (18+)",
-        "description": "Label your profile as Not Safe for Work (NSFW) and ensure it's inaccessible to people under 18",
-        "state": "disabled",
-        "image_path": "screenshots\\reddit\\Settings_Profile.png"
-      },
-      {
-        "setting": "NSFW",
-        "description": "Show all NSFW posts and comments",
+        "setting": "Past companies",
+        "description": "What employer history can we use to show you more tailored ads on LinkedIn? - Past companies",
         "state": "enabled",
-        "image_path": "screenshots\\reddit\\Settings_Profile.png"
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222014.png"
       },
       {
-        "setting": "Followers",
-        "description": "Show your follower count",
-        "state": "disabled",
-        "image_path": "screenshots\\reddit\\Settings_Profile.png"
+        "setting": "Use profile data for customized display",
+        "description": "Can we use your profile information (such as your photo, name, and company) to display ads to you on LinkedIn in a customized format? Ads formatted to display your profile information are visible only to you.",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222035.png"
+      },
+      {
+        "setting": "Use postal code and city you enter in your profile",
+        "description": "Can we use the postal code and city you enter in your profile to show you more tailored ads on LinkedIn? If you turn this off, you may still see ads based on your country or continent.",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222056.png"
+      },
+      {
+        "setting": "Use Inferred city location",
+        "description": "We may infer your city from your IP address. Can we use that data to show you personalized ads on LinkedIn? If you turn this off, you may still see ads based on your country or continent",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222105.png"
+      },
+      {
+        "setting": "Interests and traits",
+        "description": "Can we use interests and traits we derived from your LinkedIn profile and activity to show you more tailored ads on LinkedIn?",
+        "state": "enabled",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222123.png"
+      },
+      {
+        "setting": "AI Enthusiasts",
+        "description": "Include specific interests and traits",
+        "state": "enabled",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222123.png"
+      },
+      {
+        "setting": "Accounting",
+        "description": "Include specific interests and traits",
+        "state": "enabled",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222123.png"
+      },
+      {
+        "setting": "Advertising Strategies",
+        "description": "Include specific interests and traits",
+        "state": "enabled",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222123.png"
+      },
+      {
+        "setting": "Affinity for Automotive Brands",
+        "description": "Include specific interests and traits",
+        "state": "enabled",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222123.png"
+      },
+      {
+        "setting": "Affinity for Electric Vehicles",
+        "description": "Include specific interests and traits",
+        "state": "enabled",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222123.png"
+      },
+      {
+        "setting": "Agile Project Management",
+        "description": "Include specific interests and traits",
+        "state": "enabled",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222123.png"
+      },
+      {
+        "setting": "Agriculture and Farming",
+        "description": "Include specific interests and traits",
+        "state": "enabled",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222123.png"
+      },
+      {
+        "setting": "Agronomy and Agricultural Sciences",
+        "description": "Include specific interests and traits",
+        "state": "enabled",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222123.png"
+      },
+      {
+        "setting": "Artificial Intelligence",
+        "description": "Include specific interests and traits",
+        "state": "enabled",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222123.png"
+      },
+      {
+        "setting": "Arts and Entertainment",
+        "description": "Include specific interests and traits",
+        "state": "enabled",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222123.png"
+      },
+      {
+        "setting": "Audio-Visual Production",
+        "description": "Include specific interests and traits",
+        "state": "enabled",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222123.png"
+      },
+      {
+        "setting": "Augmented Reality",
+        "description": "Include specific interests and traits",
+        "state": "enabled",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222123.png"
+      },
+      {
+        "setting": "Automotive Enthusiasts",
+        "description": "Include specific interests and traits",
+        "state": "enabled",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222123.png"
+      },
+      {
+        "setting": "Automotive Enthusiasts",
+        "description": "Include specific interests and traits",
+        "state": "enabled",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222123.png"
+      },
+      {
+        "setting": "Automotive Software",
+        "description": "Include specific interests and traits",
+        "state": "enabled",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222123.png"
+      },
+      {
+        "setting": "Use your age range for ads",
+        "description": "Can we use your age range (from your profile or inferred) to show you more tailored ads on LinkedIn?",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222131.png"
+      },
+      {
+        "setting": "Use your gender for ads",
+        "description": "Can we use your gender (from your profile or inferred) to show you more tailored ads on LinkedIn?",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222139.png"
+      },
+      {
+        "setting": "Ads off LinkedIn",
+        "description": "Allows LinkedIn to show you personalized ads on other websites and services (off of LinkedIn). These personalized ads will be shown on all your devices whether or not you are logged into our services.",
+        "state": "On",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222159.png"
+      },
+      {
+        "setting": "Use data from others",
+        "description": "Can we use data about you that we get from others to show you more personalized ads? This includes data about your engagement with other services or information that you've given to our advertisers.",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222214.png"
+      },
+      {
+        "setting": "Use your data for evaluating ad success",
+        "description": "Can we use data about actions you took in response to ads to give advertisers aggregate reports about how their ads performed?",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222224.png"
+      },
+      {
+        "setting": "Data sharing with our affiliates and select partners",
+        "description": "Controls whether LinkedIn can share your data with its affiliates and select partners for advertising off LinkedIn. Affiliates use this data to personalize and show you ads, and select partners use this data to show you marketing messages from LinkedIn. If you turn this off, you will still see ads, but they won't be personalized with your LinkedIn data.",
+        "state": "on",
+        "image_path": "screenshots\\Linkedin\\Screenshot 2026-01-12 222234.png"
       }
     ],
     "summary": {
-      "total_settings_extracted": 35,
-      "successful_extractions": 4,
+      "total_settings_extracted": 74,
+      "successful_extractions": 35,
       "failed_extractions": 0,
       "failed image paths": [],
-      "average_settings_per_image": 8.75
+      "average_settings_per_image": 2.11
     },
-    "timestamp": "2025-11-25T04:10:52.777311"
-  },
-  {
-    "status": "success",
-    "total_images": 1,
-    "platform": "spotify",
-    "all_settings": [
-      {
-        "setting": "Edit personal info",
-        "description": "Navigates to a page to edit personal information such as email, gender, date of birth, and country.",
-        "state": "navigational link",
-        "image_path": "screenshots\\spotify/Profile-Picture_Settings-and-privacy_slice_0.png"
-      },
-      {
-        "setting": "Address",
-        "description": "Navigates to a page to manage your physical address.",
-        "state": "navigational link",
-        "image_path": "screenshots\\spotify/Profile-Picture_Settings-and-privacy_slice_0.png"
-      },
-      {
-        "setting": "Order history",
-        "description": "Navigates to a page to view your past orders and transactions.",
-        "state": "navigational link",
-        "image_path": "screenshots\\spotify/Profile-Picture_Settings-and-privacy_slice_0.png"
-      },
-      {
-        "setting": "Saved payment cards",
-        "description": "Navigates to a page to manage your saved payment methods.",
-        "state": "navigational link",
-        "image_path": "screenshots\\spotify/Profile-Picture_Settings-and-privacy_slice_0.png"
-      },
-      {
-        "setting": "Manage apps",
-        "description": "Navigates to a page to manage third-party applications that have access to your Spotify account.",
-        "state": "navigational link",
-        "image_path": "screenshots\\spotify/Profile-Picture_Settings-and-privacy_slice_0.png"
-      },
-      {
-        "setting": "Notification settings",
-        "description": "Navigates to a page to control what notifications you receive from Spotify.",
-        "state": "navigational link",
-        "image_path": "screenshots\\spotify/Profile-Picture_Settings-and-privacy_slice_0.png"
-      },
-      {
-        "setting": "Account privacy",
-        "description": "Navigates to a page with specific privacy settings for your account.",
-        "state": "navigational link",
-        "image_path": "screenshots\\spotify/Profile-Picture_Settings-and-privacy_slice_0.png"
-      },
-      {
-        "setting": "Edit login methods",
-        "description": "Navigates to a page to manage how you log in to your account.",
-        "state": "navigational link",
-        "image_path": "screenshots\\spotify/Profile-Picture_Settings-and-privacy_slice_0.png"
-      },
-      {
-        "setting": "Set device password",
-        "description": "Navigates to a page to set a password for specific devices.",
-        "state": "navigational link",
-        "image_path": "screenshots\\spotify/Profile-Picture_Settings-and-privacy_slice_0.png"
-      },
-      {
-        "setting": "Close account",
-        "description": "Navigates to a page to permanently close your account and delete your data.",
-        "state": "navigational link",
-        "image_path": "screenshots\\spotify/Profile-Picture_Settings-and-privacy_slice_0.png"
-      },
-      {
-        "setting": "Sign out everywhere",
-        "description": "Navigates to a page to sign out of your Spotify account on all devices.",
-        "state": "navigational link",
-        "image_path": "screenshots\\spotify/Profile-Picture_Settings-and-privacy_slice_0.png"
-      },
-      {
-        "setting": "Ad preferences",
-        "description": "Navigates to a page to manage your advertising preferences.",
-        "state": "navigational link",
-        "image_path": "screenshots\\spotify/Profile-Picture_Settings-and-privacy_slice_0.png"
-      },
-      {
-        "setting": "Your Privacy Choices",
-        "description": "A link to manage privacy choices, likely related to opting out of the sale or sharing of personal information as indicated by the CCPA icon.",
-        "state": "Link to settings page",
-        "image_path": "screenshots\\spotify/Profile-Picture_Settings-and-privacy_slice_2200.png"
-      }
-    ],
-    "summary": {
-      "total_settings_extracted": 13,
-      "successful_extractions": 1,
-      "failed_extractions": 0,
-      "failed image paths": [],
-      "average_settings_per_image": 13.0
-    },
-    "timestamp": "2025-11-25T04:12:08.090444"
-  },
-  {
-    "status": "success",
-    "total_images": 2,
-    "platform": "twitterX",
-    "all_settings": [
-      {
-        "setting": "Audience, media and tagging",
-        "description": "Manage what information you allow other people on X to see.",
-        "state": "navigation",
-        "image_path": "screenshots\\twitterX\\Profile-Picture_Settings_Privacy-and-safety.png"
-      },
-      {
-        "setting": "Your posts",
-        "description": "Manage the information associated with your posts.",
-        "state": "navigation",
-        "image_path": "screenshots\\twitterX\\Profile-Picture_Settings_Privacy-and-safety.png"
-      },
-      {
-        "setting": "Content you see",
-        "description": "Decide what you see on X based on your preferences like Topics and interests.",
-        "state": "navigation",
-        "image_path": "screenshots\\twitterX\\Profile-Picture_Settings_Privacy-and-safety.png"
-      },
-      {
-        "setting": "Mute and block",
-        "description": "Manage the accounts, words, and notifications that you've muted or blocked.",
-        "state": "navigation",
-        "image_path": "screenshots\\twitterX\\Profile-Picture_Settings_Privacy-and-safety.png"
-      },
-      {
-        "setting": "Direct Messages",
-        "description": "Manage who can message you directly.",
-        "state": "navigation",
-        "image_path": "screenshots\\twitterX\\Profile-Picture_Settings_Privacy-and-safety.png"
-      },
-      {
-        "setting": "Spaces",
-        "description": "Manage who can see your Spaces listening activity.",
-        "state": "navigation",
-        "image_path": "screenshots\\twitterX\\Profile-Picture_Settings_Privacy-and-safety.png"
-      },
-      {
-        "setting": "Discoverability and contacts",
-        "description": "Control your discoverability settings and manage contacts you've imported.",
-        "state": "navigation",
-        "image_path": "screenshots\\twitterX\\Profile-Picture_Settings_Privacy-and-safety.png"
-      },
-      {
-        "setting": "About your account",
-        "description": "Manage the location associated with your account.",
-        "state": "navigation",
-        "image_path": "screenshots\\twitterX\\Profile-Picture_Settings_Privacy-and-safety.png"
-      },
-      {
-        "setting": "Ads preferences",
-        "description": "Manage your ads experience on X.",
-        "state": "navigation",
-        "image_path": "screenshots\\twitterX\\Profile-Picture_Settings_Privacy-and-safety.png"
-      },
-      {
-        "setting": "Inferred identity",
-        "description": "Allow X to personalize your experience with your inferred activity, e.g. activity on devices you haven't used to log in to X.",
-        "state": "navigation",
-        "image_path": "screenshots\\twitterX\\Profile-Picture_Settings_Privacy-and-safety.png"
-      },
-      {
-        "setting": "Data sharing with business partners",
-        "description": "Allow sharing of additional information with X's business partners.",
-        "state": "navigation",
-        "image_path": "screenshots\\twitterX\\Profile-Picture_Settings_Privacy-and-safety.png"
-      },
-      {
-        "setting": "Location information",
-        "description": "Manage the location information X uses to personalize your experience.",
-        "state": "navigation",
-        "image_path": "screenshots\\twitterX\\Profile-Picture_Settings_Privacy-and-safety.png"
-      },
-      {
-        "setting": "Grok & Third-party Collaborators",
-        "description": "Allow your public data as well as your interactions, inputs, and results with Grok and xAI to be used for training and fine-tuning.",
-        "state": "navigation",
-        "image_path": "screenshots\\twitterX\\Profile-Picture_Settings_Privacy-and-safety.png"
-      },
-      {
-        "setting": "Privacy center",
-        "description": "Link to the Privacy center.",
-        "state": "navigation",
-        "image_path": "screenshots\\twitterX\\Profile-Picture_Settings_Privacy-and-safety.png"
-      },
-      {
-        "setting": "Privacy policy",
-        "description": "Link to the Privacy policy.",
-        "state": "navigation",
-        "image_path": "screenshots\\twitterX\\Profile-Picture_Settings_Privacy-and-safety.png"
-      },
-      {
-        "setting": "Contact us",
-        "description": "Link to the Contact us page.",
-        "state": "navigation",
-        "image_path": "screenshots\\twitterX\\Profile-Picture_Settings_Privacy-and-safety.png"
-      },
-      {
-        "setting": "Security",
-        "description": "Manage your account's security.",
-        "state": "navigation link",
-        "image_path": "screenshots\\twitterX\\Profile-Picture_Settings_Security-and-account-access.png"
-      },
-      {
-        "setting": "Apps and sessions",
-        "description": "See information about when you logged into your account and the apps you connected to your account.",
-        "state": "navigation link",
-        "image_path": "screenshots\\twitterX\\Profile-Picture_Settings_Security-and-account-access.png"
-      },
-      {
-        "setting": "Connected accounts",
-        "description": "Manage Google or Apple accounts connected to X to log in.",
-        "state": "navigation link",
-        "image_path": "screenshots\\twitterX\\Profile-Picture_Settings_Security-and-account-access.png"
-      },
-      {
-        "setting": "Delegate",
-        "description": "Manage your shared accounts.",
-        "state": "navigation link",
-        "image_path": "screenshots\\twitterX\\Profile-Picture_Settings_Security-and-account-access.png"
-      }
-    ],
-    "summary": {
-      "total_settings_extracted": 20,
-      "successful_extractions": 2,
-      "failed_extractions": 0,
-      "failed image paths": [],
-      "average_settings_per_image": 10.0
-    },
-    "timestamp": "2025-11-25T04:12:52.516132"
-  },
-  {
-    "status": "success",
-    "total_images": 15,
-    "platform": "zoom",
-    "all_settings": [
-      {
-        "setting": "Optional Diagnostic Data",
-        "description": "Allow collection of additional data that helps Zoom make product improvements and provide enhanced information to help Zoom detect, diagnose, and remediate issues.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Data&Privacy.png"
-      },
-      {
-        "setting": "Language",
-        "description": "Selects the display language for the website.",
-        "state": "English",
-        "image_path": "screenshots\\zoom\\MyAccount_Data&Privacy.png"
-      },
-      {
-        "setting": "Currency",
-        "description": "Selects the currency for displaying prices.",
-        "state": "US Dollars $",
-        "image_path": "screenshots\\zoom\\MyAccount_Data&Privacy.png"
-      },
-      {
-        "setting": "Use full display names for meeting assets generated by AI Companion",
-        "description": "By enabling this setting, you can override the display name that AI Companion detects for you with the full display name set in your profile.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_AICompanion.png"
-      },
-      {
-        "setting": "Create with avatars",
-        "description": "Create clips that uses your user's chosen avatar to read the script they enter.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_AICompanion.png"
-      },
-      {
-        "setting": "Create custom avatars",
-        "description": "Allow users to create custom avatars for clips that would read the script they enter.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_AICompanion.png"
-      },
-      {
-        "setting": "Show international numbers link on the invitation email",
-        "description": "Show the link for Zoom International Dial-in Numbers on email invitations",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_AudioConferencing.png"
-      },
-      {
-        "setting": "Mask phone number in the participant list",
-        "description": "Phone numbers of users dialing into a meeting will be masked in the participant list.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_AudioConferencing.png"
-      },
-      {
-        "setting": "Create Clips",
-        "description": "Enabling this setting will display Zoom Clips and allow users to create clips. If turning it off, users won't be able to create new clips, but they can still access and manage existing clips.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Clips_1.png"
-      },
-      {
-        "setting": "Viewers can view comments",
-        "description": "If it is disabled, only admin and clip owners can view and post comments. This setting only applies to newly generated clips after enabling this setting.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Clips_1.png"
-      },
-      {
-        "setting": "Allow signed-in viewers to add comments",
-        "description": "A sub-setting of 'Viewers can view comments' that allows signed-in viewers to add comments.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Clips_1.png"
-      },
-      {
-        "setting": "Shareable link access default setting for clips and playlists",
-        "description": "Sets the default access level for shared links to clips and playlists.",
-        "state": "Anyone with the link",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Clips_1.png"
-      },
-      {
-        "setting": "Require guests register their email before they can view the clip",
-        "description": "When turned off, we won't capture guest identities; their activity will be shown as 'Guest'.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Clips_1.png"
-      },
-      {
-        "setting": "Require passcode to access shared clips",
-        "description": "Once enabled, a random passcode will be required to access shared clips. Account admins can customize the passcode rule. This setting only applies to newly generated clips after enabling this setting.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Clips_1.png"
-      },
-      {
-        "setting": "Display the shared clip's and playlist's thumbnail, title, and description",
-        "description": "People can preview the thumbnail, title, and description of a clip or playlist shared by link when this clip doesn't have passcode protection, the sharer allows \"anyone with the link\" to access the clip; and the platform where sharing this link supports the preview feature.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Clips_1.png"
-      },
-      {
-        "setting": "Notify me when there is the first viewer",
-        "description": "Controls whether an email notification is sent when there is the first viewer.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Clips_2.png"
-      },
-      {
-        "setting": "Notify me when receiving a new comment",
-        "description": "Controls whether an email notification is sent when receiving a new comment.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Clips_2.png"
-      },
-      {
-        "setting": "Notify me or viewer when receiving a reply",
-        "description": "Controls whether an email notification is sent to the user or viewer when receiving a reply.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Clips_2.png"
-      },
-      {
-        "setting": "Notify me when mentioning me",
-        "description": "Controls whether an email notification is sent when the user is mentioned.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Clips_2.png"
-      },
-      {
-        "setting": "Auto-delete clips after a specified amount of time",
-        "description": "Clips will be moved to Trash in specified number of days. Deleted clips will stay in Trash for an additional 30 days before being deleted permanently.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Clips_2.png"
-      },
-      {
-        "setting": "Detailed crash dumps (Windows)",
-        "description": "Generate crash dumps with more information in the event of an application crash on Zoom Workplace for Windows. Those information can assist Zoom with troubleshooting issues. The dumps are not automatically shared or uploaded to Zoom.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_General.png"
-      },
-      {
-        "setting": "Feedback to Zoom",
-        "description": "Users can provide satisfaction scores and other preset feedback to Zoom.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_General.png"
-      },
-      {
-        "setting": "Allow users to send text feedback",
-        "description": "A sub-setting of 'Feedback to Zoom' that allows users to provide text feedback in addition to scores.",
-        "state": "checked",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_General.png"
-      },
-      {
-        "setting": "Show \"Join from a room\" feature on Zoom meetings in the Zoom client",
-        "description": "Users can easily start a meeting on a Zoom Room from their Zoom client",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_General.png"
-      },
-      {
-        "setting": "Allow automatic direct sharing and pairing to Zoom Rooms using ultrasonic proximity signal",
-        "description": "Enable users to share their screen, start a meeting, switch a meeting in progress, open a whiteboard or send a phone call from their laptop or mobile device to Zoom Rooms, without entering a meeting ID or sharing key.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_General.png"
-      },
-      {
-        "setting": "Hide potentially sensitive information on mobile task switcher",
-        "description": "By enable this option, iOS will blur the screenshot in the task switcher when multiple apps are open, and Android will hide the screenshot in the system-level recent apps list.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_General.png"
-      },
-      {
-        "setting": "Change my status to away when screen saver begins",
-        "description": "While a user's presence status is in a calendar event and the computer screen saver begins, their presence status on Zoom changes to away.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_General.png"
-      },
-      {
-        "setting": "Track billable hours",
-        "description": "When enabled, your account will have the ability to track and manage billable hours for phone calls and meetings. Users can assign client codes and add billing notes during or after a call or a meeting, and download billable hours reports directly from Contacts.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_General.png"
-      },
-      {
-        "setting": "Enable manual control to start and stop billable hours tracking for calls and meetings.",
-        "description": "A sub-setting of 'Track billable hours' to manually control tracking.",
-        "state": "selected",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_General.png"
-      },
-      {
-        "setting": "Enable automatic tracking of billable hours for calls and meetings.",
-        "description": "A sub-setting of 'Track billable hours' to automatically track hours.",
-        "state": "not selected",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_General.png"
-      },
-      {
-        "setting": "Show educational onboarding assistant for new features",
-        "description": "By enabling this setting, users will periodically see pop ups showing them how to set up new features in the Zoom Workplace app.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_General.png"
-      },
-      {
-        "setting": "Calendar and contacts integration",
-        "description": "We support the following services: Google Calendar, Microsoft Exchange, and Microsoft Office 365. If you want to add your contacts by importing a CSV file, go to Personal Contacts.",
-        "state": "Actionable via 'Configure Calendar and Contacts Service' button",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Mail&Calendar.png"
-      },
-      {
-        "setting": "Authentication expiry email alerts",
-        "description": "Receive an email alert when your calendar authentication expires",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Mail&Calendar.png"
-      },
-      {
-        "setting": "Insert link to meeting insights with Zoom AI Companion in meeting invitation",
-        "description": "When enabled, a link to meeting insights will be added to the invitation.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Mail&Calendar.png"
-      },
-      {
-        "setting": "Bidirectional sync for Zoom meeting data between Zoom web portal and calendars",
-        "description": "When turned on, newly created meetings or updates to existing meetings on Zoom web portal or calendars (including Zoom Calendar and other calendars) will automatically sync with each other.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Mail&Calendar.png"
-      },
-      {
-        "setting": "Show invited Zoom meetings without linked third-party calendar",
-        "description": "Invited meetings created in Zoom's web portal that aren't linked to a user's third-party calendar (e.g., Google, Exchange, Office 365) will still appear in their Zoom Calendar, allowing them to view the meetings as an attendee. Once a calendar is connected, this setting will be disabled, and invited meetings will always sync to your Zoom client.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Mail&Calendar.png"
-      },
-      {
-        "setting": "Hide meeting invites from users external to my account.",
-        "description": "A sub-setting to hide meeting invites from external users.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Mail&Calendar.png"
-      },
-      {
-        "setting": "Enable auto-calling",
-        "description": "Automatically call all accepted participants (those who replied with Yes, Maybe, or No reply) at the scheduled time, regardless of whether the host has joined the meeting.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_1.png"
-      },
-      {
-        "setting": "Require that all meetings are secured with one security option",
-        "description": "Require that all meetings are secured with one of the following security options: a passcode, Waiting Room, or \"Only authenticated users can join meetings\". If no security option is enabled, Zoom will secure all meetings with Waiting Room.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_1.png"
-      },
-      {
-        "setting": "Enable waiting room",
-        "description": "When participants join a meeting, place them in a waiting room and require the host to admit them individually. Enabling the waiting room automatically disables the setting for allowing participants to join before host.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_1.png"
-      },
-      {
-        "setting": "Meeting Passcode",
-        "description": "All instant, and scheduled meetings that users can join via client, or room systems will be passcode-protected. The Personal Meeting ID (PMI) meetings are not included.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_1.png"
-      },
-      {
-        "setting": "Require a passcode for meetings which have already been scheduled",
-        "description": "A sub-setting under Meeting Passcode to apply passcodes to previously scheduled meetings.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_1.png"
-      },
-      {
-        "setting": "Passcode for already scheduled meetings",
-        "description": "The passcode to be applied to already scheduled meetings.",
-        "state": "v3A63y",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_1.png"
-      },
-      {
-        "setting": "Personal Meeting ID (PMI) Passcode",
-        "description": "All Personal Meeting ID (PMI) meetings that users can join via client, or room systems will be passcode-protected.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_1.png"
-      },
-      {
-        "setting": "Passcode (for PMI)",
-        "description": "The passcode for Personal Meeting ID meetings.",
-        "state": "******",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_1.png"
-      },
-      {
-        "setting": "Require passcode for participants joining by phone",
-        "description": "A numeric passcode will be required for participants joining by phone if your meeting has a passcode. For meeting with an alphanumeric passcode, a numeric version will be generated.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_1.png"
-      },
-      {
-        "setting": "Embed passcode in invite link for one-click join",
-        "description": "Meeting passcode will be encrypted and included in the invite link to allow participants to join with just one click without having to enter the passcode.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_1.png"
-      },
-      {
-        "setting": "Allow Zoom Rooms to become the host if they join before meeting host and other participants",
-        "description": "When this option is enabled, Zoom Rooms configured to 'Make Zoom Rooms the host if it joins before meeting host and other participants' will be permitted to assume the host role if they join before the meeting host and other participants.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_1.png"
-      },
-      {
-        "setting": "Only authenticated users can join meetings from Web client",
-        "description": "The participants need to authenticate prior to joining meetings from web client.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_1.png"
-      },
-      {
-        "setting": "Approve or block entry for users from specific countries/regions",
-        "description": "Determine whether users from specific regions or countries can join meetings/webinars on your account by adding them to your Approved List or Blocked List. Blocking regions may limit CRC, Dial-in, Call Me, and Invite by Phone options for participants joining from those regions.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_1.png"
-      },
-      {
-        "setting": "Default encryption type",
-        "description": "If the admin locks this setting, users will not be able to change the encryption type for meetings (i.e. scheduled, instant, PMI).",
-        "state": "Enhanced encryption",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_2.png"
-      },
-      {
-        "setting": "Host video",
-        "description": "Start meetings with host video on",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_2.png"
-      },
-      {
-        "setting": "Participants video",
-        "description": "Start meetings with participant video on. Participants can change this when joining or in the meeting.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_2.png"
-      },
-      {
-        "setting": "Audio Type",
-        "description": "Determine how participants can join the audio portion of the meeting.",
-        "state": "Computer Audio",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_2.png"
-      },
-      {
-        "setting": "Allow participants to join before host",
-        "description": "Allow participants to join before the host arrives. If participants are not allowed to join before the host, or the host has another meeting running, participants will see a dialog that notifies them that the meeting has not started.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_2.png"
-      },
-      {
-        "setting": "Participants can join [time] before start time",
-        "description": "A sub-setting of 'Allow participants to join before host' that specifies how early they can join.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_2.png"
-      },
-      {
-        "setting": "Enable Personal Meeting ID",
-        "description": "A Personal Meeting ID (PMI) is a 9 to 11 digit number that is assigned to your account.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_2.png"
-      },
-      {
-        "setting": "Use Personal Meeting ID (PMI) when scheduling a meeting",
-        "description": "You can visit Personal Meeting Room to change your Personal Meeting settings.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_2.png"
-      },
-      {
-        "setting": "Use Personal Meeting ID (PMI) when starting an instant meeting",
-        "description": "Use your Personal Meeting ID for instant meetings.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_2.png"
-      },
-      {
-        "setting": "Mute all participants when they join a meeting",
-        "description": "Automatically mute all participants when they join the meeting. The host controls whether participants can unmute themselves.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_2.png"
-      },
-      {
-        "setting": "Upcoming meeting reminder",
-        "description": "Receive desktop notification for upcoming meetings. Reminder time can be configured in the Zoom Desktop Client.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_2.png"
-      },
-      {
-        "setting": "Don't allow agendas to be shared with external users",
-        "description": "By default, the meeting agenda is automatically shared with all invitees. When this setting is enabled, the agenda will be shared only with invitees in your organization.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_2.png"
-      },
-      {
-        "setting": "Require media encryption for 3rd party endpoints (SIP/H.323)",
-        "description": "By default, Zoom requires encryption for all data transferred between the Zoom cloud, Zoom client, and Zoom Room. Turn on this setting to require media encryption for 3rd party endpoints (SIP/H.323) as well.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_2.png"
-      },
-      {
-        "setting": "Chat",
-        "description": "Allow meeting and webinar participants to send chat messages.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_2.png"
-      },
-      {
-        "setting": "By default, allow participants to chat with",
-        "description": "Controls who participants can chat with by default in a meeting.",
-        "state": "Everyone and anyone directly",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_2.png"
-      },
-      {
-        "setting": "Allow users to copy or save chats from the meeting",
-        "description": "Controls who can copy or save the meeting chat.",
-        "state": "enabled (Everyone)",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_3.png"
-      },
-      {
-        "setting": "Enable continuous meeting chat",
-        "description": "Chat will continue before, during, and after the meeting in Team Chat for signed in users.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_3.png"
-      },
-      {
-        "setting": "Default enabled Continuous Meeting Chat for \"Schedule meetings\"",
-        "description": "A sub-setting to enable continuous chat by default for scheduled meetings.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_3.png"
-      },
-      {
-        "setting": "Enable Continuous Meeting Chat for \"Instant meetings\"",
-        "description": "A sub-setting to enable continuous chat for instant meetings.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_3.png"
-      },
-      {
-        "setting": "Allow participants to delete messages in meeting chat",
-        "description": "When this setting is enabled, participants can delete their own messages and hosts (and co-hosts) can delete any messages sent during the meeting.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_3.png"
-      },
-      {
-        "setting": "Allow participants to edit messages in meeting chat",
-        "description": "When this setting is enabled, participants can edit their own messages sent during the meeting.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_3.png"
-      },
-      {
-        "setting": "Enable the Screenshot feature in meeting chat",
-        "description": "When this setting is enabled, participants can send screenshots during the meeting.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_3.png"
-      },
-      {
-        "setting": "Allow participants to use emojis in meeting chat",
-        "description": "Allow participants to use the emoji library in meeting chat. Choose between allowing participants to use any emoji in the library, or choose to allow only pre-selected emojis.",
-        "state": "enabled (All emojis)",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_3.png"
-      },
-      {
-        "setting": "Private chat",
-        "description": "Allow meeting participants to send direct messages to other participants and allow webinar panelists to send direct messages to other panelists.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_3.png"
-      },
-      {
-        "setting": "Auto saving chats",
-        "description": "Automatically save all in-meeting chats so that hosts do not need to manually save the text of the chat after the meeting starts.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_3.png"
-      },
-      {
-        "setting": "Allow hyperlinks in Meeting and Webinar Chat",
-        "description": "Allow users to send and click on hyperlinks in Meeting and Webinar Chat.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_3.png"
-      },
-      {
-        "setting": "Send files via meeting chat",
-        "description": "Hosts and participants can send files through the in-meeting chat.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_3.png"
-      },
-      {
-        "setting": "Only allow specified file types",
-        "description": "A sub-setting to restrict file sharing to specific file types.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_3.png"
-      },
-      {
-        "setting": "Maximum file size",
-        "description": "A sub-setting to set a maximum file size for shared files.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_3.png"
-      },
-      {
-        "setting": "Sound notification when someone joins or leaves",
-        "description": "Plays a sound notification when a participant joins or leaves the meeting.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_3.png"
-      },
-      {
-        "setting": "Announce number of participants for dial-in participants",
-        "description": "Announces the number of participants to dial-in users.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_3.png"
-      },
-      {
-        "setting": "Display end-of-meeting experience feedback survey",
-        "description": "Display a thumbs up/down survey at the end of each meeting. If participants respond with thumbs down, they can provide additional information about what went wrong.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "End-of-meeting experience feedback survey display frequency",
-        "description": "Determines when the end-of-meeting feedback survey is displayed.",
-        "state": "Display for every meeting",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Show Zoom windows during screen share",
-        "description": "Controls whether Zoom windows are visible during a screen share.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Screen sharing",
-        "description": "Allow host and participants to share their screen or content during meetings and webinars",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "How many participants can share at the same time?",
-        "description": "Controls how many participants can share their screen simultaneously.",
-        "state": "Multiple participants can share simultaneously (dual monitors recommended)",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Who can share?",
-        "description": "Controls who is permitted to start sharing their screen.",
-        "state": "All Participants",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Who can start sharing when someone else is sharing?",
-        "description": "Controls who can interrupt an ongoing screen share to start their own.",
-        "state": "All Participants",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Screen Sharing Presenter View",
-        "description": "Allow host and participants to use presenter view while screen sharing",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Disable desktop screen sharing for meetings you host",
-        "description": "When this option is on, users can only share selected applications and files. This option may not be applicable to users using web clients.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Disable screen sharing when guests are in the meeting",
-        "description": "Guests include users who are not signed in or not in the same account. Participants who dial-in via phone or join with SIP/H.323 devices will still be able to screen share.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Prevent my screen from being controlled by an external user",
-        "description": "When this setting is on, users will not be able to give remote control to an external user, and external users cannot request control of the user.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Prevent guest user's screen from being controlled in your meeting",
-        "description": "When this setting is on, users will not be able to give remote control to an external user, and external users cannot request control of the user.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Annotation",
-        "description": "Allow host and participants to use annotation tools to add information to shared screens",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Allow saving of shared screens with annotations",
-        "description": "Allows users to save shared screens that have annotations on them.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Only the user who is sharing can annotate",
-        "description": "Restricts annotation capabilities to only the person who is currently sharing their screen.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Enable Clips in meetings",
-        "description": "Allow users to play clips in meetings. Meeting screen sharing controls this setting; Configure the details in screen sharing.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Whiteboard (Classic)",
-        "description": "Allow host and participants to share whiteboard during a meeting",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Use Whiteboard by default if available",
-        "description": "The new Zoom Whiteboard will open by default when screen sharing. Unselect this setting if you prefer to open the classic Whiteboard instead.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Allow to save the whiteboard content",
-        "description": "Allows participants to save the content of the whiteboard.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Automatically create local export when sharing is stopped",
-        "description": "Automatically saves a local copy of the whiteboard when the sharing session ends.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Remote control",
-        "description": "During screen sharing, the person who is sharing can allow others to control the shared content",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Allow remote controlling user to share clipboard",
-        "description": "Allows the user who is remotely controlling a screen to also share the clipboard content.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Slide Control",
-        "description": "During a presentation, the person who is sharing can allow others to control the PowerPoint or Keynote slide presentation",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Meeting reactions",
-        "description": "Allows participants to use reactions during a meeting.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_4.png"
-      },
-      {
-        "setting": "Meeting reactions",
-        "description": "Allow meeting participants to communicate without interrupting by reacting with emojis (e.g. clap, heart, laugh). These emojis are found in the Reactions menu in the toolbar, and when selected, they display on the participant's video and in the participants list for 10 seconds. Participants can change their emoji skin tone in Settings.",
-        "state": "All emojis",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_5.png"
-      },
-      {
-        "setting": "Allow removed participants to rejoin",
-        "description": "Allow previously removed meeting participants and webinar panelists to rejoin",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_5.png"
-      },
-      {
-        "setting": "Show invitee list in the Participants panel",
-        "description": "Users invited to meetings on other platforms (e.g. Google, Outlook, or Exchange) will also be shown on this list",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_5.png"
-      },
-      {
-        "setting": "Allow users to change their name when joining a meeting",
-        "description": "By disabling this setting, users will always use their name on profile page to join a meeting",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_5.png"
-      },
-      {
-        "setting": "Allow participants to rename themselves",
-        "description": "Allow meeting participants and webinar panelists to rename themselves.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_5.png"
-      },
-      {
-        "setting": "Allow host or co-host to rename participants in the waiting room",
-        "description": "Participants will be notified of name change",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_5.png"
-      },
-      {
-        "setting": "Hide participant profile pictures in a meeting",
-        "description": "All participant profile pictures will be hidden and only the names of participants will be displayed on the video screen. Participants will not be able to update their profile pictures in the meeting.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_5.png"
-      },
-      {
-        "setting": "Meeting timers",
-        "description": "Allow participants to set meeting timers that can be seen and heard by everyone.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_5.png"
-      },
-      {
-        "setting": "Default meeting wallpaper",
-        "description": "Select a default meeting wallpaper to be used for all meetings in your organization.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_5.png"
-      },
-      {
-        "setting": "Allow users to join external meetings, webinars and events through mesh in the local area network",
-        "description": "If the external account has allowed mesh for any participants to join, some devices might be available as Zoom Mesh parents to distribute audio and video data in the local area network. This will provide a better experience and save bandwidth.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_5.png"
-      },
-      {
-        "setting": "Report to Zoom",
-        "description": "Allow users to report meeting participants for inappropriate behavior to Zoom's Trust and Safety team for review. This setting can be found on the meeting information panel.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_5.png"
-      },
-      {
-        "setting": "Breakout room - Meetings",
-        "description": "Allow host to split meeting participants into separate, smaller rooms",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_5.png"
-      },
-      {
-        "setting": "Assign participants to breakout rooms when scheduling",
-        "description": "Allows host to assign participants to breakout rooms when scheduling a meeting.",
-        "state": "unchecked",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_5.png"
-      },
-      {
-        "setting": "Broadcast message to participants",
-        "description": "Allows host to broadcast a message to all participants in breakout rooms.",
-        "state": "checked",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_5.png"
-      },
-      {
-        "setting": "Broadcast voice to breakout rooms",
-        "description": "Allows host to broadcast their voice to all participants in breakout rooms.",
-        "state": "checked",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_5.png"
-      },
-      {
-        "setting": "Allow host to view activity statuses of participants in breakout rooms",
-        "description": "Allows host to view activity statuses of participants in breakout rooms (e.g. share screen, reactions)",
-        "state": "unchecked",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_5.png"
-      },
-      {
-        "setting": "Set default breakout room behaviors",
-        "description": "Allows host to set default behaviors for breakout rooms.",
-        "state": "unchecked",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_5.png"
-      },
-      {
-        "setting": "Remote support",
-        "description": "Allow meeting host to provide 1:1 remote support to another participant",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_5.png"
-      },
-      {
-        "setting": "Manual captions",
-        "description": "Allow host to type closed captions or assign a participant/3rd-party service to add closed captions",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_5.png"
-      },
-      {
-        "setting": "Automated captions",
-        "description": "Allow users to enable automated captions in these languages in meetings and webinars.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_5.png"
-      },
-      {
-        "setting": "Automated captions languages",
-        "description": "Select languages for automated captions in meetings and webinars.",
-        "state": "Selected: Afrikaans, Arabic, Arabic (Gulf), Bengali, Cantonese, Catalan, Chinese (Simplified), Chinese (Traditional), Croatian, Czech, Danish, Dutch, English, Estonian, Finnish, French (Canada), French (France), Galician, German, German (Switzerland), Greek, Hebrew, Hindi, Hungarian, Indonesian, Italian, Japanese, Korean, Latvian, Malay, Norwegian, Persian, Polish, Portuguese, Romanian, Russian, Serbian",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_5.png"
-      },
-      {
-        "setting": "Allow only the following users to enable captions for the meeting or webinar",
-        "description": "A checkbox to restrict which users can enable captions.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_6.png"
-      },
-      {
-        "setting": "Automated captions on device",
-        "description": "Allow users to process automated captions on their device in meetings. To use this feature, the device must meet minimum requirements.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_6.png"
-      },
-      {
-        "setting": "Full transcript",
-        "description": "Allow viewing of full transcript in the in-meeting side panel",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_6.png"
-      },
-      {
-        "setting": "Save Captions",
-        "description": "Allow participants to save fully closed captions or transcripts",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_6.png"
-      },
-      {
-        "setting": "Sign Language interpretation view",
-        "description": "Allow host to assign participants as sign language interpreters who can interpret one language into sign language in real-time. Host can assign interpreters when scheduling or during the meeting.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_6.png"
-      },
-      {
-        "setting": "Enable sign language interpretation view by default in scheduler",
-        "description": "A sub-setting to enable sign language interpretation view by default in the scheduler.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_6.png"
-      },
-      {
-        "setting": "Far end camera control",
-        "description": "Allow another user to take control of your camera during a meeting. Both users (the one requesting control and the one giving control) must have this option turned on.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_6.png"
-      },
-      {
-        "setting": "Auto-accept far end camera control",
-        "description": "Allow users to add others to their Camera Control Group. When a member of the group requests camera control, they will automatically take control of the user's camera. Group members can be added or removed in Team Chat or Contacts.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_6.png"
-      },
-      {
-        "setting": "Virtual background",
-        "description": "Customize your background to keep your environment private from others in a meeting. This can be used with or without a green screen.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_6.png"
-      },
-      {
-        "setting": "Allow use of videos as virtual backgrounds",
-        "description": "A sub-setting to permit using videos as virtual backgrounds.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_6.png"
-      },
-      {
-        "setting": "Immersive View",
-        "description": "Allow hosts to curate case-specific scenes, such as a classroom or boardroom for their meetings or webinars.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_6.png"
-      },
-      {
-        "setting": "Turn off custom background",
-        "description": "A sub-setting to turn off custom backgrounds.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_6.png"
-      },
-      {
-        "setting": "Focus Mode",
-        "description": "A mode that shows only hosts and co-hosts' videos and profile pictures during a meeting. Focus Mode can be found in the 'More' menu in the in-meeting toolbar.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_6.png"
-      },
-      {
-        "setting": "Identify guest participants in the meeting/webinar",
-        "description": "Participants who belong to your account can see that a guest (someone who does not belong to your account) is participating in the meeting/webinar. The Participants list indicates which attendees are guests. The guests themselves do not see that they are listed as guests.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_6.png"
-      },
-      {
-        "setting": "Auto-answer group in chat",
-        "description": "Allow user to add others to an 'Auto Answer Group'. Calls from members of a user's 'Auto Answer Group' will be automatically answered for that user.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_6.png"
-      },
-      {
-        "setting": "Only show default email when sending email invites",
-        "description": "Allow users to invite participants by email only by using the default email program selected on their computer",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_6.png"
-      },
-      {
-        "setting": "Use HTML format email for Outlook add-in and plug-in",
-        "description": "Use HTML formatting instead of plain text for meeting invitations scheduled with the Outlook plugin",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_6.png"
-      },
-      {
-        "setting": "Override Zoom Outlook add-in local setting",
-        "description": "When enabled, the settings you set below will override users' local add-in settings.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_6.png"
-      },
-      {
-        "setting": "Show a \"Join from your browser\" link",
-        "description": "Allow participants to bypass the Zoom application download process,",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_6.png"
-      },
-      {
-        "setting": "On desktop browser",
-        "description": "Allow participants to bypass the Zoom application and join a meeting directly from their browser. This is a workaround for participants who are unable to download, install, or run the Zoom application. Note that the meeting experience from the browser is limited.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_7.png"
-      },
-      {
-        "setting": "On mobile browser",
-        "description": "Allow participants to bypass the Zoom application and join a meeting directly from their browser. Note that the meeting experience from the mobile browser is more limited than the desktop browser.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_7.png"
-      },
-      {
-        "setting": "Show \"Always join from browser\" option when joining from join.zoom.us",
-        "description": "Allow account members to enable \"Always join from browser\" when they join meetings from join.zoom.us.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_7.png"
-      },
-      {
-        "setting": "Show a custom disclaimer when starting or joining a meeting",
-        "description": "Create your own disclaimer that will be shown at the start of all meetings hosted by your account.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_7.png"
-      },
-      {
-        "setting": "Request permission to unmute",
-        "description": "Select this option in the scheduler to request permission to unmute meeting participants and webinar panelists. Permissions, once given, will apply in all meetings scheduled by the same person.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_7.png"
-      },
-      {
-        "setting": "Far end audio control",
-        "description": "Allow another user to take control of your audio controls during a meeting. Both users (the one requesting control and the one giving control) must have this option turned on.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_7.png"
-      },
-      {
-        "setting": "Auto-accept far end audio control",
-        "description": "Allow users to add others to their Audio Control Group. When a member of the group requests audio control, they will automatically take control of the user's audio settings. Group members can be added or removed in Team Chat or Contacts.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_7.png"
-      },
-      {
-        "setting": "Enable \"Stop incoming video\" feature",
-        "description": "Allows meeting participants to turn off all incoming video feeds on their screen (does not affect other participants' screens). To access this feature, click the view button at the top-right corner of your screen.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_7.png"
-      },
-      {
-        "setting": "When attendees join meeting before host",
-        "description": "Notify host when participants join the meeting before them.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_7.png"
-      },
-      {
-        "setting": "When a meeting is cancelled",
-        "description": "Notify host and participants when the meeting is cancelled.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_7.png"
-      },
-      {
-        "setting": "Assign scheduling privilege to",
-        "description": "You can assign users in your account to schedule meetings on your behalf. You and the assigned scheduler must be on a Paid plan within the same account.",
-        "state": "No one",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_7.png"
-      },
-      {
-        "setting": "I can schedule for",
-        "description": "You can schedule meetings on behalf of someone that has assigned you scheduling privilege.",
-        "state": "No one",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Meeting_7.png"
-      },
-      {
-        "setting": "Record to computer files",
-        "description": "Allow hosts and participants to record the meeting to a computer. The recording will include video and shared content matching the recorder's view options, and an audio-only file.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Recording.png"
-      },
-      {
-        "setting": "Internal meeting participants (can request permission to record)",
-        "description": "Host can change the permissions for each participant during the meeting. This option allows internal meeting participants to request permission to record.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Recording.png"
-      },
-      {
-        "setting": "Auto approve their permission requests (Internal meeting participants)",
-        "description": "Automatically approve permission requests from internal meeting participants.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Recording.png"
-      },
-      {
-        "setting": "External meeting participants (can request permission to record)",
-        "description": "Host can change the permissions for each participant during the meeting. This option allows external meeting participants to request permission to record.",
-        "state": "enabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Recording.png"
-      },
-      {
-        "setting": "Auto approve their permission requests (External meeting participants)",
-        "description": "Automatically approve permission requests from external meeting participants.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Recording.png"
-      },
-      {
-        "setting": "Meeting participants with specified domains (can request permission to record)",
-        "description": "Host can change the permissions for each participant during the meeting. This option allows participants with specified domains to request permission. Participants matching this option will take the precedence regardless the above two options.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Recording.png"
-      },
-      {
-        "setting": "Automatic recording",
-        "description": "Record meetings automatically as they start",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Recording.png"
-      },
-      {
-        "setting": "Play voice prompt for",
-        "description": "By default, all users will see a recording disclaimer and hear an audio notification when a recording starts. This setting controls for whom the voice prompt is played.",
-        "state": "All participants",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Recording.png"
-      },
-      {
-        "setting": "Ask host to confirm before starting a recording",
-        "description": "A checkbox option under recording notifications for Zoom clients that requires host confirmation to start recording.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Recording.png"
-      },
-      {
-        "setting": "Multiple notifications for phone users",
-        "description": "By default, phone users will hear one audio notification indicating that a recording has started. This setting enables multiple notifications.",
-        "state": "disabled",
-        "image_path": "screenshots\\zoom\\MyAccount_Settings_Recording.png"
-      }
-    ],
-    "summary": {
-      "total_settings_extracted": 167,
-      "successful_extractions": 15,
-      "failed_extractions": 0,
-      "failed image paths": [],
-      "average_settings_per_image": 11.13
-    },
-    "timestamp": "2025-11-25T04:13:41.104922"
+    "timestamp": "2026-01-13T14:41:32.973044"
   }
 ]
