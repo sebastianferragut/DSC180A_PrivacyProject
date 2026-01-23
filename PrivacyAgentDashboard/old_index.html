@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Privacy Settings Treemap</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+  <header class="header">
+    <h1>Privacy Settings Treemap</h1>
+  </header>
+
+  <main class="dashboard">
+    <!-- Treemap Visualization -->
+    <section class="panel treemap-section">
+      <div class="treemap-controls">
+        <div class="treemap-control-row">
+          <label>
+            Sizing Metric:
+            <select id="sizingMetric">
+              <option value="count">Count (1 per setting)</option>
+              <option value="actionable">Actionable only</option>
+              <option value="risk-weighted">Risk-weighted</option>
+            </select>
+          </label>
+          <label>
+            State Type:
+            <select id="stateTypeFilter">
+              <option value="all">All</option>
+              <option value="actionable">Actionable</option>
+              <option value="navigational">Navigational</option>
+              <option value="unknown">Unknown</option>
+            </select>
+          </label>
+          <label for="platformFilter">
+            Platform:
+            <select id="platformFilter">
+              <option value="all">All</option>
+            </select>
+          </label>
+          <label>
+            Search:
+            <input type="text" id="searchBox" placeholder="Search settings..." />
+          </label>
+          <button id="resetView">Reset View</button>
+        </div>
+        <div class="breadcrumbs" id="breadcrumbs">
+          <span class="breadcrumb-item active" data-path="">All</span>
+        </div>
+      </div>
+      <div id="treemapContainer">
+        <p>Loading treemap visualization...</p>
+      </div>
+      <div id="treemapLegend" class="treemap-legend">
+        <!-- Legend will be populated by JavaScript -->
+      </div>
+    </section>
+  </main>
+
+  <script src="treemap.js"></script>
+</body>
+</html>

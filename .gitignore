@@ -4,3 +4,5 @@ sebastian/profiles/
 .vscode
 .DS_Store
 privacyagentapp/__pycache__/agenticapp.cpython-311.pyc
+__pycache__/
+*.pyc

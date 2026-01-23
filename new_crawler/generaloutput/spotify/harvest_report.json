@@ -1,0 +1,270 @@
+{
+  "site": "www.spotify.com",
+  "ts_iso": "2025-11-19T20:22:44.651495Z",
+  "actions": [
+    {
+      "ts": "20251119T202249Z",
+      "kind": "auto_fullpage",
+      "url": "https://www.spotify.com/us/account/overview/",
+      "path": "/generaloutput/spotify/screenshots/sections/initial_load_20251119T202249Z.png",
+      "label": "initial_load",
+      "nav_path": [],
+      "nav_path_desc": ""
+    },
+    {
+      "ts": "20251119T202307Z",
+      "kind": "planner_usage",
+      "turn": 1,
+      "input_tokens": 584,
+      "output_tokens": 13,
+      "latency_sec": 17.4132821559906,
+      "cost_usd": 0.00086,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251119T202307Z",
+      "kind": "planner_plan",
+      "turn": 1,
+      "plan": {
+        "on_settings_page": false,
+        "selectors": [],
+        "capture": {
+          "fullpage": false,
+          "section_name": null,
+          "elements": []
+        },
+        "notes": "no_parse",
+        "_usage": {
+          "input_tokens": 584,
+          "output_tokens": 13,
+          "source": "estimate",
+          "latency_sec": 17.4132821559906
+        }
+      }
+    },
+    {
+      "ts": "20251119T202321Z",
+      "kind": "planner_usage",
+      "turn": 2,
+      "input_tokens": 583,
+      "output_tokens": 0,
+      "latency_sec": 12.930435180664062,
+      "cost_usd": 0.000729,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251119T202321Z",
+      "kind": "planner_plan",
+      "turn": 2,
+      "plan": {
+        "on_settings_page": false,
+        "selectors": [],
+        "capture": {
+          "fullpage": false,
+          "section_name": null,
+          "elements": []
+        },
+        "notes": "empty_text",
+        "_usage": {
+          "input_tokens": 583,
+          "output_tokens": 0,
+          "source": "estimate",
+          "latency_sec": 12.930435180664062
+        }
+      }
+    },
+    {
+      "ts": "20251119T202335Z",
+      "kind": "planner_usage",
+      "turn": 3,
+      "input_tokens": 583,
+      "output_tokens": 0,
+      "latency_sec": 13.647663116455078,
+      "cost_usd": 0.000729,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251119T202335Z",
+      "kind": "planner_plan",
+      "turn": 3,
+      "plan": {
+        "on_settings_page": false,
+        "selectors": [],
+        "capture": {
+          "fullpage": false,
+          "section_name": null,
+          "elements": []
+        },
+        "notes": "empty_text",
+        "_usage": {
+          "input_tokens": 583,
+          "output_tokens": 0,
+          "source": "estimate",
+          "latency_sec": 13.647663116455078
+        }
+      }
+    },
+    {
+      "ts": "20251119T202350Z",
+      "kind": "planner_usage",
+      "turn": 4,
+      "input_tokens": 583,
+      "output_tokens": 0,
+      "latency_sec": 13.746941328048706,
+      "cost_usd": 0.000729,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251119T202350Z",
+      "kind": "planner_plan",
+      "turn": 4,
+      "plan": {
+        "on_settings_page": false,
+        "selectors": [],
+        "capture": {
+          "fullpage": false,
+          "section_name": null,
+          "elements": []
+        },
+        "notes": "empty_text",
+        "_usage": {
+          "input_tokens": 583,
+          "output_tokens": 0,
+          "source": "estimate",
+          "latency_sec": 13.746941328048706
+        }
+      }
+    },
+    {
+      "ts": "20251119T202404Z",
+      "kind": "planner_usage",
+      "turn": 5,
+      "input_tokens": 583,
+      "output_tokens": 0,
+      "latency_sec": 13.186475038528442,
+      "cost_usd": 0.000729,
+      "source": "estimate"
+    },
+    {
+      "ts": "20251119T202404Z",
+      "kind": "planner_plan",
+      "turn": 5,
+      "plan": {
+        "on_settings_page": false,
+        "selectors": [],
+        "capture": {
+          "fullpage": false,
+          "section_name": null,
+          "elements": []
+        },
+        "notes": "empty_text",
+        "_usage": {
+          "input_tokens": 583,
+          "output_tokens": 0,
+          "source": "estimate",
+          "latency_sec": 13.186475038528442
+        }
+      }
+    },
+    {
+      "ts": "20251119T202404Z",
+      "kind": "capture_fullpage",
+      "url": "https://www.spotify.com/us/account/overview/",
+      "path": "/generaloutput/spotify/screenshots/sections/safety_capture_20251119T202404Z.png",
+      "section": "Safety Capture",
+      "nav_path": [],
+      "nav_path_desc": ""
+    },
+    {
+      "ts": "20251119T202404Z",
+      "kind": "auto_fullpage",
+      "url": "https://www.spotify.com/us/account/overview/",
+      "path": "/generaloutput/spotify/screenshots/sections/end_of_run_20251119T202404Z.png",
+      "label": "end_of_run",
+      "nav_path": [],
+      "nav_path_desc": ""
+    }
+  ],
+  "sections": [
+    {
+      "name": "Safety Capture",
+      "path": [
+        "Safety"
+      ],
+      "url": "https://www.spotify.com/us/account/overview/",
+      "evidence_fullpage": "/generaloutput/spotify/screenshots/sections/safety_capture_20251119T202404Z.png",
+      "items": []
+    }
+  ],
+  "errors": [],
+  "model_calls": 5,
+  "state": {
+    "visited_urls": [
+      "https://www.spotify.com/us/account/overview/"
+    ],
+    "captured_sections": [],
+    "last_capture_url": null,
+    "nav_trail": []
+  },
+  "metrics": {
+    "run_start_ts": "2025-11-19T20:22:44.651589Z",
+    "run_end_ts": "2025-11-19T20:24:04.417710Z",
+    "total_runtime_sec": 79.766121,
+    "turns": 5,
+    "steps": {
+      "batch_clicks": 0,
+      "selectors_applied": 0,
+      "fullpage_screens": 0,
+      "element_screens": 0,
+      "auto_screens": 2
+    },
+    "api": {
+      "calls": 5,
+      "input_tokens": 2916,
+      "output_tokens": 13,
+      "cost_usd": 0.003776,
+      "per_call": [
+        {
+          "turn": 1,
+          "input_tokens": 584,
+          "output_tokens": 13,
+          "latency_sec": 17.4132821559906,
+          "cost_usd": 0.00086,
+          "source": "estimate"
+        },
+        {
+          "turn": 2,
+          "input_tokens": 583,
+          "output_tokens": 0,
+          "latency_sec": 12.930435180664062,
+          "cost_usd": 0.000729,
+          "source": "estimate"
+        },
+        {
+          "turn": 3,
+          "input_tokens": 583,
+          "output_tokens": 0,
+          "latency_sec": 13.647663116455078,
+          "cost_usd": 0.000729,
+          "source": "estimate"
+        },
+        {
+          "turn": 4,
+          "input_tokens": 583,
+          "output_tokens": 0,
+          "latency_sec": 13.746941328048706,
+          "cost_usd": 0.000729,
+          "source": "estimate"
+        },
+        {
+          "turn": 5,
+          "input_tokens": 583,
+          "output_tokens": 0,
+          "latency_sec": 13.186475038528442,
+          "cost_usd": 0.000729,
+          "source": "estimate"
+        }
+      ]
+    }
+  }
+}

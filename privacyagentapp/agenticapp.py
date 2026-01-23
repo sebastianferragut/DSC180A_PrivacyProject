@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 import math
-import time
+import time, random
 
 
 import chainlit as cl
@@ -27,11 +27,14 @@ from google import genai
 from google.genai import types
 from google.genai.types import Content, Part
 
+from datetime import datetime
+
 # =========================
 # Paths & Config
 # =========================
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+RUN_STATS_PATH = REPO_ROOT / "privacyagentapp" / "database" / "run_stats.json"
 
 try:
     SETTINGS_JSON_PATH = REPO_ROOT / "database" / "data" / "all_platforms_classified.json"
@@ -55,12 +58,17 @@ SESSION_CHANGES_KEY = "changed_settings"
 SESSION_PENDING_KEY = "pending_setting_choice"
 SESSION_PENDING_PLATFORM_KEY = "pending_platform"
 SESSION_PENDING_VALUE_KEY = "pending_target_value"
+SESSION_PENDING_CONFIRM = "pending_confirm_setting"
+SESSION_INFERRED_BY_SETTING = "inferred_by_setting"
+SESSION_ACTIVE_PLATFORM = "active_platform"
+SESSION_PENDING_NL_TEXT = "pending_nl_text"
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
     print("Warning: GEMINI_API_KEY not set. Setting changes will fail until it is provided.")
 
 MODEL_PLAN = os.environ.get("MODEL_PLAN", "gemini-2.5-pro")
+MODEL_NLP = os.environ.get("MODEL_NLP", "gemini-2.5-flash")
 
 client = genai.Client(api_key=GEMINI_API_KEY) if GEMINI_API_KEY else None
 
@@ -282,6 +290,112 @@ VALUE_SYNONYMS = {
     "public": {"public", "make public", "switch to public"},
 }
 
+def utc_iso() -> str:
+    return datetime.utcnow().isoformat() + "Z"
+
+def _load_json_safely(path: Path) -> dict:
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+def _atomic_write_json(path: Path, obj: dict):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(obj, indent=2, ensure_ascii=False), encoding="utf-8")
+    tmp.replace(path)
+
+def record_run_stats(
+    *,
+    platform: str,
+    setting: SettingEntry,
+    target_value: str,
+    status: str,
+    click_count: int,
+    max_history: int = 50,
+):
+    """
+    Append a run record and update aggregated stats for (platform, setting_id).
+    """
+    # Only persist successful runs
+    if status != "success":
+        return
+    
+    key = f"{platform}::{setting.setting_id}"
+    data = _load_json_safely(RUN_STATS_PATH) or {}
+
+    if "version" not in data:
+        data["version"] = 1
+    data["updated_at"] = utc_iso()
+    by_setting = data.setdefault("by_setting", {})
+
+    rec = by_setting.get(key) or {
+        "platform": platform,
+        "setting_id": setting.setting_id,
+        "name": setting.name,
+        "runs": 0,
+        "successes": 0,
+        "avg_clicks_success": None,
+        "min_clicks_success": None,
+        "max_clicks_success": None,
+        "last_success_ts": None,
+        "history": [],
+    }
+
+    # always append a run record
+    rec["runs"] = int(rec.get("runs", 0)) + 1
+    run_entry = {
+        "ts": utc_iso(),
+        "status": status,
+        "target_value": target_value,
+        "click_count": int(click_count),
+    }
+    hist = rec.get("history") or []
+    hist.append(run_entry)
+    if len(hist) > max_history:
+        hist = hist[-max_history:]
+    rec["history"] = hist
+
+    # update success aggregates
+    if status == "success":
+        rec["successes"] = int(rec.get("successes", 0)) + 1
+        rec["last_success_ts"] = run_entry["ts"]
+
+        # update min/max/avg clicks for successful runs
+        clicks = int(click_count)
+        mn = rec.get("min_clicks_success")
+        mx = rec.get("max_clicks_success")
+        rec["min_clicks_success"] = clicks if mn is None else min(int(mn), clicks)
+        rec["max_clicks_success"] = clicks if mx is None else max(int(mx), clicks)
+
+        # avg update from history of successes (bounded) – simple recompute
+        succ_clicks = [h["click_count"] for h in hist if h.get("status") == "success"]
+        if succ_clicks:
+            rec["avg_clicks_success"] = round(sum(succ_clicks) / len(succ_clicks), 3)
+
+    by_setting[key] = rec
+    data["by_setting"] = by_setting
+    _atomic_write_json(RUN_STATS_PATH, data)
+
+def infer_target_value_from_text(user_text: str) -> Optional[str]:
+    """
+    Better intent inference than normalize_target_value() for tricky cases.
+    Priority: "hide/disable/turn off" overrides presence of the word "public".
+    """
+    t = (user_text or "").lower()
+
+    # Strong negative intent -> OFF/PRIVATE
+    if any(w in t for w in ["turn off", "disable", "stop", "hide", "don't show", "do not show", "less visible"]):
+        # If talking about profile visibility/audience, "private" is closer than "off"
+        if "profile" in t or "public" in t or "visibility" in t:
+            return "private"
+        return "off"
+
+    # Otherwise use your existing synonym logic
+    return normalize_target_value(user_text)
+
 def normalize_target_value(text: str) -> Optional[str]:
     t = (text or "").strip().lower()
     if not t:
@@ -317,7 +431,8 @@ def parse_nl_request(user_text: str) -> Dict[str, Optional[str]]:
         lower_wo = lower
 
     if not target_value:
-        target_value = normalize_target_value(lower)
+        target_value = infer_target_value_from_text(user_text)
+
 
     # platform: if user types "on instagram", "for reddit", etc.
     platform_hint = None
@@ -392,7 +507,7 @@ def find_setting_candidates(platform: str, query: str, limit: int = 8) -> List[S
     scored = []
     for s in settings:
         sc = score_setting_candidate(s, query)
-        if sc > 5.0:
+        if sc > 1.0:
             scored.append((sc, s))
 
     scored.sort(key=lambda x: x[0], reverse=True)
@@ -408,6 +523,20 @@ def find_setting_candidates(platform: str, query: str, limit: int = 8) -> List[S
         if len(out) >= limit:
             break
     return out
+
+def active_platform_label() -> str:
+    plat = cl.user_session.get(SESSION_ACTIVE_PLATFORM)
+    return plat if plat else "None"
+
+def active_platform_banner() -> str:
+    return f"**Active platform:** `{active_platform_label()}`\n\n"
+
+def change_platform_action() -> cl.Action:
+    return cl.Action(
+        name="change_platform",
+        payload={},
+        label="Change platform"
+    )
 
 async def present_candidates(platform: str, query: str, candidates: List[SettingEntry], target_value: Optional[str]):
     # Keep only top 3
@@ -459,13 +588,19 @@ async def present_candidates(platform: str, query: str, candidates: List[Setting
         )
 
     await cl.Message(
-        content=(
+        content=active_platform_banner() + (
             f"On `{platform}`, I found these possible matches for: **{query}**\n\n"
             + "\n\n".join(preview_lines)
             + "\n\nPick the correct one (or choose **None of these** to retype):"
         ),
-        actions=actions,
+        actions=[change_platform_action(), *actions],
     ).send()
+
+
+@cl.action_callback("change_platform")
+async def on_change_platform(action: cl.Action):
+    # Show the platform picker without requiring any user text
+    await prompt_pick_platform()
 
 @cl.action_callback("none_match")
 async def on_none_match(action: cl.Action):
@@ -479,11 +614,13 @@ async def on_none_match(action: cl.Action):
     cl.user_session.set(SESSION_PENDING_VALUE_KEY, None)
 
     await cl.Message(
-        content=(
+        content=active_platform_banner() + (
             f"Got it — none matched for `{platform}` / **{query}**.\n\n"
             "Please rephrase what you want to change (you can be more specific, or use the exact label you see)."
-        )
+        ),
+        actions=[change_platform_action()]
     ).send()
+
 
 @cl.action_callback("pick_setting")
 async def on_pick_setting(action: cl.Action):
@@ -499,32 +636,40 @@ async def on_pick_setting(action: cl.Action):
     if not setting:
         await cl.Message(content="Could not resolve that setting in the DB. Please try again.").send()
         return
+    
+    infer_map = cl.user_session.get("inferred_by_setting") or {}
+    picked = infer_map.get(setting.setting_id) or {}
+    if picked.get("leaf_hint"):
+        cl.user_session.set("inferred_leaf_hint", picked["leaf_hint"])
+    if picked.get("target_value"):
+        cl.user_session.set("inferred_target_value", picked["target_value"])
 
-    # Store the chosen setting for the next step
-    cl.user_session.set("final_setting_to_change", {"platform": platform, "setting_id": setting.setting_id})
+    print("[UI DEBUG] after pick_setting -> inferred_leaf_hint:", repr(cl.user_session.get("inferred_leaf_hint")))
+    print("[UI DEBUG] after pick_setting -> inferred_target_value:", repr(cl.user_session.get("inferred_target_value")))
 
-    # Suggested value (if Gemini inferred one) – show it, but don't auto-run
+    # Store pending confirmation (setting inferred from user intent)
+    cl.user_session.set(SESSION_PENDING_CONFIRM, {"platform": platform, "setting_id": setting.setting_id})
+
     suggested = cl.user_session.get(SESSION_PENDING_VALUE_KEY)
 
     actions = [
-        cl.Action(name="pick_value", payload={"value": "on"}, label="On"),
-        cl.Action(name="pick_value", payload={"value": "off"}, label="Off"),
-        cl.Action(name="pick_value", payload={"value": "private"}, label="Private"),
-        cl.Action(name="pick_value", payload={"value": "public"}, label="Public"),
-        cl.Action(name="pick_value", payload={"value": "cancel"}, label="Cancel"),
+        cl.Action(name="confirm_setting", payload={"confirm": True}, label="Confirm"),
+        cl.Action(name="confirm_setting", payload={"confirm": False}, label="Cancel"),
+        change_platform_action(),
     ]
 
-    hint_line = f"\n\nSuggested from your message: `{suggested}`" if suggested else ""
+    hint_line = f"\n\nSuggested state from your message: `{suggested}`" if suggested else ""
 
     await cl.Message(
-        content=(
-            f"Selected setting on `{platform}`:\n"
-            f"**{setting.name}** (`{setting.setting_id}`)"
+        content=active_platform_banner() + (
+            "I think you meant this setting:\n\n"
+            f"**{setting.name}** (`{setting.setting_id}`)\n"
             f"{hint_line}\n\n"
-            "What do you want to change it to?"
+            "Confirm this is correct?"
         ),
         actions=actions
     ).send()
+
 
 async def ask_for_platform(pending_query: str, pending_value: Optional[str]):
     # Store pending intent
@@ -541,6 +686,513 @@ async def ask_for_platform(pending_query: str, pending_value: Optional[str]):
         content="Which platform is this for?",
         actions=actions
     ).send()
+
+async def prompt_pick_platform():
+    plats = list_platforms()
+    actions = [
+        cl.Action(
+            name="set_platform",
+            payload={"platform": p},
+            label=p
+        )
+        for p in plats[:12]  # safety cap
+    ]
+    await cl.Message(
+        content="Pick a platform to work on:",
+        actions=actions
+    ).send()
+
+@cl.action_callback("set_platform")
+async def on_set_platform(action: cl.Action):
+    payload = action.payload or {}
+    plat = payload.get("platform")
+    if not plat:
+        await cl.Message(content="Missing platform. Try again.").send()
+        return
+
+    cl.user_session.set(SESSION_ACTIVE_PLATFORM, plat)
+
+    pending_text = cl.user_session.get(SESSION_PENDING_NL_TEXT)
+    cl.user_session.set(SESSION_PENDING_NL_TEXT, None)
+
+    if pending_text:
+        await cl.Message(
+            content=active_platform_banner() + f"Platform set to `{plat}`. Continuing with your request…",
+            actions=[change_platform_action()],
+        ).send()
+        await handle_platform_scoped_nl(plat, pending_text)
+        return
+
+    await cl.Message(
+        content=active_platform_banner()
+        + f"Platform set to `{plat}`.\n\nNow tell me what setting you want to change (in normal language). This works best if you follow the structure: Turn [setting name] to [desired state].",
+        actions=[change_platform_action()],
+    ).send()
+
+@cl.action_callback("confirm_setting")
+async def on_confirm_setting(action: cl.Action):
+    payload = action.payload or {}
+    confirm = payload.get("confirm")
+
+    pending = cl.user_session.get(SESSION_PENDING_CONFIRM)
+    cl.user_session.set(SESSION_PENDING_CONFIRM, None)
+
+    if not pending:
+        await cl.Message(content="No pending setting to confirm. Please try again.").send()
+        return
+
+    platform = pending["platform"]
+    setting = resolve_setting(platform, pending["setting_id"])
+    if not setting:
+        await cl.Message(content="Could not resolve that setting. Please try again.").send()
+        return
+    
+    if not confirm:
+        # Cancel: allow selecting a platform again (as requested)
+        await cl.Message(
+            content=active_platform_banner() + "Canceled. Pick a platform to continue.",
+            actions=[change_platform_action()]
+        ).send()
+        await prompt_pick_platform()
+        return
+
+    suggested_value = cl.user_session.get("inferred_target_value")
+    print("[UI DEBUG] inferred_target_value in session:", repr(suggested_value))
+    print("[UI DEBUG] inferred_leaf_hint in session:", repr(cl.user_session.get("inferred_leaf_hint")))
+
+    # If Gemini inferred a target state, confirm it first
+    if suggested_value in ("on", "off", "private", "public"):
+        actions = [
+            cl.Action(name="confirm_value", payload={"confirm": True}, label=f"Confirm: {suggested_value}"),
+            cl.Action(name="confirm_value", payload={"confirm": False}, label="Choose different value"),
+            change_platform_action(),
+        ]
+        cl.user_session.set("final_setting_to_change", {"platform": platform, "setting_id": setting.setting_id})
+
+        await cl.Message(
+            content=active_platform_banner()
+            + f"Confirmed setting: **{setting.name}** (`{setting.setting_id}`)\n\n"
+            + f"I think you want to set it to: **{suggested_value}**.\n\n"
+            + "Confirm?",
+            actions=actions
+        ).send()
+        return
+
+    # Otherwise, fall back to full value picker
+    actions = [
+        cl.Action(name="pick_value", payload={"value": "on"}, label="On"),
+        cl.Action(name="pick_value", payload={"value": "off"}, label="Off"),
+        cl.Action(name="pick_value", payload={"value": "private"}, label="Private"),
+        cl.Action(name="pick_value", payload={"value": "public"}, label="Public"),
+        cl.Action(name="pick_value", payload={"value": "cancel"}, label="Cancel"),
+        change_platform_action(),
+    ]
+    cl.user_session.set("final_setting_to_change", {"platform": platform, "setting_id": setting.setting_id})
+
+    await cl.Message(
+        content=active_platform_banner()
+        + f"Confirmed: **{setting.name}** (`{setting.setting_id}`)\n\n"
+        + "What do you want to change it to?",
+        actions=actions
+    ).send()
+    return
+
+@cl.action_callback("confirm_value")
+async def on_confirm_value(action: cl.Action):
+    payload = action.payload or {}
+    confirm = payload.get("confirm")
+
+    suggested_value = cl.user_session.get("inferred_target_value")
+
+    if not confirm:
+        # Show the full value picker
+        actions = [
+            cl.Action(name="pick_value", payload={"value": "on"}, label="On"),
+            cl.Action(name="pick_value", payload={"value": "off"}, label="Off"),
+            cl.Action(name="pick_value", payload={"value": "private"}, label="Private"),
+            cl.Action(name="pick_value", payload={"value": "public"}, label="Public"),
+            cl.Action(name="pick_value", payload={"value": "cancel"}, label="Cancel"),
+            change_platform_action(),
+        ]
+        await cl.Message(
+            content=active_platform_banner() + "Choose the value you want:",
+            actions=actions
+        ).send()
+        return
+
+    # Confirmed suggested value -> execute
+    if suggested_value not in ("on", "off", "private", "public"):
+        await cl.Message(content="No suggested value found. Please choose manually.").send()
+        return
+
+    pending = cl.user_session.get("final_setting_to_change")
+    if not pending:
+        await cl.Message(content="No pending setting selection found. Please try again.").send()
+        return
+
+    platform = pending["platform"]
+    setting = resolve_setting(platform, pending["setting_id"])
+    cl.user_session.set("final_setting_to_change", None)
+
+    if not setting:
+        await cl.Message(content="Could not resolve the pending setting. Please try again.").send()
+        return
+
+    await cl.Message(
+        content=active_platform_banner()
+        + f"Ok — changing **{setting.name}** on `{platform}` to `{suggested_value}`…"
+    ).send()
+
+    # IMPORTANT: pass leaf_hint inferred from user message if available
+    inferred_leaf_hint = cl.user_session.get("inferred_leaf_hint") or setting.name
+
+    result = await cl.make_async(apply_setting_change_sync)(
+        platform,
+        setting,
+        suggested_value,
+        leaf_hint=inferred_leaf_hint
+    )
+    append_change(result)
+
+    if result.get("status") == "success":
+        await cl.Message(
+            content=active_platform_banner()
+            + f"✅ Success.\n\nResult details: {result.get('details')}\n\n"
+            + "You can type another setting to change on this platform, or click **Change platform**.",
+            actions=[change_platform_action()]
+        ).send()
+    else:
+        await cl.Message(
+            content=active_platform_banner()
+            + f"Result: status = `{result.get('status')}`\nDetails: {result.get('details')}",
+            actions=[change_platform_action()]
+        ).send()
+
+
+ACTION_PHRASES = [
+    "turn on", "turn off", "switch on", "switch off",
+    "enable", "disable", "make", "set", "change", "stop",
+    "hide", "show", "allow", "disallow", "block", "unblock",
+    "mute", "unmute",
+]
+
+STATE_WORDS = {"on", "off", "private", "public", "enabled", "disabled", "yes", "no"}
+
+def derive_leaf_hint_from_text(user_text: str) -> Optional[str]:
+    """
+    Platform-agnostic: derive a *hint phrase* from user text.
+    This is NOT expected to exactly match a UI label.
+    """
+    if not user_text:
+        return None
+
+    t = user_text.strip()
+
+    # Prefer quoted text if present: "Protect your posts"
+    m = re.search(r"['\"]([^'\"]{3,80})['\"]", t)
+    if m:
+        return m.group(1).strip()
+
+    low = t.lower()
+
+    # Remove common leading action phrases
+    for a in ACTION_PHRASES:
+        if low.startswith(a + " "):
+            t = t[len(a):].strip()
+            low = t.lower()
+            break
+
+    # Remove trailing "to <state>"
+    t = re.sub(r"\bto\s+(on|off|private|public|enabled|disabled)\b.*$", "", t, flags=re.I).strip()
+
+    # Token cleanup: drop platform-ish and state-ish words
+    toks = re.findall(r"[a-zA-Z0-9]+", t)
+    kept = []
+    for tok in toks:
+        tl = tok.lower()
+        if tl in STATE_WORDS:
+            continue
+        if tl in {"my", "the", "a", "an", "for", "on", "in", "at", "from", "of", "and", "or"}:
+            continue
+        kept.append(tok)
+
+    # Keep a short phrase (2–7 tokens) as the hint
+    if len(kept) >= 2:
+        return " ".join(kept[:7]).strip()
+    if kept:
+        return kept[0].strip()
+    return None
+
+def best_label_match_on_page(page: Page, hint: str, max_scan: int = 120) -> Optional[str]:
+    """
+    Find the best visible label-like text on the page that matches the hint.
+    Returns the matched label text (string) or None.
+    """
+    hint_norm = _norm(hint)
+    if not hint_norm:
+        return None
+    hint_tokens = set(hint_norm.split())
+
+    # Scan likely label nodes (headings, labels, spans, divs with text)
+    # Keep it conservative to avoid massive DOM scanning.
+    loc = page.locator("label,span,div,p,button,a,h1,h2,h3")
+    n = min(loc.count(), max_scan)
+
+    best = None
+    best_score = 0.0
+
+    for i in range(n):
+        try:
+            txt = loc.nth(i).inner_text().strip()
+        except Exception:
+            continue
+        if not txt or len(txt) > 80:
+            continue
+        txt_norm = _norm(txt)
+        if not txt_norm:
+            continue
+        tokens = set(txt_norm.split())
+        if not tokens:
+            continue
+
+        # Score by token overlap + substring bonus
+        overlap = len(tokens & hint_tokens) / max(1, len(hint_tokens))
+        score = overlap
+        if hint_norm in txt_norm or txt_norm in hint_norm:
+            score += 0.5
+
+        if score > best_score:
+            best_score = score
+            best = txt
+
+    # Require some minimum similarity so we don't click random labels
+    if best_score >= 0.25:
+        return best
+    return None
+
+
+def prefilter_platform_settings(platform: str, user_text: str, k: int = 50) -> List[SettingEntry]:
+    """
+    Cheap local filter to reduce the number of settings we send to Gemini.
+    """
+    items = list_settings_for_platform(platform) or []
+    q = _norm(user_text)
+
+    scored = []
+    for s in items:
+        name = _norm(s.name)
+        desc = _norm(s.description or "")
+        score = 0.0
+        if q and q in name:
+            score += 25
+        if q and q in desc:
+            score += 10
+        score += 10 * _token_overlap(q, name)
+        score += 3 * _token_overlap(q, desc)
+        scored.append((score, s))
+
+    scored.sort(key=lambda x: x[0], reverse=True)
+    return [s for _, s in scored[:k]]
+
+def gemini_pick_candidates_for_platform(platform: str, user_text: str, candidates: List[SettingEntry]) -> Dict[str, Any]:
+    """
+    Given a platform and a reduced candidate list, ask Gemini to pick the best 1–3 setting_ids
+    and infer target_value if present.
+
+    IMPORTANT: Robust JSON parsing (handles fences / extra text).
+    """
+    if not client:
+        return {"setting_ids": [], "target_value": None}
+
+    # Limit candidates to reduce token load
+    candidates = candidates[:20]
+
+    # Build compact candidate list for prompt (truncate descriptions!)
+    cand_payload = [
+        {
+            "setting_id": c.setting_id,
+            "name": c.name,
+            "description": (c.description or "")[:80],
+            "category": c.category or "",
+        }
+        for c in candidates
+    ]
+
+    system_instruction = (
+        "You map a natural language privacy-setting request to database entries.\n"
+        "You MUST choose only from the provided CANDIDATES list.\n\n"
+        "Return STRICT JSON ONLY (NO markdown, NO extra text, NO code fences):\n"
+        "{\n"
+        '  "setting_ids": ["id1","id2","id3"],\n'
+        '  "leaf_hint": string|null,\n'
+        '  "target_value": "on"|"off"|"private"|"public"|null,\n'
+        '  "reason": "<short>"\n'
+        "}\n"
+        "Rules:\n"
+        "- Choose up to 3 setting_ids from CANDIDATES.\n"
+        "- If the user implies enable/disable/private/public, set target_value; else null.\n"
+        "- If nothing matches, return setting_ids: []\n"
+        "- Output MUST start with '{' and end with '}'.\n"
+    )
+
+    prompt = (
+        f"PLATFORM: {platform}\n"
+        f"USER_TEXT: {user_text}\n\n"
+        "CANDIDATES:\n" + json.dumps(cand_payload, ensure_ascii=False)
+    )
+
+    config = types.GenerateContentConfig(
+        system_instruction=system_instruction,
+        temperature=0.1,
+        max_output_tokens=220,
+    )
+
+    last_err = None
+    for attempt in range(3):
+        try:
+            resp = client.models.generate_content(
+                model=MODEL_NLP,
+                contents=[Content(role="user", parts=[Part(text=prompt)])],
+                config=config,
+            )
+        except Exception as e:
+            last_err = e
+            print(f"[gemini_pick_candidates] model error attempt {attempt+1}: {e}")
+            sleep_with_jitter(attempt)
+            continue
+
+        out = ""
+        try:
+            cands = getattr(resp, "candidates", None) or []
+            if cands:
+                content = getattr(cands[0], "content", None)
+                parts = getattr(content, "parts", None) if content is not None else None
+                if parts:
+                    for part in parts:
+                        if getattr(part, "text", None):
+                            out += part.text
+            out = (out or "").strip()
+        except Exception as e:
+            last_err = e
+            print(f"[gemini_pick_candidates] extraction error attempt {attempt+1}: {e}")
+            sleep_with_jitter(attempt)
+            continue
+
+        if not out:
+            print(f"[gemini_pick_candidates] empty output attempt {attempt+1}; backing off")
+            sleep_with_jitter(attempt)
+            last_err = "empty_output"
+            continue
+
+        # If we got text, break out and parse it
+        break
+    else:
+        # exhausted retries
+        print("[gemini_pick_candidates] exhausted retries; last_err:", last_err)
+        return {"setting_ids": [], "target_value": None}
+
+
+    # Robust JSON salvage (handles ```json fences and extra text)
+    raw = out.strip()
+    try:
+        data = json.loads(raw)
+    except Exception:
+        # strip fences
+        if raw.startswith("```"):
+            raw2 = raw.strip("`")
+            # remove leading language tag line if present
+            raw2 = re.sub(r"^\s*json\s*", "", raw2, flags=re.I)
+            raw = raw2.strip()
+
+        # extract first {...} block
+        m = re.search(r"\{.*\}", raw, flags=re.S)
+        if not m:
+            print("[gemini_pick_candidates] could not find JSON object in output:", raw[:200])
+            return {"setting_ids": [], "target_value": None}
+        try:
+            data = json.loads(m.group(0))
+        except Exception as e:
+            print("[gemini_pick_candidates] JSON parse failed:", e, "raw:", raw[:200])
+            return {"setting_ids": [], "target_value": None}
+
+    setting_ids = data.get("setting_ids") or []
+    target_value = data.get("target_value")
+
+    # Dedupe + keep only valid IDs from the candidates list
+    valid_ids = {c["setting_id"] for c in cand_payload}
+    cleaned = []
+    for sid in setting_ids:
+        if sid in valid_ids and sid not in cleaned:
+            cleaned.append(sid)
+
+    leaf_hint = data.get("leaf_hint")
+
+    return {"setting_ids": cleaned[:3], "leaf_hint": leaf_hint, "target_value": target_value}
+
+    
+async def handle_platform_scoped_nl(platform: str, user_text: str):
+    # Prefilter to top ~50 for prompt size
+    pre = prefilter_platform_settings(platform, user_text, k=50)
+
+    pick = gemini_pick_candidates_for_platform(platform, user_text, pre)
+    setting_ids = pick.get("setting_ids") or []
+    target_value = pick.get("target_value")
+
+    # If Gemini didn't infer target_value, infer it deterministically from user text
+    if not target_value:
+        target_value = infer_target_value_from_text(user_text)
+
+    inferred_leaf_hint = pick.get("leaf_hint") or derive_leaf_hint_from_text(user_text)
+    if not inferred_leaf_hint:
+        inferred_leaf_hint = candidates[0].name  # best DB label
+
+    print("\n[NLP DEBUG]")
+    print("  platform:", platform)
+    print("  user_text:", repr(user_text))
+    print("  gemini_setting_ids:", setting_ids)
+    print("  gemini_leaf_hint:", repr(pick.get("leaf_hint")))
+    print("  derived_leaf_hint:", repr(inferred_leaf_hint))
+    print("  gemini_target_value:", repr(pick.get("target_value")))
+    print("  derived_target_value:", repr(target_value))
+    print("[/NLP DEBUG]\n")
+
+    cl.user_session.set("inferred_leaf_hint", inferred_leaf_hint)
+    cl.user_session.set("inferred_target_value", target_value)
+
+
+    # Store inferred hints per returned setting_id so selection can pick the right one
+    infer_map = {}
+    for sid in setting_ids:
+        infer_map[sid] = {
+            "leaf_hint": inferred_leaf_hint,
+            "target_value": target_value
+        }
+    cl.user_session.set("inferred_by_setting", infer_map)
+
+
+    if not setting_ids:
+        # Fallback: deterministic candidate search within this platform
+        fallback = find_setting_candidates(platform, user_text, limit=3)
+        if fallback:
+            await present_candidates(platform, user_text, fallback, target_value=None)
+            return
+
+        await cl.Message(
+            content=active_platform_banner() + (
+                f"I couldn’t find likely matches for **{user_text}** on `{platform}`.\n\n"
+                "Try rephrasing or use a more specific phrase from the settings page."
+            ),
+            actions=[change_platform_action()]
+        ).send()
+        return
+
+
+
+    # Resolve SettingEntry objects in the order Gemini returned
+    id_map = {s.setting_id: s for s in pre}
+    candidates = [id_map[sid] for sid in setting_ids if sid in id_map]
+
+    await present_candidates(platform, user_text, candidates, target_value)
 
 
 @cl.action_callback("pick_platform")
@@ -568,7 +1220,11 @@ async def on_pick_value(action: cl.Action):
 
     if value == "cancel":
         cl.user_session.set("final_setting_to_change", None)
-        await cl.Message(content="Canceled. You can type a new request anytime.").send()
+        await cl.Message(
+            content=active_platform_banner() + "Canceled. Pick a platform to continue.",
+            actions=[change_platform_action()]
+        ).send()
+        await prompt_pick_platform()
         return
 
     # Normalize (handles enable/disable etc if you ever pass them)
@@ -595,13 +1251,23 @@ async def on_pick_value(action: cl.Action):
         platform,
         setting,
         target_value,
-        leaf_hint=setting.name
+        leaf_hint=cl.user_session.get("inferred_leaf_hint") or setting.name
     )
     append_change(result)
 
     await cl.Message(
-        content=f"Result: status = `{result.get('status')}`\nDetails: {result.get('details')}"
+        content=active_platform_banner() + f"Result: status = `{result.get('status')}`\nDetails: {result.get('details')}",
+        actions=[change_platform_action()]
     ).send()
+
+    if result.get("status") == "success":
+        await cl.Message(
+            content=active_platform_banner()
+            + "✅ Success. You can type another setting to change on this platform, or click **Change platform**.",
+            actions=[change_platform_action()]
+        ).send()
+
+
 
 
 def list_platforms() -> List[str]:
@@ -785,7 +1451,7 @@ def gemini_interpret_request(user_text: str, known_platforms: List[str]) -> Dict
 
     try:
         resp = client.models.generate_content(
-            model=MODEL_PLAN,
+            model=MODEL_NLP,
             contents=[Content(role="user", parts=[Part(text=prompt)])],
             config=config,
         )
@@ -881,7 +1547,7 @@ def choose_setting_with_gemini(platform: str, user_query: str) -> Optional[Setti
 
     try:
         resp = client.models.generate_content(
-            model=MODEL_PLAN,
+            model=MODEL_NLP,
             contents=[Content(role="user", parts=[Part(text=user_prompt)])],
             config=config,
         )
@@ -921,6 +1587,19 @@ def choose_setting_with_gemini(platform: str, user_query: str) -> Optional[Setti
 
     return None
 
+def sleep_with_jitter(
+    attempt: int,
+    base: float = 0.5,
+    cap: float = 6.0,
+    jitter: float = 0.5,
+):
+    """
+    Exponential backoff with jitter.
+    attempt: 0-based retry count
+    """
+    delay = min(cap, base * (2 ** attempt))
+    delay += random.uniform(0, jitter)
+    time.sleep(delay)
 
 def resolve_setting_flexible(platform: str, section_query: str, leaf_hint: str | None = None):
     """
@@ -1096,8 +1775,174 @@ def dom_outline(page: Page, max_nodes: int = 300) -> str:
     except Exception:
         return "[]"
 
+def read_control_state_by_label(page: Page, label_text: str) -> Optional[bool]:
+    """
+    Try to infer on/off state deterministically using DOM attributes near a label.
+    Returns True (on), False (off), or None (unknown).
+    """
+    try:
+        label_loc = page.get_by_text(label_text, exact=True)
+        if not label_loc.count():
+            label_loc = page.get_by_text(label_text, exact=False)
+        if not label_loc.count():
+            return None
+
+        label = label_loc.first
+        label_box = label.bounding_box()
+        if not label_box:
+            return None
+
+        label_right = label_box["x"] + label_box["width"]
+        label_center_y = label_box["y"] + label_box["height"] / 2.0
+
+        cand_loc = page.locator(
+            "input[type='checkbox'],[role='switch'],[role='checkbox'],button[aria-pressed],[aria-checked]"
+        )
+        total = cand_loc.count()
+        max_to_check = min(total, 60)
+
+        best = None
+        best_dx = float("inf")
+
+        for i in range(max_to_check):
+            el = cand_loc.nth(i)
+            box = el.bounding_box()
+            if not box:
+                continue
+
+            dx = box["x"] - label_right
+            if dx < 0:
+                continue
+            if not (box["y"] <= label_center_y <= (box["y"] + box["height"])):
+                continue
+            if dx < best_dx:
+                best_dx = dx
+                best = el
+
+        if not best:
+            return None
+
+        # Try common state attributes
+        for attr in ["aria-checked", "aria-pressed"]:
+            try:
+                v = best.get_attribute(attr)
+                if v is None:
+                    continue
+                v = v.strip().lower()
+                if v in ("true", "1", "yes", "on"):
+                    return True
+                if v in ("false", "0", "no", "off"):
+                    return False
+            except Exception:
+                pass
+
+        # Checkbox checked
+        try:
+            tag = best.evaluate("el => el.tagName.toLowerCase()")
+            if tag == "input":
+                t = best.get_attribute("type") or ""
+                if t.lower() == "checkbox":
+                    checked = best.is_checked()
+                    return True if checked else False
+        except Exception:
+            pass
+
+        return None
+    except Exception:
+        return None
+
+def best_actionable_label_match_on_page(page: Page, hint: str, max_scan: int = 160) -> Optional[str]:
+    """
+    Find the best visible label-like text that matches `hint` AND has a nearby control
+    (switch/checkbox/button) associated with it.
+
+    Returns the label text to use with label-mode, or None.
+    """
+    hint_norm = _norm(hint)
+    if not hint_norm:
+        return None
+    hint_tokens = set(hint_norm.split())
+
+    # likely "labels"
+    loc = page.locator("label,span,div,p,h1,h2,h3,button,a")
+    n = min(loc.count(), max_scan)
+
+    best_text = None
+    best_score = 0.0
+
+    for i in range(n):
+        try:
+            txt = loc.nth(i).inner_text().strip()
+        except Exception:
+            continue
+        if not txt:
+            continue
+        if len(txt) > 70:
+            continue
+        if "\n" in txt:
+            continue
+        txt_norm = _norm(txt)
+        if not txt_norm:
+            continue
+
+        tokens = set(txt_norm.split())
+        if not tokens:
+            continue
+
+        # similarity score (token overlap)
+        overlap = len(tokens & hint_tokens) / max(1, len(hint_tokens))
+        score = overlap
+
+        # Prefer header-ish elements (often the setting label)
+        try:
+            tag = loc.nth(i).evaluate("el => el.tagName.toLowerCase()")
+            if tag in ("h1", "h2", "h3", "h4", "label"):
+                score += 0.15
+        except Exception:
+            pass
+
+        # modest bonus for substring relationship
+        if hint_norm in txt_norm or txt_norm in hint_norm:
+            score += 0.25
+
+        # Now: must have a nearby actionable control (container search)
+        try:
+            el = loc.nth(i)
+            container = el.locator("xpath=ancestor::*[self::li or self::section or self::div][1]")
+            if not container.count():
+                container = el
+
+            ctrl = container.locator(
+                "[role='switch'],"
+                "input[type='checkbox'],"
+                "[aria-checked],"
+                "button[aria-pressed],"
+                "[role='checkbox'],"
+                "[role='radio']"
+            )
+
+            if not ctrl.count():
+                # no control nearby -> not actionable, skip
+                continue
+
+            # bonus for being actionable
+            score += 0.5
+
+        except Exception:
+            continue
+
+        if score > best_score:
+            best_score = score
+            best_text = txt
+
+    # Require at least some match strength
+    if best_text and best_score >= 0.35:
+        return best_text
+
+    return None
 
 def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
+    desired_value = (sel.get("value") or "").strip().lower()
     stype = (sel.get("type") or "css").lower()
     sval = sel.get("selector") or ""
     if not sval:
@@ -1134,36 +1979,139 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                 return True
 
         elif stype == "coord":
-            # Two modes:
-            #  1) "label:<text>"  -> click the control associated with that label,
-            #     using DOM geometry to find the nearest clickable element.
-            #  2) "x,y"           -> raw viewport coordinates.
+            if sval.startswith("hint:"):
+                hint = sval[len("hint:"):].strip()
+                print(f"[apply_selector] coord hint-mode for {hint!r}")
+
+                # Prefer labels that have an actual control near them
+                matched = best_actionable_label_match_on_page(page, hint)
+                if not matched:
+                    # fallback: old behavior if nothing actionable is found
+                    matched = best_label_match_on_page(page, hint)
+
+                if not matched:
+                    print(f"[apply_selector] No good label match found for hint {hint!r}")
+                    return False
+
+                sval = f"label:{matched}"
+                print(f"[apply_selector] hint resolved to label {matched!r}")
+
             if sval.startswith("label:"):
                 label_text = sval[len("label:"):].strip()
                 print(f"[apply_selector] coord label-mode for {label_text!r}")
 
-                # 1) Find the label node by visible text.
-                label_loc = page.get_by_text(label_text, exact=True)
-                if not label_loc.count():
-                    label_loc = page.get_by_text(label_text, exact=False)
+                # Always define label_loc so we never hit "referenced before assignment"
+                label_loc = None
 
-                count = label_loc.count()
-                print(f"[apply_selector] label '{label_text}' -> {count} matches")
-                if not count:
-                    print(f"[apply_selector] No label found for {label_text!r}")
+                # Build variants of the label to increase chance of matching UI text
+                variants = []
+                orig = (label_text or "").strip()
+                if orig:
+                    variants.append(orig)
+
+                # Common cleanups
+                v = re.sub(r"^\s*edit\s+", "", orig, flags=re.I).strip()
+                if v and v not in variants:
+                    variants.append(v)
+
+                v2 = re.sub(r"\byour\b", "", v, flags=re.I).strip()
+                if v2 and v2 not in variants:
+                    variants.append(v2)
+
+                # Add tail phrases (last 2–4 words)
+                words = [w for w in re.split(r"\s+", v2) if w]
+                for n in (2, 3, 4):
+                    if len(words) >= n:
+                        tail = " ".join(words[-n:]).strip()
+                        if tail and tail not in variants:
+                            variants.append(tail)
+
+                # Special common rewrites
+                low = v2.lower()
+                if "profile visibility" in low and "Public profile" not in variants:
+                    variants.append("Public profile")
+                if "visibility" in low and "Profile visibility" not in variants:
+                    variants.append("Profile visibility")
+
+                # Try each variant until we find a match
+                matched_text = None
+                for v in variants:
+                    if not v:
+                        continue
+                    loc = page.get_by_text(v, exact=True)
+                    if not loc.count():
+                        loc = page.get_by_text(v, exact=False)
+                    if loc.count():
+                        label_loc = loc
+                        matched_text = v
+                        break
+
+                if not label_loc or not label_loc.count():
+                    print(f"[apply_selector] No label found for any variant of {variants!r}")
                     return False
 
+                # Use the matched label element
                 label = label_loc.first
                 label_box = label.bounding_box()
+                # --- Prefer finding a toggle/control in the same container row/card ---
+                # This solves layouts where the label container spans across the toggle.
+                try:
+                    container = label.locator("xpath=ancestor::*[self::li or self::section or self::div][1]")
+                    if container.count():
+                        # Prefer real checkbox/switch inputs first (most reliable via set_checked)
+                        inp = container.locator("input[type='checkbox'], input[role='switch'], [role='switch'][type='checkbox']")
+                        if inp.count():
+                            el = inp.first
+
+                            # if we know the desired state, set it deterministically
+                            want_on = desired_value in ("on", "enabled", "private")
+                            want_off = desired_value in ("off", "disabled", "public")
+
+                            if want_on or want_off:
+                                try:
+                                    cur = el.is_checked()
+                                    if want_on and not cur:
+                                        el.set_checked(True)
+                                        return True
+                                    if want_off and cur:
+                                        el.set_checked(False)
+                                        return True
+                                    # already correct
+                                    return True
+                                except Exception as e:
+                                    print("[apply_selector] set_checked failed, falling back to click:", e)
+                                    # fall through
+
+                            # Fallback: toggle if we don't know desired state (or set_checked failed)
+                            try:
+                                el.click(timeout=3500, force=True)
+                                return True
+                            except Exception:
+                                try:
+                                    cur = el.is_checked()
+                                    el.set_checked(not cur)
+                                    return True
+                                except Exception:
+                                    pass
+
+
+                        # Fall back to role switch, aria checked, etc.
+                        ctrl = container.locator("[role='switch'],[aria-checked],button[aria-pressed]")
+                        if ctrl.count():
+                            ctrl.first.click(timeout=3500, force=True)
+                            return True
+                except Exception as e:
+                    print("[apply_selector] container-control search failed:", e)
+
+
                 if not label_box:
-                    print("[apply_selector] No bounding_box for label, cannot click coords.")
+                    print("[apply_selector] No bounding_box for label")
                     return False
 
                 label_right = label_box["x"] + label_box["width"]
                 label_center_y = label_box["y"] + label_box["height"] / 2.0
 
-                # 2) Search for likely controls (inputs, buttons, switches, etc.)
-                #    and choose the one in the same row, just to the right of the label.
+                # Find candidate controls to the right in the same row
                 candidates_selector = (
                     "input,button,"
                     "[role='switch'],[role='checkbox'],[role='radio'],"
@@ -1171,56 +2119,53 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                 )
                 cand_loc = page.locator(candidates_selector)
                 total = cand_loc.count()
-                print(f"[apply_selector] searching {total} candidate controls near label '{label_text}'")
+                print(f"[apply_selector] searching {total} candidate controls near label {matched_text!r}")
 
                 best_box = None
                 best_dx = float("inf")
+                max_to_check = min(total, 80)
 
-                max_to_check = min(total, 60)  # safety bound
                 for i in range(max_to_check):
                     el = cand_loc.nth(i)
-                    try:
-                        box = el.bounding_box()
-                    except Exception:
-                        continue
+                    box = el.bounding_box()
                     if not box:
                         continue
 
-                    # Require the control to be to the RIGHT of the label.
+                    # Must be to the right of the label
                     dx = box["x"] - label_right
+                    # Allow controls that are inside the label container but on the right half.
                     if dx < 0:
+                        # accept if the control is on the right half of the label box
+                        ctrl_center_x = box["x"] + box["width"] / 2.0
+                        label_mid_x = label_box["x"] + label_box["width"] * 0.55
+                        if ctrl_center_x <= label_mid_x:
+                            continue
+
+
+                    # Must overlap vertically with label row
+                    if not (box["y"] <= label_center_y <= (box["y"] + box["height"])):
                         continue
 
-                    # Require some vertical overlap with the label row.
-                    ctrl_top = box["y"]
-                    ctrl_bottom = box["y"] + box["height"]
-                    if not (ctrl_top <= label_center_y <= ctrl_bottom):
-                        continue
-
-                    # Choose the closest control horizontally.
                     if dx < best_dx:
                         best_dx = dx
                         best_box = box
 
-                if best_box:
-                    cx = best_box["x"] + best_box["width"] / 2.0
-                    cy = best_box["y"] + best_box["height"] / 2.0
-                    print(
-                        "[apply_selector] Clicking center of nearest control at "
-                        f"({cx}, {cy}) for label {label_text!r}"
-                    )
-                    page.mouse.click(cx, cy)
-                    return True
+                if not best_box:
+                    # Very common: the label itself is the control (opens modal / navigates),
+                    # and there is no right-side toggle. Click the label as a safe fallback.
+                    try:
+                        print("[apply_selector] No nearby toggle found; clicking the label itself.")
+                        label.click(timeout=3500)
+                        return True
+                    except Exception as e:
+                        print("[apply_selector] Could not click label fallback:", e)
+                        return False
 
-                # 3) Fallback: if we didn't find a control, fall back to the simple
-                #    "to-the-right-of-label" click so we don't regress behavior.
-                x = label_right + min(40, label_box["width"])
-                y = label_center_y
-                print(
-                    "[apply_selector] No specific control found; falling back to "
-                    f"approx ({x}, {y}) for label {label_text!r}"
-                )
-                page.mouse.click(x, y)
+
+                cx = best_box["x"] + best_box["width"] / 2.0
+                cy = best_box["y"] + best_box["height"] / 2.0
+                print(f"[apply_selector] Clicking center of nearest control at ({cx}, {cy})")
+                page.mouse.click(cx, cy)
                 return True
 
             else:
@@ -1235,6 +2180,7 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                 except Exception as e:
                     print(f"[apply_selector] coord parse failed for {sval!r}: {e}")
                     return False
+
 
 
     except PwTimeout:
@@ -1420,7 +2366,8 @@ def planner_setting_change(
                     {
                         "purpose": "change_value",
                         "type": "coord",
-                        "selector": f"label:{leaf_hint}",
+                        "selector": f"hint:{leaf_hint}",
+                        "value": target_value,
                     }
                 ],
                 "done": False,
@@ -1473,7 +2420,8 @@ def planner_setting_change(
                     {
                         "purpose": "change_value",
                         "type": "coord",
-                        "selector": f"label:{leaf_hint}",
+                        "selector": f"hint:{leaf_hint}",
+                        "value": target_value,
                     }
                 ],
                 "done": False,
@@ -1517,7 +2465,7 @@ def planner_setting_change(
         except Exception as e2:
             print("[planner_setting_change] JSON parse error:", e2, "raw:", raw[:200])
 
-            # --- NEW: generic fallback when JSON is broken but we have a leaf_hint ---
+            # ---  fallback when JSON is broken but we have a leaf_hint ---
             if leaf_hint:
                 # Use a synthetic coord selector that our executor understands as:
                 # "click near the control associated with this label text".
@@ -1526,7 +2474,8 @@ def planner_setting_change(
                         {
                             "purpose": "change_value",
                             "type": "coord",
-                            "selector": f"label:{leaf_hint}", 
+                            "selector": f"hint:{leaf_hint}", 
+                            "value": target_value,
                         }
                     ],
                     "done": False,
@@ -1603,6 +2552,7 @@ def apply_setting_change_sync(
         "details": "",
         "url": None,
         "leaf_hint": leaf_hint,
+        "click_count": 0,
     }
 
 
@@ -1662,7 +2612,26 @@ def apply_setting_change_sync(
             # Small extra pause to let the UI paint fully before we screenshot for Gemini
             page.wait_for_timeout(2000)
 
+            # Deterministic early-exit: if already in desired state, stop immediately.
+            # (Works even when Gemini verification is overloaded.)
+            verify_label = leaf_hint or setting.name
+            desired = target_value.lower().strip()
 
+            if verify_label and desired in ("on", "off", "private", "public"):
+                state = read_control_state_by_label(page, verify_label)
+                if state is not None:
+                    if desired in ("on", "private") and state is True:
+                        result["status"] = "success"
+                        result["details"] = "Already in desired state; no action needed."
+                        result["click_count"] = 0
+                        return result
+                    if desired in ("off", "public") and state is False:
+                        result["status"] = "success"
+                        result["details"] = "Already in desired state; no action needed."
+                        result["click_count"] = 0
+                        return result
+
+            click_count = 0
             max_turns = 6
             last_notes = ""
             for turn in range(1, max_turns + 1):
@@ -1768,13 +2737,35 @@ def apply_setting_change_sync(
                     if "still loading" in ln or "no interactive elements" in ln:
                         page.wait_for_timeout(2000)
                         continue
-                    # Otherwise, we have no actions and no clear reason: bail out.
+                    # Otherwise, before bailing out, check if the setting is already in the desired state.
+                    # This prevents "uncertain" when the action succeeded or was unnecessary.
+                    try:
+                        tv = target_value.strip().lower()
+                        lbl = (leaf_hint_for_ui or leaf_hint or setting.name)
+
+                        state = read_control_state_by_label(page, lbl)
+                        if state is not None:
+                            want_on = tv in ("on", "enabled", "private")
+                            want_off = tv in ("off", "disabled", "public")
+
+                            if (want_on and state is True) or (want_off and state is False):
+                                result["status"] = "success"
+                                result["details"] = (
+                                    "Planner returned no selectors because the setting already matches the requested value. "
+                                    f"Notes: {last_notes}"
+                                )
+                                break
+                    except Exception:
+                        pass
+
+                    # If we still can't confirm state, bail as uncertain.
                     result["status"] = "uncertain"
                     result["details"] = (
                         f"Planner returned no selectors on turn {turn} with no clear loading message. "
                         f"Notes: {last_notes}"
                     )
                     break
+
 
                 # 4) Apply selectors.
                 applied_any = False
@@ -1783,6 +2774,7 @@ def apply_setting_change_sync(
                     purpose = (sel.get("purpose") or "").lower()
                     ok = apply_selector(page, sel)
                     if ok:
+                        click_count += 1
                         applied_any = True
                         if purpose == "confirm":
                             applied_confirm = True
@@ -1938,6 +2930,19 @@ def apply_setting_change_sync(
     except Exception as e:
         result["status"] = "error"
         result["details"] = f"Playwright/Gemini execution error: {e}"
+    
+    result["click_count"] = click_count
+    # Record stats to disk (success and non-success are both useful)
+    try:
+        record_run_stats(
+            platform=platform,
+            setting=setting,
+            target_value=target_value,
+            status=result.get("status", "unknown"),
+            click_count=int(result.get("click_count", 0)),
+        )
+    except Exception as e:
+        print("[stats] Failed to record run stats:", e)
 
     return result
 
@@ -2090,16 +3095,16 @@ async def on_chat_start():
     plat_list = "\n".join(f"- `{p}`" for p in plats) if plats else "_None loaded_"
 
     help_text = (
-        "Welcome to the Agentic Privacy Control Center 👋\n\n"
+        "Welcome to the Agentic Privacy Control Center! \n\n"
         "You can interact with this chatbot in two ways:\n\n"
         "🟢 **Natural language:**\n"
+        "Pick a platform from the buttons below, then describe the privacy or account setting you want to change and the desired state.\n\n"
         "You can type normally, as long as you mention:\n"
-        "- A **platform** (e.g. Reddit, Instagram, X)\n"
         "- A **privacy or account setting** you want to change\n"
         "- The **state** you want to change it to (e.g. on/off, private/public)\n\n"
         "Examples:\n"
-        "- \"Turn off allowing people to follow me on Reddit\"\n"
-        "- \"Set my Instagram account to private\"\n\n"
+        "- \"Turn off allowing people to follow me\"\n"
+        "- \"Set my account to private\"\n\n"
         "If multiple settings could match your request, I’ll ask you to confirm the correct one before making any changes.\n\n"
         "🔧 **Command-based (advanced):**\n"
         "- `platforms` — list all supported platforms\n"
@@ -2107,12 +3112,17 @@ async def on_chat_start():
         "- `change <platform> <section_id_or_name> to <value>`\n"
         "- `change <platform> <section_id_or_name>::<leaf_setting_name> to <value>`\n"
         "- `report` — show a summary of this session's changes\n\n"
-        "Supported platforms currently loaded:\n"
-        + "\n".join(f"- `{p}`" for p in plats)
+        
     )
 
+    #DEBUG add into help_text:
+    # "Supported platforms currently loaded:\n"
+    #     + "\n".join(f"- `{p}`" for p in plats)
 
-    await cl.Message(content=help_text).send()
+
+    await cl.Message(help_text).send()
+    await prompt_pick_platform()
+
 
 
 @cl.on_message
@@ -2124,7 +3134,14 @@ async def on_message(message: cl.Message):
 
     lower = text.lower().strip()
 
+    if lower in ("change platform", "switch platform", "platform"):
+        await prompt_pick_platform()
+        return
+
+
+    # ---------------------------------------------------------------------
     # Debug command: dump_settings -> export current settings DB to JSON file
+    # ---------------------------------------------------------------------
     if lower == "dump_settings":
         data = export_all_settings_snapshot()
         out_path = REPO_ROOT / "privacyagentapp" / "settingslist" / "settings_snapshot.json"
@@ -2133,9 +3150,8 @@ async def on_message(message: cl.Message):
         await cl.Message(content=f"Saved settings snapshot to `{out_path}`").send()
         return
 
-
     # ---------------------------------------------------------------------
-    # 0) If we previously asked for a missing value after a setting pick
+    # 0) If we previously asked for a missing value after a setting pick (typed reply)
     # ---------------------------------------------------------------------
     pending = cl.user_session.get("final_setting_to_change")
     if pending and lower in ("on", "off", "private", "public", "enable", "disable", "enabled", "disabled"):
@@ -2150,30 +3166,18 @@ async def on_message(message: cl.Message):
 
         await cl.Message(content=f"Ok — changing **{setting.name}** on `{platform}` to `{target_value}`…").send()
         result = await cl.make_async(apply_setting_change_sync)(
-            platform, setting, target_value, leaf_hint=setting.name
+            platform, setting, target_value, leaf_hint=cl.user_session.get("inferred_leaf_hint") or setting.name
         )
         append_change(result)
         await cl.Message(
-            content=f"Result: status = `{result.get('status')}`\nDetails: {result.get('details')}"
+            content=active_platform_banner() + f"Result: status = `{result.get('status')}`\nDetails: {result.get('details')}",
+            actions=[change_platform_action()]
         ).send()
+
         return
 
     # ---------------------------------------------------------------------
-    # 1) If we previously asked "Which platform is this for?", handle reply now
-    # ---------------------------------------------------------------------
-    pending_nl = cl.user_session.get("pending_nl_query")
-    if pending_nl and not lower.startswith("change "):
-        plat = find_platform_alias(text.strip())
-        if plat:
-            cl.user_session.set("pending_nl_query", None)
-            setting_query = pending_nl.get("setting_query")
-            target_value = pending_nl.get("target_value")
-            candidates = find_setting_candidates(plat, setting_query or "", limit=8)
-            await present_candidates(plat, setting_query or "(unspecified)", candidates, target_value)
-            return
-
-    # ---------------------------------------------------------------------
-    # 2) Command routing
+    # 1) Commands
     # ---------------------------------------------------------------------
     if lower == "platforms":
         plats = list_platforms()
@@ -2203,7 +3207,7 @@ async def on_message(message: cl.Message):
         return
 
     # ---------------------------------------------------------------------
-    # 3) Advanced command: change <platform> <section_id_or_name>[::leaf] to <value>
+    # 2) Advanced command: change <platform> <section_id_or_name>[::leaf] to <value>
     # ---------------------------------------------------------------------
     if lower.startswith("change "):
         try:
@@ -2272,7 +3276,8 @@ async def on_message(message: cl.Message):
             append_change(result)
 
             await cl.Message(
-                content=f"Result: status = `{result.get('status')}`\nDetails: {result.get('details')}"
+                content=active_platform_banner() + f"Result: status = `{result.get('status')}`\nDetails: {result.get('details')}",
+                actions=[change_platform_action()]
             ).send()
             return
 
@@ -2290,62 +3295,18 @@ async def on_message(message: cl.Message):
             return
 
     # ---------------------------------------------------------------------
-    # 4) Natural language flow
+    # 3) Platform-first Natural Language flow (platform-scoped Gemini + DB)
     # ---------------------------------------------------------------------
-    known_platforms = list_platforms()
-    parsed = gemini_interpret_request(text, known_platforms)
+    
 
-    # Fallback to heuristic parser if Gemini fails
-    if not parsed.get("setting_query") and not parsed.get("platform_hint") and not parsed.get("target_value"):
-        parsed2 = parse_nl_request(text)
-        parsed = {
-            "platform_hint": parsed2.get("platform_hint"),
-            "setting_query": parsed2.get("setting_query"),
-            "target_value": parsed2.get("target_value"),
-        }
+    active_plat = cl.user_session.get(SESSION_ACTIVE_PLATFORM)
 
-    platform_hint = parsed.get("platform_hint")
-    target_value = parsed.get("target_value")
-    setting_query = parsed.get("setting_query")
-
-
-    plat = None
-    if platform_hint:
-        plat = find_platform_alias(platform_hint) or platform_hint
-
-    # If platform missing, ask for platform and store pending query
-    if not plat:
-        if setting_query:
-            await cl.Message(
-                content="Which platform is this for? (Example: `instagram`, `reddit`, `twitterX`)"
-            ).send()
-            cl.user_session.set("pending_nl_query", {"setting_query": setting_query, "target_value": target_value})
-            return
-
-    # If platform exists but query missing, ask for setting
-    if plat and not setting_query:
-        await cl.Message(
-            content="What setting do you want to change? (Example: “allow people to follow me”)"
-        ).send()
+    # If no active platform, store text and prompt platform buttons.
+    if not active_plat:
+        cl.user_session.set(SESSION_PENDING_NL_TEXT, text)
+        await prompt_pick_platform()
         return
 
-    # If we have platform + query, present candidates (even if value missing)
-    if plat and setting_query:
-        candidates = find_setting_candidates(plat, setting_query, limit=8)
-        await present_candidates(plat, setting_query, candidates, target_value)
-        return
-
-    # ---------------------------------------------------------------------
-    # 5) Fallback
-    # ---------------------------------------------------------------------
-    await cl.Message(
-        content=(
-            "I didn't recognize that command.\n\n"
-            "For now, use one of:\n"
-            "- `platforms`\n"
-            "- `settings <platform>`\n"
-            "- `change <platform> <setting_id_or_name> to <value>`\n"
-            "- `report`\n\n"
-            "Or type a normal sentence like: \"Turn off people following me on Reddit\""
-        )
-    ).send()
+    # We have an active platform — interpret + candidate-pick scoped to that platform.
+    await handle_platform_scoped_nl(active_plat, text)
+    return

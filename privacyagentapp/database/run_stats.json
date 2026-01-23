@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "updated_at": "2026-01-20T23:55:29.902160Z",
+  "by_setting": {
+    "reddit::allow_people_to_follow_you": {
+      "platform": "reddit",
+      "setting_id": "allow_people_to_follow_you",
+      "name": "Allow people to follow you",
+      "runs": 1,
+      "successes": 1,
+      "avg_clicks_success": 1.0,
+      "min_clicks_success": 1,
+      "max_clicks_success": 1,
+      "last_success_ts": "2026-01-20T19:50:05.021532Z",
+      "history": [
+        {
+          "ts": "2026-01-20T19:50:05.021532Z",
+          "status": "success",
+          "target_value": "off",
+          "click_count": 1
+        }
+      ]
+    },
+    "instagram::private_account": {
+      "platform": "instagram",
+      "setting_id": "private_account",
+      "name": "Private account",
+      "runs": 1,
+      "successes": 1,
+      "avg_clicks_success": 2.0,
+      "min_clicks_success": 2,
+      "max_clicks_success": 2,
+      "last_success_ts": "2026-01-20T19:53:33.471114Z",
+      "history": [
+        {
+          "ts": "2026-01-20T19:53:33.471114Z",
+          "status": "success",
+          "target_value": "off",
+          "click_count": 2
+        }
+      ]
+    },
+    "zoom::optional_diagnostic_data": {
+      "platform": "zoom",
+      "setting_id": "optional_diagnostic_data",
+      "name": "Optional Diagnostic Data",
+      "runs": 1,
+      "successes": 1,
+      "avg_clicks_success": 1.0,
+      "min_clicks_success": 1,
+      "max_clicks_success": 1,
+      "last_success_ts": "2026-01-20T20:19:36.986542Z",
+      "history": [
+        {
+          "ts": "2026-01-20T20:19:36.986542Z",
+          "status": "success",
+          "target_value": "off",
+          "click_count": 1
+        }
+      ]
+    },
+    "twitterX::audience__media_and_tagging": {
+      "platform": "twitterX",
+      "setting_id": "audience__media_and_tagging",
+      "name": "Audience, media and tagging",
+      "runs": 1,
+      "successes": 1,
+      "avg_clicks_success": 3.0,
+      "min_clicks_success": 3,
+      "max_clicks_success": 3,
+      "last_success_ts": "2026-01-20T21:07:52.583650Z",
+      "history": [
+        {
+          "ts": "2026-01-20T21:07:52.583650Z",
+          "status": "success",
+          "target_value": "on",
+          "click_count": 3
+        }
+      ]
+    },
+    "linkedin::edit_your_public_profile": {
+      "platform": "linkedin",
+      "setting_id": "edit_your_public_profile",
+      "name": "Edit your public profile",
+      "runs": 2,
+      "successes": 2,
+      "avg_clicks_success": 2.5,
+      "min_clicks_success": 2,
+      "max_clicks_success": 3,
+      "last_success_ts": "2026-01-20T23:55:29.902187Z",
+      "history": [
+        {
+          "ts": "2026-01-20T22:19:54.504604Z",
+          "status": "success",
+          "target_value": "off",
+          "click_count": 2
+        },
+        {
+          "ts": "2026-01-20T23:55:29.902187Z",
+          "status": "success",
+          "target_value": "on",
+          "click_count": 3
+        }
+      ]
+    }
+  }
+}
