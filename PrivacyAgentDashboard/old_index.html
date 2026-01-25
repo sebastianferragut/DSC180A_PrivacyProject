@@ -36,7 +36,7 @@
           </label>
           <label for="platformFilter">
             Platform:
-            <select id="platformFilter">
+            <select id="platformFilter" multiple size="5">
               <option value="all">All</option>
             </select>
           </label>
@@ -57,7 +57,79 @@
         <!-- Legend will be populated by JavaScript -->
       </div>
     </section>
+
+    <!-- Additional Charts Section -->
+    <section class="panel charts-section">
+      <div id="belowTreemapRow" class="charts-container">
+        <div class="chart-panel">
+          <h3>Settings by Platform and Type</h3>
+          <div id="stackedPlatformChart"></div>
+        </div>
+        <div class="chart-panel">
+          <h3>Coverage Heatmap</h3>
+          <div id="categorySmallMultiples"></div>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <style>
+    #platformFilter {
+      min-width: 150px;
+      padding: 4px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #fff;
+    }
+    
+    #platformFilter option {
+      padding: 4px 8px;
+    }
+    
+    .charts-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 30px;
+      padding: 20px;
+    }
+
+    @media (max-width: 1024px) {
+      .charts-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-panel {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 15px;
+    }
+
+    .chart-panel h3 {
+      margin: 0 0 15px 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    #stackedPlatformChart,
+    #categorySmallMultiples {
+      min-height: 400px;
+    }
+
+    .small-multiple {
+      margin-bottom: 30px;
+    }
+
+    .small-multiple h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 0 10px 0;
+      color: #555;
+    }
+  </style>
 
   <script src="treemap.js"></script>
 </body>

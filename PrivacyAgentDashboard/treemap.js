@@ -46,7 +46,7 @@ let zoomStack = [];
 let currentSizingMetric = 'count';
 let currentStateFilter = 'all';
 let currentSearchQuery = '';
-let currentPlatformFilter = 'all';
+let currentPlatformFilter = ['all']; // Array to support multiple selections
 
 // Load and parse CSV
 // Try local path first (if CSV is in same directory), then relative path
@@ -260,9 +260,9 @@ function calculateWeight(stateType, category, metric) {
 function getFilteredData() {
   let filtered = allData;
   
-  // Apply platform filter
-  if (currentPlatformFilter !== 'all') {
-    filtered = filtered.filter(d => d.platform === currentPlatformFilter);
+  // Apply platform filter (supports multiple selections)
+  if (!currentPlatformFilter.includes('all') && currentPlatformFilter.length > 0) {
+    filtered = filtered.filter(d => currentPlatformFilter.includes(d.platform));
   }
   
   // Apply state type filter
@@ -671,6 +671,7 @@ function renderTreemap() {
   
     updateBreadcrumbs();
     renderLegend(platforms, categories);
+    renderBelowTreemapCharts();
   }
   
 
@@ -760,6 +761,513 @@ function renderLegend(platforms, categories) {
       .style("color", "#666")
       .text(category.replace(/_/g, ' '));
   });
+}
+
+/**
+ * Render charts below treemap (stacked bar and small multiples)
+ */
+function renderBelowTreemapCharts() {
+  const filtered = getFilteredData();
+  renderStackedPlatformChart(filtered);
+  renderCoverageHeatmap(filtered);
+}
+
+/**
+ * Render stacked bar chart: actionable vs navigational vs unknown counts per platform
+ */
+function renderStackedPlatformChart(filteredData) {
+  const container = d3.select("#stackedPlatformChart");
+  container.selectAll("*").remove();
+
+  if (!filteredData || filteredData.length === 0) {
+    container.append("p")
+      .style("padding", "20px")
+      .style("color", "#666")
+      .text("No data available after filtering.");
+    return;
+  }
+
+  // Prepare data: group by platform and count by stateType
+  const platformMap = new Map();
+  filteredData.forEach(d => {
+    const platform = d.platform || "unknown";
+    if (!platformMap.has(platform)) {
+      platformMap.set(platform, {
+        platform: platform,
+        actionable: 0,
+        navigational: 0,
+        unknown: 0
+      });
+    }
+    const counts = platformMap.get(platform);
+    const stateType = d.stateType || "unknown";
+    if (stateType === "actionable") counts.actionable++;
+    else if (stateType === "navigational") counts.navigational++;
+    else counts.unknown++;
+  });
+
+  const data = Array.from(platformMap.values())
+    .map(d => ({
+      platform: d.platform,
+      actionable: d.actionable,
+      navigational: d.navigational,
+      unknown: d.unknown,
+      total: d.actionable + d.navigational + d.unknown
+    }))
+    .sort((a, b) => b.total - a.total);
+
+  if (data.length === 0) {
+    container.append("p")
+      .style("padding", "20px")
+      .style("color", "#666")
+      .text("No data available after filtering.");
+    return;
+  }
+
+  // Set up dimensions
+  const margin = { top: 20, right: 20, bottom: 60, left: 50 };
+  const width = container.node().getBoundingClientRect().width || 600;
+  const height = 400;
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+
+  // Create SVG
+  const svg = container.append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+  const g = svg.append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  // Scales
+  const xScale = d3.scaleBand()
+    .domain(data.map(d => d.platform))
+    .range([0, innerWidth])
+    .padding(0.2);
+
+  const maxTotal = d3.max(data, d => d.total) || 1;
+  const yScale = d3.scaleLinear()
+    .domain([0, maxTotal])
+    .nice()
+    .range([innerHeight, 0]);
+
+  // Stack keys
+  const stackKeys = ["actionable", "navigational", "unknown"];
+  const stack = d3.stack()
+    .keys(stackKeys)
+    .order(d3.stackOrderNone)
+    .offset(d3.stackOffsetNone);
+
+  const stackedData = stack(data);
+
+  // Color scale for stack layers
+  const colorScale = d3.scaleOrdinal()
+    .domain(stackKeys)
+    .range(["#2196F3", "#4CAF50", "#9E9E9E"]);
+
+  // Create or reuse tooltip
+  let tooltip = d3.select("body").select(".stacked-chart-tooltip");
+  if (tooltip.empty()) {
+    tooltip = d3.select("body").append("div")
+      .attr("class", "stacked-chart-tooltip");
+  }
+  tooltip
+    .style("position", "absolute")
+    .style("padding", "8px 12px")
+    .style("background", "rgba(0, 0, 0, 0.85)")
+    .style("color", "#fff")
+    .style("border-radius", "4px")
+    .style("font-size", "12px")
+    .style("pointer-events", "none")
+    .style("opacity", 0)
+    .style("z-index", 1000);
+
+  // Draw bars
+  const layers = g.selectAll(".layer")
+    .data(stackedData)
+    .enter()
+    .append("g")
+    .attr("class", "layer")
+    .attr("fill", d => colorScale(d.key));
+
+  layers.selectAll("rect")
+    .data(d => d)
+    .enter()
+    .append("rect")
+    .attr("x", d => xScale(d.data.platform))
+    .attr("y", d => yScale(d[1]))
+    .attr("height", d => yScale(d[0]) - yScale(d[1]))
+    .attr("width", xScale.bandwidth())
+    .on("mouseover", function(event, d) {
+      const platform = d.data.platform;
+      const key = d3.select(this.parentNode).datum().key;
+      const value = d[1] - d[0];
+      const total = d.data.total;
+      const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+
+      tooltip.transition()
+        .duration(200)
+        .style("opacity", 1);
+
+      tooltip.html(`
+        <strong>${platform.charAt(0).toUpperCase() + platform.slice(1)}</strong><br/>
+        ${key.charAt(0).toUpperCase() + key.slice(1)}: ${value} (${percentage}%)<br/>
+        Total: ${total}
+      `)
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 10) + "px");
+    })
+    .on("mousemove", function(event) {
+      tooltip
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 10) + "px");
+    })
+    .on("mouseout", function() {
+      tooltip.transition()
+        .duration(200)
+        .style("opacity", 0);
+    });
+
+  // X-axis
+  g.append("g")
+    .attr("transform", `translate(0,${innerHeight})`)
+    .call(d3.axisBottom(xScale))
+    .selectAll("text")
+    .style("text-anchor", "end")
+    .attr("dx", "-.8em")
+    .attr("dy", ".15em")
+    .attr("transform", "rotate(-45)")
+    .style("font-size", "11px");
+
+  // Y-axis
+  g.append("g")
+    .call(d3.axisLeft(yScale).ticks(5))
+    .style("font-size", "11px");
+
+  // Y-axis label
+  g.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 0 - margin.left)
+    .attr("x", 0 - (innerHeight / 2))
+    .attr("dy", "1em")
+    .style("text-anchor", "middle")
+    .style("font-size", "12px")
+    .text("Count of Settings");
+
+  // Legend
+  const legend = g.append("g")
+    .attr("transform", `translate(${innerWidth - 150}, 10)`);
+
+  const legendItems = legend.selectAll(".legend-item")
+    .data(stackKeys)
+    .enter()
+    .append("g")
+    .attr("class", "legend-item")
+    .attr("transform", (d, i) => `translate(0, ${i * 20})`);
+
+  legendItems.append("rect")
+    .attr("width", 12)
+    .attr("height", 12)
+    .attr("fill", d => colorScale(d));
+
+  legendItems.append("text")
+    .attr("x", 16)
+    .attr("y", 9)
+    .style("font-size", "11px")
+    .text(d => d.charAt(0).toUpperCase() + d.slice(1));
+}
+
+/**
+ * Render coverage heatmap: platforms (rows) vs top N setting names (columns)
+ * Cell value encodes: 0=missing, 1=navigational, 2=actionable, 3=unknown
+ */
+function renderCoverageHeatmap(filteredData) {
+  const container = d3.select("#categorySmallMultiples");
+  container.selectAll("*").remove();
+
+  if (!filteredData || filteredData.length === 0) {
+    container.append("p")
+      .style("padding", "20px")
+      .style("color", "#666")
+      .text("No data for current filters.");
+    return;
+  }
+
+  // Configuration: top N settings to show
+  const TOP_N_SETTINGS = 30;
+
+  // Build list of platforms (sorted, prefer order from PLATFORM_COLORS)
+  const platformOrder = Object.keys(PLATFORM_COLORS);
+  const platformsSet = new Set(filteredData.map(d => (d.platform || "unknown").trim().toLowerCase()));
+  const platforms = platformOrder.filter(p => platformsSet.has(p))
+    .concat(Array.from(platformsSet).filter(p => !platformOrder.includes(p)).sort());
+
+  if (platforms.length === 0) {
+    container.append("p")
+      .style("padding", "20px")
+      .style("color", "#666")
+      .text("No data for current filters.");
+    return;
+  }
+
+  // Build list of top N setting names by frequency
+  const settingCounts = new Map();
+  filteredData.forEach(d => {
+    const settingName = (d.setting || "").trim();
+    if (settingName) {
+      const key = settingName.toLowerCase(); // Normalize for counting
+      settingCounts.set(key, (settingCounts.get(key) || 0) + 1);
+    }
+  });
+
+  // Get top N settings (preserve original capitalization from first occurrence)
+  const settingNameMap = new Map(); // lowercase -> original
+  filteredData.forEach(d => {
+    const settingName = (d.setting || "").trim();
+    if (settingName) {
+      const key = settingName.toLowerCase();
+      if (!settingNameMap.has(key)) {
+        settingNameMap.set(key, settingName);
+      }
+    }
+  });
+
+  const topSettings = Array.from(settingCounts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, TOP_N_SETTINGS)
+    .map(([key]) => settingNameMap.get(key))
+    .filter(Boolean);
+
+  if (topSettings.length === 0) {
+    container.append("p")
+      .style("padding", "20px")
+      .style("color", "#666")
+      .text("No data for current filters.");
+    return;
+  }
+
+  // Build lookup: platform+setting -> best stateType
+  // Priority: actionable > navigational > unknown
+  const coverageMap = new Map();
+  const urlMap = new Map(); // Store first URL found for each platform+setting
+  const countMap = new Map(); // Count occurrences
+
+  filteredData.forEach(d => {
+    const platform = (d.platform || "unknown").trim().toLowerCase();
+    const settingName = (d.setting || "").trim();
+    if (!settingName) return;
+
+    const key = `${platform}::${settingName.toLowerCase()}`;
+    const currentStateType = (d.stateType || "unknown").toLowerCase();
+    
+    // Count occurrences
+    countMap.set(key, (countMap.get(key) || 0) + 1);
+    
+    if (!coverageMap.has(key)) {
+      coverageMap.set(key, currentStateType);
+      if (d.url) {
+        urlMap.set(key, d.url);
+      }
+    } else {
+      // Update if we have a "better" stateType
+      const existing = coverageMap.get(key);
+      const priority = { actionable: 3, navigational: 2, unknown: 1 };
+      if (priority[currentStateType] > priority[existing]) {
+        coverageMap.set(key, currentStateType);
+        if (d.url && !urlMap.has(key)) {
+          urlMap.set(key, d.url);
+        }
+      }
+    }
+  });
+
+  // Build matrix data
+  const matrix = platforms.map(platform => {
+    return topSettings.map(settingName => {
+      const key = `${platform}::${settingName.toLowerCase()}`;
+      const stateType = coverageMap.get(key);
+      
+      let value = 0; // missing
+      if (stateType === "actionable") value = 2;
+      else if (stateType === "navigational") value = 1;
+      else if (stateType === "unknown") value = 3;
+
+      return {
+        platform,
+        setting: settingName,
+        value,
+        url: urlMap.get(key) || null,
+        count: countMap.get(key) || 0
+      };
+    });
+  });
+
+  // Set up dimensions
+  const containerWidth = container.node().getBoundingClientRect().width || 600;
+  const margin = { top: 80, right: 20, bottom: 120, left: 120 };
+  const width = containerWidth - margin.left - margin.right;
+  const height = Math.max(400, platforms.length * 25 + margin.top + margin.bottom) - margin.top - margin.bottom;
+
+  // Create SVG
+  const svg = container.append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom);
+
+  const g = svg.append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  // Scales
+  const xScale = d3.scaleBand()
+    .domain(topSettings)
+    .range([0, width])
+    .padding(0.05);
+
+  const yScale = d3.scaleBand()
+    .domain(platforms)
+    .range([0, height])
+    .padding(0.05);
+
+  // Color scale
+  const colorScale = d3.scaleOrdinal()
+    .domain([0, 1, 2, 3])
+    .range(["#f2f2f2", "#4CAF50", "#2196F3", "#9E9E9E"]);
+
+  // Create or reuse tooltip
+  let tooltip = d3.select("body").select(".heatmap-tooltip");
+  if (tooltip.empty()) {
+    tooltip = d3.select("body").append("div")
+      .attr("class", "heatmap-tooltip");
+  }
+  tooltip
+    .style("position", "absolute")
+    .style("padding", "8px 12px")
+    .style("background", "rgba(0, 0, 0, 0.85)")
+    .style("color", "#fff")
+    .style("border-radius", "4px")
+    .style("font-size", "12px")
+    .style("pointer-events", "none")
+    .style("opacity", 0)
+    .style("z-index", 1000);
+
+  // Draw cells
+  const cells = g.selectAll(".cell")
+    .data(matrix.flat())
+    .enter()
+    .append("rect")
+    .attr("class", "cell")
+    .attr("x", d => xScale(d.setting))
+    .attr("y", d => yScale(d.platform))
+    .attr("width", xScale.bandwidth())
+    .attr("height", yScale.bandwidth())
+    .attr("fill", d => colorScale(d.value))
+    .attr("stroke", "#fff")
+    .attr("stroke-width", 0.5)
+    .style("cursor", d => d.value > 0 && d.url ? "pointer" : "default")
+    .on("mouseover", function(event, d) {
+      const statusMap = {
+        0: "Missing",
+        1: "Navigational",
+        2: "Actionable",
+        3: "Unknown"
+      };
+
+      tooltip.transition()
+        .duration(200)
+        .style("opacity", 1);
+
+      let tooltipHtml = `
+        <strong>${d.platform.charAt(0).toUpperCase() + d.platform.slice(1)}</strong><br/>
+        <strong>${d.setting}</strong><br/>
+        Status: ${statusMap[d.value]}<br/>
+        Count: ${d.count}
+      `;
+      
+      if (d.url) {
+        tooltipHtml += `<br/><em style="font-size: 10px; color: #ccc;">Click to open URL</em>`;
+      }
+
+      tooltip.html(tooltipHtml)
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 10) + "px");
+
+      d3.select(this)
+        .attr("stroke-width", 2)
+        .attr("stroke", "#333");
+    })
+    .on("mousemove", function(event) {
+      tooltip
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 10) + "px");
+    })
+    .on("mouseout", function() {
+      tooltip.transition()
+        .duration(200)
+        .style("opacity", 0);
+
+      d3.select(this)
+        .attr("stroke-width", 0.5)
+        .attr("stroke", "#fff");
+    })
+    .on("click", function(event, d) {
+      if (d.value > 0 && d.url) {
+        window.open(d.url, "_blank");
+      }
+    });
+
+  // X-axis (setting names at bottom, rotated)
+  g.append("g")
+    .attr("transform", `translate(0,${height})`)
+    .call(d3.axisBottom(xScale))
+    .selectAll("text")
+    .style("text-anchor", "end")
+    .attr("dx", "-.8em")
+    .attr("dy", ".15em")
+    .attr("transform", "rotate(-45)")
+    .style("font-size", "10px")
+    .text(d => {
+      // Truncate long setting names
+      const maxLen = 20;
+      return d.length > maxLen ? d.substring(0, maxLen - 3) + "..." : d;
+    });
+
+  // Y-axis (platform names on left)
+  g.append("g")
+    .call(d3.axisLeft(yScale))
+    .selectAll("text")
+    .style("font-size", "11px")
+    .text(d => d.charAt(0).toUpperCase() + d.slice(1));
+
+  // Legend
+  const legendData = [
+    { label: "Missing", value: 0 },
+    { label: "Navigational", value: 1 },
+    { label: "Actionable", value: 2 },
+    { label: "Unknown", value: 3 }
+  ];
+
+  const legend = g.append("g")
+    .attr("class", "legend")
+    .attr("transform", `translate(${width - 180}, -60)`);
+
+  const legendItems = legend.selectAll(".legend-item")
+    .data(legendData)
+    .enter()
+    .append("g")
+    .attr("class", "legend-item")
+    .attr("transform", (d, i) => `translate(0, ${i * 20})`);
+
+  legendItems.append("rect")
+    .attr("width", 14)
+    .attr("height", 14)
+    .attr("fill", d => colorScale(d.value))
+    .attr("stroke", "#fff")
+    .attr("stroke-width", 0.5);
+
+  legendItems.append("text")
+    .attr("x", 18)
+    .attr("y", 11)
+    .style("font-size", "11px")
+    .text(d => d.label);
 }
 
 /**
@@ -905,13 +1413,14 @@ function populatePlatformFilter() {
     .filter(p => p && p !== 'unknown')
     .sort();
   
-  // Preserve current selection if it exists
-  const currentSelection = platformFilterSelect.value;
+  // Preserve current selections (array of selected values)
+  const currentSelections = Array.from(platformFilterSelect.selectedOptions)
+    .map(option => option.value);
   
   // Build options HTML
   let optionsHTML = '<option value="all">All</option>';
   platforms.forEach(platform => {
-    const selected = currentSelection === platform ? ' selected' : '';
+    const selected = currentSelections.includes(platform) ? ' selected' : '';
     const displayName = platform.charAt(0).toUpperCase() + platform.slice(1);
     optionsHTML += `<option value="${platform}"${selected}>${displayName}</option>`;
   });
@@ -919,10 +1428,24 @@ function populatePlatformFilter() {
   // Update dropdown
   platformFilterSelect.innerHTML = optionsHTML;
   
-  // If previous selection doesn't exist anymore, reset to "all"
-  if (currentSelection !== 'all' && !platforms.includes(currentSelection)) {
-    platformFilterSelect.value = 'all';
-    currentPlatformFilter = 'all';
+  // Restore selections if they still exist
+  if (currentSelections.length > 0 && !currentSelections.includes('all')) {
+    currentSelections.forEach(val => {
+      const option = platformFilterSelect.querySelector(`option[value="${val}"]`);
+      if (option) {
+        option.selected = true;
+      }
+    });
+    // Update the filter state
+    currentPlatformFilter = currentSelections.filter(p => platforms.includes(p));
+    if (currentPlatformFilter.length === 0) {
+      currentPlatformFilter = ['all'];
+      platformFilterSelect.querySelector('option[value="all"]').selected = true;
+    }
+  } else {
+    // Default to "all" if no valid selections
+    currentPlatformFilter = ['all'];
+    platformFilterSelect.querySelector('option[value="all"]').selected = true;
   }
 }
 
@@ -938,7 +1461,37 @@ function setupEventHandlers() {
   
   if (platformFilterSelect) {
     platformFilterSelect.addEventListener("change", function() {
-      currentPlatformFilter = this.value;
+      // Get all selected options
+      const selectedOptions = Array.from(this.selectedOptions).map(opt => opt.value);
+      
+      // Handle "All" option logic
+      if (selectedOptions.includes('all')) {
+        // If "All" is selected along with other options, deselect "All" and keep others
+        if (selectedOptions.length > 1) {
+          this.querySelector('option[value="all"]').selected = false;
+          const filtered = selectedOptions.filter(v => v !== 'all');
+          currentPlatformFilter = filtered;
+        } else {
+          // Only "All" is selected - deselect everything else to be safe
+          Array.from(this.options).forEach(opt => {
+            if (opt.value !== 'all') {
+              opt.selected = false;
+            }
+          });
+          currentPlatformFilter = ['all'];
+        }
+      } else {
+        // "All" is not selected
+        if (selectedOptions.length === 0) {
+          // No selection - default to "All"
+          this.querySelector('option[value="all"]').selected = true;
+          currentPlatformFilter = ['all'];
+        } else {
+          // Other platforms selected - use them
+          currentPlatformFilter = selectedOptions;
+        }
+      }
+      
       currentRoot = null;
       zoomStack = [];
       buildHierarchy();
@@ -983,12 +1536,15 @@ function setupEventHandlers() {
       currentRoot = null;
       zoomStack = [];
       currentSearchQuery = '';
-      currentPlatformFilter = 'all';
+      currentPlatformFilter = ['all'];
       if (searchBox) {
         searchBox.value = "";
       }
       if (platformFilterSelect) {
-        platformFilterSelect.value = 'all';
+        // Deselect all options except "all"
+        Array.from(platformFilterSelect.options).forEach(opt => {
+          opt.selected = opt.value === 'all';
+        });
       }
       buildHierarchy();
       renderTreemap();
