@@ -69,6 +69,47 @@ SESSION_INFERRED_BY_SETTING = "inferred_by_setting"
 SESSION_ACTIVE_PLATFORM = "active_platform"
 SESSION_PENDING_NL_TEXT = "pending_nl_text"
 
+
+SESSION_BROWSE_CATEGORY = "browse_category"
+SESSION_BROWSE_PAGE = "browse_page"
+SESSION_SELECTED_SETTING_ID = "selected_setting_id"
+SESSION_SELECTED_PLATFORM = "selected_platform"
+
+
+ENABLE_NLP = False  
+
+# Categories present in settings_snapshot.json (verified)
+CATEGORY_ORDER = [
+    "security_authentication",
+    "identity_personal_info",
+    "device_sensor_access",
+    "data_collection_tracking",
+    "visibility_audience",
+    "communication_notifications",
+    "uncategorized",
+]
+
+CATEGORY_TITLES = {
+    "security_authentication": "Security & Authentication",
+    "identity_personal_info": "Identity & Personal Info",
+    "device_sensor_access": "Device & Sensor Access",
+    "data_collection_tracking": "Data Collection & Tracking",
+    "visibility_audience": "Visibility & Audience",
+    "communication_notifications": "Communication & Notifications",
+    "uncategorized": "Uncategorized",
+}
+
+CATEGORY_HELP = {
+    "security_authentication": "Passwords, 2FA/passkeys, sessions, suspicious activity, recovery.",
+    "identity_personal_info": "Profile details, contact info, identity verification, demographics.",
+    "device_sensor_access": "Camera, mic, screen share, recording, device permissions.",
+    "data_collection_tracking": "Ads, tracking, telemetry, history, personalization, AI training data.",
+    "visibility_audience": "Profile/post visibility, discoverability, followers, blocking.",
+    "communication_notifications": "Messaging, calls, comments, notifications, read receipts.",
+    "uncategorized": "Not classified yet.",
+}
+
+
 # =========================
 # Session-only Gemini API key support
 # =========================
@@ -774,7 +815,22 @@ def end_session_action() -> cl.Action:
         label="End session (wipe key)"
     )
 
+async def _nlp_disabled_notice():
+    await cl.Message(
+        content=active_platform_banner()
+        + "NLP mode is disabled for the demo. Use **Browse settings** or the `change ...` command.",
+        actions=[browse_settings_action(), change_platform_action(), set_gemini_key_action(), end_session_action()],
+    ).send()
+
 async def present_candidates(platform: str, query: str, candidates: List[SettingEntry], target_value: Optional[str]):
+    if not ENABLE_NLP:
+        await cl.Message(
+            content=active_platform_banner()
+            + "NLP selection is disabled for the demo. Use **Browse settings** instead.",
+            actions=[browse_settings_action(), change_platform_action(), set_gemini_key_action(), end_session_action()],
+        ).send()
+        return
+
     # Keep only top 3
     candidates = candidates[:3]
 
@@ -870,6 +926,9 @@ async def on_change_platform(action: cl.Action):
 
 @cl.action_callback("none_match")
 async def on_none_match(action: cl.Action):
+    if not ENABLE_NLP:
+        await _nlp_disabled_notice()
+        return
     payload = action.payload or {}
     platform = payload.get("platform")
     query = payload.get("query")
@@ -890,6 +949,9 @@ async def on_none_match(action: cl.Action):
 
 @cl.action_callback("pick_setting")
 async def on_pick_setting(action: cl.Action):
+    if not ENABLE_NLP:
+        await _nlp_disabled_notice()
+        return
     payload = action.payload or {}
     setting_id = payload.get("setting_id")
     platform = payload.get("platform") or cl.user_session.get(SESSION_PENDING_PLATFORM_KEY)
@@ -991,21 +1053,35 @@ async def on_set_platform(action: cl.Action):
     cl.user_session.set(SESSION_PENDING_NL_TEXT, None)
 
     if pending_text:
+        if ENABLE_NLP:
+            await cl.Message(
+                content=active_platform_banner() + f"Platform set to `{plat}`. Continuing with your request…",
+                actions=[browse_settings_action(), set_gemini_key_action(), end_session_action(), change_platform_action()],
+            ).send()
+            await handle_platform_scoped_nl(plat, pending_text)
+            return
+
+        # Demo mode: ignore queued NL text and steer user to browse/commands
         await cl.Message(
-            content=active_platform_banner() + f"Platform set to `{plat}`. Continuing with your request…",
-            actions=[set_gemini_key_action(), end_session_action(), change_platform_action()],
+            content=active_platform_banner()
+            + f"Platform set to `{plat}`.\n\n"
+            + "Demo mode: please use **Browse settings** (buttons) or the `change ...` command.",
+            actions=[browse_settings_action(), set_gemini_key_action(), end_session_action(), change_platform_action()],
         ).send()
-        await handle_platform_scoped_nl(plat, pending_text)
         return
 
     await cl.Message(
         content=active_platform_banner()
-        + f"Platform set to `{plat}`.\n\nNow tell me what setting you want to change (in normal language). This works best if you follow the structure: Turn [setting name] to [desired state].",
-        actions=[set_gemini_key_action(), end_session_action(), change_platform_action()],
+        + f"Platform set to `{plat}`.\n\n"
+        + "Next: click **Browse settings** to pick a setting, or use the `change ...` command.",
+        actions=[browse_settings_action(), set_gemini_key_action(), end_session_action(), change_platform_action()],
     ).send()
 
 @cl.action_callback("confirm_setting")
 async def on_confirm_setting(action: cl.Action):
+    if not ENABLE_NLP:
+        await _nlp_disabled_notice()
+        return
     payload = action.payload or {}
     confirm = payload.get("confirm")
 
@@ -1525,6 +1601,9 @@ async def handle_platform_scoped_nl(platform: str, user_text: str):
 
 @cl.action_callback("pick_platform")
 async def on_pick_platform(action: cl.Action):
+    if not ENABLE_NLP:
+        await _nlp_disabled_notice()
+        return
     payload = action.payload or {}
     plat = payload.get("platform")
 
@@ -1543,6 +1622,9 @@ async def on_pick_platform(action: cl.Action):
 
 @cl.action_callback("pick_value")
 async def on_pick_value(action: cl.Action):
+    if not ENABLE_NLP:
+        await _nlp_disabled_notice()
+        return
     payload = action.payload or {}
     value = payload.get("value")
 
@@ -2084,6 +2166,7 @@ def viewport_dom_textmap(page: Page, max_items: int = 120) -> str:
             seen.add(t)
             out.append(t)
     return "\n".join(out[:max_items])
+
 
 
 def dom_outline(page: Page, max_nodes: int = 300) -> str:
@@ -2886,6 +2969,108 @@ def planner_setting_change(
 # =========================
 # Setting change executor (Playwright + Gemini)
 # =========================
+def categories_for_platform(platform: str) -> List[str]:
+    entries = list_settings_for_platform(platform) or []
+    counts: Dict[str, int] = {}
+    for e in entries:
+        c = e.category or "uncategorized"
+        counts[c] = counts.get(c, 0) + 1
+
+    ordered = [c for c in CATEGORY_ORDER if c in counts]
+    # Append any unexpected categories (future-proof)
+    extras = sorted([c for c in counts.keys() if c not in CATEGORY_ORDER])
+    ordered += extras
+    return ordered
+
+def category_counts_for_platform(platform: str) -> Dict[str, int]:
+    entries = list_settings_for_platform(platform) or []
+    counts: Dict[str, int] = {}
+    for e in entries:
+        c = e.category or "uncategorized"
+        counts[c] = counts.get(c, 0) + 1
+    return counts
+
+def settings_for_platform_category(platform: str, category: Optional[str]) -> List[SettingEntry]:
+    """
+    Return a deduped list of SettingEntry for a platform/category, sorted for browsing.
+    Dedupes by setting_id to prevent repeated entries in the UI.
+    """
+    entries = list_settings_for_platform(platform) or []
+
+    # Filter by category
+    if category and category != "all":
+        entries = [e for e in entries if (e.category or "uncategorized") == category]
+
+    # Dedupe by setting_id (keep first occurrence)
+    seen = set()
+    deduped: List[SettingEntry] = []
+    for e in entries:
+        sid = (e.setting_id or "").strip()
+        if not sid or sid in seen:
+            continue
+        seen.add(sid)
+        deduped.append(e)
+
+    # Sort for stable browsing
+    if category and category != "all":
+        return sorted(deduped, key=lambda e: e.name.lower())
+    return sorted(deduped, key=lambda e: ((e.category or "uncategorized"), e.name.lower()))
+
+def render_scrollbox_settings(entries: List[SettingEntry], max_lines: int = 160) -> str:
+    """
+    Human-readable scrollbox using Markdown code fences (Chainlit displays this well).
+    Also dedupes by setting_id to avoid repeated rows.
+    """
+    seen = set()
+    lines: List[str] = []
+
+    for e in entries:
+        sid = (e.setting_id or "").strip()
+        if not sid or sid in seen:
+            continue
+        seen.add(sid)
+
+        cat = e.category or "uncategorized"
+        # Keep it compact and readable
+        lines.append(f"{sid:<35}  {e.name}  [{cat}]")
+
+        if len(lines) >= max_lines:
+            break
+
+    remaining = 0
+    # If we stopped early, estimate remaining based on unseen entries
+    if len(lines) >= max_lines:
+        # Count remaining unique ids not shown
+        for e in entries:
+            sid = (e.setting_id or "").strip()
+            if sid and sid not in seen:
+                remaining += 1
+
+    if not lines:
+        body = "(No settings)"
+    else:
+        body = "\n".join(lines)
+        if remaining > 0:
+            body += f"\n... ({remaining} more not shown)"
+
+    return "```text\n" + body + "\n```"
+
+
+def browse_settings_action() -> cl.Action:
+    return cl.Action(name="browse_settings", payload={}, label="Browse settings")
+
+def pick_category_action(category: str, count: int) -> cl.Action:
+    return cl.Action(
+        name="pick_category",
+        payload={"category": category},
+        label=f"{CATEGORY_TITLES.get(category, category)} ({count})",
+    )
+
+def browse_page_action(direction: str) -> cl.Action:
+    return cl.Action(name="browse_page", payload={"dir": direction}, label=("Next ▶" if direction == "next" else "◀ Prev"))
+
+def set_value_action(value: str) -> cl.Action:
+    return cl.Action(name="set_value_ui", payload={"value": value}, label=value.capitalize())
 
 def apply_setting_change_sync(
     platform: str,
@@ -3464,6 +3649,199 @@ def verify_setting_state(
 # Chainlit Handlers
 # =========================
 
+@cl.action_callback("browse_settings")
+async def on_browse_settings(action: cl.Action):
+    plat = cl.user_session.get(SESSION_ACTIVE_PLATFORM)
+    if not plat:
+        await cl.Message(content="Pick a platform first.").send()
+        await prompt_pick_platform()
+        return
+
+    cl.user_session.set(SESSION_BROWSE_CATEGORY, "all")
+    cl.user_session.set(SESSION_BROWSE_PAGE, 0)
+
+    counts = category_counts_for_platform(plat)
+    cats = categories_for_platform(plat)
+
+    cat_actions = [pick_category_action("all", sum(counts.values()))]
+    cat_actions += [pick_category_action(c, counts.get(c, 0)) for c in cats]
+
+    await cl.Message(
+        content=active_platform_banner() + "Choose a category to browse:",
+        actions=[*cat_actions, change_platform_action(), set_gemini_key_action(), end_session_action()],
+    ).send()
+
+@cl.action_callback("pick_category")
+async def on_pick_category(action: cl.Action):
+    plat = cl.user_session.get(SESSION_ACTIVE_PLATFORM)
+    if not plat:
+        await prompt_pick_platform()
+        return
+
+    category = (action.payload or {}).get("category") or "all"
+    cl.user_session.set(SESSION_BROWSE_CATEGORY, category)
+    cl.user_session.set(SESSION_BROWSE_PAGE, 0)
+
+    await show_settings_browser_page(plat)
+
+async def show_settings_browser_page(platform: str):
+    category = cl.user_session.get(SESSION_BROWSE_CATEGORY) or "all"
+    page_idx = int(cl.user_session.get(SESSION_BROWSE_PAGE) or 0)
+
+    entries = settings_for_platform_category(platform, category)
+
+    per_page = 10
+    start = page_idx * per_page
+    page_items = entries[start:start + per_page]
+
+    # Readable scrollbox (markdown fenced text block)
+    scroll_box = render_scrollbox_settings(entries, max_lines=160)
+
+    # Selection actions (these are handled by @cl.action_callback("pick_setting_ui"))
+    select_actions: List[cl.Action] = []
+    for i, e in enumerate(page_items, start=1):
+        select_actions.append(
+            cl.Action(
+                name="pick_setting_ui",
+                payload={"setting_id": e.setting_id},
+                label=f"{i}. {e.name[:42]}",
+            )
+        )
+
+    # Nav actions (handled by @cl.action_callback("browse_page"))
+    nav_actions: List[cl.Action] = []
+    if start > 0:
+        nav_actions.append(cl.Action(name="browse_page", payload={"dir": "prev"}, label="◀ Prev"))
+    if start + per_page < len(entries):
+        nav_actions.append(cl.Action(name="browse_page", payload={"dir": "next"}, label="Next ▶"))
+
+    # Small page table so buttons correspond to visible rows
+    table_rows = []
+    for i, e in enumerate(page_items, start=1):
+        cat = e.category or "uncategorized"
+        table_rows.append(f"| {i} | `{e.setting_id}` | {e.name} | `{cat}` |")
+    page_table = (
+        "| # | ID | Name | Category |\n"
+        "|---:|---|---|---|\n"
+        + ("\n".join(table_rows) if table_rows else "| - | - | (No items on this page) | - |")
+    )
+
+    cat_title = CATEGORY_TITLES.get(category, category)
+    cat_help = CATEGORY_HELP.get(category, "")
+
+    await cl.Message(
+        content=(
+            active_platform_banner()
+            + f"**Browsing:** `{platform}`  |  **Category:** {cat_title}  |  **Page:** {page_idx + 1}\n\n"
+            + (f"_{cat_help}_\n\n" if cat_help else "")
+            + "\n\n**Current settings page:**\n"
+            + page_table
+            + "\n\nSelect a setting from this page:"
+        ),
+        actions=[
+            *select_actions,
+            *nav_actions,
+            browse_settings_action(),
+            change_platform_action(),
+            set_gemini_key_action(),
+            end_session_action(),
+        ],
+    ).send()
+
+
+
+@cl.action_callback("browse_page")
+async def on_browse_page(action: cl.Action):
+    plat = cl.user_session.get(SESSION_ACTIVE_PLATFORM)
+    if not plat:
+        await prompt_pick_platform()
+        return
+
+    direction = (action.payload or {}).get("dir")
+    page_idx = int(cl.user_session.get(SESSION_BROWSE_PAGE) or 0)
+    if direction == "next":
+        page_idx += 1
+    elif direction == "prev" and page_idx > 0:
+        page_idx -= 1
+
+    cl.user_session.set(SESSION_BROWSE_PAGE, page_idx)
+    await show_settings_browser_page(plat)
+
+@cl.action_callback("pick_setting_ui")
+async def on_pick_setting_ui(action: cl.Action):
+    plat = cl.user_session.get(SESSION_ACTIVE_PLATFORM)
+    if not plat:
+        await prompt_pick_platform()
+        return
+
+    setting_id = (action.payload or {}).get("setting_id")
+    if not setting_id:
+        await cl.Message(content="Missing setting_id.").send()
+        return
+
+    setting = resolve_setting(plat, setting_id)
+    if not setting:
+        await cl.Message(content=f"Could not resolve setting `{setting_id}` on `{plat}`.").send()
+        return
+
+    cl.user_session.set(SESSION_SELECTED_SETTING_ID, setting.setting_id)
+    cl.user_session.set(SESSION_SELECTED_PLATFORM, plat)
+
+    # Value picker
+    actions = [
+        set_value_action("on"),
+        set_value_action("off"),
+        set_value_action("private"),
+        set_value_action("public"),
+        browse_settings_action(),
+        change_platform_action(),
+        set_gemini_key_action(),
+        end_session_action(),
+    ]
+
+    await cl.Message(
+        content=active_platform_banner()
+        + f"Selected: **{setting.name}** (`{setting.setting_id}`)\n\nChoose the value:",
+        actions=actions,
+    ).send()
+
+@cl.action_callback("set_value_ui")
+async def on_set_value_ui(action: cl.Action):
+    plat = cl.user_session.get(SESSION_SELECTED_PLATFORM)
+    setting_id = cl.user_session.get(SESSION_SELECTED_SETTING_ID)
+    value = (action.payload or {}).get("value")
+
+    if not plat or not setting_id or not value:
+        await cl.Message(content="Missing selection context. Please browse and select a setting again.").send()
+        return
+
+    setting = resolve_setting(plat, setting_id)
+    if not setting:
+        await cl.Message(content="Could not resolve selected setting.").send()
+        return
+
+    target_value = normalize_target_value(value) or value
+
+    await cl.Message(
+        content=active_platform_banner()
+        + f"Ok — changing **{setting.name}** on `{plat}` to `{target_value}`…"
+    ).send()
+
+    # For UI-selection demo: leaf_hint should default to setting.name (deterministic)
+    result = await cl.make_async(apply_setting_change_sync)(
+        plat,
+        setting,
+        target_value,
+        leaf_hint=setting.name
+    )
+    append_change(result)
+
+    await cl.Message(
+        content=active_platform_banner() + f"Result: status = `{result.get('status')}`\nDetails: {result.get('details')}",
+        actions=[browse_settings_action(), change_platform_action(), set_gemini_key_action(), end_session_action()],
+    ).send()
+
+
 @cl.on_chat_start
 async def on_chat_start():
     global SETTINGS_BY_PLATFORM
@@ -3486,9 +3864,8 @@ async def on_chat_start():
         await cl.Message(
             content=(
                 "⚠️ No Gemini API key is configured.\n\n"
-                "Click **Set Gemini API key** to provide one for this session only."
-            ),
-            actions=[set_gemini_key_action(), end_session_action(), change_platform_action()],
+                "Click **Set Gemini API key** at the bottom of the welcome message to provide one for this session only."
+            )
         ).send()
 
 
@@ -3513,10 +3890,8 @@ async def on_chat_start():
         "Welcome to the Agentic Privacy Control Center! \n\n"
         "Be sure to set your Gemini API key before starting (it will auto-wipe on session end or upon user request.)\n\n"
         "You can interact with this chatbot in two ways:\n\n"
-        "🟢 **Natural language:**\n"
-        "Pick a platform from the buttons below, then describe the privacy or account setting you want to change and the desired state.\n\n"
-        "You can type in the structure: 'Turn [desired state] [desired setting]'\n"
-        "If multiple settings could match your request, I’ll ask you to confirm the correct one before making any changes.\n\n"
+        "✅ **Recommended:** Click **Browse settings** after choosing a platform to select a setting from the database.\n"
+        "⚙️ **Alternative (Commands):** Use `settings <platform>` and `change <platform> <setting_id> to <value>`.\n"
         "🔧 **Command-based (advanced):**\n"
         "- `platforms` — list all supported platforms\n"
         "- `settings <platform>` — list known settings for a platform\n"
@@ -3772,24 +4147,34 @@ async def on_message(message: cl.Message):
 
     active_plat = cl.user_session.get(SESSION_ACTIVE_PLATFORM)
 
-    # If no active platform, store text and prompt platform buttons.
     if not active_plat:
         cl.user_session.set(SESSION_PENDING_NL_TEXT, text)
         await prompt_pick_platform()
         return
 
-    # We have an active platform — interpret + candidate-pick scoped to that platform.
-    await handle_platform_scoped_nl(active_plat, text)
+    if ENABLE_NLP:
+        await handle_platform_scoped_nl(active_plat, text)
+        return
+
+    # Demo mode: commands + UI browse only
+    await cl.Message(
+        content=active_platform_banner()
+        + "Use **Browse settings** (buttons) or the `change ...` advanced commands.\n\n"
+        + "Examples:\n"
+        + "- `settings instagram`\n"
+        + "- `change instagram private_account to on`\n",
+        actions=[browse_settings_action(), change_platform_action(), set_gemini_key_action(), end_session_action()],
+    ).send()
     return
 
-@cl.on_app_shutdown
-async def on_chat_end():
-    if "GEMINI_API_KEY" in cl.user_session.get("env"):
-        del cl.user_session.get("env")["GEMINI_API_KEY"]
-        print("[session] Wiped Gemini API key from session env on app shutdown.")
 
 @cl.on_chat_end
 async def on_chat_end():
-    if "GEMINI_API_KEY" in cl.user_session.get("env"):
-        del cl.user_session.get("env")["GEMINI_API_KEY"]
-        print("[session] Wiped Gemini API key from session env on app shutdown.")
+    # Best-effort wipe on chat end
+    wipe_session_gemini()
+    print("[session] Wiped Gemini API key/client on chat end.")
+
+@cl.on_app_shutdown
+async def on_app_shutdown():
+    wipe_session_gemini()
+    print("[session] Wiped Gemini API key/client on app shutdown.")
