@@ -966,7 +966,7 @@ async def prompt_pick_platform():
         for p in plats[:12]  # safety cap
     ]
     await cl.Message(
-        content="Session controls:",
+        content="Session controls (be sure to set your Gemini API key before starting):",
         actions=[set_gemini_key_action(), end_session_action()],
     ).send()
 
