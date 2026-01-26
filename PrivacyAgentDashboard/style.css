@@ -227,6 +227,65 @@ body {
   overflow: hidden;
 }
 
+/* Area Evidence Panel */
+.area-evidence {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 320px;
+  max-width: calc(100% - 24px);
+  max-height: 420px;
+  overflow: auto;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 12px;
+  z-index: 10;
+}
+
+.area-evidence.hidden {
+  display: none;
+}
+
+.area-evidence-title {
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #333;
+  font-size: 13px;
+}
+
+.area-evidence-body {
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.area-evidence-row {
+  font-size: 12px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.area-evidence-platform {
+  border-top: 1px solid #eee;
+  padding-top: 8px;
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.area-evidence-platform strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: #333;
+}
+
+.area-evidence-eq {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 11px;
+  color: #555;
+}
+
 /* Setting Details Panel */
 .hidden {
   display: none !important;

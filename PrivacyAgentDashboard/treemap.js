@@ -57,6 +57,9 @@ let detailBreadcrumb = null;
 let settingDetails, detailsTitle, detailsSubtitle, detailsDescription, detailsState, 
     detailsActionable, detailsRisk, detailsOpenUrl, detailsClose;
 
+// Area evidence panel state
+let areaEvidenceEl = null;
+
 // Load and parse CSV
 // Try local path first (if CSV is in same directory), then relative path
 // Note: If opening HTML directly in browser (file://), you'll need a local server due to CORS
@@ -510,6 +513,103 @@ function showSettingDetails(d) {
 }
 
 /**
+ * Ensure area evidence panel exists and return it
+ */
+function ensureAreaEvidencePanel() {
+  if (!areaEvidenceEl) {
+    const container = document.getElementById("treemapContainer");
+    if (!container) return null;
+    
+    // Ensure container is position relative
+    if (window.getComputedStyle(container).position === "static") {
+      container.style.position = "relative";
+    }
+    
+    areaEvidenceEl = document.createElement("div");
+    areaEvidenceEl.className = "area-evidence hidden";
+    container.appendChild(areaEvidenceEl);
+  }
+  return areaEvidenceEl;
+}
+
+/**
+ * Wire evidence panel hover behavior to reset on mouseleave (when not over treemap)
+ * The evidence panel is treated as a "safe hover zone" - moving into it doesn't reset highlights
+ */
+function wireEvidencePanelHoverBehavior() {
+  const panel = ensureAreaEvidencePanel();
+  if (!panel) return;
+  
+  // Only wire once
+  if (panel.__wired) return;
+  panel.__wired = true;
+  
+  panel.addEventListener("mouseleave", function() {
+    // Check if mouse is currently over any treemap element to avoid flicker
+    const hoveredCell = document.querySelector("rect.treemap-cell:hover, rect.category-click-overlay:hover");
+    if (!hoveredCell) {
+      // Not hovering over treemap, safe to reset
+      hideAreaEvidence();
+      
+      // Reset visual state by finding and restoring all cells
+      const container = d3.select("#treemapContainer");
+      const svg = container.select("svg");
+      if (!svg.empty()) {
+        const g = svg.select("g");
+        g.selectAll("rect.treemap-cell").style("opacity", 1);
+        g.selectAll("text.treemap-label").style("opacity", 1);
+      }
+    }
+  });
+}
+
+/**
+ * Show area evidence panel
+ */
+function showAreaEvidence(title, htmlBody) {
+  const panel = ensureAreaEvidencePanel();
+  if (!panel) return;
+  
+  panel.innerHTML = `
+    <div class="area-evidence-title">${title}</div>
+    <div class="area-evidence-body">${htmlBody}</div>
+  `;
+  panel.classList.remove("hidden");
+  
+  // Wire hover behavior when panel is shown
+  wireEvidencePanelHoverBehavior();
+}
+
+/**
+ * Hide area evidence panel
+ */
+function hideAreaEvidence() {
+  if (areaEvidenceEl) {
+    areaEvidenceEl.classList.add("hidden");
+  }
+}
+
+/**
+ * Calculate pixel area for a leaf node
+ */
+function leafPixelArea(leaf) {
+  if (!leaf || leaf.x1 === undefined || leaf.x0 === undefined || 
+      leaf.y1 === undefined || leaf.y0 === undefined) {
+    return 0;
+  }
+  const w = Math.max(0, leaf.x1 - leaf.x0);
+  const h = Math.max(0, leaf.y1 - leaf.y0);
+  return w * h;
+}
+
+/**
+ * Format integer with locale string
+ */
+function fmtInt(n) {
+  return (n || 0).toLocaleString();
+}
+
+/**
  * Enter detail view for a leaf node
  */
 function enterDetailView(d) {
@@ -806,15 +906,21 @@ function renderTreemap() {
       buildHierarchy();
     }
   
-    // Clean up any existing tooltips and clear hover timeouts
+    // Clean up any existing tooltips (removed, but keep cleanup for safety)
     d3.selectAll(".treemap-tooltip").remove();
-    if (typeof window.treemapHoverTimeout !== "undefined" && window.treemapHoverTimeout) {
-      clearTimeout(window.treemapHoverTimeout);
-      window.treemapHoverTimeout = null;
-    }
   
     const container = d3.select("#treemapContainer");
-    container.selectAll("*").remove();
+    // Remove all SVG content but preserve the area evidence panel
+    container.selectAll("svg").remove();
+    // Reset area evidence panel reference if it was removed, and hide it
+    if (areaEvidenceEl) {
+      if (!areaEvidenceEl.parentNode) {
+        areaEvidenceEl = null;
+      } else {
+        // Hide panel when treemap is re-rendered
+        hideAreaEvidence();
+      }
+    }
   
     const width = container.node().getBoundingClientRect().width || 1200;
     const height = 500;
@@ -833,6 +939,205 @@ function renderTreemap() {
   
     // Root state for this render pass
     const atRootNow = zoomStack.length === 0;
+    
+    // Platform normalization helper
+    function normalizePlatformKey(p) {
+      const k = (p || "unknown").trim().toLowerCase();
+      if (k === "twitter") return "twitterx"; // optional mapping
+      return k;
+    }
+    
+    // Leaf hover state flag
+    let isLeafHoverActive = false;
+    
+    // Helper to check if element is inside evidence panel (safe hover zone)
+    function isInsideEvidencePanel(el) {
+      if (!el) return false;
+      return el.closest && el.closest(".area-evidence") !== null;
+    }
+    
+    // Helper functions for area evidence (need access to g)
+    function computeCategoryPlatformAreas(catNode) {
+      const leaves = catNode.leaves ? catNode.leaves() : [];
+      const perPlatform = new Map();
+      let totalArea = 0;
+      
+      leaves.forEach(leaf => {
+        const area = leafPixelArea(leaf);
+        totalArea += area;
+        
+        const platform = (leaf.data.platform || "unknown").toLowerCase();
+        if (!perPlatform.has(platform)) {
+          perPlatform.set(platform, {
+            platform: platform,
+            totalArea: 0,
+            leaves: []
+          });
+        }
+        
+        const platformData = perPlatform.get(platform);
+        platformData.totalArea += area;
+        
+        const w = Math.max(0, leaf.x1 - leaf.x0);
+        const h = Math.max(0, leaf.y1 - leaf.y0);
+        platformData.leaves.push({
+          name: leaf.data.name || leaf.data.setting || "Setting",
+          w: Math.round(w),
+          h: Math.round(h),
+          area: Math.round(area)
+        });
+      });
+      
+      // Sort leaves by area descending for each platform
+      perPlatform.forEach(platformData => {
+        platformData.leaves.sort((a, b) => b.area - a.area);
+      });
+      
+      return {
+        perPlatform: perPlatform,
+        totalArea: totalArea,
+        leavesCount: leaves.length
+      };
+    }
+    
+    function dimAllCells() {
+      g.selectAll("rect.treemap-cell").style("opacity", 0.2);
+      g.selectAll("text.treemap-label").style("opacity", 0.2);
+    }
+    
+    function restoreAllCells() {
+      g.selectAll("rect.treemap-cell").style("opacity", 1);
+      g.selectAll("text.treemap-label").style("opacity", 1);
+      hideAreaEvidence();
+    }
+    
+    function dimAllLeaves() {
+      g.selectAll("g").each(function(d) {
+        const isLeaf = !d.children || d.children.length === 0;
+        if (isLeaf) {
+          d3.select(this).select("rect.treemap-cell").style("opacity", 0.2);
+          d3.select(this).select("text.treemap-label").style("opacity", 0.2);
+        }
+      });
+    }
+    
+    function restoreAllLeaves() {
+      g.selectAll("g").each(function(d) {
+        const isLeaf = !d.children || d.children.length === 0;
+        if (isLeaf) {
+          d3.select(this).select("rect.treemap-cell").style("opacity", 1);
+          d3.select(this).select("text.treemap-label").style("opacity", 1);
+        }
+      });
+      hideAreaEvidence();
+      isLeafHoverActive = false;
+    }
+    
+    function getCategoryNodeForLeaf(leafNode) {
+      if (!leafNode || !leafNode.parent) return null;
+      return leafNode.parent;
+    }
+    
+    function highlightLeavesByCategoryAndPlatform(catNode, platformKey) {
+      g.selectAll("g").each(function(d) {
+        const isLeaf = !d.children || d.children.length === 0;
+        if (isLeaf && d.parent === catNode && normalizePlatformKey(d.data.platform) === platformKey) {
+          d3.select(this).select("rect.treemap-cell").style("opacity", 1);
+          d3.select(this).select("text.treemap-label").style("opacity", 1);
+        }
+      });
+    }
+    
+    function computeSubsetArea(catNode, platformKey) {
+      const leaves = catNode.leaves ? catNode.leaves() : [];
+      const matchingLeaves = leaves.filter(leaf => 
+        normalizePlatformKey(leaf.data.platform) === platformKey
+      );
+      
+      let totalArea = 0;
+      const topLeaves = [];
+      
+      matchingLeaves.forEach(leaf => {
+        const area = leafPixelArea(leaf);
+        totalArea += area;
+        
+        const w = Math.max(0, leaf.x1 - leaf.x0);
+        const h = Math.max(0, leaf.y1 - leaf.y0);
+        topLeaves.push({
+          name: leaf.data.name || leaf.data.setting || "Setting",
+          w: Math.round(w),
+          h: Math.round(h),
+          area: Math.round(area)
+        });
+      });
+      
+      // Sort by area descending
+      topLeaves.sort((a, b) => b.area - a.area);
+      
+      return {
+        totalArea: totalArea,
+        leavesCount: matchingLeaves.length,
+        topLeaves: topLeaves.slice(0, 3) // Top 3
+      };
+    }
+    
+    function highlightCategoryLeaves(catNode) {
+      const catLeaves = catNode.leaves ? catNode.leaves() : [];
+      const leafSet = new Set(catLeaves);
+      
+      g.selectAll("g").each(function(d) {
+        const isLeaf = !d.children || d.children.length === 0;
+        if (isLeaf && leafSet.has(d)) {
+          d3.select(this).select("rect.treemap-cell").style("opacity", 1);
+          d3.select(this).select("text.treemap-label").style("opacity", 1);
+        }
+      });
+    }
+    
+    function renderAreaEvidence(catNode) {
+      const categoryName = (catNode.data.name || "Category").replace(/_/g, ' ');
+      const areas = computeCategoryPlatformAreas(catNode);
+      
+      let body = `
+        <div class="area-evidence-row">
+          <strong>Total area:</strong> ${fmtInt(Math.round(areas.totalArea))} px²<br/>
+          <strong>Leaf count:</strong> ${fmtInt(areas.leavesCount)}
+        </div>
+      `;
+      
+      // Sort platforms by area descending
+      const platformEntries = Array.from(areas.perPlatform.entries())
+        .sort((a, b) => b[1].totalArea - a[1].totalArea);
+      
+      platformEntries.forEach(([platformKey, platformData]) => {
+        const platformName = platformKey.charAt(0).toUpperCase() + platformKey.slice(1);
+        const percentage = areas.totalArea > 0 
+          ? ((platformData.totalArea / areas.totalArea) * 100).toFixed(1) 
+          : "0.0";
+        const leafCount = platformData.leaves.length;
+        
+        body += `
+          <div class="area-evidence-platform">
+            <strong>${platformName}</strong><br/>
+            ${fmtInt(Math.round(platformData.totalArea))} px² (${percentage}%)<br/>
+            <span class="area-evidence-eq">Area = Σ((x1-x0)×(y1-y0)) over ${leafCount} leaf rectangle${leafCount !== 1 ? 's' : ''}</span>
+        `;
+        
+        // Top 3 largest contributing leaves
+        const topLeaves = platformData.leaves.slice(0, 3);
+        if (topLeaves.length > 0) {
+          body += `<div style="margin-top: 4px; font-size: 11px; color: #666;">`;
+          topLeaves.forEach(leaf => {
+            body += `• ${leaf.name}: <span class="area-evidence-eq">(${leaf.w}×${leaf.h})=${fmtInt(leaf.area)}</span><br/>`;
+          });
+          body += `</div>`;
+        }
+        
+        body += `</div>`;
+      });
+      
+      showAreaEvidence(categoryName, body);
+    }
   
     // Get unique platforms and categories
     const platforms = Array.from(new Set(allData.map(d => d.platform))).sort();
@@ -886,6 +1191,70 @@ function renderTreemap() {
       })
       .attr("stroke-width", d => (d.data.stateType ? 2 : 1.5))
       .attr("stroke-dasharray", d => (d.data.stateType === "navigational" ? "4,2" : "none"))
+      .on("mouseover", function(event, d) {
+        const isLeaf = !d.children || d.children.length === 0;
+        if (!isLeaf) return;
+        
+        // If in detail view, do nothing
+        if (isDetailView) return;
+        
+        const catNode = getCategoryNodeForLeaf(d);
+        if (!catNode) return;
+        
+        const platformKey = normalizePlatformKey(d.data.platform);
+        isLeafHoverActive = true;
+        dimAllLeaves();
+        highlightLeavesByCategoryAndPlatform(catNode, platformKey);
+        
+        const catName = (catNode.data.name || "Category").replace(/_/g, " ");
+        const platformName = platformKey.charAt(0).toUpperCase() + platformKey.slice(1);
+        
+        const subset = computeSubsetArea(catNode, platformKey);
+        const pct = (catNode && catNode.leaves && catNode.leaves().length > 0)
+          ? (() => {
+              const catTotal = catNode.leaves().reduce((acc, leaf) => acc + leafPixelArea(leaf), 0);
+              return catTotal > 0 ? ((subset.totalArea / catTotal) * 100).toFixed(1) : "0.0";
+            })()
+          : "0.0";
+        
+        const body = `
+          <div class="area-evidence-row">
+            <div style="margin-bottom:6px;">
+              <strong>How area is computed:</strong><br/>
+              width = (x1-x0), height = (y1-y0), area = width×height (px²)<br/>
+              subset area = Σ area over matching leaf rectangles
+            </div>
+            <strong>Subset total:</strong> ${fmtInt(Math.round(subset.totalArea))} px² (${pct}% of category leaf area)<br/>
+            <strong>Leaf count:</strong> ${fmtInt(subset.leavesCount)}<br/>
+            <span class="area-evidence-eq">Area = Σ((x1-x0)×(y1-y0)) over ${subset.leavesCount} leaf rectangle${subset.leavesCount !== 1 ? "s" : ""}</span>
+          </div>
+        ` + (subset.topLeaves.length > 0 ? `
+          <div class="area-evidence-platform">
+            <strong>Top contributors</strong>
+            <div style="margin-top:4px; font-size:11px; color:#666;">
+              ${subset.topLeaves.map(leaf => `• ${leaf.name}: <span class="area-evidence-eq">(${leaf.w}×${leaf.h})=${fmtInt(leaf.area)}</span>`).join("<br/>")}
+            </div>
+          </div>
+        ` : "");
+        
+        showAreaEvidence(`Category: ${catName} — Platform: ${platformName} (Sizing: ${currentSizingMetric})`, body);
+      })
+      .on("mouseout", function(event, d) {
+        const isLeaf = !d.children || d.children.length === 0;
+        if (!isLeaf) return;
+        
+        const relatedTarget = event.relatedTarget;
+        // Don't restore if moving to evidence panel (safe hover zone) or another treemap element
+        const isMovingToEvidencePanel = isInsideEvidencePanel(relatedTarget);
+        const isMovingToTreemapElement = relatedTarget && (
+          (relatedTarget.closest && (relatedTarget.closest("rect.treemap-cell") || relatedTarget.closest("rect.category-click-overlay"))) ||
+          (relatedTarget.classList && (relatedTarget.classList.contains("treemap-cell") || relatedTarget.classList.contains("category-click-overlay")))
+        );
+        
+        if (!isMovingToEvidencePanel && !isMovingToTreemapElement) {
+          restoreAllLeaves();
+        }
+      })
       .on("click", function(event, d) {
         event.stopPropagation();
         event.preventDefault();
@@ -940,11 +1309,25 @@ function renderTreemap() {
           }
           zoomInto(d);
         })
-        .on("mouseover", function() {
+        .on("mouseover", function(event, d) {
+          // Don't override leaf hover if active
+          if (isLeafHoverActive) return;
+          
           d3.select(this).attr("fill", "rgba(0,0,0,0.05)");
+          highlightCategoryLeaves(d);
+          renderAreaEvidence(d);
         })
-        .on("mouseout", function() {
+        .on("mouseout", function(event) {
+          // Don't restore if leaf hover is active
+          if (isLeafHoverActive) return;
+          
+          const relatedTarget = event.relatedTarget;
+          // Don't restore if moving to evidence panel (safe hover zone)
+          const isMovingToEvidencePanel = isInsideEvidencePanel(relatedTarget);
+          if (isMovingToEvidencePanel) return;
+          
           d3.select(this).attr("fill", "transparent");
+          restoreAllCells();
         });
   
       // Header bar
@@ -1037,101 +1420,7 @@ function renderTreemap() {
         return name;
       });
   
-    // ===============================
-    // Tooltip - single instance
-    // ===============================
-    const tooltip = d3.select("body").append("div")
-      .attr("class", "treemap-tooltip")
-      .style("opacity", 0)
-      .style("pointer-events", "none")
-      .style("display", "none");
-  
-    let hoverTimeout = null;
-  
-    cells.on("mouseover", function(event, d) {
-      if (hoverTimeout) {
-        clearTimeout(hoverTimeout);
-        hoverTimeout = null;
-      }
-  
-      tooltip.interrupt();
-      tooltip.style("display", "block");
-  
-      const isLeaf = !d.children || d.children.length === 0;
-  
-      let content = "";
-      if (isLeaf) {
-        let platform = d.data.platform;
-        let category = d.data.category;
-  
-        if (!platform && d.parent) {
-          category = d.parent.data.name;
-          platform = d.data.platform || "unknown";
-        }
-  
-        content = `<strong>${d.data.name || "N/A"}</strong>
-          <p><strong>Setting:</strong> ${d.data.name || "N/A"}</p>
-          <p><strong>Platform:</strong> ${platform || "unknown"}</p>
-          <p><strong>Category:</strong> ${category || d.parent?.data?.name || "unknown"}</p>
-          <p><strong>State:</strong> ${d.data.state || "N/A"}</p>
-          <p><strong>Type:</strong> ${d.data.stateType || "unknown"}</p>
-          <p><strong>Description:</strong> ${truncate(d.data.description || "", 200)}</p>
-          ${d.data.url ? `<p><strong>URL:</strong> ${d.data.url}</p>` : ""}`;
-      } else {
-        content = `<strong>${d.data.name}</strong>
-          <p><strong>Value:</strong> ${d.value ? d.value.toFixed(2) : 0}</p>
-          <p><strong>Children:</strong> ${d.children ? d.children.length : 0}</p>
-          ${d.children && d.children.length > 0 ? "<p><em>Click to zoom in</em></p>" : ""}`;
-      }
-  
-      tooltip.html(content)
-        .style("left", (event.pageX + 10) + "px")
-        .style("top", (event.pageY - 10) + "px")
-        .transition()
-        .duration(150)
-        .style("opacity", 1);
-    })
-    .on("mousemove", function(event) {
-      tooltip
-        .style("left", (event.pageX + 10) + "px")
-        .style("top", (event.pageY - 10) + "px");
-    })
-    .on("mouseout", function(event) {
-      const relatedTarget = event.relatedTarget;
-      const isMovingToCell = relatedTarget && (
-        relatedTarget.closest("g") ||
-        relatedTarget.tagName === "rect" ||
-        relatedTarget.tagName === "text"
-      );
-  
-      const delay = isMovingToCell ? 100 : 0;
-  
-      if (hoverTimeout) clearTimeout(hoverTimeout);
-  
-      hoverTimeout = setTimeout(() => {
-        tooltip.transition()
-          .duration(150)
-          .style("opacity", 0)
-          .on("end", function() {
-            tooltip.style("display", "none");
-          });
-        hoverTimeout = null;
-      }, delay);
-    });
-  
-    svg.on("mouseleave", function() {
-      if (hoverTimeout) {
-        clearTimeout(hoverTimeout);
-        hoverTimeout = null;
-      }
-      tooltip.interrupt();
-      tooltip.transition()
-        .duration(150)
-        .style("opacity", 0)
-        .on("end", function() {
-          tooltip.style("display", "none");
-        });
-    });
+    // Tooltip handlers removed - replaced with area evidence panel on category hover
   
     updateBreadcrumbs();
     renderLegend(platforms, categories);
@@ -1950,6 +2239,21 @@ function setupEventHandlers() {
       } else if (settingDetails && !settingDetails.classList.contains("hidden")) {
         closeDetails();
       }
+    }
+  });
+  
+  // Reset hover state when window loses focus (e.g., when opening URL in new tab)
+  window.addEventListener("blur", function() {
+    if (areaEvidenceEl && !areaEvidenceEl.classList.contains("hidden")) {
+      hideAreaEvidence();
+    }
+  });
+  
+  // Reset hover state when window regains focus
+  window.addEventListener("focus", function() {
+    // Ensure panel is hidden and state is reset
+    if (areaEvidenceEl) {
+      hideAreaEvidence();
     }
   });
   
