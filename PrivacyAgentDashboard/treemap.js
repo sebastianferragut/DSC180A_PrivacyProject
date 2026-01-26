@@ -48,6 +48,15 @@ let currentStateFilter = 'all';
 let currentSearchQuery = '';
 let currentPlatformFilter = ['all']; // Array to support multiple selections
 
+// Detail view state
+let isDetailView = false;
+let detailPayload = null;
+let detailBreadcrumb = null;
+
+// DOM references for setting details panel
+let settingDetails, detailsTitle, detailsSubtitle, detailsDescription, detailsState, 
+    detailsActionable, detailsRisk, detailsOpenUrl, detailsClose;
+
 // Load and parse CSV
 // Try local path first (if CSV is in same directory), then relative path
 // Note: If opening HTML directly in browser (file://), you'll need a local server due to CORS
@@ -349,6 +358,447 @@ function buildHierarchy() {
 }
 
 /**
+ * Get breadcrumb path for a node (Platform → Category → Setting)
+ */
+function getBreadcrumb(d) {
+  if (!d) return "";
+  
+  const parts = [];
+  let node = d;
+  
+  // Traverse up the hierarchy to collect parts
+  while (node && node.data) {
+    if (node.data.name && node.data.name !== 'root') {
+      // For leaf nodes, use the setting name; for categories, use category name
+      if (!node.children || node.children.length === 0) {
+        // Leaf node - use setting name
+        const settingName = node.data.setting || node.data.name || "Setting";
+        parts.unshift(settingName);
+      } else {
+        // Category node
+        const categoryName = node.data.name.replace(/_/g, ' ');
+        parts.unshift(categoryName);
+      }
+    }
+    node = node.parent;
+  }
+  
+  // Add platform if available from leaf data
+  if (d.data && d.data.platform) {
+    const platformName = d.data.platform.charAt(0).toUpperCase() + d.data.platform.slice(1);
+    parts.unshift(platformName);
+  }
+  
+  return parts.join(" → ") || "Setting";
+}
+
+/**
+ * Extract setting payload from node data with fallbacks
+ */
+function getSettingPayload(d) {
+  if (!d || !d.data) {
+    return {
+      name: "Setting",
+      description: "",
+      state: "",
+      url: "",
+      actionable: "",
+      risk: "",
+      platform: "",
+      category: ""
+    };
+  }
+  
+  // Handle nested data structures
+  let data = d.data;
+  if (data.meta) {
+    data = { ...data, ...data.meta };
+  }
+  if (data.settingObj) {
+    data = { ...data, ...data.settingObj };
+  }
+  if (Array.isArray(data.settings) && data.settings.length > 0) {
+    data = { ...data, ...data.settings[0] };
+  }
+  
+  // Extract fields with fallbacks
+  const stateType = (data.stateType || "").toLowerCase();
+  const isActionable = stateType === "actionable" || stateType === "navigational";
+  
+  // Risk calculation (same as calculateWeight for risk-weighted)
+  const categoryLower = (data.category || "").toLowerCase();
+  let riskLevel = "Standard";
+  if (categoryLower.includes('tracking')) {
+    riskLevel = "High";
+  } else if (categoryLower.includes('security')) {
+    riskLevel = "Medium";
+  }
+  
+  return {
+    name: data.setting || data.name || "Setting",
+    description: data.description || "",
+    state: data.state || "",
+    url: data.url || data.link || "",
+    actionable: isActionable ? (stateType === "actionable" ? "Actionable" : "Navigational") : "Unknown",
+    risk: data.risk || data.risk_level || data.risk_weight || riskLevel,
+    platform: data.platform || "",
+    category: data.category || ""
+  };
+}
+
+/**
+ * Open the details panel
+ */
+function openDetails() {
+  if (settingDetails) {
+    settingDetails.classList.remove("hidden");
+  }
+}
+
+/**
+ * Close the details panel
+ */
+function closeDetails() {
+  if (settingDetails) {
+    settingDetails.classList.add("hidden");
+  }
+}
+
+/**
+ * Show setting details in the panel
+ */
+function showSettingDetails(d) {
+  if (!d) return;
+  
+  const payload = getSettingPayload(d);
+  const breadcrumb = getBreadcrumb(d);
+  
+  // Update panel fields with null checks
+  if (detailsTitle) {
+    detailsTitle.textContent = payload.name;
+  }
+  if (detailsSubtitle) {
+    detailsSubtitle.textContent = breadcrumb;
+  }
+  if (detailsDescription) {
+    detailsDescription.textContent = payload.description || "No description available.";
+  }
+  if (detailsState) {
+    detailsState.textContent = payload.state || "N/A";
+  }
+  if (detailsActionable) {
+    detailsActionable.textContent = payload.actionable || "Unknown";
+  }
+  if (detailsRisk) {
+    detailsRisk.textContent = payload.risk || "Standard";
+  }
+  if (detailsOpenUrl) {
+    if (payload.url) {
+      detailsOpenUrl.href = payload.url;
+      detailsOpenUrl.style.pointerEvents = "auto";
+      detailsOpenUrl.style.opacity = "1";
+      detailsOpenUrl.style.cursor = "pointer";
+    } else {
+      detailsOpenUrl.href = "#";
+      detailsOpenUrl.style.pointerEvents = "none";
+      detailsOpenUrl.style.opacity = "0.5";
+      detailsOpenUrl.style.cursor = "not-allowed";
+    }
+  }
+  
+  openDetails();
+}
+
+/**
+ * Enter detail view for a leaf node
+ */
+function enterDetailView(d) {
+  isDetailView = true;
+  detailPayload = getSettingPayload(d);
+  detailBreadcrumb = getBreadcrumb(d);
+  renderTreemap();
+}
+
+/**
+ * Exit detail view and return to treemap
+ */
+function exitDetailView() {
+  isDetailView = false;
+  detailPayload = null;
+  detailBreadcrumb = null;
+  renderTreemap();
+}
+
+/**
+ * Wrap text to fit within max width
+ */
+function wrapText(textElement, text, maxWidth) {
+  const words = text.split(/\s+/).reverse();
+  let word;
+  let line = [];
+  let lineNumber = 0;
+  const lineHeight = 1.2;
+  const y = textElement.attr("y");
+  const dy = parseFloat(textElement.attr("dy") || 0);
+  let tspan = textElement.text(null)
+    .append("tspan")
+    .attr("x", textElement.attr("x") || 0)
+    .attr("y", y)
+    .attr("dy", dy + "em");
+  
+  while (word = words.pop()) {
+    line.push(word);
+    tspan.text(line.join(" "));
+    if (tspan.node().getComputedTextLength() > maxWidth && line.length > 1) {
+      line.pop();
+      tspan.text(line.join(" "));
+      line = [word];
+      tspan = textElement.append("tspan")
+        .attr("x", textElement.attr("x") || 0)
+        .attr("y", y)
+        .attr("dy", ++lineNumber * lineHeight + dy + "em")
+        .text(word);
+    }
+  }
+}
+
+/**
+ * Render detail view card in SVG
+ */
+function renderDetailView(svg, width, height, payload, breadcrumb) {
+  const cardWidth = Math.min(600, width * 0.8);
+  const cardHeight = Math.min(500, height * 0.8);
+  const cardX = (width - cardWidth) / 2;
+  const cardY = (height - cardHeight) / 2;
+  const padding = 24;
+  const cornerRadius = 8;
+  
+  // Card background
+  const card = svg.append("g")
+    .attr("class", "detail-card");
+  
+  card.append("rect")
+    .attr("x", cardX)
+    .attr("y", cardY)
+    .attr("width", cardWidth)
+    .attr("height", cardHeight)
+    .attr("rx", cornerRadius)
+    .attr("ry", cornerRadius)
+    .attr("fill", "#ffffff")
+    .attr("stroke", "#e0e0e0")
+    .attr("stroke-width", 1);
+  
+  // Title
+  const titleY = cardY + padding + 20;
+  card.append("text")
+    .attr("x", cardX + padding)
+    .attr("y", titleY)
+    .attr("font-size", "24px")
+    .attr("font-weight", "600")
+    .attr("fill", "#333")
+    .text(payload.name || "Setting");
+  
+  // Breadcrumb/subtitle
+  const subtitleY = titleY + 28;
+  card.append("text")
+    .attr("x", cardX + padding)
+    .attr("y", subtitleY)
+    .attr("font-size", "14px")
+    .attr("fill", "#666")
+    .text(breadcrumb || "");
+  
+  // Body content
+  let currentY = subtitleY + 40;
+  const lineSpacing = 24;
+  const labelWidth = 120;
+  const contentX = cardX + padding + labelWidth;
+  const contentWidth = cardWidth - padding * 2 - labelWidth;
+  
+  // State
+  card.append("text")
+    .attr("x", cardX + padding)
+    .attr("y", currentY)
+    .attr("font-size", "13px")
+    .attr("font-weight", "600")
+    .attr("fill", "#666")
+    .text("State:");
+  card.append("text")
+    .attr("x", contentX)
+    .attr("y", currentY)
+    .attr("font-size", "13px")
+    .attr("fill", "#333")
+    .text(payload.state || "N/A");
+  currentY += lineSpacing;
+  
+  // Type/Actionability
+  card.append("text")
+    .attr("x", cardX + padding)
+    .attr("y", currentY)
+    .attr("font-size", "13px")
+    .attr("font-weight", "600")
+    .attr("fill", "#666")
+    .text("Type:");
+  card.append("text")
+    .attr("x", contentX)
+    .attr("y", currentY)
+    .attr("font-size", "13px")
+    .attr("fill", "#333")
+    .text(payload.actionable || "Unknown");
+  currentY += lineSpacing;
+  
+  // Risk
+  if (payload.risk) {
+    card.append("text")
+      .attr("x", cardX + padding)
+      .attr("y", currentY)
+      .attr("font-size", "13px")
+      .attr("font-weight", "600")
+      .attr("fill", "#666")
+      .text("Risk:");
+    card.append("text")
+      .attr("x", contentX)
+      .attr("y", currentY)
+      .attr("font-size", "13px")
+      .attr("fill", "#333")
+      .text(payload.risk);
+    currentY += lineSpacing;
+  }
+  
+  // Platform
+  if (payload.platform) {
+    card.append("text")
+      .attr("x", cardX + padding)
+      .attr("y", currentY)
+      .attr("font-size", "13px")
+      .attr("font-weight", "600")
+      .attr("fill", "#666")
+      .text("Platform:");
+    card.append("text")
+      .attr("x", contentX)
+      .attr("y", currentY)
+      .attr("font-size", "13px")
+      .attr("fill", "#333")
+      .text(payload.platform.charAt(0).toUpperCase() + payload.platform.slice(1));
+    currentY += lineSpacing;
+  }
+  
+  // Category
+  if (payload.category) {
+    card.append("text")
+      .attr("x", cardX + padding)
+      .attr("y", currentY)
+      .attr("font-size", "13px")
+      .attr("font-weight", "600")
+      .attr("fill", "#666")
+      .text("Category:");
+    card.append("text")
+      .attr("x", contentX)
+      .attr("y", currentY)
+      .attr("font-size", "13px")
+      .attr("fill", "#333")
+      .text(payload.category.replace(/_/g, ' '));
+    currentY += lineSpacing;
+  }
+  
+  // Description
+  currentY += 10;
+  card.append("text")
+    .attr("x", cardX + padding)
+    .attr("y", currentY)
+    .attr("font-size", "13px")
+    .attr("font-weight", "600")
+    .attr("fill", "#666")
+    .text("Description:");
+  currentY += 20;
+  
+  const descriptionText = (payload.description || "No description available.").substring(0, 500);
+  const descText = card.append("text")
+    .attr("x", cardX + padding)
+    .attr("y", currentY)
+    .attr("font-size", "13px")
+    .attr("fill", "#333")
+    .attr("dy", "0em");
+  wrapText(descText, descriptionText, cardWidth - padding * 2);
+  
+  // Buttons
+  const buttonY = cardY + cardHeight - padding - 40;
+  const buttonHeight = 36;
+  const buttonWidth = 140;
+  const buttonSpacing = 16;
+  
+  // Back button
+  const backButton = card.append("g")
+    .attr("class", "detail-button")
+    .attr("cursor", "pointer")
+    .on("click", function(e) {
+      e.stopPropagation();
+      exitDetailView();
+    });
+  
+  backButton.append("rect")
+    .attr("x", cardX + padding)
+    .attr("y", buttonY)
+    .attr("width", buttonWidth)
+    .attr("height", buttonHeight)
+    .attr("rx", 4)
+    .attr("ry", 4)
+    .attr("fill", "#f0f0f0")
+    .attr("stroke", "#ccc")
+    .attr("stroke-width", 1);
+  
+  backButton.append("text")
+    .attr("x", cardX + padding + buttonWidth / 2)
+    .attr("y", buttonY + buttonHeight / 2)
+    .attr("text-anchor", "middle")
+    .attr("dominant-baseline", "middle")
+    .attr("font-size", "14px")
+    .attr("font-weight", "500")
+    .attr("fill", "#333")
+    .text("← Back to treemap");
+  
+  // Open URL button (only if URL exists)
+  if (payload.url) {
+    const urlButton = card.append("g")
+      .attr("class", "detail-button")
+      .attr("cursor", "pointer")
+      .on("click", function(e) {
+        e.stopPropagation();
+        window.open(payload.url, "_blank");
+      });
+    
+    urlButton.append("rect")
+      .attr("x", cardX + cardWidth - padding - buttonWidth)
+      .attr("y", buttonY)
+      .attr("width", buttonWidth)
+      .attr("height", buttonHeight)
+      .attr("rx", 4)
+      .attr("ry", 4)
+      .attr("fill", "#4c6ef5")
+      .attr("stroke", "#4c6ef5")
+      .attr("stroke-width", 1);
+    
+    urlButton.append("text")
+      .attr("x", cardX + cardWidth - padding - buttonWidth / 2)
+      .attr("y", buttonY + buttonHeight / 2)
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "middle")
+      .attr("font-size", "14px")
+      .attr("font-weight", "500")
+      .attr("fill", "#ffffff")
+      .text("Open URL →");
+  }
+  
+  // Escape key hint
+  card.append("text")
+    .attr("x", cardX + cardWidth / 2)
+    .attr("y", buttonY + buttonHeight + 20)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "11px")
+    .attr("fill", "#999")
+    .text("Press Esc to go back");
+}
+
+/**
  * Render treemap visualization
  */
 function renderTreemap() {
@@ -372,6 +822,12 @@ function renderTreemap() {
     const svg = container.append("svg")
       .attr("width", width)
       .attr("height", height);
+  
+    // Check if we should render detail view instead of treemap
+    if (isDetailView && detailPayload) {
+      renderDetailView(svg, width, height, detailPayload, detailBreadcrumb);
+      return;
+    }
   
     const g = svg.append("g");
   
@@ -436,9 +892,14 @@ function renderTreemap() {
   
         const isLeaf = !d.children || d.children.length === 0;
         if (!isLeaf && d.children && d.children.length > 0) {
+          // Non-leaf: exit detail view if active, then zoom
+          if (isDetailView) {
+            exitDetailView();
+          }
           zoomInto(d);
-        } else if (isLeaf && d.data.url) {
-          window.open(d.data.url, "_blank");
+        } else {
+          // Leaf: enter detail view
+          enterDetailView(d);
         }
       })
       .style("cursor", d => {
@@ -474,6 +935,9 @@ function renderTreemap() {
         .on("click", function(event) {
           event.stopPropagation();
           event.preventDefault();
+          if (isDetailView) {
+            exitDetailView();
+          }
           zoomInto(d);
         })
         .on("mouseover", function() {
@@ -1453,6 +1917,50 @@ function populatePlatformFilter() {
  * Setup event handlers - called after DOM is ready
  */
 function setupEventHandlers() {
+  // Initialize DOM references for details panel
+  settingDetails = document.getElementById("settingDetails");
+  detailsTitle = document.getElementById("detailsTitle");
+  detailsSubtitle = document.getElementById("detailsSubtitle");
+  detailsDescription = document.getElementById("detailsDescription");
+  detailsState = document.getElementById("detailsState");
+  detailsActionable = document.getElementById("detailsActionable");
+  detailsRisk = document.getElementById("detailsRisk");
+  detailsOpenUrl = document.getElementById("detailsOpenUrl");
+  detailsClose = document.getElementById("detailsClose");
+  
+  // Initialize panel as hidden
+  if (settingDetails) {
+    settingDetails.classList.add("hidden");
+  }
+  
+  // Close button handler
+  if (detailsClose) {
+    detailsClose.addEventListener("click", function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      closeDetails();
+    });
+  }
+  
+  // Escape key handler
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") {
+      if (isDetailView) {
+        exitDetailView();
+      } else if (settingDetails && !settingDetails.classList.contains("hidden")) {
+        closeDetails();
+      }
+    }
+  });
+  
+  // Prevent URL link from triggering zoom
+  if (detailsOpenUrl) {
+    detailsOpenUrl.addEventListener("click", function(e) {
+      e.stopPropagation();
+      // Allow default link behavior (open in new tab)
+    });
+  }
+  
   const sizingMetricSelect = document.getElementById("sizingMetric");
   const stateTypeFilterSelect = document.getElementById("stateTypeFilter");
   const searchBox = document.getElementById("searchBox");
