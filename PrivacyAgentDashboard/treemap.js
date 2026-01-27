@@ -533,8 +533,8 @@ function ensureAreaEvidencePanel() {
 }
 
 /**
- * Wire evidence panel hover behavior to reset on mouseleave (when not over treemap)
- * The evidence panel is treated as a "safe hover zone" - moving into it doesn't reset highlights
+ * Wire evidence panel hover behavior to reset when leaving actions area (when not over treemap)
+ * Only the actions area (buttons/links) is a safe hover zone, not the panel body
  */
 function wireEvidencePanelHoverBehavior() {
   const panel = ensureAreaEvidencePanel();
@@ -544,21 +544,31 @@ function wireEvidencePanelHoverBehavior() {
   if (panel.__wired) return;
   panel.__wired = true;
   
-  panel.addEventListener("mouseleave", function() {
-    // Check if mouse is currently over any treemap element to avoid flicker
+  let restoreGuard = false; // Guard to avoid flicker
+  
+  panel.addEventListener("mouseleave", function(event) {
+    const relatedTarget = event.relatedTarget;
+    // Check if mouse is moving to actions area or treemap element
+    const isMovingToActions = relatedTarget && relatedTarget.closest && relatedTarget.closest(".area-evidence-actions");
     const hoveredCell = document.querySelector("rect.treemap-cell:hover, rect.category-click-overlay:hover");
-    if (!hoveredCell) {
-      // Not hovering over treemap, safe to reset
-      hideAreaEvidence();
-      
-      // Reset visual state by finding and restoring all cells
-      const container = d3.select("#treemapContainer");
-      const svg = container.select("svg");
-      if (!svg.empty()) {
-        const g = svg.select("g");
-        g.selectAll("rect.treemap-cell").style("opacity", 1);
-        g.selectAll("text.treemap-label").style("opacity", 1);
-      }
+    const isMovingToTreemap = hoveredCell !== null;
+    
+    if (!isMovingToActions && !isMovingToTreemap && !restoreGuard) {
+      // Not moving to safe zones, safe to reset
+      restoreGuard = true;
+      setTimeout(() => {
+        hideAreaEvidence();
+        
+        // Reset visual state
+        const container = d3.select("#treemapContainer");
+        const svg = container.select("svg");
+        if (!svg.empty()) {
+          const g = svg.select("g");
+          g.selectAll("rect.treemap-cell").style("opacity", 1);
+          g.selectAll("text.treemap-label").style("opacity", 1);
+        }
+        restoreGuard = false;
+      }, 50);
     }
   });
 }
@@ -573,11 +583,43 @@ function showAreaEvidence(title, htmlBody) {
   panel.innerHTML = `
     <div class="area-evidence-title">${title}</div>
     <div class="area-evidence-body">${htmlBody}</div>
+    <div class="area-evidence-actions">
+      <!-- Actions/buttons area - safe hover zone -->
+    </div>
   `;
   panel.classList.remove("hidden");
   
   // Wire hover behavior when panel is shown
   wireEvidencePanelHoverBehavior();
+  
+  // Wire body hover behavior after DOM is ready
+  setTimeout(function() {
+    const bodyEl = panel.querySelector(".area-evidence-body");
+    if (bodyEl && !bodyEl.__wired) {
+      bodyEl.__wired = true;
+      let restoreGuard = false;
+      bodyEl.addEventListener("mouseenter", function() {
+        // Check if mouse is over treemap element to avoid flicker
+        const hoveredCell = document.querySelector("rect.treemap-cell:hover, rect.category-click-overlay:hover");
+        if (!hoveredCell && !restoreGuard) {
+          restoreGuard = true;
+          setTimeout(() => {
+            hideAreaEvidence();
+            
+            // Reset visual state
+            const container = d3.select("#treemapContainer");
+            const svg = container.select("svg");
+            if (!svg.empty()) {
+              const g = svg.select("g");
+              g.selectAll("rect.treemap-cell").style("opacity", 1);
+              g.selectAll("text.treemap-label").style("opacity", 1);
+            }
+            restoreGuard = false;
+          }, 100);
+        }
+      });
+    }
+  }, 10);
 }
 
 /**
@@ -950,10 +992,11 @@ function renderTreemap() {
     // Leaf hover state flag
     let isLeafHoverActive = false;
     
-    // Helper to check if element is inside evidence panel (safe hover zone)
-    function isInsideEvidencePanel(el) {
+    // Helper to check if element is inside evidence actions area (safe hover zone)
+    // Only the actions area (buttons/links) is a safe zone, not the panel body
+    function isInsideEvidenceActions(el) {
       if (!el) return false;
-      return el.closest && el.closest(".area-evidence") !== null;
+      return el.closest && el.closest(".area-evidence-actions") !== null;
     }
     
     // Helper functions for area evidence (need access to g)
@@ -1244,14 +1287,14 @@ function renderTreemap() {
         if (!isLeaf) return;
         
         const relatedTarget = event.relatedTarget;
-        // Don't restore if moving to evidence panel (safe hover zone) or another treemap element
-        const isMovingToEvidencePanel = isInsideEvidencePanel(relatedTarget);
+        // Don't restore if moving to evidence actions area (safe hover zone) or another treemap element
+        const isMovingToEvidenceActions = isInsideEvidenceActions(relatedTarget);
         const isMovingToTreemapElement = relatedTarget && (
           (relatedTarget.closest && (relatedTarget.closest("rect.treemap-cell") || relatedTarget.closest("rect.category-click-overlay"))) ||
           (relatedTarget.classList && (relatedTarget.classList.contains("treemap-cell") || relatedTarget.classList.contains("category-click-overlay")))
         );
         
-        if (!isMovingToEvidencePanel && !isMovingToTreemapElement) {
+        if (!isMovingToEvidenceActions && !isMovingToTreemapElement) {
           restoreAllLeaves();
         }
       })
@@ -1322,9 +1365,9 @@ function renderTreemap() {
           if (isLeafHoverActive) return;
           
           const relatedTarget = event.relatedTarget;
-          // Don't restore if moving to evidence panel (safe hover zone)
-          const isMovingToEvidencePanel = isInsideEvidencePanel(relatedTarget);
-          if (isMovingToEvidencePanel) return;
+          // Don't restore if moving to evidence actions area (safe hover zone)
+          const isMovingToEvidenceActions = isInsideEvidenceActions(relatedTarget);
+          if (isMovingToEvidenceActions) return;
           
           d3.select(this).attr("fill", "transparent");
           restoreAllCells();

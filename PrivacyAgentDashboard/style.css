@@ -286,6 +286,15 @@ body {
   color: #555;
 }
 
+.area-evidence-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+  min-height: 20px;
+}
+
 /* Setting Details Panel */
 .hidden {
   display: none !important;
