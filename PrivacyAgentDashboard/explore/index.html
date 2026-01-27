@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Privacy Agent Dashboard</title>
     <link rel="stylesheet" href="../style2.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <script type="module" src="../global.js"></script>
+    <script type="module" src="../treemap.js"></script>
 </head>
 
 <body>
@@ -24,9 +26,95 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="main-content">
-            <h2>Welcome</h2>
-            <p>Select a section from the left menu to begin.</p>
+         <!-- Main Content -->
+        <main class="dashboard">
+            <!-- Treemap Visualization -->
+            <section class="panel treemap-section">
+            <div class="treemap-controls">
+                <div class="treemap-control-row">
+                <label>
+                    Sizing Metric:
+                    <select id="sizingMetric">
+                    <option value="count">Count (1 per setting)</option>
+                    <option value="actionable">Actionable only</option>
+                    <option value="risk-weighted">Risk-weighted</option>
+                    </select>
+                </label>
+                <label>
+                    State Type:
+                    <select id="stateTypeFilter">
+                    <option value="all">All</option>
+                    <option value="actionable">Actionable</option>
+                    <option value="navigational">Navigational</option>
+                    <option value="unknown">Unknown</option>
+                    </select>
+                </label>
+                <label for="platformFilter">
+                    Platform:
+                    <select id="platformFilter" multiple size="5">
+                    <option value="all">All</option>
+                    </select>
+                </label>
+                <label>
+                    Search:
+                    <input type="text" id="searchBox" placeholder="Search settings..." />
+                </label>
+                <button id="resetView">Reset View</button>
+                </div>
+                <div class="breadcrumbs" id="breadcrumbs">
+                <span class="breadcrumb-item active" data-path="">All</span>
+                </div>
+            </div>
+            <div id="treemapContainer">
+                <p>Loading treemap visualization...</p>
+                <!-- Setting Details Panel -->
+                <div id="settingDetails" class="hidden">
+                <div class="details-header">
+                    <h3 id="detailsTitle">Setting Details</h3>
+                    <p id="detailsSubtitle" class="details-subtitle"></p>
+                    <button id="detailsClose" class="details-close" aria-label="Close">×</button>
+                </div>
+                <div class="details-body">
+                    <div class="details-row">
+                    <strong>Description:</strong>
+                    <p id="detailsDescription"></p>
+                    </div>
+                    <div class="details-row">
+                    <strong>State:</strong>
+                    <p id="detailsState"></p>
+                    </div>
+                    <div class="details-row">
+                    <strong>Actionability:</strong>
+                    <p id="detailsActionable"></p>
+                    </div>
+                    <div class="details-row">
+                    <strong>Risk:</strong>
+                    <p id="detailsRisk"></p>
+                    </div>
+                </div>
+                <div class="details-footer">
+                    <a id="detailsOpenUrl" href="#" target="_blank" rel="noopener noreferrer" class="details-link">Open setting page →</a>
+                </div>
+                </div>
+            </div>
+            <div id="treemapLegend" class="treemap-legend">
+                <!-- Legend will be populated by JavaScript -->
+            </div>
+            </section>
+
+            <!-- Additional Charts Section -->
+            <section class="panel charts-section">
+            <div id="belowTreemapRow" class="charts-container">
+                <div class="chart-panel">
+                <h3>Settings by Platform and Type</h3>
+                <div id="stackedPlatformChart"></div>
+                </div>
+                <div class="chart-panel">
+                <h3>Coverage Heatmap</h3>
+                <div id="categorySmallMultiples"></div>
+                </div>
+            </div>
+            </section>
         </main>
     </div>
 </body>
