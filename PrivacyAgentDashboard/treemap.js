@@ -66,6 +66,7 @@ let areaEvidenceEl = null;
 // Run: python -m http.server 8000 (from project root) then open http://localhost:8000/PrivacyAgentDashboard/old_index.html
 
 const csvPaths = [
+  "all_platforms_classified_with_clicks.csv",  // File with clicks data (if in explore directory)
   "all_platforms_classified.csv",  // Local copy in dashboard directory
   "../database/data/all_platforms_classified.csv"  // Original location
 ];
@@ -144,6 +145,7 @@ function parseCSVData(csvData) {
         const settingName = setting.setting || 'Unknown';
         const description = setting.description || '';
         const state = setting.state || 'unknown';
+        const clicks = setting.clicks ? parseInt(setting.clicks, 10) : 0; // Extract clicks, default to 0
         
         // Create unique key for deduplication
         const key = `${platform}::${category}::${settingName}`;
@@ -160,13 +162,18 @@ function parseCSVData(csvData) {
             state: state,
             stateType: stateType,
             url: url,
-            weight: calculateWeight(stateType, category, currentSizingMetric)
+            clicks: clicks, // Store clicks value
+            weight: calculateWeight(stateType, category, currentSizingMetric, clicks)
           });
         } else {
           // Update URL if different (keep the first one found)
           const existing = settingsMap.get(key);
           if (!existing.url && url) {
             existing.url = url;
+          }
+          // Update clicks if available (use max or latest)
+          if (clicks > 0) {
+            existing.clicks = Math.max(existing.clicks || 0, clicks);
           }
         }
       });
@@ -248,7 +255,7 @@ function determineStateType(state) {
 /**
  * Calculate weight based on sizing metric
  */
-function calculateWeight(stateType, category, metric) {
+function calculateWeight(stateType, category, metric, clicks = 0) {
   if (metric === 'count') {
     return 1;
   } else if (metric === 'actionable') {
@@ -262,6 +269,9 @@ function calculateWeight(stateType, category, metric) {
       riskWeight = 1.5;
     }
     return riskWeight;
+  } else if (metric === 'clicks') {
+    // Use clicks value, default to 1 if clicks is 0 or missing
+    return clicks > 0 ? clicks : 1;
   }
   return 1;
 }
@@ -303,7 +313,7 @@ function buildHierarchy() {
   
   // Update weights based on current metric
   filtered.forEach(d => {
-    d.weight = calculateWeight(d.stateType, d.category, currentSizingMetric);
+    d.weight = calculateWeight(d.stateType, d.category, currentSizingMetric, d.clicks || 0);
   });
   
   // Group directly by category (skip platform level)
