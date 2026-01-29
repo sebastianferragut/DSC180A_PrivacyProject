@@ -55,6 +55,7 @@ body {
 .container {
     display: flex;
     height: calc(100vh - 70px);
+    overflow: hidden;
 }
 
 /* Left Sidebar Navigation */
@@ -102,11 +103,12 @@ body {
 }
 
 .dashboard {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto auto 1fr auto;
-  gap: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
   padding: 16px;
+  min-width: 0; /* Prevents flex item from overflowing */
 }
 
 .combined-section {
@@ -207,8 +209,10 @@ body {
 
 /* Treemap Styles */
 .treemap-section {
-  grid-column: 1 / -1;
-  min-height: 600px;
+  flex: 0 0 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .treemap-controls {
@@ -290,9 +294,12 @@ body {
 
 #treemapContainer {
   width: 100%;
+  height: 700px;
   min-height: 500px;
+  max-height: calc(100vh - 300px);
   position: relative;
   overflow: hidden;
+  flex: 0 0 auto;
 }
 
 /* Area Evidence Panel */
@@ -485,7 +492,7 @@ body {
 #treemapContainer svg {
   display: block;
   width: 100%;
-  height: 500px;
+  height: 100%;
 }
 
 .treemap-cell {
@@ -662,6 +669,11 @@ h2 {
   padding: 20px;
 }
 
+.charts-section {
+  flex: 0 0 auto;
+  overflow: visible;
+}
+
 @media (max-width: 1024px) {
   .charts-container {
     grid-template-columns: 1fr;
@@ -685,6 +697,8 @@ h2 {
 #stackedPlatformChart,
 #categorySmallMultiples {
   min-height: 400px;
+  max-height: 500px;
+  overflow: auto;
 }
 
 .small-multiple {
