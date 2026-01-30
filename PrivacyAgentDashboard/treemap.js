@@ -66,6 +66,7 @@ let areaEvidenceEl = null;
 // Run: python -m http.server 8000 (from project root) then open http://localhost:8000/PrivacyAgentDashboard/old_index.html
 
 const csvPaths = [
+  "all_platforms_classified_with_clicks.csv",  // File with clicks data (if in explore directory)
   "all_platforms_classified.csv",  // Local copy in dashboard directory
   "../database/data/all_platforms_classified.csv"  // Original location
 ];
@@ -144,6 +145,7 @@ function parseCSVData(csvData) {
         const settingName = setting.setting || 'Unknown';
         const description = setting.description || '';
         const state = setting.state || 'unknown';
+        const clicks = setting.clicks ? parseInt(setting.clicks, 10) : 0; // Extract clicks, default to 0
         
         // Create unique key for deduplication
         const key = `${platform}::${category}::${settingName}`;
@@ -160,13 +162,18 @@ function parseCSVData(csvData) {
             state: state,
             stateType: stateType,
             url: url,
-            weight: calculateWeight(stateType, category, currentSizingMetric)
+            clicks: clicks, // Store clicks value
+            weight: calculateWeight(stateType, category, currentSizingMetric, clicks)
           });
         } else {
           // Update URL if different (keep the first one found)
           const existing = settingsMap.get(key);
           if (!existing.url && url) {
             existing.url = url;
+          }
+          // Update clicks if available (use max or latest)
+          if (clicks > 0) {
+            existing.clicks = Math.max(existing.clicks || 0, clicks);
           }
         }
       });
@@ -248,7 +255,7 @@ function determineStateType(state) {
 /**
  * Calculate weight based on sizing metric
  */
-function calculateWeight(stateType, category, metric) {
+function calculateWeight(stateType, category, metric, clicks = 0) {
   if (metric === 'count') {
     return 1;
   } else if (metric === 'actionable') {
@@ -262,6 +269,9 @@ function calculateWeight(stateType, category, metric) {
       riskWeight = 1.5;
     }
     return riskWeight;
+  } else if (metric === 'clicks') {
+    // Use clicks value, default to 1 if clicks is 0 or missing
+    return clicks > 0 ? clicks : 1;
   }
   return 1;
 }
@@ -303,7 +313,7 @@ function buildHierarchy() {
   
   // Update weights based on current metric
   filtered.forEach(d => {
-    d.weight = calculateWeight(d.stateType, d.category, currentSizingMetric);
+    d.weight = calculateWeight(d.stateType, d.category, currentSizingMetric, d.clicks || 0);
   });
   
   // Group directly by category (skip platform level)
@@ -445,7 +455,8 @@ function getSettingPayload(d) {
     actionable: isActionable ? (stateType === "actionable" ? "Actionable" : "Navigational") : "Unknown",
     risk: data.risk || data.risk_level || data.risk_weight || riskLevel,
     platform: data.platform || "",
-    category: data.category || ""
+    category: data.category || "",
+    clicks: data.clicks || 0
   };
 }
 
@@ -513,6 +524,87 @@ function showSettingDetails(d) {
 }
 
 /**
+ * Attach a simple name-only tooltip to a button element
+ * Shows ONLY the button label (aria-label or textContent)
+ */
+function attachButtonNameTooltip(buttonEl) {
+  if (!buttonEl || buttonEl.__hasNameTooltip) return;
+  buttonEl.__hasNameTooltip = true;
+
+  let tip = document.querySelector(".button-name-tooltip");
+  if (!tip) {
+    tip = document.createElement("div");
+    tip.className = "button-name-tooltip";
+    document.body.appendChild(tip);
+  }
+
+  function getLabel() {
+    return (buttonEl.getAttribute("aria-label") || buttonEl.textContent || "").trim();
+  }
+
+  buttonEl.addEventListener("mouseenter", (e) => {
+    const label = getLabel();
+    if (!label) return;
+    tip.textContent = label; // ONLY the name
+    tip.style.opacity = "1";
+    tip.style.left = (e.pageX + 10) + "px";
+    tip.style.top = (e.pageY - 10) + "px";
+  });
+
+  buttonEl.addEventListener("mousemove", (e) => {
+    tip.style.left = (e.pageX + 10) + "px";
+    tip.style.top = (e.pageY - 10) + "px";
+  });
+
+  buttonEl.addEventListener("mouseleave", () => {
+    tip.style.opacity = "0";
+  });
+}
+
+/**
+ * Create a simple tooltip for SVG button groups (like detail buttons)
+ * Shows ONLY the button label text
+ */
+function createSVGButtonTooltip(buttonGroup, label) {
+  let tip = null;
+  
+  buttonGroup
+    .on("mouseenter", function(event) {
+      if (!tip) {
+        tip = d3.select("body").append("div")
+          .attr("class", "button-name-tooltip")
+          .style("opacity", 0)
+          .style("position", "absolute")
+          .style("background", "rgba(0, 0, 0, 0.85)")
+          .style("color", "white")
+          .style("padding", "6px 10px")
+          .style("border-radius", "4px")
+          .style("font-size", "12px")
+          .style("pointer-events", "none")
+          .style("z-index", "10000")
+          .style("white-space", "nowrap");
+      }
+      tip
+        .text(label) // ONLY the name
+        .style("opacity", 1)
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 10) + "px");
+    })
+    .on("mousemove", function(event) {
+      if (tip) {
+        tip
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 10) + "px");
+      }
+    })
+    .on("mouseout", function() {
+      if (tip) {
+        tip.style("opacity", 0);
+      }
+    });
+}
+
+/**
  * Ensure area evidence panel exists and return it
  */
 function ensureAreaEvidencePanel() {
@@ -533,8 +625,8 @@ function ensureAreaEvidencePanel() {
 }
 
 /**
- * Wire evidence panel hover behavior to reset on mouseleave (when not over treemap)
- * The evidence panel is treated as a "safe hover zone" - moving into it doesn't reset highlights
+ * Wire evidence panel hover behavior to reset when leaving actions area (when not over treemap)
+ * Only the actions area (buttons/links) is a safe hover zone, not the panel body
  */
 function wireEvidencePanelHoverBehavior() {
   const panel = ensureAreaEvidencePanel();
@@ -544,21 +636,31 @@ function wireEvidencePanelHoverBehavior() {
   if (panel.__wired) return;
   panel.__wired = true;
   
-  panel.addEventListener("mouseleave", function() {
-    // Check if mouse is currently over any treemap element to avoid flicker
+  let restoreGuard = false; // Guard to avoid flicker
+  
+  panel.addEventListener("mouseleave", function(event) {
+    const relatedTarget = event.relatedTarget;
+    // Check if mouse is moving to actions area or treemap element
+    const isMovingToActions = relatedTarget && relatedTarget.closest && relatedTarget.closest(".area-evidence-actions");
     const hoveredCell = document.querySelector("rect.treemap-cell:hover, rect.category-click-overlay:hover");
-    if (!hoveredCell) {
-      // Not hovering over treemap, safe to reset
-      hideAreaEvidence();
-      
-      // Reset visual state by finding and restoring all cells
-      const container = d3.select("#treemapContainer");
-      const svg = container.select("svg");
-      if (!svg.empty()) {
-        const g = svg.select("g");
-        g.selectAll("rect.treemap-cell").style("opacity", 1);
-        g.selectAll("text.treemap-label").style("opacity", 1);
-      }
+    const isMovingToTreemap = hoveredCell !== null;
+    
+    if (!isMovingToActions && !isMovingToTreemap && !restoreGuard) {
+      // Not moving to safe zones, safe to reset
+      restoreGuard = true;
+      setTimeout(() => {
+        hideAreaEvidence();
+        
+        // Reset visual state
+        const container = d3.select("#treemapContainer");
+        const svg = container.select("svg");
+        if (!svg.empty()) {
+          const g = svg.select("g");
+          g.selectAll("rect.treemap-cell").style("opacity", 1);
+          g.selectAll("text.treemap-label").style("opacity", 1);
+        }
+        restoreGuard = false;
+      }, 50);
     }
   });
 }
@@ -573,11 +675,43 @@ function showAreaEvidence(title, htmlBody) {
   panel.innerHTML = `
     <div class="area-evidence-title">${title}</div>
     <div class="area-evidence-body">${htmlBody}</div>
+    <div class="area-evidence-actions">
+      <!-- Actions/buttons area - safe hover zone -->
+    </div>
   `;
   panel.classList.remove("hidden");
   
   // Wire hover behavior when panel is shown
   wireEvidencePanelHoverBehavior();
+  
+  // Wire body hover behavior after DOM is ready
+  setTimeout(function() {
+    const bodyEl = panel.querySelector(".area-evidence-body");
+    if (bodyEl && !bodyEl.__wired) {
+      bodyEl.__wired = true;
+      let restoreGuard = false;
+      bodyEl.addEventListener("mouseenter", function() {
+        // Check if mouse is over treemap element to avoid flicker
+        const hoveredCell = document.querySelector("rect.treemap-cell:hover, rect.category-click-overlay:hover");
+        if (!hoveredCell && !restoreGuard) {
+          restoreGuard = true;
+          setTimeout(() => {
+            hideAreaEvidence();
+            
+            // Reset visual state
+            const container = d3.select("#treemapContainer");
+            const svg = container.select("svg");
+            if (!svg.empty()) {
+              const g = svg.select("g");
+              g.selectAll("rect.treemap-cell").style("opacity", 1);
+              g.selectAll("text.treemap-label").style("opacity", 1);
+            }
+            restoreGuard = false;
+          }, 100);
+        }
+      });
+    }
+  }, 10);
 }
 
 /**
@@ -630,14 +764,16 @@ function exitDetailView() {
 }
 
 /**
- * Wrap text to fit within max width
+ * Wrap text to fit within max width and optionally max height
  */
-function wrapText(textElement, text, maxWidth) {
+function wrapText(textElement, text, maxWidth, maxHeight = null) {
   const words = text.split(/\s+/).reverse();
   let word;
   let line = [];
   let lineNumber = 0;
   const lineHeight = 1.2;
+  const fontSize = parseFloat(textElement.attr("font-size") || "13");
+  const lineHeightPx = fontSize * lineHeight;
   const y = textElement.attr("y");
   const dy = parseFloat(textElement.attr("dy") || 0);
   let tspan = textElement.text(null)
@@ -653,10 +789,20 @@ function wrapText(textElement, text, maxWidth) {
       line.pop();
       tspan.text(line.join(" "));
       line = [word];
+      lineNumber++;
+      
+      // Check max height if provided
+      if (maxHeight !== null && (lineNumber * lineHeightPx) > maxHeight) {
+        // Truncate and add ellipsis
+        const currentText = tspan.text();
+        tspan.text(currentText.substring(0, currentText.length - 3) + "...");
+        break;
+      }
+      
       tspan = textElement.append("tspan")
         .attr("x", textElement.attr("x") || 0)
         .attr("y", y)
-        .attr("dy", ++lineNumber * lineHeight + dy + "em")
+        .attr("dy", lineNumber * lineHeight + dy + "em")
         .text(word);
     }
   }
@@ -666,12 +812,27 @@ function wrapText(textElement, text, maxWidth) {
  * Render detail view card in SVG
  */
 function renderDetailView(svg, width, height, payload, breadcrumb) {
-  const cardWidth = Math.min(600, width * 0.8);
-  const cardHeight = Math.min(500, height * 0.8);
-  const cardX = (width - cardWidth) / 2;
-  const cardY = (height - cardHeight) / 2;
-  const padding = 24;
+  const padding = 14;
   const cornerRadius = 8;
+  const headerHeight = 62; // Title + subtitle + spacing
+  const footerHeight = 56; // Buttons + spacing
+  
+  // Calculate card dimensions - make it smaller and more compact
+  const cardWidth = Math.min(420, width * 0.60);
+  // Ensure card height leaves room for buttons at the bottom
+  const maxCardHeight = Math.min(380, height * 0.55);
+  const cardHeight = maxCardHeight;
+  const cardX = Math.max(10, (width - cardWidth) / 2);
+  const cardY = Math.max(10, (height - cardHeight) / 2);
+  
+  // Reserve a guaranteed footer area and compute buttonY BEFORE rendering content
+  const buttonHeight = 30;
+  const buttonWidth = 120;
+  const buttonSpacing = 12;
+  const buttonY = cardY + cardHeight - padding - buttonHeight;
+  
+  // Calculate available content height (subtract title, subtitle, buttons, padding)
+  const availableContentHeight = cardHeight - headerHeight - footerHeight - padding * 2;
   
   // Card background
   const card = svg.append("g")
@@ -689,17 +850,17 @@ function renderDetailView(svg, width, height, payload, breadcrumb) {
     .attr("stroke-width", 1);
   
   // Title
-  const titleY = cardY + padding + 20;
+  const titleY = cardY + padding + 12;
   card.append("text")
     .attr("x", cardX + padding)
     .attr("y", titleY)
-    .attr("font-size", "24px")
+    .attr("font-size", "20px")
     .attr("font-weight", "600")
     .attr("fill", "#333")
     .text(payload.name || "Setting");
   
   // Breadcrumb/subtitle
-  const subtitleY = titleY + 28;
+  const subtitleY = titleY + 20;
   card.append("text")
     .attr("x", cardX + padding)
     .attr("y", subtitleY)
@@ -708,9 +869,9 @@ function renderDetailView(svg, width, height, payload, breadcrumb) {
     .text(breadcrumb || "");
   
   // Body content
-  let currentY = subtitleY + 40;
-  const lineSpacing = 24;
-  const labelWidth = 120;
+  let currentY = subtitleY + 30;
+  const lineSpacing = 20;
+  const labelWidth = 100;
   const contentX = cardX + padding + labelWidth;
   const contentWidth = cardWidth - padding * 2 - labelWidth;
   
@@ -800,8 +961,27 @@ function renderDetailView(svg, width, height, payload, breadcrumb) {
     currentY += lineSpacing;
   }
   
+  // Clicks
+  if (payload.clicks !== undefined && payload.clicks !== null) {
+    card.append("text")
+      .attr("x", cardX + padding)
+      .attr("y", currentY)
+      .attr("font-size", "13px")
+      .attr("font-weight", "600")
+      .attr("fill", "#666")
+      .text("Clicks:");
+    card.append("text")
+      .attr("x", contentX)
+      .attr("y", currentY)
+      .attr("font-size", "13px")
+      .attr("fill", "#333")
+      .text(payload.clicks.toString());
+    currentY += lineSpacing;
+  }
+  
   // Description
   currentY += 10;
+  const descLabelY = currentY;
   card.append("text")
     .attr("x", cardX + padding)
     .attr("y", currentY)
@@ -811,29 +991,63 @@ function renderDetailView(svg, width, height, payload, breadcrumb) {
     .text("Description:");
   currentY += 20;
   
-  const descriptionText = (payload.description || "No description available.").substring(0, 500);
+  // Calculate max height for description - clamp so it NEVER overlaps the footer/buttons
+  const maxDescHeight = Math.max(
+    40,
+    (buttonY - 10) - currentY
+  );
+  const descriptionText = (payload.description || "No description available.");
+  
+  // Create a clipping path for the description area
+  const descClipId = "desc-clip-" + Date.now();
+  const descClip = svg.append("defs").append("clipPath")
+    .attr("id", descClipId)
+    .attr("clipPathUnits", "userSpaceOnUse");
+  descClip.append("rect")
+    .attr("x", cardX + padding)
+    .attr("y", currentY - 15)
+    .attr("width", cardWidth - padding * 2)
+    .attr("height", maxDescHeight);
+  
   const descText = card.append("text")
     .attr("x", cardX + padding)
     .attr("y", currentY)
     .attr("font-size", "13px")
     .attr("fill", "#333")
-    .attr("dy", "0em");
-  wrapText(descText, descriptionText, cardWidth - padding * 2);
+    .attr("dy", "0em")
+    .attr("clip-path", `url(#${descClipId})`);
+  wrapText(descText, descriptionText, cardWidth - padding * 2, maxDescHeight);
   
-  // Buttons
-  const buttonY = cardY + cardHeight - padding - 40;
-  const buttonHeight = 36;
-  const buttonWidth = 140;
-  const buttonSpacing = 16;
+  // Add a footer background strip to make buttons pop
+  card.append("rect")
+    .attr("x", cardX)
+    .attr("y", buttonY - 14)
+    .attr("width", cardWidth)
+    .attr("height", buttonHeight + 28)
+    .attr("fill", "#ffffff")
+    .attr("opacity", 0.95);
   
-  // Back button
+  // Back button - make it more prominent
   const backButton = card.append("g")
     .attr("class", "detail-button")
     .attr("cursor", "pointer")
     .on("click", function(e) {
       e.stopPropagation();
       exitDetailView();
+    })
+    .on("mouseover", function() {
+      d3.select(this).select("rect")
+        .attr("fill", "#3b5bdb")
+        .attr("stroke", "#3b5bdb");
+    })
+    .on("mouseout", function() {
+      d3.select(this).select("rect")
+        .attr("fill", "#4c6ef5")
+        .attr("stroke", "#4c6ef5");
     });
+  
+  // Add tooltip for back button (name only)
+  createSVGButtonTooltip(backButton, "Back");
   
   backButton.append("rect")
     .attr("x", cardX + padding)
@@ -842,8 +1056,8 @@ function renderDetailView(svg, width, height, payload, breadcrumb) {
     .attr("height", buttonHeight)
     .attr("rx", 4)
     .attr("ry", 4)
-    .attr("fill", "#f0f0f0")
-    .attr("stroke", "#ccc")
+    .attr("fill", "#4c6ef5")
+    .attr("stroke", "#4c6ef5")
     .attr("stroke-width", 1);
   
   backButton.append("text")
@@ -851,10 +1065,13 @@ function renderDetailView(svg, width, height, payload, breadcrumb) {
     .attr("y", buttonY + buttonHeight / 2)
     .attr("text-anchor", "middle")
     .attr("dominant-baseline", "middle")
-    .attr("font-size", "14px")
+    .attr("font-size", "13px")
     .attr("font-weight", "500")
-    .attr("fill", "#333")
-    .text("← Back to treemap");
+    .attr("fill", "#ffffff")
+    .text("← Back");
+  
+  // Force back button to front
+  backButton.raise();
   
   // Open URL button (only if URL exists)
   if (payload.url) {
@@ -864,7 +1081,20 @@ function renderDetailView(svg, width, height, payload, breadcrumb) {
       .on("click", function(e) {
         e.stopPropagation();
         window.open(payload.url, "_blank");
+      })
+      .on("mouseover", function() {
+        d3.select(this).select("rect")
+          .attr("fill", "#3b5bdb")
+          .attr("stroke", "#3b5bdb");
+      })
+      .on("mouseout", function() {
+        d3.select(this).select("rect")
+          .attr("fill", "#4c6ef5")
+          .attr("stroke", "#4c6ef5");
       });
+    
+    // Add tooltip for URL button (name only)
+    createSVGButtonTooltip(urlButton, "Open URL");
     
     urlButton.append("rect")
       .attr("x", cardX + cardWidth - padding - buttonWidth)
@@ -886,16 +1116,21 @@ function renderDetailView(svg, width, height, payload, breadcrumb) {
       .attr("font-weight", "500")
       .attr("fill", "#ffffff")
       .text("Open URL →");
+    
+    // Force URL button to front
+    urlButton.raise();
   }
   
-  // Escape key hint
-  card.append("text")
-    .attr("x", cardX + cardWidth / 2)
-    .attr("y", buttonY + buttonHeight + 20)
-    .attr("text-anchor", "middle")
-    .attr("font-size", "11px")
-    .attr("fill", "#999")
-    .text("Press Esc to go back");
+  // Escape key hint - only show if there's space
+  if (buttonY + buttonHeight + 15 < cardY + cardHeight) {
+    card.append("text")
+      .attr("x", cardX + cardWidth / 2)
+      .attr("y", buttonY + buttonHeight + 12)
+      .attr("text-anchor", "middle")
+      .attr("font-size", "10px")
+      .attr("fill", "#999")
+      .text("Press Esc to go back");
+  }
 }
 
 /**
@@ -906,8 +1141,11 @@ function renderTreemap() {
       buildHierarchy();
     }
   
-    // Clean up any existing tooltips (removed, but keep cleanup for safety)
+    // Clean up any existing tooltips
     d3.selectAll(".treemap-tooltip").remove();
+    
+    // Hide area evidence panel
+    hideAreaEvidence();
   
     const container = d3.select("#treemapContainer");
     // Remove all SVG content but preserve the area evidence panel
@@ -923,7 +1161,7 @@ function renderTreemap() {
     }
   
     const width = container.node().getBoundingClientRect().width || 1200;
-    const height = 500;
+    const height = 700;
   
     const svg = container.append("svg")
       .attr("width", width)
@@ -950,10 +1188,11 @@ function renderTreemap() {
     // Leaf hover state flag
     let isLeafHoverActive = false;
     
-    // Helper to check if element is inside evidence panel (safe hover zone)
-    function isInsideEvidencePanel(el) {
+    // Helper to check if element is inside evidence actions area (safe hover zone)
+    // Only the actions area (buttons/links) is a safe zone, not the panel body
+    function isInsideEvidenceActions(el) {
       if (!el) return false;
-      return el.closest && el.closest(".area-evidence") !== null;
+      return el.closest && el.closest(".area-evidence-actions") !== null;
     }
     
     // Helper functions for area evidence (need access to g)
@@ -1198,62 +1437,43 @@ function renderTreemap() {
         // If in detail view, do nothing
         if (isDetailView) return;
         
-        const catNode = getCategoryNodeForLeaf(d);
-        if (!catNode) return;
+        // Get setting name
+        const settingName = d.data.name || d.data.setting || d.data.meta?.setting || "Setting";
         
-        const platformKey = normalizePlatformKey(d.data.platform);
-        isLeafHoverActive = true;
-        dimAllLeaves();
-        highlightLeavesByCategoryAndPlatform(catNode, platformKey);
-        
-        const catName = (catNode.data.name || "Category").replace(/_/g, " ");
-        const platformName = platformKey.charAt(0).toUpperCase() + platformKey.slice(1);
-        
-        const subset = computeSubsetArea(catNode, platformKey);
-        const pct = (catNode && catNode.leaves && catNode.leaves().length > 0)
-          ? (() => {
-              const catTotal = catNode.leaves().reduce((acc, leaf) => acc + leafPixelArea(leaf), 0);
-              return catTotal > 0 ? ((subset.totalArea / catTotal) * 100).toFixed(1) : "0.0";
-            })()
-          : "0.0";
-        
-        const body = `
-          <div class="area-evidence-row">
-            <div style="margin-bottom:6px;">
-              <strong>How area is computed:</strong><br/>
-              width = (x1-x0), height = (y1-y0), area = width×height (px²)<br/>
-              subset area = Σ area over matching leaf rectangles
-            </div>
-            <strong>Subset total:</strong> ${fmtInt(Math.round(subset.totalArea))} px² (${pct}% of category leaf area)<br/>
-            <strong>Leaf count:</strong> ${fmtInt(subset.leavesCount)}<br/>
-            <span class="area-evidence-eq">Area = Σ((x1-x0)×(y1-y0)) over ${subset.leavesCount} leaf rectangle${subset.leavesCount !== 1 ? "s" : ""}</span>
-          </div>
-        ` + (subset.topLeaves.length > 0 ? `
-          <div class="area-evidence-platform">
-            <strong>Top contributors</strong>
-            <div style="margin-top:4px; font-size:11px; color:#666;">
-              ${subset.topLeaves.map(leaf => `• ${leaf.name}: <span class="area-evidence-eq">(${leaf.w}×${leaf.h})=${fmtInt(leaf.area)}</span>`).join("<br/>")}
-            </div>
-          </div>
-        ` : "");
-        
-        showAreaEvidence(`Category: ${catName} — Platform: ${platformName} (Sizing: ${currentSizingMetric})`, body);
-      })
-      .on("mouseout", function(event, d) {
-        const isLeaf = !d.children || d.children.length === 0;
-        if (!isLeaf) return;
-        
-        const relatedTarget = event.relatedTarget;
-        // Don't restore if moving to evidence panel (safe hover zone) or another treemap element
-        const isMovingToEvidencePanel = isInsideEvidencePanel(relatedTarget);
-        const isMovingToTreemapElement = relatedTarget && (
-          (relatedTarget.closest && (relatedTarget.closest("rect.treemap-cell") || relatedTarget.closest("rect.category-click-overlay"))) ||
-          (relatedTarget.classList && (relatedTarget.classList.contains("treemap-cell") || relatedTarget.classList.contains("category-click-overlay")))
-        );
-        
-        if (!isMovingToEvidencePanel && !isMovingToTreemapElement) {
-          restoreAllLeaves();
+        // Create or get tooltip
+        let tooltip = d3.select("body").select(".treemap-tooltip");
+        if (tooltip.empty()) {
+          tooltip = d3.select("body").append("div")
+            .attr("class", "treemap-tooltip")
+            .style("opacity", 0)
+            .style("position", "absolute")
+            .style("background", "rgba(0, 0, 0, 0.85)")
+            .style("color", "white")
+            .style("padding", "8px 12px")
+            .style("border-radius", "4px")
+            .style("font-size", "13px")
+            .style("pointer-events", "none")
+            .style("z-index", "1000")
+            .style("max-width", "300px");
         }
+        
+        tooltip
+          .html(settingName)
+          .style("opacity", 1)
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 10) + "px");
+      })
+      .on("mousemove", function(event) {
+        const tooltip = d3.select("body").select(".treemap-tooltip");
+        if (!tooltip.empty()) {
+          tooltip
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY - 10) + "px");
+        }
+      })
+      .on("mouseout", function() {
+        d3.select("body").select(".treemap-tooltip")
+          .style("opacity", 0);
       })
       .on("click", function(event, d) {
         event.stopPropagation();
@@ -1310,24 +1530,10 @@ function renderTreemap() {
           zoomInto(d);
         })
         .on("mouseover", function(event, d) {
-          // Don't override leaf hover if active
-          if (isLeafHoverActive) return;
-          
           d3.select(this).attr("fill", "rgba(0,0,0,0.05)");
-          highlightCategoryLeaves(d);
-          renderAreaEvidence(d);
         })
-        .on("mouseout", function(event) {
-          // Don't restore if leaf hover is active
-          if (isLeafHoverActive) return;
-          
-          const relatedTarget = event.relatedTarget;
-          // Don't restore if moving to evidence panel (safe hover zone)
-          const isMovingToEvidencePanel = isInsideEvidencePanel(relatedTarget);
-          if (isMovingToEvidencePanel) return;
-          
+        .on("mouseout", function() {
           d3.select(this).attr("fill", "transparent");
-          restoreAllCells();
         });
   
       // Header bar
@@ -2344,6 +2550,7 @@ function setupEventHandlers() {
   }
   
   if (resetViewBtn) {
+    attachButtonNameTooltip(resetViewBtn);
     resetViewBtn.addEventListener("click", function() {
       currentRoot = null;
       zoomStack = [];
