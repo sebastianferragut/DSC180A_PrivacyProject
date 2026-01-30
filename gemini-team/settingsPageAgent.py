@@ -34,7 +34,7 @@ def is_valid_link(href, text, role):
     prompt = (
         f"Analyze this link from a privacy/settings page:\n\n{context}\n\n"
         "Platforms often nest their setting toggles within nested links. The goal of this program is to find all " 
-        "the user configurable setting toggles by crawling through the different links on Facebook's settings page. "
+        f"the user configurable setting toggles by crawling through the different links on Youtube's settings page. "
         "Please determine if clicking this link will lead to a page that contains privacy/data/security SETTINGS TOGGLES or CONTROLS that users can enable/disable.\n\n"
         "Links that lead to settings toggles include:\n"
         "- /settings or /account\n"
@@ -52,7 +52,7 @@ def is_valid_link(href, text, role):
         '{"has_settings_toggles": "yes"}\n'
         'or\n'
         '{"has_settings_toggles": "no"}\n\n'
-        "Do not include any other text, explanations, or markdown formatting."
+        "Do not include any other text, explanations, or markdown formatting. The page should strictly be related to Youtube."
     )
 
     config = types.GenerateContentConfig(
@@ -193,7 +193,7 @@ def crawl_settings(url):
         # stops when the stack is empty
         # depth first search essentially
 
-        a_tags = page.locator("a").all()
+        a_tags = page.locator("a").all()  # these will be the children of the root node
         link_stack = []
         visited_links = set()
 
@@ -207,18 +207,27 @@ def crawl_settings(url):
 
                 text = (a_tag.inner_text() or "").strip()
                 role = a_tag.get_attribute("role")
-                link_stack.append((normalized, text, role)) # push
+                link_stack.append((normalized, text, role)) # push (an object might be better here)
 
             except Exception as e:
                 print(f"Initial link array is empty: {e}")
                 raise
 
+        ### Brain Dump ###
+
+        # we have parent and its children
+        # we need to connect them somehow
+        # initialize tree
+        # at each page, create a new node with value = current_link, children = all <a> tags, and parent = ???
+
+
+        ##################
 
         while link_stack:
-            href, text, role = link_stack.pop() # pop from the back
+            href, text, role = link_stack.pop() # pop from the back (IF WE POP, WE HAVE TO CATCH)
 
             result = is_valid_link(href = href, text = text, role = role)
-            time.sleep(1) # don't want to hit quota
+            time.sleep(1) # don't want to hit quota for gemini calls
 
             print(f"Visiting: {text} -> {href}, Result: {result}")
 
@@ -233,11 +242,12 @@ def crawl_settings(url):
                 page.goto(href, wait_until="domcontentloaded", timeout=60000) # page.goto(href, wait_until="networkidle", timeout=30000)
                 page.wait_for_timeout(6000)
 
-                a_tags = page.locator("a").all()
+                a_tags = page.locator("a").all() # TREE IS POSSIBLE, so self.parent = href, self.current = normalized
 
                 safe_filename = sanitize_filename(f"{text}_{href}") # change if needed
                 screenshot_path = f"picasso/{safe_filename}.png" # can you lossy jpeg
-                page.screenshot(path=screenshot_path, full_page=True)
+
+                page.screenshot(path=screenshot_path, full_page=True, timeout=60000)
 
                 for a_tag in a_tags:
                     try:
