@@ -306,6 +306,69 @@ function getFilteredData() {
 }
 
 /**
+ * Get leaf data from current treemap view, filtered by current filters
+ * Returns the .data objects from currentRoot.leaves() after applying filters
+ */
+function getCurrentViewLeafData() {
+  if (!currentRoot) {
+    return [];
+  }
+  
+  // Get leaves from current view
+  const leaves = currentRoot.leaves ? currentRoot.leaves() : [];
+  
+  // Extract and normalize data from leaves
+  // Leaf data structure: { name, meta: { platform, category, setting, ... }, platform, category, ... }
+  let rows = leaves.map(l => {
+    const data = l.data || {};
+    // Merge meta into main object for easier access
+    const merged = { ...data };
+    if (data.meta) {
+      Object.assign(merged, data.meta);
+    }
+    // Ensure we have the fields we need
+    merged.setting = merged.setting || merged.name || "";
+    merged.platform = merged.platform || "unknown";
+    merged.stateType = merged.stateType || "unknown";
+    merged.category = merged.category || "";
+    merged.description = merged.description || "";
+    merged.clicks = merged.clicks || 0;
+    return merged;
+  });
+  
+  // Apply platform filter (supports multiple selections)
+  if (!currentPlatformFilter.includes('all') && currentPlatformFilter.length > 0) {
+    rows = rows.filter(d => {
+      const platform = (d.platform || "unknown").toLowerCase();
+      return currentPlatformFilter.includes(platform);
+    });
+  }
+  
+  // Apply state type filter
+  if (currentStateFilter !== 'all') {
+    rows = rows.filter(d => {
+      const stateType = (d.stateType || "unknown").toLowerCase();
+      return stateType === currentStateFilter;
+    });
+  }
+  
+  // Apply search filter
+  if (currentSearchQuery.trim()) {
+    const query = currentSearchQuery.toLowerCase();
+    rows = rows.filter(d => {
+      const setting = (d.setting || "").toLowerCase();
+      const description = (d.description || "").toLowerCase();
+      const category = (d.category || "").toLowerCase();
+      return setting.includes(query) || 
+             description.includes(query) ||
+             category.includes(query);
+    });
+  }
+  
+  return rows;
+}
+
+/**
  * Build hierarchy from filtered data
  * Structure: Category → Setting (leaves) - no platform grouping
  */
@@ -1722,12 +1785,209 @@ function renderLegend(platforms, categories) {
 }
 
 /**
- * Render charts below treemap (stacked bar and small multiples)
+ * Render charts below treemap (stacked bar and pie chart)
  */
 function renderBelowTreemapCharts() {
-  const filtered = getFilteredData();
-  renderStackedPlatformChart(filtered);
-  renderCoverageHeatmap(filtered);
+  const viewData = getCurrentViewLeafData();
+  renderStackedPlatformChart(viewData);
+  renderAreaSharePieChart(viewData);
+}
+
+/**
+ * Calculate contribution value for a row based on current sizing metric
+ */
+function calculateContribution(row) {
+  const metric = currentSizingMetric;
+  
+  if (metric === 'count') {
+    return 1;
+  } else if (metric === 'actionable') {
+    const stateType = (row.stateType || "unknown").toLowerCase();
+    return stateType === 'actionable' ? 1 : 0;
+  } else if (metric === 'risk-weighted') {
+    // Check if risk is numeric
+    let risk = row.risk;
+    if (typeof risk === 'number') {
+      return risk;
+    }
+    // If risk is string, map it
+    if (typeof risk === 'string') {
+      const riskLower = risk.toLowerCase();
+      if (riskLower.includes('high')) return 3;
+      if (riskLower.includes('medium')) return 2;
+      if (riskLower.includes('low')) return 1;
+    }
+    // Fallback: use category-based risk (same as calculateWeight)
+    const category = (row.category || "").toLowerCase();
+    if (category.includes('tracking')) return 2;
+    if (category.includes('security')) return 1.5;
+    return 1;
+  } else if (metric === 'clicks') {
+    const clicks = row.clicks || 0;
+    return clicks > 0 ? clicks : 1;
+  }
+  return 1;
+}
+
+/**
+ * Render area share pie chart based on current view and sizing metric
+ */
+function renderAreaSharePieChart(viewData) {
+  const container = d3.select("#pieAreaChart");
+  container.selectAll("*").remove();
+
+  if (!viewData || viewData.length === 0) {
+    container.append("p")
+      .style("padding", "20px")
+      .style("color", "#666")
+      .style("text-align", "center")
+      .text("No data available after filtering.");
+    return;
+  }
+
+  // Aggregate contributions by platform
+  const platformMap = new Map();
+  
+  viewData.forEach(row => {
+    const platform = (row.platform || row.meta?.platform || "unknown").toLowerCase();
+    const contribution = calculateContribution(row);
+    
+    if (!platformMap.has(platform)) {
+      platformMap.set(platform, 0);
+    }
+    platformMap.set(platform, platformMap.get(platform) + contribution);
+  });
+
+  // Convert to array and sort by value descending
+  const pieData = Array.from(platformMap.entries())
+    .map(([platform, value]) => ({
+      platform: platform,
+      value: value
+    }))
+    .filter(d => d.value > 0)
+    .sort((a, b) => b.value - a.value);
+
+  if (pieData.length === 0) {
+    container.append("p")
+      .style("padding", "20px")
+      .style("color", "#666")
+      .style("text-align", "center")
+      .text("No data available after filtering.");
+    return;
+  }
+
+  // Calculate total for percentages
+  const total = d3.sum(pieData, d => d.value);
+
+  // Set up dimensions
+  const containerWidth = container.node().getBoundingClientRect().width || 480;
+  const width = containerWidth;
+  const height = 340;
+  const radius = Math.min(width, height) / 2 - 20;
+
+  // Create SVG
+  const svg = container.append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+  const g = svg.append("g")
+    .attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+  // Create pie generator
+  const pie = d3.pie()
+    .value(d => d.value)
+    .sort(null);
+
+  // Create arc generator
+  const arc = d3.arc()
+    .innerRadius(0)
+    .outerRadius(radius);
+
+  // Create arc for labels
+  const labelArc = d3.arc()
+    .innerRadius(radius + 20)
+    .outerRadius(radius + 20);
+
+  // Generate arcs
+  const arcs = g.selectAll(".arc")
+    .data(pie(pieData))
+    .enter()
+    .append("g")
+    .attr("class", "arc");
+
+  // Draw slices
+  arcs.append("path")
+    .attr("d", arc)
+    .attr("fill", d => {
+      const platform = d.data.platform;
+      return PLATFORM_COLORS[platform] || PLATFORM_COLORS.unknown;
+    })
+    .attr("stroke", "#fff")
+    .attr("stroke-width", 2)
+    .on("mouseover", function(event, d) {
+      d3.select(this)
+        .attr("stroke-width", 3)
+        .attr("opacity", 0.8);
+    })
+    .on("mouseout", function() {
+      d3.select(this)
+        .attr("stroke-width", 2)
+        .attr("opacity", 1);
+    });
+
+  // Add percentage labels on slices (only if slice is large enough)
+  arcs.filter(d => (d.endAngle - d.startAngle) > 0.1)
+    .append("text")
+    .attr("transform", d => `translate(${labelArc.centroid(d)})`)
+    .attr("text-anchor", "middle")
+    .attr("font-size", "11px")
+    .attr("fill", "#333")
+    .attr("font-weight", "600")
+    .text(d => {
+      const percent = ((d.value / total) * 100).toFixed(1);
+      return percent >= 5 ? percent + "%" : "";
+    });
+
+  // Create legend below the pie chart
+  const legend = svg.append("g")
+    .attr("class", "pie-legend")
+    .attr("transform", `translate(${width / 2}, ${height / 2 + radius + 40})`);
+
+  const legendItems = legend.selectAll(".legend-item")
+    .data(pieData)
+    .enter()
+    .append("g")
+    .attr("class", "legend-item")
+    .attr("transform", (d, i) => {
+      const itemsPerRow = Math.ceil(Math.sqrt(pieData.length));
+      const col = i % itemsPerRow;
+      const row = Math.floor(i / itemsPerRow);
+      const itemWidth = 150;
+      const itemHeight = 20;
+      const startX = -(itemsPerRow * itemWidth) / 2;
+      return `translate(${startX + col * itemWidth}, ${row * itemHeight})`;
+    });
+
+  legendItems.append("rect")
+    .attr("width", 14)
+    .attr("height", 14)
+    .attr("x", 0)
+    .attr("y", 3)
+    .attr("fill", d => PLATFORM_COLORS[d.platform] || PLATFORM_COLORS.unknown)
+    .attr("stroke", "#ccc")
+    .attr("stroke-width", 1)
+    .attr("border-radius", "2px");
+
+  legendItems.append("text")
+    .attr("x", 18)
+    .attr("y", 12)
+    .attr("font-size", "12px")
+    .attr("fill", "#333")
+    .text(d => {
+      const platformName = d.platform.charAt(0).toUpperCase() + d.platform.slice(1);
+      const percent = ((d.value / total) * 100).toFixed(1);
+      return `${platformName}: ${percent}%`;
+    });
 }
 
 /**
@@ -1748,7 +2008,7 @@ function renderStackedPlatformChart(filteredData) {
   // Prepare data: group by platform and count by stateType
   const platformMap = new Map();
   filteredData.forEach(d => {
-    const platform = d.platform || "unknown";
+    const platform = (d.platform || "unknown").toLowerCase();
     if (!platformMap.has(platform)) {
       platformMap.set(platform, {
         platform: platform,
@@ -1758,7 +2018,7 @@ function renderStackedPlatformChart(filteredData) {
       });
     }
     const counts = platformMap.get(platform);
-    const stateType = d.stateType || "unknown";
+    const stateType = (d.stateType || "unknown").toLowerCase();
     if (stateType === "actionable") counts.actionable++;
     else if (stateType === "navigational") counts.navigational++;
     else counts.unknown++;
@@ -1914,7 +2174,7 @@ function renderStackedPlatformChart(filteredData) {
 
   // Legend
   const legend = g.append("g")
-    .attr("transform", `translate(${innerWidth - 150}, 10)`);
+    .attr("transform", `translate(${innerWidth - 80}, -5)`);
 
   const legendItems = legend.selectAll(".legend-item")
     .data(stackKeys)
