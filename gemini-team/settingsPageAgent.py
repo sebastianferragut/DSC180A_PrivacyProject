@@ -22,19 +22,19 @@ def is_valid_link(href, text, role):
         dict: {"has_settings_toggles": "yes" or "no"}
         Returns {"has_settings_toggles": "no"} on error
     """
-    API_KEY = os.environ.get("GEMINI_API_KEY")
-    if not API_KEY:
-        print("Error: GEMINI_API_KEY not set.")
-        raise ValueError("Missing Gemini API key.")
+    # API_KEY = os.environ.get("GEMINI_API_KEY")
+    # if not API_KEY:
+    #     print("Error: GEMINI_API_KEY not set.")
+    #     raise ValueError("Missing Gemini API key.")
 
-    client = genai.Client(api_key=API_KEY)
+    client = genai.Client(api_key="AIzaSyAxxhoTYP6gShgpmpDDDaKyZX4qTScJj2k")
 
     context = f"Link URL: {href}, Link Text: {text}, Link Role: {role}"
 
     prompt = (
         f"Analyze this link from a privacy/settings page:\n\n{context}\n\n"
         "Platforms often nest their setting toggles within nested links. The goal of this program is to find all " 
-        f"the user configurable setting toggles by crawling through the different links on Youtube's settings page. "
+        f"the user configurable setting toggles by crawling through the different links on LinkedIn's settings page. "
         "Please determine if clicking this link will lead to a page that contains privacy/data/security SETTINGS TOGGLES or CONTROLS that users can enable/disable.\n\n"
         "Links that lead to settings toggles include:\n"
         "- /settings or /account\n"
@@ -52,7 +52,7 @@ def is_valid_link(href, text, role):
         '{"has_settings_toggles": "yes"}\n'
         'or\n'
         '{"has_settings_toggles": "no"}\n\n'
-        "Do not include any other text, explanations, or markdown formatting. The page should strictly be related to Youtube."
+        "Do not include any other text, explanations, or markdown formatting. The page should strictly be related to LinkedIn."
     )
 
     config = types.GenerateContentConfig(
@@ -193,9 +193,14 @@ def crawl_settings(url):
         # stops when the stack is empty
         # depth first search essentially
 
-        a_tags = page.locator("a").all()  # these will be the children of the root node
-        link_stack = []
+        a_tags = page.locator("a").all()  # in order for this to work, we need to do one nav li at a time
+        link_queue = []  # Each item: (url, text, role, depth)
         visited_links = set()
+
+        layer_dict = {}  # Maps "Layer N" -> [list of URLs at that depth]
+
+        # Initialize Layer 0 with starting page links
+        layer_dict["Layer 0"] = [] # mechanism to store the links at each layer (genius)
 
         for a_tag in a_tags:
             try:
@@ -207,29 +212,22 @@ def crawl_settings(url):
 
                 text = (a_tag.inner_text() or "").strip()
                 role = a_tag.get_attribute("role")
-                link_stack.append((normalized, text, role)) # push (an object might be better here)
+                
+                # Add depth=0 for initial links
+                link_queue.append((normalized, text, role, 0))
+                layer_dict["Layer 0"].append(normalized)
 
             except Exception as e:
                 print(f"Initial link array is empty: {e}")
                 raise
 
-        ### Brain Dump ###
+        while link_queue:
+            href, text, role, depth = link_queue.pop(0)  # Now includes depth
 
-        # we have parent and its children
-        # we need to connect them somehow
-        # initialize tree
-        # at each page, create a new node with value = current_link, children = all <a> tags, and parent = ???
+            result = is_valid_link(href=href, text=text, role=role)
+            time.sleep(1)  # don't want to hit quota for gemini calls
 
-
-        ##################
-
-        while link_stack:
-            href, text, role = link_stack.pop() # pop from the back (IF WE POP, WE HAVE TO CATCH)
-
-            result = is_valid_link(href = href, text = text, role = role)
-            time.sleep(1) # don't want to hit quota for gemini calls
-
-            print(f"Visiting: {text} -> {href}, Result: {result}")
+            print(f"Visiting (depth {depth}): {text} -> {href}, Result: {result}")
 
             if (href in visited_links) or (result["has_settings_toggles"] == "no"):
                 visited_links.add(href)
@@ -239,21 +237,29 @@ def crawl_settings(url):
             visited_links.add(href)
 
             try:
-                page.goto(href, wait_until="domcontentloaded", timeout=60000) # page.goto(href, wait_until="networkidle", timeout=30000)
+                page.goto(href, wait_until="domcontentloaded", timeout=60000)
                 page.wait_for_timeout(6000)
 
-                a_tags = page.locator("a").all() # TREE IS POSSIBLE, so self.parent = href, self.current = normalized
+                a_tags = page.locator("a").all()
 
-                safe_filename = sanitize_filename(f"{text}_{href}") # change if needed
-                screenshot_path = f"picasso/{safe_filename}.png" # can you lossy jpeg
+                safe_filename = sanitize_filename(f"{text}_{href}")
+                screenshot_path = f"picasso/{safe_filename}.png"
 
-                page.screenshot(path=screenshot_path, full_page=True, timeout=60000)
+                page.screenshot(path=screenshot_path, full_page=True, timeout=120000)
+
+                # Children are at depth + 1
+                child_depth = depth + 1
+                layer_key = f"Layer {child_depth}"
+                
+                # Create the layer if it doesn't exist
+                if layer_key not in layer_dict:
+                    layer_dict[layer_key] = []
 
                 for a_tag in a_tags:
                     try:
                         new_href = a_tag.get_attribute("href")
 
-                        if (not new_href):
+                        if not new_href:
                             continue
                         
                         absolute_url = urljoin(page.url, new_href)
@@ -263,7 +269,10 @@ def crawl_settings(url):
                         if normalized not in visited_links:
                             new_text = (a_tag.inner_text() or "").strip()
                             new_role = a_tag.get_attribute("role")
-                            link_stack.append((normalized, new_text, new_role))
+                            
+                            # Add with child_depth
+                            link_queue.append((normalized, new_text, new_role, child_depth))
+                            layer_dict[layer_key].append(normalized)
                     
                     except Exception as e:
                         continue
@@ -272,8 +281,30 @@ def crawl_settings(url):
                 print(f"Error visiting {href}: {e}")
                 continue
 
-
-            print(f"Visited: {len(visited_links)} links")
+        # Save results to JSON
+        output_data = {
+            "visited_links": list(visited_links),
+            "layer_dict": layer_dict,  # {"Layer 0": [...], "Layer 1": [...], ...}
+            "total_visited": len(visited_links),
+            "total_layers": len(layer_dict),
+            "links_per_layer": {k: len(v) for k, v in layer_dict.items()}
+        }
+        
+        # Save to picasso folder with the hostname as the filename
+        os.makedirs("picasso", exist_ok=True)
+        output_path = f"picasso/{host}_crawl_results.json"
+        
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(output_data, f, indent=2)
+        
+        print(f"\n{'='*60}")
+        print(f"✓ Crawl results saved to {output_path}")
+        print(f"  Total links visited: {len(visited_links)}")
+        print(f"  Total layers: {len(layer_dict)}")
+        print(f"  Links per layer:")
+        for layer_name, links in layer_dict.items():
+            print(f"    {layer_name}: {len(links)} links")
+        print(f"{'='*60}\n")
 
         browser.close()
 
@@ -343,6 +374,6 @@ def crawl_settings(url):
 
 
 if __name__ == "__main__":
-    url = 'https://x.com/settings/account'
+    url = 'https://www.linkedin.com/mypreferences/d/categories/privacy'
     crawl_settings(url)
     
