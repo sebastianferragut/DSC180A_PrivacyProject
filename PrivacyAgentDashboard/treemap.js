@@ -52,6 +52,7 @@ let currentPlatformFilter = ['all']; // Array to support multiple selections
 let isDetailView = false;
 let detailPayload = null;
 let detailBreadcrumb = null;
+let detailNode = null;
 
 // DOM references for setting details panel
 let settingDetails, detailsTitle, detailsSubtitle, detailsDescription, detailsState, 
@@ -748,6 +749,7 @@ function fmtInt(n) {
  */
 function enterDetailView(d) {
   isDetailView = true;
+  detailNode = d;
   detailPayload = getSettingPayload(d);
   detailBreadcrumb = getBreadcrumb(d);
   renderTreemap();
@@ -758,6 +760,7 @@ function enterDetailView(d) {
  */
 function exitDetailView() {
   isDetailView = false;
+  detailNode = null;
   detailPayload = null;
   detailBreadcrumb = null;
   renderTreemap();
@@ -811,7 +814,7 @@ function wrapText(textElement, text, maxWidth, maxHeight = null) {
 /**
  * Render detail view card in SVG
  */
-function renderDetailView(svg, width, height, payload, breadcrumb) {
+function renderDetailView(svg, width, height, payload, breadcrumb, focusNode) {
   const padding = 14;
   const cornerRadius = 8;
   const headerHeight = 62; // Title + subtitle + spacing
@@ -822,8 +825,17 @@ function renderDetailView(svg, width, height, payload, breadcrumb) {
   // Ensure card height leaves room for buttons at the bottom
   const maxCardHeight = Math.min(380, height * 0.55);
   const cardHeight = maxCardHeight;
-  const cardX = Math.max(10, (width - cardWidth) / 2);
-  const cardY = Math.max(10, (height - cardHeight) / 2);
+  
+  const focusCx = focusNode
+    ? (focusNode.x0 + focusNode.x1) / 2
+    : width / 2;
+
+  const focusCy = focusNode
+    ? (focusNode.y0 + focusNode.y1) / 2
+    : height / 2;
+
+  const cardX = Math.max(10, focusCx - cardWidth / 2);
+  const cardY = Math.max(10, focusCy - cardHeight / 2);
   
   // Reserve a guaranteed footer area and compute buttonY BEFORE rendering content
   const buttonHeight = 30;
@@ -1034,20 +1046,7 @@ function renderDetailView(svg, width, height, payload, breadcrumb) {
     .on("click", function(e) {
       e.stopPropagation();
       exitDetailView();
-    })
-    .on("mouseover", function() {
-      d3.select(this).select("rect")
-        .attr("fill", "#3b5bdb")
-        .attr("stroke", "#3b5bdb");
-    })
-    .on("mouseout", function() {
-      d3.select(this).select("rect")
-        .attr("fill", "#4c6ef5")
-        .attr("stroke", "#4c6ef5");
     });
-  
-  // Add tooltip for back button (name only)
-  createSVGButtonTooltip(backButton, "Back");
   
   backButton.append("rect")
     .attr("x", cardX + padding)
@@ -1169,7 +1168,7 @@ function renderTreemap() {
   
     // Check if we should render detail view instead of treemap
     if (isDetailView && detailPayload) {
-      renderDetailView(svg, width, height, detailPayload, detailBreadcrumb);
+      renderDetailView(svg, width, height, detailPayload, detailBreadcrumb, detailNode);
       return;
     }
   
