@@ -726,10 +726,28 @@ h2 {
 }
 
 .chart-panel h3 {
-  margin: 0 0 15px 0;
+  margin: 0 0 8px 0;
   font-size: 16px;
   font-weight: 600;
   color: #333;
+}
+
+.chart-subtitle {
+  font-size: 12px;
+  color: #666;
+  margin: 0 0 15px 0;
+  line-height: 1.4;
+}
+
+.treemap-callout {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: #555;
+  line-height: 1.5;
 }
 
 #stackedPlatformChart,
