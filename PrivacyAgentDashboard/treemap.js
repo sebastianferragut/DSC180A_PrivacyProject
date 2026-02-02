@@ -941,6 +941,7 @@ function renderDetailView(svg, width, height, payload, breadcrumb) {
   const cornerRadius = 8;
   const headerHeight = 62; // Title + subtitle + spacing
   const footerHeight = 56; // Buttons + spacing
+  const DETAIL_CARD_Y_OFFSET = 110; // Fixed upward offset for card position
   
   // Calculate card dimensions - make it smaller and more compact
   const cardWidth = Math.min(420, width * 0.60);
@@ -954,9 +955,10 @@ function renderDetailView(svg, width, height, payload, breadcrumb) {
     Math.round((width - cardWidth) / 2)
   );
 
+  // Center vertically and shift upward by fixed offset
   const cardY = Math.max(
     20,
-    Math.round((height - cardHeight) / 2)
+    Math.round((height - cardHeight) / 2) - DETAIL_CARD_Y_OFFSET
   );
   
   // Reserve a guaranteed footer area and compute buttonY BEFORE rendering content
