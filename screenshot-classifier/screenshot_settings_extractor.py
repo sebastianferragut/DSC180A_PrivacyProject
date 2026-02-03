@@ -188,6 +188,7 @@ class PrivacySettingsExtractor:
         Returns:
             Dictionary containing extracted settings with image_path for each setting
         """
+        parsed_url = self._parse_url_from_filename(image_path)
 
         slice_paths = []
         try:
@@ -236,8 +237,8 @@ class PrivacySettingsExtractor:
 
                 if not text.strip():
                     continue
-
-                parsed = self._parse_extraction_response(text, slice_path)
+                
+                parsed = self._parse_extraction_response(text, image_path)
                 all_slice_settings.extend(parsed.get("settings", []))
 
                 # Respect API rate limits between slice uploads
@@ -248,6 +249,7 @@ class PrivacySettingsExtractor:
             return {
                 "status": "success",
                 "image_path": image_path,
+                "url": parsed_url,
                 "timestamp": datetime.now().isoformat(),
                 "settings": all_slice_settings,
                 "settings_count": len(all_slice_settings)
@@ -257,6 +259,7 @@ class PrivacySettingsExtractor:
             return {
                 "status": "error",
                 "message": f"Failed to extract settings: {str(e)}",
+                "url": parsed_url,
                 "image_path": image_path,
                 "timestamp": datetime.now().isoformat(),
                 "settings": []
@@ -304,7 +307,7 @@ class PrivacySettingsExtractor:
             print(f"\n📁 Processing platform: {platform_name}")
             
             # Find image files in this platform's screenshots/sections directory
-            sections_dir = platform_dir / "screenshots" / "sections"
+            sections_dir = platform_dir
             image_files = []
             if sections_dir.exists():
                 image_files = [
@@ -386,6 +389,26 @@ class PrivacySettingsExtractor:
         
         return all_platform_results
 
+    def _parse_url_from_filename(self, image_path: str) -> Optional[str]:
+        """
+        Parses a URL encoded in the screenshot filename.
+
+        Example:
+        Account login activity_https___accountscenter.facebook.com_password_and_security_login_activity.png
+        → https://accountscenter.facebook.com/password_and_security/login_activity/
+        """
+        name = Path(image_path).name
+
+        if "_https___" not in name:
+            return None
+
+        core = name.split("_https___", 1)[1]
+        core = core.replace(Path(name).suffix, "")
+
+        url = "https://" + core.replace("_", "/").rstrip("/") + "/"
+        return url
+
+
 
 def main():
     
@@ -401,7 +424,7 @@ def main():
         return
     
     # Batch extract settings from screenshots
-    screenshots_dir = "../gemini-team/generaloutput"
+    screenshots_dir = "../gemini-team/picasso"
     
     if os.path.exists(screenshots_dir):
         print(f"\n🔍 Extracting settings from screenshots in: {screenshots_dir}")

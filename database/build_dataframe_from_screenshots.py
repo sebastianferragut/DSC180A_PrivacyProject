@@ -10,7 +10,7 @@ from typing import List, Dict
 import importlib.util
 
 import convert_json_to_csv as json_to_csv
-import merge_harvest_text as merge_harvest
+import database.map_url as merge_harvest
 import classify_categories as classify
 
 
