@@ -1,222 +1,53 @@
 {
   "version": 1,
-  "updated_at": "2026-01-23T18:53:42.921131Z",
+  "updated_at": "2026-02-04T18:02:53.063641Z",
   "by_setting": {
-    "reddit::allow_people_to_follow_you": {
-      "platform": "reddit",
-      "setting_id": "allow_people_to_follow_you",
+    "Reddit::allow_people_to_follow_you_l3_settings_privacy": {
+      "platform": "Reddit",
+      "setting_id": "allow_people_to_follow_you_l3_settings_privacy",
       "name": "Allow people to follow you",
-      "runs": 2,
-      "successes": 2,
-      "avg_clicks_success": 1.5,
-      "min_clicks_success": 1,
-      "max_clicks_success": 2,
-      "last_success_ts": "2026-01-23T18:35:01.497864Z",
-      "history": [
-        {
-          "ts": "2026-01-20T19:50:05.021532Z",
-          "status": "success",
-          "target_value": "off",
-          "click_count": 1
-        },
-        {
-          "ts": "2026-01-23T18:35:01.497864Z",
-          "status": "success",
-          "target_value": "off",
-          "click_count": 2,
-          "path": {
-            "entrypoint": "nl",
-            "candidate_source": "deterministic",
-            "leaf_hint_source": "derived",
-            "turns": [
-              {
-                "turn": 1,
-                "url": "https://www.reddit.com/settings/privacy",
-                "notes": "model_empty_output: planner received no text; using fallback coord selector around label 'people following me'. | Gemini verify: state != target; requesting another plan.",
-                "selectors": [
-                  {
-                    "purpose": "change_value",
-                    "type": "coord",
-                    "selector": "hint:people following me",
-                    "value": "off"
-                  }
-                ],
-                "applied": [
-                  {
-                    "purpose": "change_value",
-                    "ok": true,
-                    "type": "coord",
-                    "selector": "hint:people following me"
-                  }
-                ],
-                "deterministic_check": null,
-                "gemini_verify": false
-              },
-              {
-                "turn": 2,
-                "url": "https://www.reddit.com/settings/privacy",
-                "notes": "model_empty_output: planner received no text; using fallback coord selector around label 'people following me'.",
-                "selectors": [
-                  {
-                    "purpose": "change_value",
-                    "type": "coord",
-                    "selector": "hint:people following me",
-                    "value": "off"
-                  }
-                ],
-                "applied": [
-                  {
-                    "purpose": "change_value",
-                    "ok": true,
-                    "type": "coord",
-                    "selector": "hint:people following me"
-                  }
-                ],
-                "deterministic_check": null,
-                "gemini_verify": true
-              }
-            ],
-            "final_decider": "gemini"
-          }
-        }
-      ]
-    },
-    "instagram::private_account": {
-      "platform": "instagram",
-      "setting_id": "private_account",
-      "name": "Private account",
-      "runs": 1,
-      "successes": 1,
-      "avg_clicks_success": 2.0,
-      "min_clicks_success": 2,
-      "max_clicks_success": 2,
-      "last_success_ts": "2026-01-20T19:53:33.471114Z",
-      "history": [
-        {
-          "ts": "2026-01-20T19:53:33.471114Z",
-          "status": "success",
-          "target_value": "off",
-          "click_count": 2
-        }
-      ]
-    },
-    "zoom::optional_diagnostic_data": {
-      "platform": "zoom",
-      "setting_id": "optional_diagnostic_data",
-      "name": "Optional Diagnostic Data",
       "runs": 1,
       "successes": 1,
       "avg_clicks_success": 1.0,
       "min_clicks_success": 1,
       "max_clicks_success": 1,
-      "last_success_ts": "2026-01-20T20:19:36.986542Z",
+      "last_success_ts": "2026-02-04T18:02:53.063661Z",
       "history": [
         {
-          "ts": "2026-01-20T20:19:36.986542Z",
-          "status": "success",
-          "target_value": "off",
-          "click_count": 1
-        }
-      ]
-    },
-    "twitterX::audience__media_and_tagging": {
-      "platform": "twitterX",
-      "setting_id": "audience__media_and_tagging",
-      "name": "Audience, media and tagging",
-      "runs": 1,
-      "successes": 1,
-      "avg_clicks_success": 3.0,
-      "min_clicks_success": 3,
-      "max_clicks_success": 3,
-      "last_success_ts": "2026-01-20T21:07:52.583650Z",
-      "history": [
-        {
-          "ts": "2026-01-20T21:07:52.583650Z",
+          "ts": "2026-02-04T18:02:53.063661Z",
           "status": "success",
           "target_value": "on",
-          "click_count": 3
-        }
-      ]
-    },
-    "linkedin::edit_your_public_profile": {
-      "platform": "linkedin",
-      "setting_id": "edit_your_public_profile",
-      "name": "Edit your public profile",
-      "runs": 3,
-      "successes": 3,
-      "avg_clicks_success": 2.333,
-      "min_clicks_success": 2,
-      "max_clicks_success": 3,
-      "last_success_ts": "2026-01-23T18:53:42.921143Z",
-      "history": [
-        {
-          "ts": "2026-01-20T22:19:54.504604Z",
-          "status": "success",
-          "target_value": "off",
-          "click_count": 2
-        },
-        {
-          "ts": "2026-01-20T23:55:29.902187Z",
-          "status": "success",
-          "target_value": "on",
-          "click_count": 3
-        },
-        {
-          "ts": "2026-01-23T18:53:42.921143Z",
-          "status": "success",
-          "target_value": "on",
-          "click_count": 2,
+          "click_count": 1,
           "path": {
-            "entrypoint": "nl",
-            "candidate_source": "deterministic",
-            "leaf_hint_source": "derived",
+            "entrypoint": null,
+            "candidate_source": null,
+            "leaf_hint_source": null,
             "turns": [
               {
                 "turn": 1,
-                "url": "https://www.linkedin.com/mypreferences/d/categories/sign-in-and-security",
-                "notes": "The target setting 'Edit your public profile' is under the 'Visibility' section. The current page is 'Sign in & security'. I need to click on 'Visibility' first to navigate to the correct settings page.",
+                "url": "https://www.reddit.com/settings/privacy",
+                "notes": "model_empty_output",
                 "selectors": [
                   {
-                    "purpose": "open_setting_group",
-                    "type": "text",
-                    "selector": "Visibility"
+                    "purpose": "change_value",
+                    "type": "coord",
+                    "selector": "hint:Allow people to follow you",
+                    "value": "on"
                   }
                 ],
                 "applied": [
                   {
-                    "purpose": "open_setting_group",
+                    "purpose": "change_value",
                     "ok": true,
-                    "type": "text",
-                    "selector": "Visibility"
+                    "type": "coord",
+                    "selector": "hint:Allow people to follow you"
                   }
                 ],
-                "deterministic_check": null,
+                "deterministic_check": true,
                 "gemini_verify": null
-              },
-              {
-                "turn": 2,
-                "url": "https://www.linkedin.com/mypreferences/d/categories/profile-visibility",
-                "notes": "The current page is a list of settings. I need to click on 'Edit your public profile' to navigate to the page where the actual setting can be changed.",
-                "selectors": [
-                  {
-                    "purpose": "open_setting_group",
-                    "type": "text",
-                    "selector": "Edit your public profile"
-                  }
-                ],
-                "applied": [
-                  {
-                    "purpose": "open_setting_group",
-                    "ok": true,
-                    "type": "text",
-                    "selector": "Edit your public profile"
-                  }
-                ],
-                "deterministic_check": null,
-                "gemini_verify": true
               }
             ],
-            "final_decider": "gemini"
+            "final_decider": "deterministic"
           }
         }
       ]
