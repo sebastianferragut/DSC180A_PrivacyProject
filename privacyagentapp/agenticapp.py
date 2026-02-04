@@ -43,10 +43,15 @@ SETTINGS_SNAPSHOT_PATH = SETTINGSLIST_DIR / "settings_snapshot.json"
 PLATFORM_SUMMARIES_PATH = SETTINGSLIST_DIR / "platform_summaries.json"
 
 try:
-    SETTINGS_JSON_PATH = REPO_ROOT / "database" / "data" / "all_platforms_classified.json"
+    SETTINGS_JSON_PATH = (
+        REPO_ROOT
+        / "database"
+        / "data"
+        / "extracted_settings_with_urls_and_layers_classified.json"
+    )
 except Exception as e:
     print(f"Warning: could not construct SETTINGS_JSON_PATH from REPO_ROOT ({REPO_ROOT}): {e}")
-    SETTINGS_JSON_PATH = Path("all_platforms_classified.json")
+    SETTINGS_JSON_PATH = Path("extracted_settings_with_urls_and_layers_classified.json")
 
 try:
     GENERAL_OUTPUT_DIR = REPO_ROOT / "gemini-team" / "general_output"
@@ -150,28 +155,12 @@ SETTINGS_BY_PLATFORM: Dict[str, List[SettingEntry]] = {}
 
 def load_settings_db() -> Dict[str, List[SettingEntry]]:
     """
-    Load settings from all_platforms_classified.json.
+    Load settings from extracted_settings_with_urls_and_layers_classified.json.
 
-    Expected primary format (as in example):
-
-    [
-      {
-        "platform": "twitterX",
-        "image": "after_click__Privacy_and_safety_2025....png",
-        "full_image_path": "/generaloutput/twitterX/screenshots/sections/....png",
-        "url": "https://x.com/settings/privacy_and_safety",
-        "settings": [
-           {
-             "setting": "Ads preferences",
-             "description": "...",
-             "state": "not applicable"
-           },
-           ...
-        ],
-        "category": "data_collection_tracking"
-      },
-      ...
-    ]
+    Supports:
+    - NEW format: list of platform bundles with "all_settings"
+    - OLD format: list of section records with "settings"
+    - Fallback: older/alternate structures
     """
     if not SETTINGS_JSON_PATH.exists():
         raise FileNotFoundError(f"Settings JSON not found at {SETTINGS_JSON_PATH}")
@@ -181,7 +170,95 @@ def load_settings_db() -> Dict[str, List[SettingEntry]]:
 
     by_platform: Dict[str, List[SettingEntry]] = {}
 
-    # Primary: list of section records with "settings"
+    # ----------------------------
+    # NEW primary format:
+    # [
+    #   { "platform": "Facebook", "all_settings": [ {...}, {...} ], ... },
+    #   ...
+    # ]
+    # ----------------------------
+    if isinstance(data, list) and data and isinstance(data[0], dict) and "all_settings" in data[0]:
+        for rec in data:
+            if not isinstance(rec, dict):
+                continue
+
+            platform = rec.get("platform") or "unknown"
+
+            # Omit non-platform aggregates (your reported issue)
+            if str(platform).strip().lower() in {"click_counts", "clickcount", "counts"}:
+                continue
+
+            all_settings = rec.get("all_settings") or []
+            if not isinstance(all_settings, list) or not all_settings:
+                continue
+
+            seen_ids: set[str] = set()
+
+            for s in all_settings:
+                if not isinstance(s, dict):
+                    continue
+
+                setting_name = s.get("setting") or s.get("name") or s.get("label")
+                if not setting_name:
+                    continue
+
+                url = s.get("url")
+                desc = s.get("description") or s.get("desc")
+                category = s.get("category")
+                layer = s.get("layer")
+                image_path = s.get("image_path")
+
+                # Base slug for id
+                base = "".join(ch.lower() if ch.isalnum() else "_" for ch in str(setting_name))[:60] or "setting"
+
+                # Make collisions unlikely by incorporating layer + tail of URL path if present
+                url_tail = ""
+                try:
+                    if url:
+                        # last 1–2 path components
+                        parts = [p for p in urlparse(url).path.split("/") if p]
+                        url_tail = "_".join(parts[-2:])[:30]
+                except Exception:
+                    url_tail = ""
+
+                layer_tag = f"l{layer}" if layer is not None else ""
+                setting_id = "_".join([p for p in [base, layer_tag, url_tail] if p])[:80]
+
+                # Final collision guard
+                if setting_id in seen_ids:
+                    # add a tiny deterministic suffix from URL or name
+                    suffix_src = (url or setting_name)
+                    suffix = abs(hash(suffix_src)) % 10000
+                    setting_id = f"{setting_id}_{suffix}"
+                seen_ids.add(setting_id)
+
+                raw = {
+                    "platform": platform,
+                    "url": url,
+                    "image": os.path.basename(image_path) if isinstance(image_path, str) else None,
+                    "full_image_path": image_path,
+                    "group_category": category,
+                    "setting": setting_name,
+                    "description": desc,
+                    "state": s.get("state"),
+                    "layer": layer,
+                }
+
+                entry = SettingEntry(
+                    platform=str(platform),
+                    setting_id=str(setting_id),
+                    name=str(setting_name),
+                    category=str(category) if category is not None else None,
+                    description=str(desc) if desc is not None else None,
+                    raw=raw,
+                )
+                by_platform.setdefault(entry.platform, []).append(entry)
+
+        return by_platform
+
+    # ----------------------------
+    # OLD primary format: list of section records with "settings"
+    # ----------------------------
     if isinstance(data, list) and data and isinstance(data[0], dict) and "settings" in data[0]:
         for rec in data:
             platform = rec.get("platform") or "unknown"
@@ -197,13 +274,11 @@ def load_settings_db() -> Dict[str, List[SettingEntry]]:
                 setting_name = s.get("setting") or s.get("name") or s.get("label")
                 if not setting_name:
                     continue
-                # slug for id
                 setting_id = (
                     "".join(ch.lower() if ch.isalnum() else "_" for ch in str(setting_name))[:80]
                     or "setting"
                 )
                 desc = s.get("description") or s.get("desc")
-                # Combine platform-level and setting-level info in raw
                 raw = {
                     "platform": platform,
                     "url": url,
@@ -226,14 +301,17 @@ def load_settings_db() -> Dict[str, List[SettingEntry]]:
 
         return by_platform
 
-    # Fallback for older / alternate structures
-    # (less important, but keeps code robust if file changes)
+    # ----------------------------
+    # Fallback: older / alternate structures
+    # ----------------------------
     by_platform = {}
     if isinstance(data, list):
         for raw in data:
             if not isinstance(raw, dict):
                 continue
             platform = raw.get("platform") or raw.get("platform_name") or "unknown"
+            if str(platform).strip().lower() in {"click_counts"}:
+                continue
             name = raw.get("name") or raw.get("setting") or raw.get("label") or raw.get("title") or "setting"
             setting_id = (
                 raw.get("setting_id")
@@ -252,9 +330,12 @@ def load_settings_db() -> Dict[str, List[SettingEntry]]:
                 raw=raw,
             )
             by_platform.setdefault(entry.platform, []).append(entry)
+
     elif isinstance(data, dict):
         for plat, items in data.items():
             if not isinstance(items, list):
+                continue
+            if str(plat).strip().lower() in {"click_counts"}:
                 continue
             for raw in items:
                 if not isinstance(raw, dict):
