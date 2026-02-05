@@ -446,11 +446,11 @@ function getBreadcrumb(d) {
   // Traverse up the hierarchy to collect parts
   while (node && node.data) {
     if (node.data.name && node.data.name !== 'root') {
-      // For leaf nodes, use the setting name; for categories, use category name
+      // For leaf nodes, skip the setting name (it's shown as the title)
+      // For categories, use category name
       if (!node.children || node.children.length === 0) {
-        // Leaf node - use setting name
-        const settingName = node.data.setting || node.data.name || "Setting";
-        parts.unshift(settingName);
+        // Leaf node - skip setting name, it will be shown as the title
+        // Don't add it to breadcrumb
       } else {
         // Category node
         const categoryName = node.data.name.replace(/_/g, ' ');
@@ -875,13 +875,73 @@ function wrapText(textElement, text, maxWidth, maxHeight = null) {
 }
 
 /**
+ * Wrap SVG text to fit within maxWidth, with optional maxLines and lineHeight
+ * Returns the number of pixels added beyond the first line
+ */
+function wrapSvgText(textSel, str, maxWidth, maxLines = 2, lineHeight = 24) {
+  const words = (str || "").split(/\s+/).filter(Boolean);
+  textSel.text(null);
+
+  if (words.length === 0) {
+    return 0;
+  }
+
+  let line = [];
+  let lineNumber = 0;
+
+  let tspan = textSel.append("tspan")
+    .attr("x", textSel.attr("x"))
+    .attr("dy", "0em");
+
+  for (let i = 0; i < words.length; i++) {
+    line.push(words[i]);
+    tspan.text(line.join(" "));
+
+    if (tspan.node().getComputedTextLength() > maxWidth && line.length > 1) {
+      line.pop();
+      tspan.text(line.join(" "));
+
+      lineNumber++;
+      if (lineNumber >= maxLines) {
+        // clamp last line with ellipsis
+        let clamped = line.join(" ");
+        // Add remaining words that didn't fit
+        for (let j = i; j < words.length; j++) {
+          const testText = clamped + " " + words[j];
+          tspan.text(testText);
+          if (tspan.node().getComputedTextLength() > maxWidth) {
+            break;
+          }
+          clamped = testText;
+        }
+        // Now trim characters until it fits with ellipsis
+        while (tspan.node().getComputedTextLength() > maxWidth && clamped.length > 0) {
+          clamped = clamped.slice(0, -1);
+          tspan.text(clamped + "…");
+        }
+        return lineNumber * lineHeight; // pixels added beyond first line
+      }
+
+      line = [words[i]];
+      tspan = textSel.append("tspan")
+        .attr("x", textSel.attr("x"))
+        .attr("dy", `${lineHeight}px`)
+        .text(words[i]);
+    }
+  }
+
+  return lineNumber * lineHeight;
+}
+
+/**
  * Render detail view card in SVG
  */
-function renderDetailView(svg, width, height, payload, breadcrumb, focusNode) {
+function renderDetailView(svg, width, height, payload, breadcrumb) {
   const padding = 14;
   const cornerRadius = 8;
   const headerHeight = 62; // Title + subtitle + spacing
   const footerHeight = 56; // Buttons + spacing
+  const DETAIL_CARD_Y_OFFSET = 110; // Fixed upward offset for card position
   
   // Calculate card dimensions - make it smaller and more compact
   const cardWidth = Math.min(420, width * 0.60);
@@ -889,16 +949,17 @@ function renderDetailView(svg, width, height, payload, breadcrumb, focusNode) {
   const maxCardHeight = Math.min(380, height * 0.55);
   const cardHeight = maxCardHeight;
   
-  const focusCx = focusNode
-    ? (focusNode.x0 + focusNode.x1) / 2
-    : width / 2;
+  // Center the card in the viewport, independent of click location
+  const cardX = Math.max(
+    20,
+    Math.round((width - cardWidth) / 2)
+  );
 
-  const focusCy = focusNode
-    ? (focusNode.y0 + focusNode.y1) / 2
-    : height / 2;
-
-  const cardX = Math.max(10, focusCx - cardWidth / 2);
-  const cardY = Math.max(10, focusCy - cardHeight / 2);
+  // Center vertically and shift upward by fixed offset
+  const cardY = Math.max(
+    20,
+    Math.round((height - cardHeight) / 2) - DETAIL_CARD_Y_OFFSET
+  );
   
   // Reserve a guaranteed footer area and compute buttonY BEFORE rendering content
   const buttonHeight = 30;
@@ -924,18 +985,23 @@ function renderDetailView(svg, width, height, payload, breadcrumb, focusNode) {
     .attr("stroke", "#e0e0e0")
     .attr("stroke-width", 1);
   
-  // Title
-  const titleY = cardY + padding + 12;
-  card.append("text")
-    .attr("x", cardX + padding)
+  // Title with wrapping
+  const fullTitle = payload.name || "Setting";
+  const titleX = cardX + padding;
+  const titleY = cardY + padding + 18;
+  
+  const titleEl = card.append("text")
+    .attr("x", titleX)
     .attr("y", titleY)
     .attr("font-size", "20px")
     .attr("font-weight", "600")
-    .attr("fill", "#333")
-    .text(payload.name || "Setting");
+    .attr("fill", "#333");
+  
+  const titleExtra = wrapSvgText(titleEl, fullTitle, cardWidth - padding * 2, 2, 24);
+  titleEl.append("title").text(fullTitle);
   
   // Breadcrumb/subtitle
-  const subtitleY = titleY + 20;
+  const subtitleY = titleY + 22 + titleExtra;
   card.append("text")
     .attr("x", cardX + padding)
     .attr("y", subtitleY)
@@ -1196,9 +1262,42 @@ function renderDetailView(svg, width, height, payload, breadcrumb, focusNode) {
 }
 
 /**
+ * Update the treemap area callout text based on current sizing metric
+ */
+function updateTreemapAreaCallout() {
+  const calloutEl = document.getElementById("treemapAreaCallout");
+  if (!calloutEl) return;
+  
+  const metric = document.getElementById("sizingMetric")?.value || currentSizingMetric || "count";
+  
+  let explanation = "";
+  switch (metric) {
+    case "count":
+      explanation = "Rectangle area represents the number of settings (each setting contributes 1).";
+      break;
+    case "actionable":
+      explanation = "Rectangle area represents the number of actionable settings only.";
+      break;
+    case "risk-weighted":
+      explanation = "Rectangle area represents a risk-weighted score (higher-risk settings contribute more area).";
+      break;
+    case "clicks":
+      explanation = "Rectangle area represents the total clicks (or click depth) aggregated across settings.";
+      break;
+    default:
+      explanation = "Rectangle area represents the current sizing metric.";
+  }
+  
+  calloutEl.textContent = explanation;
+}
+
+/**
  * Render treemap visualization
  */
 function renderTreemap() {
+    // Update callout before rendering
+    updateTreemapAreaCallout();
+    
     if (!currentRoot) {
       buildHierarchy();
     }
@@ -1231,7 +1330,7 @@ function renderTreemap() {
   
     // Check if we should render detail view instead of treemap
     if (isDetailView && detailPayload) {
-      renderDetailView(svg, width, height, detailPayload, detailBreadcrumb, detailNode);
+      renderDetailView(svg, width, height, detailPayload, detailBreadcrumb);
       return;
     }
   
@@ -1491,7 +1590,7 @@ function renderTreemap() {
         return "#fff";
       })
       .attr("stroke-width", d => (d.data.stateType ? 2 : 1.5))
-      .attr("stroke-dasharray", d => (d.data.stateType === "navigational" ? "4,2" : "none"))
+      .attr("stroke-dasharray", "none")
       .on("mouseover", function(event, d) {
         const isLeaf = !d.children || d.children.length === 0;
         if (!isLeaf) return;
@@ -1648,7 +1747,7 @@ function renderTreemap() {
       const isLeaf = !d.children || d.children.length === 0;
       const w = d.x1 - d.x0;
       const h = d.y1 - d.y0;
-      return !isCategory && isLeaf && w > 60 && h > 20;
+      return !isCategory && isLeaf && w > 110 && h > 45;
     }).append("text")
       .attr("class", d => {
         const w = d.x1 - d.x0;
@@ -1681,7 +1780,7 @@ function renderTreemap() {
       .text(d => {
         const name = d.data.name || "";
         const w = d.x1 - d.x0;
-        const maxChars = Math.floor(w / 6);
+        const maxChars = Math.floor(w / 7);
         if (name.length > maxChars && maxChars > 3) {
           return name.substring(0, maxChars - 3) + "...";
         }
@@ -2687,6 +2786,9 @@ function setupEventHandlers() {
     settingDetails.classList.add("hidden");
   }
   
+  // Initialize callout
+  updateTreemapAreaCallout();
+  
   // Close button handler
   if (detailsClose) {
     detailsClose.addEventListener("click", function(e) {
@@ -2781,6 +2883,7 @@ function setupEventHandlers() {
   if (sizingMetricSelect) {
     sizingMetricSelect.addEventListener("change", function() {
       currentSizingMetric = this.value;
+      updateTreemapAreaCallout();
       buildHierarchy();
       renderTreemap();
     });

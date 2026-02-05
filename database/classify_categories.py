@@ -1,47 +1,3 @@
-# BIG_CATEGORIES = {
-#     "identity_personal_info": [
-#         "personal", "name", "email", "phone", "contact",
-#         "profile", "birthday", "age", "gender", "demographic"
-#     ],
-
-#     "security_authentication": [
-#         "security", "password", "authentication", "login",
-#         "two-factor", "2fa", "verification", "identity confirmation",
-#         "encryption"
-#     ],
-
-#     "device_sensor_access": [
-#         "camera", "microphone", "audio", "video",
-#         "record", "recording", "device", "sensor",
-#         "screen sharing", "screen record"
-#     ],
-
-#     "data_collection_tracking": [
-#         "collect", "collection", "tracking", "analytics", "telemetry",
-#         "ad", "ads", "diagnostic", "inferred", "activity",
-#         "search history"
-#     ],
-
-#     "data_sharing_third_parties": [
-#         "third party", "partners", "affiliates", "sharing",
-#         "integration", "connected", "external", "api",
-#         "cookies"
-#     ],
-
-#     "visibility_audience": [
-#         "visibility", "public", "private", "audience",
-#         "who can see", "followers", "profile viewing",
-#         "discoverability"
-#     ],
-
-#     "communication_notifications": [
-#         "messages", "chat", "messaging", "calls",
-#         "notifications", "alerts", "read receipts",
-#         "typing indicators"
-#     ]
-# }
-
-    
 import json
 import numpy as np
 from pathlib import Path
@@ -51,8 +7,8 @@ client = genai.Client()
 
 EMBED_MODEL = "models/text-embedding-004"
 
-INPUT_PATH = Path("data/all_platforms_images.json")
-OUTPUT_PATH = Path("data/all_platforms_classified.json")
+INPUT_PATH = Path("data/extracted_settings_with_urls_and_layers.json")
+OUTPUT_PATH = Path("data/extracted_settings_with_urls_and_layers_classified.json")
 CATEGORY_EMBED_PATH = Path("data/category_embeddings.json")
 
 # -------------------------------------------
@@ -145,24 +101,25 @@ def load_or_compute_category_embeddings():
 # Screenshot classification
 # -------------------------------------------
 
-def classify_entry(entry, category_embeddings):
-    # Combine all text from settings in this screenshot
-    full_text = " ".join(
-        f"{s.get('setting','')}. {s.get('description','')}. {s.get('state','')}."
-        for s in entry.get("settings", [])
-    ).strip()
+def classify_setting(setting, category_embeddings):
+    """
+    Classify a single privacy setting into one of the big categories.
+    """
+    text = " ".join([
+        setting.get("setting", ""),
+        setting.get("description", ""),
+        setting.get("state", "")
+    ]).strip()
 
-    if not full_text:
+    if not text:
         return "uncategorized"
 
-    # Get embedding for screenshot content
     resp = client.models.embed_content(
         model=EMBED_MODEL,
-        contents=[full_text]
+        contents=[text]
     )
     emb = resp.embeddings[0].values
 
-    # Compare to each category
     best_cat = None
     best_score = -1
 
@@ -174,25 +131,30 @@ def classify_entry(entry, category_embeddings):
 
     return best_cat
 
-
 # -------------------------------------------
 # MAIN
 # -------------------------------------------
 
 def main():
-    print("[INFO] Loading screenshot dataset...")
-    entries = json.loads(INPUT_PATH.read_text())
+    print("[INFO] Loading extracted settings with URLs and layers...")
+    data = json.loads(INPUT_PATH.read_text())
 
     print("[INFO] Loading or computing category embeddings...")
     category_embeddings = load_or_compute_category_embeddings()
 
-    print("[INFO] Classifying screenshots using Gemini embeddings...")
-    for entry in entries:
-        entry["category"] = classify_entry(entry, category_embeddings)
+    print("[INFO] Classifying individual settings...")
+    total = 0
 
-    OUTPUT_PATH.write_text(json.dumps(entries, indent=2))
-    print(f"[DONE] Classification written to → {OUTPUT_PATH}")
+    for block in data:
+        for setting in block.get("all_settings", []):
+            setting["category"] = classify_setting(setting, category_embeddings)
+            total += 1
+            if total % 10 == 0:
+                print(f"[INFO] Classified {total} settings...")
 
+
+    OUTPUT_PATH.write_text(json.dumps(data, indent=2))
+    print(f"[DONE] Classified {total} settings → {OUTPUT_PATH}")
 
 if __name__ == "__main__":
     main()
