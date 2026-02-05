@@ -22,12 +22,12 @@ def is_valid_link(href, text, role):
         dict: {"has_settings_toggles": "yes" or "no"}
         Returns {"has_settings_toggles": "no"} on error
     """
-    # API_KEY = os.environ.get("GEMINI_API_KEY")
-    # if not API_KEY:
-    #     print("Error: GEMINI_API_KEY not set.")
-    #     raise ValueError("Missing Gemini API key.")
+    API_KEY = os.environ.get("GEMINI_API_KEY")
+    if not API_KEY:
+        print("Error: GEMINI_API_KEY not set.")
+        raise ValueError("Missing Gemini API key.")
 
-    client = genai.Client(api_key="AIzaSyDsdCAot-7x03Cc57TFIrshawiB3u-nJKg")
+    client = genai.Client(api_key=API_KEY)
 
     context = f"Link URL: {href}, Link Text: {text}, Link Role: {role}"
 
