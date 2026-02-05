@@ -22,19 +22,19 @@ def is_valid_link(href, text, role):
         dict: {"has_settings_toggles": "yes" or "no"}
         Returns {"has_settings_toggles": "no"} on error
     """
-    API_KEY = os.environ.get("GEMINI_API_KEY")
-    if not API_KEY:
-        print("Error: GEMINI_API_KEY not set.")
-        raise ValueError("Missing Gemini API key.")
+    # API_KEY = os.environ.get("GEMINI_API_KEY")
+    # if not API_KEY:
+    #     print("Error: GEMINI_API_KEY not set.")
+    #     raise ValueError("Missing Gemini API key.")
 
-    client = genai.Client(api_key=API_KEY)
+    client = genai.Client(api_key="AIzaSyDsdCAot-7x03Cc57TFIrshawiB3u-nJKg")
 
     context = f"Link URL: {href}, Link Text: {text}, Link Role: {role}"
 
     prompt = (
         f"Analyze this link from a privacy/settings page:\n\n{context}\n\n"
         "Platforms often nest their setting toggles within nested links. The goal of this program is to find all " 
-        f"the user configurable setting toggles by crawling through the different links on Google Account Center's settings page. "
+        f"the user configurable setting toggles by crawling through the different links on Spotify's settings page. "
         "Please determine if clicking this link will lead to a page that contains privacy/data/security SETTINGS TOGGLES or CONTROLS that users can enable/disable.\n\n"
         "Links that lead to settings toggles include:\n"
         "- /settings or /account\n"
@@ -52,7 +52,7 @@ def is_valid_link(href, text, role):
         '{"has_settings_toggles": "yes"}\n'
         'or\n'
         '{"has_settings_toggles": "no"}\n\n'
-        "Do not include any other text, explanations, or markdown formatting. The page should strictly be related to Google Account Center."
+        "Do not include any other text, explanations, or markdown formatting. The page should strictly be related to Spotify."
     )
 
     config = types.GenerateContentConfig(
@@ -220,7 +220,7 @@ def crawl_settings(url):
 
         # Stopping condition: max iterations
         iteration_count = 0
-        max_iterations = 400
+        max_iterations = 5000
 
         while link_queue:
             iteration_count += 1
@@ -380,6 +380,6 @@ def crawl_settings(url):
 
 
 if __name__ == "__main__":
-    url = 'https://myaccount.google.com/u/4/?tab=kk'
+    url = 'https://www.spotify.com/us/account/overview/'
     crawl_settings(url)
     

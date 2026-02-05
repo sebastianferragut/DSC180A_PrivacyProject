@@ -338,10 +338,10 @@
   ],
   "layer_dict": {
     "Layer 0": [
-      "https://www.linkedin.com/mypreferences/d/categories/privacy",
       "https://www.linkedin.com/mypreferences/d/categories/account",
       "https://www.linkedin.com/mypreferences/d/categories/sign-in-and-security",
       "https://www.linkedin.com/mypreferences/d/categories/profile-visibility",
+      "https://www.linkedin.com/mypreferences/d/categories/privacy",
       "https://www.linkedin.com/mypreferences/d/categories/ads",
       "https://www.linkedin.com/mypreferences/d/categories/notifications"
     ],

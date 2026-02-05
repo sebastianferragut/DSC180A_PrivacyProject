@@ -240,6 +240,7 @@
   "layer_dict": {
     "Layer 0": [
       "https://x.com/settings/account",
+      "https://x.com/i/jf/creators/studio",
       "https://x.com/settings/security_and_account_access",
       "https://x.com/settings/privacy_and_safety",
       "https://x.com/settings/notifications",
@@ -314,7 +315,8 @@
       "https://x.com/i/flow/passkey_registration",
       "https://x.com/settings/your_twitter_data",
       "https://x.com/settings/blocked/imported",
-      "https://x.com/settings/add_muted_keyword"
+      "https://x.com/settings/add_muted_keyword",
+      "https://x.com/privacytester1/topics/not_interested"
     ],
     "Layer 4": [
       "https://x.com/settings/your_twitter_data/account_history",
@@ -329,9 +331,9 @@
   "total_layers": 6,
   "links_per_layer": {
     "Layer 0": 5,
-    "Layer 1": 27,
-    "Layer 2": 26,
-    "Layer 3": 4,
+    "Layer 1": 26,
+    "Layer 2": 27,
+    "Layer 3": 5,
     "Layer 4": 3,
     "Layer 5": 1
   }

@@ -57,16 +57,20 @@
     "Layer 0": [
       "https://accountscenter.facebook.com/profiles/",
       "https://accountscenter.facebook.com/password_and_security/",
+      "https://accountscenter.facebook.com/connected_experiences/",
       "https://accountscenter.facebook.com/info_and_permissions/",
       "https://accountscenter.facebook.com/ads/",
+      "https://accountscenter.facebook.com/meta_pay_wallet/",
+      "https://accountscenter.facebook.com/subscriptions/",
       "https://accountscenter.facebook.com/manage/"
     ],
     "Layer 1": [
       "https://accountscenter.facebook.com/profiles/61583503087559/",
+      "https://www.facebook.com/device_based_login/?from_accounts_center=1",
 
       "https://accountscenter.facebook.com/meta_verified/",
 
-      "https://accountscenter.facebook.com/ads/ad_topics/"
+      "https://accountscenter.facebook.com/info_and_permissions/ayi"
     ],
     "Layer 2": [
       "https://accountscenter.facebook.com/profiles/61583503087559/name/",
@@ -75,12 +79,12 @@
       "https://accountscenter.facebook.com/youraccount/birthday/",
 
       "https://accountscenter.facebook.com/password_and_security/password/change/",
-      "https://accountscenter.facebook.com/password_and_security/two_factor/",
       "https://accountscenter.facebook.com/password_and_security/login_activity/",
       "https://accountscenter.facebook.com/password_and_security/login_alerts/",
 
       "https://accountscenter.facebook.com/info_and_permissions/search_history/",
       "https://accountscenter.facebook.com/info_and_permissions/off_facebook_activity/",
+      "https://accountscenter.facebook.com/ads/ad_topics/",
 
       "https://accountscenter.facebook.com/ads/ads_shown_off_meta/",
 
@@ -91,6 +95,7 @@
       "https://accountscenter.facebook.com/youraccount/contact_points/",
 
       "https://accountscenter.facebook.com/passkey/management/",
+      "https://accountscenter.facebook.com/password_and_security/two_factor/",
 
       "https://accountscenter.facebook.com/info_and_permissions/dyi/",
 
@@ -98,7 +103,8 @@
       "https://accountscenter.facebook.com/ads/data_from_partners/",
       "https://accountscenter.facebook.com/ads/social_interactions/",
 
-      "https://accountscenter.facebook.com/manage/deletion_and_deactivation/"
+      "https://accountscenter.facebook.com/manage/deletion_and_deactivation/",
+      "https://accountscenter.facebook.com/memorialization/select_preference/"
     ],
     "Layer 4": [],
     "Layer 5": [],
@@ -110,9 +116,9 @@
   "total_layers": 7,
   "links_per_layer": {
     "Layer 0": 5,
-    "Layer 1": 3,
+    "Layer 1": 4,
     "Layer 2": 12,
-    "Layer 3": 7,
+    "Layer 3": 9,
     "Layer 4": 0,
     "Layer 5": 0,
     "Layer 6": 1
