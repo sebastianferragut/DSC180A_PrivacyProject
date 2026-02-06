@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-02-04T18:02:53.063641Z",
+  "updated_at": "2026-02-06T16:34:05.556079Z",
   "by_setting": {
     "Reddit::allow_people_to_follow_you_l3_settings_privacy": {
       "platform": "Reddit",
@@ -33,6 +33,56 @@
                     "type": "coord",
                     "selector": "hint:Allow people to follow you",
                     "value": "on"
+                  }
+                ],
+                "applied": [
+                  {
+                    "purpose": "change_value",
+                    "ok": true,
+                    "type": "coord",
+                    "selector": "hint:Allow people to follow you"
+                  }
+                ],
+                "deterministic_check": true,
+                "gemini_verify": null
+              }
+            ],
+            "final_decider": "deterministic"
+          }
+        }
+      ]
+    },
+    "Reddit::allow_people_to_follow_you_l1_settings_privacy": {
+      "platform": "Reddit",
+      "setting_id": "allow_people_to_follow_you_l1_settings_privacy",
+      "name": "Allow people to follow you",
+      "runs": 1,
+      "successes": 1,
+      "avg_clicks_success": 1.0,
+      "min_clicks_success": 1,
+      "max_clicks_success": 1,
+      "last_success_ts": "2026-02-06T16:34:05.556102Z",
+      "history": [
+        {
+          "ts": "2026-02-06T16:34:05.556102Z",
+          "status": "success",
+          "target_value": "off",
+          "click_count": 1,
+          "path": {
+            "entrypoint": null,
+            "candidate_source": null,
+            "leaf_hint_source": null,
+            "turns": [
+              {
+                "turn": 1,
+                "url": "https://www.reddit.com/settings/privacy",
+                "notes": "model_empty_output",
+                "selectors": [
+                  {
+                    "purpose": "change_value",
+                    "type": "coord",
+                    "selector": "hint:Allow people to follow you",
+                    "value": "off"
                   }
                 ],
                 "applied": [

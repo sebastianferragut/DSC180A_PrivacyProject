@@ -87,7 +87,7 @@ reaction_on_message_received = false
 [UI]
 # Name of the assistant.
 name = "Agentic Privacy Control Center"
-icon = "favicon.svg"
+icon = "favicon.png"
 description = "Centralized hub for adjusting privacy/data settings across platforms."
 
 # default_theme = "dark"

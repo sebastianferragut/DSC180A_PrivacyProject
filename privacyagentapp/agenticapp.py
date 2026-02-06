@@ -361,7 +361,6 @@ def load_settings_db() -> Dict[str, List[SettingEntry]]:
 
     return by_platform
 
-
 # =========================
 # Utility functions
 # =========================
@@ -1862,19 +1861,28 @@ def score_entry_for_setting(entry, section_query: str, leaf_hint: str | None) ->
 
     return score
 
+def _escape_md(text: str) -> str:
+    """Escape characters that break Markdown tables."""
+    if not text:
+        return "-"
+    return str(text).replace("|", r"\|").replace("\n", " ")
+
 def format_settings_table(settings: List[SettingEntry], max_rows: int = 25) -> str:
     if not settings:
         return "_No settings found for this platform in the DB._"
 
-    header = "| ID | Name | Category |\n| --- | --- | --- |\n"
+    header = "| Name | Category | ID |\n| --- | --- | --- |\n"
     rows = []
+
     for s in settings[:max_rows]:
-        cat = s.category or "-"
-        rows.append(f"| `{s.setting_id}` | {s.name} | {cat} |")
+        name = _escape_md(s.name)
+        cat = _escape_md(s.category) if s.category else "-"
+        rows.append(f"| {name} | {cat} | `{s.setting_id}` |")
+
     if len(settings) > max_rows:
         rows.append(f"| … | _{len(settings) - max_rows} more settings not shown_ | - |")
-    return header + "\n".join(rows)
 
+    return header + "\n".join(rows)
 
 def resolve_setting(platform: str, setting_id_or_name: str) -> Optional[SettingEntry]:
     settings = list_settings_for_platform(platform)
@@ -3800,9 +3808,9 @@ async def show_settings_browser_page(platform: str):
     table_rows = []
     for i, e in enumerate(page_items, start=1):
         cat = e.category or "uncategorized"
-        table_rows.append(f"| {i} | `{e.setting_id}` | {e.name} | `{cat}` |")
+        table_rows.append(f"| {i} | {e.name} | `{cat}` | `{e.setting_id}` |")
     page_table = (
-        "| # | ID | Name | Category |\n"
+        "| # | Name | Category | ID |\n"
         "|---:|---|---|---|\n"
         + ("\n".join(table_rows) if table_rows else "| - | - | (No items on this page) | - |")
     )

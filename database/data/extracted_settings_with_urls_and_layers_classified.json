@@ -1787,7 +1787,7 @@
         "description": "When selected, your posts and other account information are only visible to people who follow you.",
         "state": "disabled",
         "image_path": "../gemini-team/picasso/TwitterX/Audience, media and tagging_Manage what information you allow other people on X to see._https___x.com_settings_audience_and_tagging.png",
-        "url": "https://x.com/settings/audience/and/tagging",
+        "url": "https://x.com/settings/audience_and_tagging",
         "layer": 1,
         "category": "visibility_audience"
       },
@@ -1796,7 +1796,7 @@
         "description": "If selected, videos in your posts will not be downloadable by default. This setting applies to posts going forward and is not retroactive.",
         "state": "disabled",
         "image_path": "../gemini-team/picasso/TwitterX/Audience, media and tagging_Manage what information you allow other people on X to see._https___x.com_settings_audience_and_tagging.png",
-        "url": "https://x.com/settings/audience/and/tagging",
+        "url": "https://x.com/settings/audience_and_tagging",
         "layer": 1,
         "category": "visibility_audience"
       },
@@ -1805,7 +1805,7 @@
         "description": "Controls who can tag you in photos.",
         "state": "Off",
         "image_path": "../gemini-team/picasso/TwitterX/Audience, media and tagging_Manage what information you allow other people on X to see._https___x.com_settings_audience_and_tagging.png",
-        "url": "https://x.com/settings/audience/and/tagging",
+        "url": "https://x.com/settings/audience_and_tagging",
         "layer": 1,
         "category": "visibility_audience"
       },
