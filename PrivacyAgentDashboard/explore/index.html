@@ -52,15 +52,20 @@
                 </label>
                 <label for="platformFilter">
                     Platform:
-                    <select id="platformFilter" multiple size="5">
-                    <option value="all">All</option>
-                    </select>
+                    <div class="custom-dropdown" id="platformFilterDropdown">
+                        <div class="dropdown-trigger" id="platformFilterTrigger">
+                            <span class="dropdown-label">All platforms</span>
+                            <span class="dropdown-caret">▼</span>
+                        </div>
+                        <div class="dropdown-menu" id="platformFilterMenu">
+                            <ul class="dropdown-list" id="platformFilterList"></ul>
+                        </div>
+                    </div>
                 </label>
                 <label>
                     Search:
                     <input type="text" id="searchBox" placeholder="Search settings..." />
                 </label>
-                <button id="resetView">Reset View</button>
                 </div>
                 <div class="breadcrumbs" id="breadcrumbs">
                 <span class="breadcrumb-item active" data-path="">All</span>

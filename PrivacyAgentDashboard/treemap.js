@@ -2716,12 +2716,38 @@ function truncate(text, maxLength) {
 }
 
 /**
+ * Update the dropdown label text based on current selections
+ */
+function updatePlatformFilterLabel() {
+  const trigger = document.getElementById("platformFilterTrigger");
+  const label = trigger?.querySelector(".dropdown-label");
+  if (!label) return;
+  
+  const selected = currentPlatformFilter.filter(p => p !== 'all');
+  const allPlatforms = Array.from(new Set(allData.map(d => d.platform)))
+    .filter(p => p && p !== 'unknown')
+    .sort();
+  
+  if (currentPlatformFilter.includes('all') || selected.length === 0 || selected.length === allPlatforms.length) {
+    label.textContent = "All platforms";
+  } else if (selected.length === 1) {
+    const platformName = selected[0].charAt(0).toUpperCase() + selected[0].slice(1);
+    label.textContent = platformName;
+  } else if (selected.length <= 3) {
+    label.textContent = selected.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(", ");
+  } else {
+    label.textContent = `${selected.length} selected`;
+  }
+}
+
+/**
  * Populate platform filter dropdown with unique platforms from data
  */
 function populatePlatformFilter() {
-  const platformFilterSelect = document.getElementById("platformFilter");
-  if (!platformFilterSelect) {
-    console.warn("platformFilter element not found");
+  const dropdown = document.getElementById("platformFilterDropdown");
+  const list = document.getElementById("platformFilterList");
+  if (!dropdown || !list) {
+    console.warn("platformFilterDropdown element not found");
     return;
   }
   
@@ -2730,40 +2756,47 @@ function populatePlatformFilter() {
     .filter(p => p && p !== 'unknown')
     .sort();
   
-  // Preserve current selections (array of selected values)
-  const currentSelections = Array.from(platformFilterSelect.selectedOptions)
-    .map(option => option.value);
+  // Clear existing items
+  list.innerHTML = '';
   
-  // Build options HTML
-  let optionsHTML = '<option value="all">All</option>';
+  // Add "All" option
+  const allItem = document.createElement("li");
+  const allCheckbox = document.createElement("input");
+  allCheckbox.type = "checkbox";
+  allCheckbox.id = "platform-all";
+  allCheckbox.value = "all";
+  allCheckbox.checked = currentPlatformFilter.includes('all') || currentPlatformFilter.length === 0;
+  
+  const allLabel = document.createElement("label");
+  allLabel.htmlFor = "platform-all";
+  allLabel.textContent = "All";
+  
+  allItem.className = "dropdown-item";
+  allItem.appendChild(allCheckbox);
+  allItem.appendChild(allLabel);
+  list.appendChild(allItem);
+  
+  // Add platform options
   platforms.forEach(platform => {
-    const selected = currentSelections.includes(platform) ? ' selected' : '';
-    const displayName = platform.charAt(0).toUpperCase() + platform.slice(1);
-    optionsHTML += `<option value="${platform}"${selected}>${displayName}</option>`;
+    const item = document.createElement("li");
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.id = `platform-${platform}`;
+    checkbox.value = platform;
+    checkbox.checked = currentPlatformFilter.includes(platform);
+    
+    const label = document.createElement("label");
+    label.htmlFor = `platform-${platform}`;
+    label.textContent = platform.charAt(0).toUpperCase() + platform.slice(1);
+    
+    item.className = "dropdown-item";
+    item.appendChild(checkbox);
+    item.appendChild(label);
+    list.appendChild(item);
   });
   
-  // Update dropdown
-  platformFilterSelect.innerHTML = optionsHTML;
-  
-  // Restore selections if they still exist
-  if (currentSelections.length > 0 && !currentSelections.includes('all')) {
-    currentSelections.forEach(val => {
-      const option = platformFilterSelect.querySelector(`option[value="${val}"]`);
-      if (option) {
-        option.selected = true;
-      }
-    });
-    // Update the filter state
-    currentPlatformFilter = currentSelections.filter(p => platforms.includes(p));
-    if (currentPlatformFilter.length === 0) {
-      currentPlatformFilter = ['all'];
-      platformFilterSelect.querySelector('option[value="all"]').selected = true;
-    }
-  } else {
-    // Default to "all" if no valid selections
-    currentPlatformFilter = ['all'];
-    platformFilterSelect.querySelector('option[value="all"]').selected = true;
-  }
+  // Update label
+  updatePlatformFilterLabel();
 }
 
 /**
@@ -2788,6 +2821,9 @@ function setupEventHandlers() {
   
   // Initialize callout
   updateTreemapAreaCallout();
+  
+  // Initialize platform filter dropdown label
+  updatePlatformFilterLabel();
   
   // Close button handler
   if (detailsClose) {
@@ -2835,49 +2871,91 @@ function setupEventHandlers() {
   const sizingMetricSelect = document.getElementById("sizingMetric");
   const stateTypeFilterSelect = document.getElementById("stateTypeFilter");
   const searchBox = document.getElementById("searchBox");
-  const resetViewBtn = document.getElementById("resetView");
-  const platformFilterSelect = document.getElementById("platformFilter");
+  // Setup custom platform filter dropdown
+  const platformFilterDropdown = document.getElementById("platformFilterDropdown");
+  const platformFilterTrigger = document.getElementById("platformFilterTrigger");
+  const platformFilterMenu = document.getElementById("platformFilterMenu");
+  const platformFilterList = document.getElementById("platformFilterList");
   
-  if (platformFilterSelect) {
-    platformFilterSelect.addEventListener("change", function() {
-      // Get all selected options
-      const selectedOptions = Array.from(this.selectedOptions).map(opt => opt.value);
+  if (platformFilterDropdown && platformFilterTrigger && platformFilterMenu && platformFilterList) {
+    // Toggle dropdown on trigger click
+    platformFilterTrigger.addEventListener("click", function(e) {
+      e.stopPropagation();
+      const isOpen = platformFilterMenu.classList.contains("open");
+      if (isOpen) {
+        platformFilterMenu.classList.remove("open");
+        platformFilterTrigger.classList.remove("active");
+      } else {
+        platformFilterMenu.classList.add("open");
+        platformFilterTrigger.classList.add("active");
+      }
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener("click", function(e) {
+      if (!platformFilterDropdown.contains(e.target)) {
+        platformFilterMenu.classList.remove("open");
+        platformFilterTrigger.classList.remove("active");
+      }
+    });
+    
+    // Handle checkbox changes
+    platformFilterList.addEventListener("change", function(e) {
+      if (e.target.type !== "checkbox") return;
+      
+      const allCheckbox = document.getElementById("platform-all");
+      const checkboxes = platformFilterList.querySelectorAll('input[type="checkbox"]');
+      const platformCheckboxes = Array.from(checkboxes).filter(cb => cb.value !== 'all');
       
       // Handle "All" option logic
-      if (selectedOptions.includes('all')) {
-        // If "All" is selected along with other options, deselect "All" and keep others
-        if (selectedOptions.length > 1) {
-          this.querySelector('option[value="all"]').selected = false;
-          const filtered = selectedOptions.filter(v => v !== 'all');
-          currentPlatformFilter = filtered;
-        } else {
-          // Only "All" is selected - deselect everything else to be safe
-          Array.from(this.options).forEach(opt => {
-            if (opt.value !== 'all') {
-              opt.selected = false;
-            }
-          });
+      if (e.target.value === 'all') {
+        if (e.target.checked) {
+          // Select all platforms when "All" is checked
+          platformCheckboxes.forEach(cb => cb.checked = true);
           currentPlatformFilter = ['all'];
+        } else {
+          // Prevent unchecking "All" directly - user must select specific platforms
+          e.target.checked = true;
+          return;
         }
       } else {
-        // "All" is not selected
-        if (selectedOptions.length === 0) {
-          // No selection - default to "All"
-          this.querySelector('option[value="all"]').selected = true;
-          currentPlatformFilter = ['all'];
+        // Platform checkbox changed
+        const selectedPlatforms = platformCheckboxes
+          .filter(cb => cb.checked)
+          .map(cb => cb.value);
+        
+        if (e.target.checked) {
+          // Uncheck "All" when a specific platform is selected
+          if (allCheckbox) {
+            allCheckbox.checked = false;
+          }
+          currentPlatformFilter = selectedPlatforms;
         } else {
-          // Other platforms selected - use them
-          currentPlatformFilter = selectedOptions;
+          // Platform unchecked
+          if (selectedPlatforms.length === 0) {
+            // No platforms selected - select "All"
+            if (allCheckbox) {
+              allCheckbox.checked = true;
+            }
+            platformCheckboxes.forEach(cb => cb.checked = false);
+            currentPlatformFilter = ['all'];
+          } else {
+            currentPlatformFilter = selectedPlatforms;
+          }
         }
       }
       
+      // Update label
+      updatePlatformFilterLabel();
+      
+      // Update treemap and charts
       currentRoot = null;
       zoomStack = [];
       buildHierarchy();
       renderTreemap();
     });
   } else {
-    console.warn("platformFilter element not found");
+    console.warn("platformFilterDropdown elements not found");
   }
   
   if (sizingMetricSelect) {
@@ -2909,29 +2987,6 @@ function setupEventHandlers() {
     });
   } else {
     console.warn("searchBox element not found");
-  }
-  
-  if (resetViewBtn) {
-    attachButtonNameTooltip(resetViewBtn);
-    resetViewBtn.addEventListener("click", function() {
-      currentRoot = null;
-      zoomStack = [];
-      currentSearchQuery = '';
-      currentPlatformFilter = ['all'];
-      if (searchBox) {
-        searchBox.value = "";
-      }
-      if (platformFilterSelect) {
-        // Deselect all options except "all"
-        Array.from(platformFilterSelect.options).forEach(opt => {
-          opt.selected = opt.value === 'all';
-        });
-      }
-      buildHierarchy();
-      renderTreemap();
-    });
-  } else {
-    console.warn("resetView element not found");
   }
   
   // Handle window resize
