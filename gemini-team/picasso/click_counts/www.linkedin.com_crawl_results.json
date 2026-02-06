@@ -456,6 +456,7 @@
       "https://www.linkedin.com/mypreferences/d/notification-subcategories/search-appearances",
       "https://www.linkedin.com/mypreferences/d/notification-subcategories/skill-assessment-recommendations",
       "https://www.linkedin.com/mypreferences/d/notification-subcategories/skills-path-updates",
+      "https://www.linkedin.com/mypreferences/d/two-factor-authentication/enroll",
 
       "https://www.linkedin.com/mypreferences/d/notification-subcategories/job-post-updates",
       "https://www.linkedin.com/mypreferences/d/notification-subcategories/messages-from-candidates",
@@ -533,6 +534,9 @@
 
       "https://www.linkedin.com/mypreferences/d/notification-subcategories/billing-reminders",
       "https://www.linkedin.com/mypreferences/d/notification-subcategories/education-and-best-practices"
+    ],
+    "Layer 3": [
+      "https://www.linkedin.com/jobs/application-settings/"
     ]
   },
   "total_visited": 335,
@@ -540,6 +544,7 @@
   "links_per_layer": {
     "Layer 0": 6,
     "Layer 1": 94,
-    "Layer 2": 73
+    "Layer 2": 73,
+    "Layer 3": 1
   }
 }
