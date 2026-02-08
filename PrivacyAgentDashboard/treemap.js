@@ -61,41 +61,118 @@ let settingDetails, detailsTitle, detailsSubtitle, detailsDescription, detailsSt
 // Area evidence panel state
 let areaEvidenceEl = null;
 
-// Load and parse CSV
-// Try local path first (if CSV is in same directory), then relative path
-// Note: If opening HTML directly in browser (file://), you'll need a local server due to CORS
-// Run: python -m http.server 8000 (from project root) then open http://localhost:8000/PrivacyAgentDashboard/old_index.html
+// Data source paths (JSON first, then CSV fallback)
+// JSON: from explore/ use ../../database/data/..., from dashboard root use ../database/data/...
+const jsonPaths = [
+  "../../database/data/extracted_settings_with_urls_and_layers_classified.json",
+  "../database/data/extracted_settings_with_urls_and_layers_classified.json"
+];
 
 const csvPaths = [
-  "all_platforms_classified_with_clicks.csv",  // File with clicks data (if in explore directory)
-  "all_platforms_classified.csv",  // Local copy in dashboard directory
-  "../database/data/all_platforms_classified.csv"  // Original location
+  "all_platforms_classified_with_clicks.csv",
+  "all_platforms_classified.csv",
+  "../database/data/all_platforms_classified.csv"
 ];
+
+function showLoadError(title, triedPaths) {
+  const container = d3.select("#treemapContainer");
+  container.html(`
+    <div style='padding: 20px; color: #d32f2f;'>
+      <p><strong>Error loading data:</strong> ${title}</p>
+      <p style='margin-top: 10px; font-size: 13px; color: #666;'>
+        <strong>Solution:</strong> This visualization requires a web server due to browser security restrictions.<br>
+        Run from the project root: <code>python -m http.server 8000</code><br>
+        Then open the explore or dashboard page.
+      </p>
+      <p style='margin-top: 10px; font-size: 12px; color: #666;'>
+        Tried paths:<br>
+        ${(triedPaths || []).map((p, i) => `${i + 1}. ${p}`).join('<br>')}
+      </p>
+    </div>
+  `);
+}
+
+/**
+ * Parse classified JSON into the same allData shape as parseCSVData
+ * JSON shape: array of { platform, all_settings: [ { setting, description, state, url, layer, category } ] }
+ */
+function parseJSONData(jsonArray) {
+  if (!Array.isArray(jsonArray)) {
+    return [];
+  }
+  const settingsMap = new Map();
+  jsonArray.forEach(platformBlock => {
+    let platform = (platformBlock.platform || "unknown").trim().toLowerCase();
+    if (platform === "google") platform = "googleaccount";
+    if (platform === "twitter") platform = "twitterx";
+    const settings = platformBlock.all_settings;
+    if (!Array.isArray(settings)) return;
+    settings.forEach(s => {
+      const settingName = s.setting || "Unknown";
+      const description = s.description || "";
+      const state = s.state || "unknown";
+      const category = (s.category || "unknown").trim();
+      const url = s.url || "";
+      const clicks = s.layer != null ? Number(s.layer) : 0; // layer = depth (equivalent to clicks)
+      const key = `${platform}::${category}::${settingName}`;
+      const stateType = determineStateType(state);
+      if (!settingsMap.has(key)) {
+        settingsMap.set(key, {
+          platform,
+          category,
+          setting: settingName,
+          description,
+          state,
+          stateType,
+          url,
+          clicks,
+          weight: calculateWeight(stateType, category, currentSizingMetric, clicks)
+        });
+      } else {
+        const existing = settingsMap.get(key);
+        if (!existing.url && url) existing.url = url;
+      }
+    });
+  });
+  return Array.from(settingsMap.values());
+}
+
+function loadJSON(pathIndex = 0) {
+  if (pathIndex >= jsonPaths.length) {
+    console.warn("All JSON paths failed, falling back to CSV");
+    loadCSV(0);
+    return;
+  }
+  const jsonPath = jsonPaths[pathIndex];
+  console.log("Attempting to load JSON from:", jsonPath);
+  fetch(jsonPath)
+    .then(res => {
+      if (!res.ok) throw new Error(res.statusText);
+      return res.json();
+    })
+    .then(data => {
+      if (!data || (Array.isArray(data) && data.length === 0)) {
+        throw new Error("JSON is empty");
+      }
+      allData = parseJSONData(data);
+      console.log("JSON loaded:", data.length, "platform blocks →", allData.length, "unique settings");
+      populatePlatformFilter();
+      buildHierarchy();
+      renderTreemap();
+    })
+    .catch(err => {
+      console.error("Failed to load JSON from " + jsonPath + ":", err);
+      loadJSON(pathIndex + 1);
+    });
+}
 
 function loadCSV(pathIndex = 0) {
   if (pathIndex >= csvPaths.length) {
-    // All paths failed
-    const container = d3.select("#treemapContainer");
-    container.html(`
-      <div style='padding: 20px; color: #d32f2f;'>
-        <p><strong>Error loading data:</strong> Could not find CSV file</p>
-        <p style='margin-top: 10px; font-size: 13px; color: #666;'>
-          <strong>Solution:</strong> This visualization requires a web server due to browser security restrictions.<br>
-          Run from the project root: <code>python -m http.server 8000</code><br>
-          Then open: <code>http://localhost:8000/PrivacyAgentDashboard/old_index.html</code>
-        </p>
-        <p style='margin-top: 10px; font-size: 12px; color: #666;'>
-          Tried paths:<br>
-          ${csvPaths.map((p, i) => `${i + 1}. ${p}`).join('<br>')}
-        </p>
-      </div>
-    `);
+    showLoadError("Could not find CSV file", csvPaths);
     return;
   }
-  
   const csvPath = csvPaths[pathIndex];
-  console.log(`Attempting to load CSV from: ${csvPath}`);
-  
+  console.log("Attempting to load CSV from:", csvPath);
   d3.csv(csvPath).then(data => {
     console.log("CSV loaded successfully from:", csvPath);
     console.log("CSV rows:", data.length);
@@ -108,14 +185,13 @@ function loadCSV(pathIndex = 0) {
     buildHierarchy();
     renderTreemap();
   }).catch(err => {
-    console.error(`Failed to load from ${csvPath}:`, err);
-    // Try next path
+    console.error("Failed to load from " + csvPath + ":", err);
     loadCSV(pathIndex + 1);
   });
 }
 
-// Start loading
-loadCSV();
+// Start loading: try JSON first, then CSV fallback
+loadJSON();
 
 /**
  * Parse CSV data and extract settings
