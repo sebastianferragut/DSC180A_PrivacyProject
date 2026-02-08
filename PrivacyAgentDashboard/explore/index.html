@@ -50,6 +50,12 @@
                     <option value="unknown">Unknown</option>
                     </select>
                 </label>
+                <label>
+                    Category:
+                    <select id="categoryFilter">
+                    <option value="all">All categories</option>
+                    </select>
+                </label>
                 <label for="platformFilter">
                     Platform:
                     <div class="custom-dropdown" id="platformFilterDropdown">
@@ -66,6 +72,10 @@
                     Search:
                     <input type="text" id="searchBox" placeholder="Search settings..." />
                 </label>
+                </div>
+                <div id="guidedCategoryControls" class="guided-controls hidden">
+                    <button type="button" id="showNextCategory">Show next category</button>
+                    <button type="button" id="showAllCategories">Show all</button>
                 </div>
                 <div class="breadcrumbs" id="breadcrumbs">
                 <span class="breadcrumb-item active" data-path="">All</span>

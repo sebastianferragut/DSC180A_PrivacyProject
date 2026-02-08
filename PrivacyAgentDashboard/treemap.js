@@ -47,6 +47,8 @@ let currentSizingMetric = 'count';
 let currentStateFilter = 'all';
 let currentSearchQuery = '';
 let currentPlatformFilter = ['all']; // Array to support multiple selections
+let currentCategoryFilter = 'all';
+let revealedCategories = new Set(); // For guided (progressive reveal) mode
 
 // Detail view state
 let isDetailView = false;
@@ -157,6 +159,7 @@ function loadJSON(pathIndex = 0) {
       allData = parseJSONData(data);
       console.log("JSON loaded:", data.length, "platform blocks →", allData.length, "unique settings");
       populatePlatformFilter();
+      populateCategoryFilter();
       buildHierarchy();
       renderTreemap();
     })
@@ -182,6 +185,7 @@ function loadCSV(pathIndex = 0) {
     allData = parseCSVData(data);
     console.log("Parsed data:", allData.length, "unique settings");
     populatePlatformFilter();
+    populateCategoryFilter();
     buildHierarchy();
     renderTreemap();
   }).catch(err => {
@@ -354,6 +358,15 @@ function calculateWeight(stateType, category, metric, clicks = 0) {
 }
 
 /**
+ * Get sorted unique category keys from allData
+ */
+function getSortedCategories() {
+  return Array.from(new Set(allData.map(d => d.category || 'unknown')))
+    .filter(Boolean)
+    .sort();
+}
+
+/**
  * Filter data based on current filters
  */
 function getFilteredData() {
@@ -376,6 +389,13 @@ function getFilteredData() {
       d.setting.toLowerCase().includes(query) ||
       (d.description && d.description.toLowerCase().includes(query))
     );
+  }
+  
+  // Apply category filter
+  if (currentCategoryFilter === 'guided') {
+    filtered = filtered.filter(d => revealedCategories.has(d.category));
+  } else if (currentCategoryFilter !== 'all') {
+    filtered = filtered.filter(d => d.category === currentCategoryFilter);
   }
   
   return filtered;
@@ -2876,6 +2896,34 @@ function populatePlatformFilter() {
 }
 
 /**
+ * Populate category filter dropdown with unique categories from data
+ */
+function populateCategoryFilter() {
+  const select = document.getElementById("categoryFilter");
+  if (!select) return;
+  const categories = getSortedCategories();
+  const value = select.value;
+  select.innerHTML = '';
+  const allOpt = document.createElement("option");
+  allOpt.value = 'all';
+  allOpt.textContent = 'All categories';
+  select.appendChild(allOpt);
+  categories.forEach(cat => {
+    const opt = document.createElement("option");
+    opt.value = cat;
+    opt.textContent = (cat || 'unknown').replace(/_/g, ' ');
+    select.appendChild(opt);
+  });
+  const guidedOpt = document.createElement("option");
+  guidedOpt.value = 'guided';
+  guidedOpt.textContent = 'Guided (one at a time)';
+  select.appendChild(guidedOpt);
+  if (value && Array.from(select.options).some(o => o.value === value)) {
+    select.value = value;
+  }
+}
+
+/**
  * Setup event handlers - called after DOM is ready
  */
 function setupEventHandlers() {
@@ -3032,6 +3080,59 @@ function setupEventHandlers() {
     });
   } else {
     console.warn("platformFilterDropdown elements not found");
+  }
+  
+  const categoryFilterSelect = document.getElementById("categoryFilter");
+  const guidedCategoryControls = document.getElementById("guidedCategoryControls");
+  const showNextCategoryBtn = document.getElementById("showNextCategory");
+  const showAllCategoriesBtn = document.getElementById("showAllCategories");
+  
+  if (categoryFilterSelect) {
+    categoryFilterSelect.addEventListener("change", function() {
+      currentCategoryFilter = this.value;
+      if (currentCategoryFilter === 'guided') {
+        const categories = getSortedCategories();
+        revealedCategories = new Set(categories.length > 0 ? [categories[0]] : []);
+        if (guidedCategoryControls) {
+          guidedCategoryControls.classList.remove("hidden");
+        }
+      } else {
+        revealedCategories.clear();
+        if (guidedCategoryControls) {
+          guidedCategoryControls.classList.add("hidden");
+        }
+      }
+      currentRoot = null;
+      zoomStack = [];
+      buildHierarchy();
+      renderTreemap();
+    });
+  }
+  
+  if (showNextCategoryBtn) {
+    showNextCategoryBtn.addEventListener("click", function() {
+      if (currentCategoryFilter !== 'guided') return;
+      const categories = getSortedCategories();
+      const next = categories.find(c => !revealedCategories.has(c));
+      if (next) {
+        revealedCategories.add(next);
+        currentRoot = null;
+        zoomStack = [];
+        buildHierarchy();
+        renderTreemap();
+      }
+    });
+  }
+  
+  if (showAllCategoriesBtn) {
+    showAllCategoriesBtn.addEventListener("click", function() {
+      if (currentCategoryFilter !== 'guided') return;
+      getSortedCategories().forEach(c => revealedCategories.add(c));
+      currentRoot = null;
+      zoomStack = [];
+      buildHierarchy();
+      renderTreemap();
+    });
   }
   
   if (sizingMetricSelect) {
