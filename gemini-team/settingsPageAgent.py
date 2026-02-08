@@ -22,7 +22,7 @@ def is_valid_link(href, text, role):
         dict: {"has_settings_toggles": "yes" or "no"}
         Returns {"has_settings_toggles": "no"} on error
     """
-    API_KEY = "AIzaSyCQHcHyvx5zY0uTDbl4IH33ajUzt2CdI0I" # os.environ.get("GEMINI_API_KEY")
+    API_KEY = os.environ.get("GEMINI_API_KEY")
     if not API_KEY:
         print("Error: GEMINI_API_KEY not set.")
         raise ValueError("Missing Gemini API key.")
