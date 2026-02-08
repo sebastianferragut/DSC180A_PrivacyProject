@@ -1401,6 +1401,19 @@ function updateTreemapAreaCallout() {
 }
 
 /**
+ * Get current treemap container dimensions (responsive to layout).
+ */
+function getTreemapSize() {
+  const container = document.getElementById("treemapContainer");
+  if (!container) return { width: 1200, height: 700 };
+  const rect = container.getBoundingClientRect();
+  return {
+    width: Math.max(300, rect.width),
+    height: Math.max(400, rect.height)
+  };
+}
+
+/**
  * Render treemap visualization
  */
 function renderTreemap() {
@@ -1430,12 +1443,16 @@ function renderTreemap() {
       }
     }
   
-    const width = container.node().getBoundingClientRect().width || 1200;
-    const height = 920;
+    const { width, height } = getTreemapSize();
+    if (currentRoot && currentRoot.leaves) {
+      console.log("Treemap size:", width, height, "| Leaf count:", currentRoot.leaves().length);
+    }
   
     const svg = container.append("svg")
       .attr("width", width)
-      .attr("height", height);
+      .attr("height", height)
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("preserveAspectRatio", "xMidYMid meet");
   
     // Check if we should render detail view instead of treemap
     if (isDetailView && detailPayload) {
@@ -3141,11 +3158,13 @@ function setupEventHandlers() {
     console.warn("searchBox element not found");
   }
   
-  // Handle window resize
+  // Debounced resize: recompute treemap with current container dimensions
+  let resizeTimeout;
   window.addEventListener("resize", function() {
-    if (currentRoot) {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(function() {
       renderTreemap();
-    }
+    }, 150);
   });
 }
 
