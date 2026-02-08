@@ -1,4 +1,41 @@
 <!DOCTYPE html>
+<!--
+  Category definitions (from database/classify_categories.py):
+  Used to classify privacy settings in the treemap. Display names use spaces instead of underscores.
+
+  security_authentication
+    Settings related to passwords, login security, account protection,
+    two-factor authentication, passkeys, active sessions, identity
+    verification, suspicious activity, and saved devices.
+
+  identity_personal_info
+    Settings related to personal profile details such as name, birthday,
+    gender, demographic data, identity verification information, and
+    contact information like phone numbers and email addresses.
+
+  device_sensor_access
+    Settings related to device access such as camera, microphone, audio,
+    video, sensors, screen sharing, and recording permissions.
+
+  data_collection_tracking
+    Settings related to analytics, tracking, telemetry, search history,
+    ad preferences, inference data, AI training data, off-platform
+    activity, and any collected data used for personalization.
+
+  data_sharing_third_parties
+    Settings related to third-party sharing, partner integrations,
+    affiliates, external apps, connected apps, cookies, API access,
+    and cross-service data flows.
+
+  visibility_audience
+    Settings controlling who can view your profile, posts, connections,
+    last name visibility, page visibility, discoverability, followers,
+    blocking, and visibility of your actions on the platform.
+
+  communication_notifications
+    Settings for messaging, calls, chat, comments, notifications,
+    alerts, read receipts, typing indicators, and communication preferences.
+-->
 <html lang="en">
 
 <head>
@@ -26,8 +63,42 @@
         </aside>
 
         <!-- Main Content -->
-         <!-- Main Content -->
         <main class="dashboard">
+            <!-- Category descriptions: introduction to the visualization -->
+            <section class="panel category-intro" id="categoryIntro">
+                <h2 class="category-intro-title">How settings are categorized</h2>
+                <p class="category-intro-lead">The treemap below groups privacy settings by category. Each category is defined as follows (from <code>database/classify_categories.py</code>):</p>
+                <ul class="category-descriptions">
+                    <li>
+                        <span class="category-name">Security &amp; authentication</span>
+                        <span class="category-desc">Passwords, login security, account protection, two-factor authentication, passkeys, active sessions, identity verification, suspicious activity, and saved devices.</span>
+                    </li>
+                    <li>
+                        <span class="category-name">Identity &amp; personal info</span>
+                        <span class="category-desc">Personal profile details such as name, birthday, gender, demographic data, identity verification information, and contact information like phone numbers and email addresses.</span>
+                    </li>
+                    <li>
+                        <span class="category-name">Device &amp; sensor access</span>
+                        <span class="category-desc">Device access such as camera, microphone, audio, video, sensors, screen sharing, and recording permissions.</span>
+                    </li>
+                    <li>
+                        <span class="category-name">Data collection &amp; tracking</span>
+                        <span class="category-desc">Analytics, tracking, telemetry, search history, ad preferences, inference data, AI training data, off-platform activity, and any collected data used for personalization.</span>
+                    </li>
+                    <li>
+                        <span class="category-name">Data sharing &amp; third parties</span>
+                        <span class="category-desc">Third-party sharing, partner integrations, affiliates, external apps, connected apps, cookies, API access, and cross-service data flows.</span>
+                    </li>
+                    <li>
+                        <span class="category-name">Visibility &amp; audience</span>
+                        <span class="category-desc">Who can view your profile, posts, connections, last name visibility, page visibility, discoverability, followers, blocking, and visibility of your actions on the platform.</span>
+                    </li>
+                    <li>
+                        <span class="category-name">Communication &amp; notifications</span>
+                        <span class="category-desc">Messaging, calls, chat, comments, notifications, alerts, read receipts, typing indicators, and communication preferences.</span>
+                    </li>
+                </ul>
+            </section>
             <!-- Treemap Visualization -->
             <section class="panel treemap-section">
             <div class="treemap-controls">

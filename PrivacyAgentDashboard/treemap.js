@@ -1418,7 +1418,7 @@ function renderTreemap() {
     }
   
     const width = container.node().getBoundingClientRect().width || 1200;
-    const height = 700;
+    const height = 920;
   
     const svg = container.append("svg")
       .attr("width", width)
