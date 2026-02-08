@@ -3084,8 +3084,9 @@ function setupEventHandlers() {
   
   const categoryFilterSelect = document.getElementById("categoryFilter");
   const guidedCategoryControls = document.getElementById("guidedCategoryControls");
+  const showPrevCategoryBtn = document.getElementById("showPrevCategory");
   const showNextCategoryBtn = document.getElementById("showNextCategory");
-  const showAllCategoriesBtn = document.getElementById("showAllCategories");
+  const resetGuidedCategoriesBtn = document.getElementById("resetGuidedCategories");
   
   if (categoryFilterSelect) {
     categoryFilterSelect.addEventListener("change", function() {
@@ -3124,10 +3125,26 @@ function setupEventHandlers() {
     });
   }
   
-  if (showAllCategoriesBtn) {
-    showAllCategoriesBtn.addEventListener("click", function() {
+  if (showPrevCategoryBtn) {
+    showPrevCategoryBtn.addEventListener("click", function() {
       if (currentCategoryFilter !== 'guided') return;
-      getSortedCategories().forEach(c => revealedCategories.add(c));
+      const categories = getSortedCategories();
+      const revealedOrdered = categories.filter(c => revealedCategories.has(c));
+      if (revealedOrdered.length <= 1) return; // keep at least the first
+      revealedOrdered.pop();
+      revealedCategories = new Set(revealedOrdered);
+      currentRoot = null;
+      zoomStack = [];
+      buildHierarchy();
+      renderTreemap();
+    });
+  }
+  
+  if (resetGuidedCategoriesBtn) {
+    resetGuidedCategoriesBtn.addEventListener("click", function() {
+      if (currentCategoryFilter !== 'guided') return;
+      const categories = getSortedCategories();
+      revealedCategories = new Set(categories.length > 0 ? [categories[0]] : []);
       currentRoot = null;
       zoomStack = [];
       buildHierarchy();
