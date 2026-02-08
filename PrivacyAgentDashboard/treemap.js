@@ -1897,16 +1897,9 @@ function renderLegend(platforms) {
   const legendContainer = d3.select("#treemapLegend");
   legendContainer.selectAll("*").remove();
   
-  // Create legend wrapper
+  // Create legend wrapper (styling via CSS for hotbar layout)
   const legend = legendContainer.append("div")
-    .attr("class", "legend-wrapper")
-    .style("display", "flex")
-    .style("gap", "30px")
-    .style("margin-top", "15px")
-    .style("padding", "15px")
-    .style("background", "#f9f9f9")
-    .style("border-radius", "6px")
-    .style("border", "1px solid #e0e0e0");
+    .attr("class", "legend-wrapper");
   
   // Platforms section (with colors)
   const platformsSection = legend.append("div")
@@ -1914,34 +1907,18 @@ function renderLegend(platforms) {
   
   platformsSection.append("div")
     .attr("class", "legend-title")
-    .style("font-weight", "600")
-    .style("margin-bottom", "8px")
-    .style("font-size", "14px")
-    .style("color", "#333")
     .text("Platforms (colors)");
   
   const platformsList = platformsSection.append("div")
-    .attr("class", "legend-items")
-    .style("display", "flex")
-    .style("flex-wrap", "wrap")
-    .style("gap", "12px");
+    .attr("class", "legend-items");
   
   platforms.forEach(platform => {
     const item = platformsList.append("div")
-      .attr("class", "legend-item")
-      .style("display", "flex")
-      .style("align-items", "center")
-      .style("gap", "6px")
-      .style("font-size", "12px");
+      .attr("class", "legend-item");
     
     item.append("div")
       .attr("class", "legend-color")
-      .style("width", "16px")
-      .style("height", "16px")
-      .style("background", PLATFORM_COLORS[platform] || PLATFORM_COLORS.unknown)
-      .style("border", "1px solid #ccc")
-      .style("border-radius", "3px")
-      .style("flex-shrink", "0");
+      .style("background", PLATFORM_COLORS[platform] || PLATFORM_COLORS.unknown);
     
     item.append("span")
       .text(platform.charAt(0).toUpperCase() + platform.slice(1));
