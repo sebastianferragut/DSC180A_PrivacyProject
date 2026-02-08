@@ -1,4 +1,41 @@
 <!DOCTYPE html>
+<!--
+  Category definitions (from database/classify_categories.py):
+  Used to classify privacy settings in the treemap. Display names use spaces instead of underscores.
+
+  security_authentication
+    Settings related to passwords, login security, account protection,
+    two-factor authentication, passkeys, active sessions, identity
+    verification, suspicious activity, and saved devices.
+
+  identity_personal_info
+    Settings related to personal profile details such as name, birthday,
+    gender, demographic data, identity verification information, and
+    contact information like phone numbers and email addresses.
+
+  device_sensor_access
+    Settings related to device access such as camera, microphone, audio,
+    video, sensors, screen sharing, and recording permissions.
+
+  data_collection_tracking
+    Settings related to analytics, tracking, telemetry, search history,
+    ad preferences, inference data, AI training data, off-platform
+    activity, and any collected data used for personalization.
+
+  data_sharing_third_parties
+    Settings related to third-party sharing, partner integrations,
+    affiliates, external apps, connected apps, cookies, API access,
+    and cross-service data flows.
+
+  visibility_audience
+    Settings controlling who can view your profile, posts, connections,
+    last name visibility, page visibility, discoverability, followers,
+    blocking, and visibility of your actions on the platform.
+
+  communication_notifications
+    Settings for messaging, calls, chat, comments, notifications,
+    alerts, read receipts, typing indicators, and communication preferences.
+-->
 <html lang="en">
 
 <head>
@@ -26,8 +63,57 @@
         </aside>
 
         <!-- Main Content -->
-         <!-- Main Content -->
         <main class="dashboard">
+            <!-- How to use this visualization (tutorial + category definitions) -->
+            <section class="panel category-intro" id="categoryIntro">
+                <div class="category-intro-header">
+                    <h2>How to use this visualization</h2>
+                    <button id="toggleCategoryIntro" type="button">Hide guide</button>
+                </div>
+                <div class="category-intro-body" id="categoryIntroBody">
+                    <p class="category-intro-lead">This treemap visualizes privacy settings across platforms. Rectangle area reflects the selected sizing metric (count, actionable, risk, or clicks).</p>
+                    <ul class="tutorial-bullets">
+                        <li><strong>Zoom:</strong> Click a category header to zoom in.</li>
+                        <li><strong>Details:</strong> Click a setting rectangle to view details.</li>
+                        <li><strong>Go back:</strong> Use breadcrumbs or the Back button.</li>
+                        <li><strong>Filter:</strong> Use Category, Platform, State, and Search.</li>
+                        <li><strong>Linked charts:</strong> Bar and pie charts update with the treemap view.</li>
+                    </ul>
+                    <hr class="intro-divider" />
+                    <h3>How settings are categorized</h3>
+                    <p class="category-intro-lead">Each category is defined as follows (from <code>database/classify_categories.py</code>):</p>
+                    <ul class="category-descriptions">
+                        <li>
+                            <span class="category-name">Security &amp; authentication</span>
+                            <span class="category-desc">Passwords, login security, account protection, two-factor authentication, passkeys, active sessions, identity verification, suspicious activity, and saved devices.</span>
+                        </li>
+                        <li>
+                            <span class="category-name">Identity &amp; personal info</span>
+                            <span class="category-desc">Personal profile details such as name, birthday, gender, demographic data, identity verification information, and contact information like phone numbers and email addresses.</span>
+                        </li>
+                        <li>
+                            <span class="category-name">Device &amp; sensor access</span>
+                            <span class="category-desc">Device access such as camera, microphone, audio, video, sensors, screen sharing, and recording permissions.</span>
+                        </li>
+                        <li>
+                            <span class="category-name">Data collection &amp; tracking</span>
+                            <span class="category-desc">Analytics, tracking, telemetry, search history, ad preferences, inference data, AI training data, off-platform activity, and any collected data used for personalization.</span>
+                        </li>
+                        <li>
+                            <span class="category-name">Data sharing &amp; third parties</span>
+                            <span class="category-desc">Third-party sharing, partner integrations, affiliates, external apps, connected apps, cookies, API access, and cross-service data flows.</span>
+                        </li>
+                        <li>
+                            <span class="category-name">Visibility &amp; audience</span>
+                            <span class="category-desc">Who can view your profile, posts, connections, last name visibility, page visibility, discoverability, followers, blocking, and visibility of your actions on the platform.</span>
+                        </li>
+                        <li>
+                            <span class="category-name">Communication &amp; notifications</span>
+                            <span class="category-desc">Messaging, calls, chat, comments, notifications, alerts, read receipts, typing indicators, and communication preferences.</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
             <!-- Treemap Visualization -->
             <section class="panel treemap-section">
             <div class="treemap-controls">
@@ -50,6 +136,12 @@
                     <option value="unknown">Unknown</option>
                     </select>
                 </label>
+                <label>
+                    Category:
+                    <select id="categoryFilter">
+                    <option value="all">All categories</option>
+                    </select>
+                </label>
                 <label for="platformFilter">
                     Platform:
                     <div class="custom-dropdown" id="platformFilterDropdown">
@@ -66,6 +158,14 @@
                     Search:
                     <input type="text" id="searchBox" placeholder="Search settings..." />
                 </label>
+                <div id="treemapLegend" class="treemap-legend legend-in-hotbar">
+                    <!-- Legend populated by JavaScript -->
+                </div>
+                </div>
+                <div id="guidedCategoryControls" class="guided-controls hidden">
+                    <button type="button" id="showPrevCategory">Previous</button>
+                    <button type="button" id="showNextCategory">Show next category</button>
+                    <button type="button" id="resetGuidedCategories">Reset</button>
                 </div>
                 <div class="breadcrumbs" id="breadcrumbs">
                 <span class="breadcrumb-item active" data-path="">All</span>
@@ -102,9 +202,6 @@
                     <a id="detailsOpenUrl" href="#" target="_blank" rel="noopener noreferrer" class="details-link">Open setting page →</a>
                 </div>
                 </div>
-            </div>
-            <div id="treemapLegend" class="treemap-legend">
-                <!-- Legend will be populated by JavaScript -->
             </div>
             </section>
 

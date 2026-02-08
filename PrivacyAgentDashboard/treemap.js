@@ -47,6 +47,9 @@ let currentSizingMetric = 'count';
 let currentStateFilter = 'all';
 let currentSearchQuery = '';
 let currentPlatformFilter = ['all']; // Array to support multiple selections
+let currentCategoryFilter = 'all';
+let guidedMode = true; // Default: show guided walkthrough (one category at a time)
+let revealedCategories = new Set(); // For guided (progressive reveal) mode
 
 // Detail view state
 let isDetailView = false;
@@ -61,41 +64,127 @@ let settingDetails, detailsTitle, detailsSubtitle, detailsDescription, detailsSt
 // Area evidence panel state
 let areaEvidenceEl = null;
 
-// Load and parse CSV
-// Try local path first (if CSV is in same directory), then relative path
-// Note: If opening HTML directly in browser (file://), you'll need a local server due to CORS
-// Run: python -m http.server 8000 (from project root) then open http://localhost:8000/PrivacyAgentDashboard/old_index.html
+// Data source paths (JSON first, then CSV fallback)
+// JSON: from explore/ use ../../database/data/..., from dashboard root use ../database/data/...
+const jsonPaths = [
+  "../../database/data/extracted_settings_with_urls_and_layers_classified.json",
+  "../database/data/extracted_settings_with_urls_and_layers_classified.json"
+];
 
 const csvPaths = [
-  "all_platforms_classified_with_clicks.csv",  // File with clicks data (if in explore directory)
-  "all_platforms_classified.csv",  // Local copy in dashboard directory
-  "../database/data/all_platforms_classified.csv"  // Original location
+  "all_platforms_classified_with_clicks.csv",
+  "all_platforms_classified.csv",
+  "../database/data/all_platforms_classified.csv"
 ];
+
+function showLoadError(title, triedPaths) {
+  const container = d3.select("#treemapContainer");
+  container.html(`
+    <div style='padding: 20px; color: #d32f2f;'>
+      <p><strong>Error loading data:</strong> ${title}</p>
+      <p style='margin-top: 10px; font-size: 13px; color: #666;'>
+        <strong>Solution:</strong> This visualization requires a web server due to browser security restrictions.<br>
+        Run from the project root: <code>python -m http.server 8000</code><br>
+        Then open the explore or dashboard page.
+      </p>
+      <p style='margin-top: 10px; font-size: 12px; color: #666;'>
+        Tried paths:<br>
+        ${(triedPaths || []).map((p, i) => `${i + 1}. ${p}`).join('<br>')}
+      </p>
+    </div>
+  `);
+}
+
+/**
+ * Parse classified JSON into the same allData shape as parseCSVData
+ * JSON shape: array of { platform, all_settings: [ { setting, description, state, url, layer, category } ] }
+ */
+function parseJSONData(jsonArray) {
+  if (!Array.isArray(jsonArray)) {
+    return [];
+  }
+  const settingsMap = new Map();
+  jsonArray.forEach(platformBlock => {
+    let platform = (platformBlock.platform || "unknown").trim().toLowerCase();
+    if (platform === "google") platform = "googleaccount";
+    if (platform === "twitter") platform = "twitterx";
+    const settings = platformBlock.all_settings;
+    if (!Array.isArray(settings)) return;
+    settings.forEach(s => {
+      const settingName = s.setting || "Unknown";
+      const description = s.description || "";
+      const state = s.state || "unknown";
+      const category = (s.category || "unknown").trim();
+      const url = s.url || "";
+      const clicks = s.layer != null ? Number(s.layer) : 0; // layer = depth (equivalent to clicks)
+      const key = `${platform}::${category}::${settingName}`;
+      const stateType = determineStateType(state);
+      if (!settingsMap.has(key)) {
+        settingsMap.set(key, {
+          platform,
+          category,
+          setting: settingName,
+          description,
+          state,
+          stateType,
+          url,
+          clicks,
+          weight: calculateWeight(stateType, category, currentSizingMetric, clicks)
+        });
+      } else {
+        const existing = settingsMap.get(key);
+        if (!existing.url && url) existing.url = url;
+      }
+    });
+  });
+  return Array.from(settingsMap.values());
+}
+
+function loadJSON(pathIndex = 0) {
+  if (pathIndex >= jsonPaths.length) {
+    console.warn("All JSON paths failed, falling back to CSV");
+    loadCSV(0);
+    return;
+  }
+  const jsonPath = jsonPaths[pathIndex];
+  console.log("Attempting to load JSON from:", jsonPath);
+  fetch(jsonPath)
+    .then(res => {
+      if (!res.ok) throw new Error(res.statusText);
+      return res.json();
+    })
+    .then(data => {
+      if (!data || (Array.isArray(data) && data.length === 0)) {
+        throw new Error("JSON is empty");
+      }
+      allData = parseJSONData(data);
+      console.log("JSON loaded:", data.length, "platform blocks →", allData.length, "unique settings");
+      populatePlatformFilter();
+      populateCategoryFilter();
+      currentCategoryFilter = 'guided';
+      guidedMode = true;
+      const cats = getSortedCategories();
+      revealedCategories = new Set(cats.length ? [cats[0]] : []);
+      const catSelect = document.getElementById('categoryFilter');
+      if (catSelect) catSelect.value = 'guided';
+      const guidedEl = document.getElementById('guidedCategoryControls');
+      if (guidedEl) guidedEl.classList.remove('hidden');
+      buildHierarchy();
+      renderTreemap();
+    })
+    .catch(err => {
+      console.error("Failed to load JSON from " + jsonPath + ":", err);
+      loadJSON(pathIndex + 1);
+    });
+}
 
 function loadCSV(pathIndex = 0) {
   if (pathIndex >= csvPaths.length) {
-    // All paths failed
-    const container = d3.select("#treemapContainer");
-    container.html(`
-      <div style='padding: 20px; color: #d32f2f;'>
-        <p><strong>Error loading data:</strong> Could not find CSV file</p>
-        <p style='margin-top: 10px; font-size: 13px; color: #666;'>
-          <strong>Solution:</strong> This visualization requires a web server due to browser security restrictions.<br>
-          Run from the project root: <code>python -m http.server 8000</code><br>
-          Then open: <code>http://localhost:8000/PrivacyAgentDashboard/old_index.html</code>
-        </p>
-        <p style='margin-top: 10px; font-size: 12px; color: #666;'>
-          Tried paths:<br>
-          ${csvPaths.map((p, i) => `${i + 1}. ${p}`).join('<br>')}
-        </p>
-      </div>
-    `);
+    showLoadError("Could not find CSV file", csvPaths);
     return;
   }
-  
   const csvPath = csvPaths[pathIndex];
-  console.log(`Attempting to load CSV from: ${csvPath}`);
-  
+  console.log("Attempting to load CSV from:", csvPath);
   d3.csv(csvPath).then(data => {
     console.log("CSV loaded successfully from:", csvPath);
     console.log("CSV rows:", data.length);
@@ -105,17 +194,25 @@ function loadCSV(pathIndex = 0) {
     allData = parseCSVData(data);
     console.log("Parsed data:", allData.length, "unique settings");
     populatePlatformFilter();
+    populateCategoryFilter();
+    currentCategoryFilter = 'guided';
+    guidedMode = true;
+    const cats = getSortedCategories();
+    revealedCategories = new Set(cats.length ? [cats[0]] : []);
+    const catSelect = document.getElementById('categoryFilter');
+    if (catSelect) catSelect.value = 'guided';
+    const guidedEl = document.getElementById('guidedCategoryControls');
+    if (guidedEl) guidedEl.classList.remove('hidden');
     buildHierarchy();
     renderTreemap();
   }).catch(err => {
-    console.error(`Failed to load from ${csvPath}:`, err);
-    // Try next path
+    console.error("Failed to load from " + csvPath + ":", err);
     loadCSV(pathIndex + 1);
   });
 }
 
-// Start loading
-loadCSV();
+// Start loading: try JSON first, then CSV fallback
+loadJSON();
 
 /**
  * Parse CSV data and extract settings
@@ -278,6 +375,15 @@ function calculateWeight(stateType, category, metric, clicks = 0) {
 }
 
 /**
+ * Get sorted unique category keys from allData
+ */
+function getSortedCategories() {
+  return Array.from(new Set(allData.map(d => d.category || 'unknown')))
+    .filter(Boolean)
+    .sort();
+}
+
+/**
  * Filter data based on current filters
  */
 function getFilteredData() {
@@ -300,6 +406,13 @@ function getFilteredData() {
       d.setting.toLowerCase().includes(query) ||
       (d.description && d.description.toLowerCase().includes(query))
     );
+  }
+  
+  // Apply category filter
+  if (currentCategoryFilter === 'guided') {
+    filtered = filtered.filter(d => revealedCategories.has(d.category));
+  } else if (currentCategoryFilter !== 'all') {
+    filtered = filtered.filter(d => d.category === currentCategoryFilter);
   }
   
   return filtered;
@@ -399,36 +512,32 @@ function buildHierarchy() {
   categoryMap.forEach((settings, category) => {
     const categoryNode = {
       name: category,
-      children: settings.map(setting => ({
-        name: setting.setting,
-        meta: setting,
-        value: setting.weight,
-        url: setting.url,
-        description: setting.description,
-        state: setting.state,
-        stateType: setting.stateType,
-        platform: setting.platform,
-        category: setting.category
-      }))
+      children: settings.map(setting => {
+        const w = setting.weight;
+        const leafValue = typeof w === 'number' && w > 0 ? w : 1;
+        return {
+          name: setting.setting,
+          meta: setting,
+          value: leafValue,
+          url: setting.url,
+          description: setting.description,
+          state: setting.state,
+          stateType: setting.stateType,
+          platform: setting.platform,
+          category: setting.category
+        };
+      })
     };
-    
     root.children.push(categoryNode);
   });
   
-  // Use d3.hierarchy to create hierarchy structure
-  // Only leaf nodes contribute value (internal nodes get 0)
   currentRoot = d3.hierarchy(root)
-    .sum(d => (d.children && d.children.length) ? 0 : (d.value || 0))
+    .sum(d => (d.children && d.children.length) ? 0 : (Number(d.value) || 1))
     .sort((a, b) => (b.value || 0) - (a.value || 0));
   
-  // Debug: Check "communication notifications" category
-  const commNotif = currentRoot.descendants().find(d => 
-    d.data.name && d.data.name.toLowerCase().includes('communication')
-  );
-  if (commNotif) {
-    console.log('Debug - Category:', commNotif.data.name, 
-      'Children:', commNotif.children ? commNotif.children.length : 0,
-      'Value:', commNotif.value);
+  if (currentCategoryFilter === 'all') {
+    const leafCount = currentRoot.leaves ? currentRoot.leaves().length : 0;
+    console.log('[Treemap All mode] filtered rows:', filtered.length, '| categories:', root.children.length, '| leaves:', leafCount, leafCount !== filtered.length ? ' (MISMATCH)' : '');
   }
   
   return currentRoot;
@@ -1292,6 +1401,19 @@ function updateTreemapAreaCallout() {
 }
 
 /**
+ * Get current treemap container dimensions (responsive to layout).
+ */
+function getTreemapSize() {
+  const container = document.getElementById("treemapContainer");
+  if (!container) return { width: 1200, height: 700 };
+  const rect = container.getBoundingClientRect();
+  return {
+    width: Math.max(300, rect.width),
+    height: Math.max(400, rect.height)
+  };
+}
+
+/**
  * Render treemap visualization
  */
 function renderTreemap() {
@@ -1321,12 +1443,16 @@ function renderTreemap() {
       }
     }
   
-    const width = container.node().getBoundingClientRect().width || 1200;
-    const height = 700;
+    const { width, height } = getTreemapSize();
+    if (currentRoot && currentRoot.leaves) {
+      console.log("Treemap size:", width, height, "| Leaf count:", currentRoot.leaves().length);
+    }
   
     const svg = container.append("svg")
       .attr("width", width)
-      .attr("height", height);
+      .attr("height", height)
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("preserveAspectRatio", "xMidYMid meet");
   
     // Check if we should render detail view instead of treemap
     if (isDetailView && detailPayload) {
@@ -1539,9 +1665,8 @@ function renderTreemap() {
       showAreaEvidence(categoryName, body);
     }
   
-    // Get unique platforms and categories
+    // Get unique platforms for legend
     const platforms = Array.from(new Set(allData.map(d => d.platform))).sort();
-    const categories = Array.from(new Set(allData.map(d => d.category)));
   
     // Treemap layout
     const treemap = d3.treemap()
@@ -1790,28 +1915,21 @@ function renderTreemap() {
     // Tooltip handlers removed - replaced with area evidence panel on category hover
   
     updateBreadcrumbs();
-    renderLegend(platforms, categories);
+    renderLegend(platforms);
     renderBelowTreemapCharts();
   }
   
 
 /**
- * Render legend showing platforms (with colors) and categories
+ * Render legend showing platforms (with colors)
  */
-function renderLegend(platforms, categories) {
+function renderLegend(platforms) {
   const legendContainer = d3.select("#treemapLegend");
   legendContainer.selectAll("*").remove();
   
-  // Create legend wrapper
+  // Create legend wrapper (styling via CSS for hotbar layout)
   const legend = legendContainer.append("div")
-    .attr("class", "legend-wrapper")
-    .style("display", "flex")
-    .style("gap", "30px")
-    .style("margin-top", "15px")
-    .style("padding", "15px")
-    .style("background", "#f9f9f9")
-    .style("border-radius", "6px")
-    .style("border", "1px solid #e0e0e0");
+    .attr("class", "legend-wrapper");
   
   // Platforms section (with colors)
   const platformsSection = legend.append("div")
@@ -1819,67 +1937,21 @@ function renderLegend(platforms, categories) {
   
   platformsSection.append("div")
     .attr("class", "legend-title")
-    .style("font-weight", "600")
-    .style("margin-bottom", "8px")
-    .style("font-size", "14px")
-    .style("color", "#333")
     .text("Platforms (colors)");
   
   const platformsList = platformsSection.append("div")
-    .attr("class", "legend-items")
-    .style("display", "flex")
-    .style("flex-wrap", "wrap")
-    .style("gap", "12px");
+    .attr("class", "legend-items");
   
   platforms.forEach(platform => {
     const item = platformsList.append("div")
-      .attr("class", "legend-item")
-      .style("display", "flex")
-      .style("align-items", "center")
-      .style("gap", "6px")
-      .style("font-size", "12px");
+      .attr("class", "legend-item");
     
     item.append("div")
       .attr("class", "legend-color")
-      .style("width", "16px")
-      .style("height", "16px")
-      .style("background", PLATFORM_COLORS[platform] || PLATFORM_COLORS.unknown)
-      .style("border", "1px solid #ccc")
-      .style("border-radius", "3px")
-      .style("flex-shrink", "0");
+      .style("background", PLATFORM_COLORS[platform] || PLATFORM_COLORS.unknown);
     
     item.append("span")
       .text(platform.charAt(0).toUpperCase() + platform.slice(1));
-  });
-  
-  // Categories section (grouping info, no colors)
-  const categoriesSection = legend.append("div")
-    .attr("class", "legend-section categories-section");
-  
-  categoriesSection.append("div")
-    .attr("class", "legend-title")
-    .style("font-weight", "600")
-    .style("margin-bottom", "8px")
-    .style("font-size", "14px")
-    .style("color", "#333")
-    .text("Categories (grouping)");
-  
-  const categoriesList = categoriesSection.append("div")
-    .attr("class", "legend-items")
-    .style("display", "flex")
-    .style("flex-wrap", "wrap")
-    .style("gap", "8px");
-  
-  categories.forEach(category => {
-    categoriesList.append("div")
-      .attr("class", "legend-platform-item")
-      .style("padding", "4px 10px")
-      .style("background", "#fff")
-      .style("border", "1px solid #ddd")
-      .style("border-radius", "4px")
-      .style("font-size", "12px")
-      .style("color", "#666")
-      .text(category.replace(/_/g, ' '));
   });
 }
 
@@ -2588,44 +2660,42 @@ function renderCoverageHeatmap(filteredData) {
 }
 
 /**
+ * Clone a d3.hierarchy node into a plain object tree (so it can be re-passed to d3.hierarchy).
+ * Preserves leaf metadata and ensures leaf value is numeric for layout.
+ */
+function cloneSubtree(hNode) {
+  const isLeaf = !hNode.children || hNode.children.length === 0;
+  if (isLeaf) {
+    const val = hNode.value != null ? hNode.value : (hNode.data.value != null ? hNode.data.value : 1);
+    return {
+      ...hNode.data,
+      name: hNode.data.name != null ? hNode.data.name : 'Setting',
+      value: typeof val === 'number' && val > 0 ? val : 1
+    };
+  }
+  return {
+    name: hNode.data.name != null ? hNode.data.name : 'Category',
+    children: hNode.children.map(cloneSubtree)
+  };
+}
+
+/**
  * Zoom into a node
  */
 function zoomInto(d) {
   if (d.depth === 0) {
-    // Already at root
     return;
   }
-  
-  // Save current root to stack (clone it)
-  if (currentRoot) {
-    zoomStack.push({
-      root: currentRoot,
-      name: d.data.name
-    });
+  if (isDetailView) {
+    exitDetailView();
   }
-  
-  // Create new root from selected node's children
-  const newRoot = {
-    name: d.data.name,
-    children: d.children ? d.children.map(child => ({
-      name: child.data.name,
-      children: child.children || [],
-      value: child.value,
-      meta: child.data.meta,
-      url: child.data.url,
-      description: child.data.description,
-      state: child.data.state,
-      stateType: child.data.stateType,
-      platform: child.data.platform,
-      category: child.data.category
-    })) : [],
-    value: d.value
-  };
-  
-  currentRoot = d3.hierarchy(newRoot)
-    .sum(d => (d.children && d.children.length) ? 0 : (d.value || 0))
+  if (currentRoot) {
+    zoomStack.push({ root: currentRoot, name: d.data.name });
+  }
+  const cloned = cloneSubtree(d);
+  currentRoot = d3.hierarchy(cloned)
+    .sum(x => (x.children && x.children.length) ? 0 : (Number(x.value) || 1))
     .sort((a, b) => (b.value || 0) - (a.value || 0));
-  
   renderTreemap();
 }
 
@@ -2800,6 +2870,34 @@ function populatePlatformFilter() {
 }
 
 /**
+ * Populate category filter dropdown with unique categories from data
+ */
+function populateCategoryFilter() {
+  const select = document.getElementById("categoryFilter");
+  if (!select) return;
+  const categories = getSortedCategories();
+  const value = select.value;
+  select.innerHTML = '';
+  const allOpt = document.createElement("option");
+  allOpt.value = 'all';
+  allOpt.textContent = 'All categories';
+  select.appendChild(allOpt);
+  categories.forEach(cat => {
+    const opt = document.createElement("option");
+    opt.value = cat;
+    opt.textContent = (cat || 'unknown').replace(/_/g, ' ');
+    select.appendChild(opt);
+  });
+  const guidedOpt = document.createElement("option");
+  guidedOpt.value = 'guided';
+  guidedOpt.textContent = 'Guided (one at a time)';
+  select.appendChild(guidedOpt);
+  if (value && Array.from(select.options).some(o => o.value === value)) {
+    select.value = value;
+  }
+}
+
+/**
  * Setup event handlers - called after DOM is ready
  */
 function setupEventHandlers() {
@@ -2819,6 +2917,28 @@ function setupEventHandlers() {
     settingDetails.classList.add("hidden");
   }
   
+  // Category intro (tutorial + definitions): collapsible, state persisted in localStorage
+  const introBody = document.getElementById("categoryIntroBody");
+  const toggleBtn = document.getElementById("toggleCategoryIntro");
+  const INTRO_KEY = "category_intro_collapsed";
+
+  function setIntroCollapsed(collapsed) {
+    if (!introBody) return;
+    introBody.classList.toggle("hidden", collapsed);
+    if (toggleBtn) toggleBtn.textContent = collapsed ? "Show guide" : "Hide guide";
+  }
+
+  const introCollapsed = localStorage.getItem(INTRO_KEY) === "1";
+  setIntroCollapsed(introCollapsed);
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", function() {
+      const isCollapsed = !introBody.classList.contains("hidden");
+      localStorage.setItem(INTRO_KEY, isCollapsed ? "1" : "0");
+      setIntroCollapsed(isCollapsed);
+    });
+  }
+
   // Initialize callout
   updateTreemapAreaCallout();
   
@@ -2958,6 +3078,77 @@ function setupEventHandlers() {
     console.warn("platformFilterDropdown elements not found");
   }
   
+  const categoryFilterSelect = document.getElementById("categoryFilter");
+  const guidedCategoryControls = document.getElementById("guidedCategoryControls");
+  const showPrevCategoryBtn = document.getElementById("showPrevCategory");
+  const showNextCategoryBtn = document.getElementById("showNextCategory");
+  const resetGuidedCategoriesBtn = document.getElementById("resetGuidedCategories");
+  
+  if (categoryFilterSelect) {
+    categoryFilterSelect.addEventListener("change", function() {
+      currentCategoryFilter = this.value;
+      guidedMode = (currentCategoryFilter === 'guided');
+      if (currentCategoryFilter === 'guided') {
+        const categories = getSortedCategories();
+        revealedCategories = new Set(categories.length > 0 ? [categories[0]] : []);
+        if (guidedCategoryControls) {
+          guidedCategoryControls.classList.remove("hidden");
+        }
+      } else {
+        revealedCategories.clear();
+        if (guidedCategoryControls) {
+          guidedCategoryControls.classList.add("hidden");
+        }
+      }
+      currentRoot = null;
+      zoomStack = [];
+      buildHierarchy();
+      renderTreemap();
+    });
+  }
+  
+  if (showNextCategoryBtn) {
+    showNextCategoryBtn.addEventListener("click", function() {
+      if (currentCategoryFilter !== 'guided') return;
+      const categories = getSortedCategories();
+      const next = categories.find(c => !revealedCategories.has(c));
+      if (next) {
+        revealedCategories.add(next);
+        currentRoot = null;
+        zoomStack = [];
+        buildHierarchy();
+        renderTreemap();
+      }
+    });
+  }
+  
+  if (showPrevCategoryBtn) {
+    showPrevCategoryBtn.addEventListener("click", function() {
+      if (currentCategoryFilter !== 'guided') return;
+      const categories = getSortedCategories();
+      const revealedOrdered = categories.filter(c => revealedCategories.has(c));
+      if (revealedOrdered.length <= 1) return; // keep at least the first
+      revealedOrdered.pop();
+      revealedCategories = new Set(revealedOrdered);
+      currentRoot = null;
+      zoomStack = [];
+      buildHierarchy();
+      renderTreemap();
+    });
+  }
+  
+  if (resetGuidedCategoriesBtn) {
+    resetGuidedCategoriesBtn.addEventListener("click", function() {
+      if (currentCategoryFilter !== 'guided') return;
+      const categories = getSortedCategories();
+      revealedCategories = new Set(categories.length > 0 ? [categories[0]] : []);
+      currentRoot = null;
+      zoomStack = [];
+      buildHierarchy();
+      renderTreemap();
+    });
+  }
+  
   if (sizingMetricSelect) {
     sizingMetricSelect.addEventListener("change", function() {
       currentSizingMetric = this.value;
@@ -2989,11 +3180,13 @@ function setupEventHandlers() {
     console.warn("searchBox element not found");
   }
   
-  // Handle window resize
+  // Debounced resize: recompute treemap with current container dimensions
+  let resizeTimeout;
   window.addEventListener("resize", function() {
-    if (currentRoot) {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(function() {
       renderTreemap();
-    }
+    }, 150);
   });
 }
 
