@@ -2917,6 +2917,28 @@ function setupEventHandlers() {
     settingDetails.classList.add("hidden");
   }
   
+  // Category intro (tutorial + definitions): collapsible, state persisted in localStorage
+  const introBody = document.getElementById("categoryIntroBody");
+  const toggleBtn = document.getElementById("toggleCategoryIntro");
+  const INTRO_KEY = "category_intro_collapsed";
+
+  function setIntroCollapsed(collapsed) {
+    if (!introBody) return;
+    introBody.classList.toggle("hidden", collapsed);
+    if (toggleBtn) toggleBtn.textContent = collapsed ? "Show guide" : "Hide guide";
+  }
+
+  const introCollapsed = localStorage.getItem(INTRO_KEY) === "1";
+  setIntroCollapsed(introCollapsed);
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", function() {
+      const isCollapsed = !introBody.classList.contains("hidden");
+      localStorage.setItem(INTRO_KEY, isCollapsed ? "1" : "0");
+      setIntroCollapsed(isCollapsed);
+    });
+  }
+
   // Initialize callout
   updateTreemapAreaCallout();
   
