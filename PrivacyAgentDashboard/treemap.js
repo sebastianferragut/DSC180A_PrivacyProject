@@ -48,6 +48,7 @@ let currentStateFilter = 'all';
 let currentSearchQuery = '';
 let currentPlatformFilter = ['all']; // Array to support multiple selections
 let currentCategoryFilter = 'all';
+let guidedMode = true; // Default: show guided walkthrough (one category at a time)
 let revealedCategories = new Set(); // For guided (progressive reveal) mode
 
 // Detail view state
@@ -160,6 +161,14 @@ function loadJSON(pathIndex = 0) {
       console.log("JSON loaded:", data.length, "platform blocks →", allData.length, "unique settings");
       populatePlatformFilter();
       populateCategoryFilter();
+      currentCategoryFilter = 'guided';
+      guidedMode = true;
+      const cats = getSortedCategories();
+      revealedCategories = new Set(cats.length ? [cats[0]] : []);
+      const catSelect = document.getElementById('categoryFilter');
+      if (catSelect) catSelect.value = 'guided';
+      const guidedEl = document.getElementById('guidedCategoryControls');
+      if (guidedEl) guidedEl.classList.remove('hidden');
       buildHierarchy();
       renderTreemap();
     })
@@ -186,6 +195,14 @@ function loadCSV(pathIndex = 0) {
     console.log("Parsed data:", allData.length, "unique settings");
     populatePlatformFilter();
     populateCategoryFilter();
+    currentCategoryFilter = 'guided';
+    guidedMode = true;
+    const cats = getSortedCategories();
+    revealedCategories = new Set(cats.length ? [cats[0]] : []);
+    const catSelect = document.getElementById('categoryFilter');
+    if (catSelect) catSelect.value = 'guided';
+    const guidedEl = document.getElementById('guidedCategoryControls');
+    if (guidedEl) guidedEl.classList.remove('hidden');
     buildHierarchy();
     renderTreemap();
   }).catch(err => {
@@ -495,36 +512,32 @@ function buildHierarchy() {
   categoryMap.forEach((settings, category) => {
     const categoryNode = {
       name: category,
-      children: settings.map(setting => ({
-        name: setting.setting,
-        meta: setting,
-        value: setting.weight,
-        url: setting.url,
-        description: setting.description,
-        state: setting.state,
-        stateType: setting.stateType,
-        platform: setting.platform,
-        category: setting.category
-      }))
+      children: settings.map(setting => {
+        const w = setting.weight;
+        const leafValue = typeof w === 'number' && w > 0 ? w : 1;
+        return {
+          name: setting.setting,
+          meta: setting,
+          value: leafValue,
+          url: setting.url,
+          description: setting.description,
+          state: setting.state,
+          stateType: setting.stateType,
+          platform: setting.platform,
+          category: setting.category
+        };
+      })
     };
-    
     root.children.push(categoryNode);
   });
   
-  // Use d3.hierarchy to create hierarchy structure
-  // Only leaf nodes contribute value (internal nodes get 0)
   currentRoot = d3.hierarchy(root)
-    .sum(d => (d.children && d.children.length) ? 0 : (d.value || 0))
+    .sum(d => (d.children && d.children.length) ? 0 : (Number(d.value) || 1))
     .sort((a, b) => (b.value || 0) - (a.value || 0));
   
-  // Debug: Check "communication notifications" category
-  const commNotif = currentRoot.descendants().find(d => 
-    d.data.name && d.data.name.toLowerCase().includes('communication')
-  );
-  if (commNotif) {
-    console.log('Debug - Category:', commNotif.data.name, 
-      'Children:', commNotif.children ? commNotif.children.length : 0,
-      'Value:', commNotif.value);
+  if (currentCategoryFilter === 'all') {
+    const leafCount = currentRoot.leaves ? currentRoot.leaves().length : 0;
+    console.log('[Treemap All mode] filtered rows:', filtered.length, '| categories:', root.children.length, '| leaves:', leafCount, leafCount !== filtered.length ? ' (MISMATCH)' : '');
   }
   
   return currentRoot;
@@ -2630,44 +2643,42 @@ function renderCoverageHeatmap(filteredData) {
 }
 
 /**
+ * Clone a d3.hierarchy node into a plain object tree (so it can be re-passed to d3.hierarchy).
+ * Preserves leaf metadata and ensures leaf value is numeric for layout.
+ */
+function cloneSubtree(hNode) {
+  const isLeaf = !hNode.children || hNode.children.length === 0;
+  if (isLeaf) {
+    const val = hNode.value != null ? hNode.value : (hNode.data.value != null ? hNode.data.value : 1);
+    return {
+      ...hNode.data,
+      name: hNode.data.name != null ? hNode.data.name : 'Setting',
+      value: typeof val === 'number' && val > 0 ? val : 1
+    };
+  }
+  return {
+    name: hNode.data.name != null ? hNode.data.name : 'Category',
+    children: hNode.children.map(cloneSubtree)
+  };
+}
+
+/**
  * Zoom into a node
  */
 function zoomInto(d) {
   if (d.depth === 0) {
-    // Already at root
     return;
   }
-  
-  // Save current root to stack (clone it)
-  if (currentRoot) {
-    zoomStack.push({
-      root: currentRoot,
-      name: d.data.name
-    });
+  if (isDetailView) {
+    exitDetailView();
   }
-  
-  // Create new root from selected node's children
-  const newRoot = {
-    name: d.data.name,
-    children: d.children ? d.children.map(child => ({
-      name: child.data.name,
-      children: child.children || [],
-      value: child.value,
-      meta: child.data.meta,
-      url: child.data.url,
-      description: child.data.description,
-      state: child.data.state,
-      stateType: child.data.stateType,
-      platform: child.data.platform,
-      category: child.data.category
-    })) : [],
-    value: d.value
-  };
-  
-  currentRoot = d3.hierarchy(newRoot)
-    .sum(d => (d.children && d.children.length) ? 0 : (d.value || 0))
+  if (currentRoot) {
+    zoomStack.push({ root: currentRoot, name: d.data.name });
+  }
+  const cloned = cloneSubtree(d);
+  currentRoot = d3.hierarchy(cloned)
+    .sum(x => (x.children && x.children.length) ? 0 : (Number(x.value) || 1))
     .sort((a, b) => (b.value || 0) - (a.value || 0));
-  
   renderTreemap();
 }
 
@@ -3037,6 +3048,7 @@ function setupEventHandlers() {
   if (categoryFilterSelect) {
     categoryFilterSelect.addEventListener("change", function() {
       currentCategoryFilter = this.value;
+      guidedMode = (currentCategoryFilter === 'guided');
       if (currentCategoryFilter === 'guided') {
         const categories = getSortedCategories();
         revealedCategories = new Set(categories.length > 0 ? [categories[0]] : []);
