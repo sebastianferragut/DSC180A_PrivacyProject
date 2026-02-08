@@ -1635,9 +1635,8 @@ function renderTreemap() {
       showAreaEvidence(categoryName, body);
     }
   
-    // Get unique platforms and categories
+    // Get unique platforms for legend
     const platforms = Array.from(new Set(allData.map(d => d.platform))).sort();
-    const categories = Array.from(new Set(allData.map(d => d.category)));
   
     // Treemap layout
     const treemap = d3.treemap()
@@ -1886,15 +1885,15 @@ function renderTreemap() {
     // Tooltip handlers removed - replaced with area evidence panel on category hover
   
     updateBreadcrumbs();
-    renderLegend(platforms, categories);
+    renderLegend(platforms);
     renderBelowTreemapCharts();
   }
   
 
 /**
- * Render legend showing platforms (with colors) and categories
+ * Render legend showing platforms (with colors)
  */
-function renderLegend(platforms, categories) {
+function renderLegend(platforms) {
   const legendContainer = d3.select("#treemapLegend");
   legendContainer.selectAll("*").remove();
   
@@ -1946,36 +1945,6 @@ function renderLegend(platforms, categories) {
     
     item.append("span")
       .text(platform.charAt(0).toUpperCase() + platform.slice(1));
-  });
-  
-  // Categories section (grouping info, no colors)
-  const categoriesSection = legend.append("div")
-    .attr("class", "legend-section categories-section");
-  
-  categoriesSection.append("div")
-    .attr("class", "legend-title")
-    .style("font-weight", "600")
-    .style("margin-bottom", "8px")
-    .style("font-size", "14px")
-    .style("color", "#333")
-    .text("Categories (grouping)");
-  
-  const categoriesList = categoriesSection.append("div")
-    .attr("class", "legend-items")
-    .style("display", "flex")
-    .style("flex-wrap", "wrap")
-    .style("gap", "8px");
-  
-  categories.forEach(category => {
-    categoriesList.append("div")
-      .attr("class", "legend-platform-item")
-      .style("padding", "4px 10px")
-      .style("background", "#fff")
-      .style("border", "1px solid #ddd")
-      .style("border-radius", "4px")
-      .style("font-size", "12px")
-      .style("color", "#666")
-      .text(category.replace(/_/g, ' '));
   });
 }
 
