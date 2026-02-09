@@ -2345,7 +2345,7 @@ function renderStackedPlatformChart(filteredData) {
 
   // Legend
   const legend = g.append("g")
-    .attr("transform", `translate(${innerWidth - 80}, -5)`);
+    .attr("transform", `translate(${innerWidth - 65}, -18)`);
 
   const legendItems = legend.selectAll(".legend-item")
     .data(stackKeys)
