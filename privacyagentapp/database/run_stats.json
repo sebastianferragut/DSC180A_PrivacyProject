@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated_at": "2026-02-06T16:34:05.556079Z",
+  "updated_at": "2026-02-09T23:44:32.286336Z",
   "by_setting": {
     "Reddit::allow_people_to_follow_you_l3_settings_privacy": {
       "platform": "Reddit",
@@ -91,6 +91,78 @@
                     "ok": true,
                     "type": "coord",
                     "selector": "hint:Allow people to follow you"
+                  }
+                ],
+                "deterministic_check": true,
+                "gemini_verify": null
+              }
+            ],
+            "final_decider": "deterministic"
+          }
+        }
+      ]
+    },
+    "TwitterX::protect_your_posts_l1_settings_audience_and_tagging": {
+      "platform": "TwitterX",
+      "setting_id": "protect_your_posts_l1_settings_audience_and_tagging",
+      "name": "Protect your posts",
+      "runs": 1,
+      "successes": 1,
+      "avg_clicks_success": 2.0,
+      "min_clicks_success": 2,
+      "max_clicks_success": 2,
+      "last_success_ts": "2026-02-09T23:44:32.286350Z",
+      "history": [
+        {
+          "ts": "2026-02-09T23:44:32.286350Z",
+          "status": "success",
+          "target_value": "on",
+          "click_count": 2,
+          "path": {
+            "entrypoint": null,
+            "candidate_source": null,
+            "leaf_hint_source": null,
+            "turns": [
+              {
+                "turn": 1,
+                "url": "https://x.com/settings/audience_and_tagging",
+                "notes": "model_bad_json | deterministic != target",
+                "selectors": [
+                  {
+                    "purpose": "change_value",
+                    "type": "coord",
+                    "selector": "hint:Protect your posts",
+                    "value": "on"
+                  }
+                ],
+                "applied": [
+                  {
+                    "purpose": "change_value",
+                    "ok": true,
+                    "type": "coord",
+                    "selector": "hint:Protect your posts"
+                  }
+                ],
+                "deterministic_check": false,
+                "gemini_verify": null
+              },
+              {
+                "turn": 2,
+                "url": "https://x.com/settings/audience_and_tagging",
+                "notes": "confirm_fallback",
+                "selectors": [
+                  {
+                    "purpose": "confirm",
+                    "type": "role",
+                    "selector": "button, name: Protect, exact: true"
+                  }
+                ],
+                "applied": [
+                  {
+                    "purpose": "confirm",
+                    "ok": true,
+                    "type": "role",
+                    "selector": "button, name: Protect, exact: true"
                   }
                 ],
                 "deterministic_check": true,
