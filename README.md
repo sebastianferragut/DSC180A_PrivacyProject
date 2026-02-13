@@ -78,6 +78,28 @@ chainlit run privacyagentapp/agenticapp.py -w
 If a site logs you out or changes sessions, re-run `save_state.py` for that hostname.
 
 ---
+## Running screenshot processing
+
+### What it does
+This process is to process the screenshots captured by the web crawler and build into json and csv file for supporting the Chainlit app and the dashboard view.
+
+Flow:
+- Extract text from screenshots
+- Parse and map url to the respective screenshots
+- Classify screenshot settings
+
+### Run command
+```bash
+cd screenshot-classifier
+python screenshot_settings_extractor.py
+cd ../database
+python map_url.py
+python classify_categories.py
+```
+
+The json files produced after each step are ```screenshot-classifier/extracted_settings.json```, ```/database/data/extracted_settings_with_urls_and_layers.json``` and the final file ```database/data/extracted_settings_with_urls_and_layers_classified```.
+
+
 
 ## Running the Agent (agenticapp.py)
 

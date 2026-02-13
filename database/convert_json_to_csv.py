@@ -31,8 +31,8 @@ def json_to_dataframe(json_data: list) -> pd.DataFrame:
 # MAIN
 # -----------------------------
 def main():
-    input_path = Path("data/all_platforms_classified.json")
-    output_path = Path("data/all_platforms_classified.csv")  # optional
+    input_path = Path("data/extracted_settings_with_urls_and_layers_classified.json")
+    output_path = Path("data/priority_privacy.csv")
 
     data = load_json(input_path)
     df = json_to_dataframe(data)
