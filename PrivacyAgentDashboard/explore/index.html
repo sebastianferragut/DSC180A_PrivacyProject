@@ -71,7 +71,7 @@
                     <button id="toggleCategoryIntro" type="button">Hide guide</button>
                 </div>
                 <div class="category-intro-body" id="categoryIntroBody">
-                    <p class="category-intro-lead">This treemap visualizes privacy settings across platforms. Rectangle area reflects the selected sizing metric (count, actionable, risk, or clicks).</p>
+                    <p class="category-intro-lead">This treemap visualizes privacy settings across platforms. Rectangle area reflects the selected sizing metric (count, actionable, risk, or clicks). Data is loaded from <code>database/data/priority_privacy.csv</code>.</p>
                     <ul class="tutorial-bullets">
                         <li><strong>Zoom:</strong> Click a category header to zoom in.</li>
                         <li><strong>Details:</strong> Click a setting rectangle to view details.</li>
@@ -210,12 +210,12 @@
             <div id="belowTreemapRow" class="charts-container">
                 <div class="chart-panel">
                 <h3>Settings by Platform and Type</h3>
-                <p class="chart-subtitle">Updates to match the current treemap view (zoom + filters).</p>
+                <p class="chart-subtitle">Updates to match the current treemap view (zoom + filters). Data: priority_privacy.csv.</p>
                 <div id="stackedPlatformChart"></div>
                 </div>
                 <div class="chart-panel">
                 <h3>Area Share (Current View)</h3>
-                <p class="chart-subtitle">Shows platform share within the current view using the same sizing metric as the treemap.</p>
+                <p class="chart-subtitle">Shows platform share within the current view using the same sizing metric as the treemap. Data: priority_privacy.csv.</p>
                 <div id="pieAreaChart"></div>
                 </div>
             </div>

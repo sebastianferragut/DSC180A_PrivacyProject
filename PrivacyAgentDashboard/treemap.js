@@ -75,6 +75,12 @@ const csvPaths = [
   "../database/data/all_platforms_classified.csv"
 ];
 
+// Priority privacy CSV (flat: platform, toggle_name, description, state, click_counts, category, url) — used by explore page
+const priorityCsvPaths = [
+  "../../database/data/priority_privacy.csv",
+  "../database/data/priority_privacy.csv"
+];
+
 function showLoadError(title, triedPaths) {
   const container = d3.select("#treemapContainer");
   container.html(`
@@ -209,8 +215,76 @@ function loadCSV(pathIndex = 0) {
   });
 }
 
-// Start loading: try JSON first, then CSV fallback
-loadJSON();
+// Start loading: explore page uses priority_privacy.csv; other pages use JSON then CSV fallback
+const isExplorePage = typeof window !== "undefined" && window.location.pathname.indexOf("explore") !== -1;
+if (isExplorePage) {
+  loadPriorityCSV(0);
+} else {
+  loadJSON();
+}
+
+/**
+ * Parse priority_privacy.csv (flat rows: platform, toggle_name, description, state, click_counts, category, url)
+ * into the same allData shape as parseCSVData / parseJSONData.
+ * No deduplication: every row becomes one entry so all rows are shown.
+ */
+function parsePriorityCSVData(csvData) {
+  if (!Array.isArray(csvData)) return [];
+  return csvData.map(row => {
+    let platform = (row.platform || "unknown").trim().toLowerCase();
+    if (platform === "google") platform = "googleaccount";
+    if (platform === "twitter") platform = "twitterx";
+    const settingName = (row.toggle_name || row.setting || "Unknown").trim();
+    const description = (row.description || "").trim();
+    const state = (row.state || "unknown").trim();
+    const category = (row.category || "unknown").trim();
+    const url = (row.url || "").trim();
+    const clicks = Math.max(0, parseInt(row.click_counts, 10) || 0);
+    const stateType = determineStateType(state);
+    return {
+      platform,
+      category,
+      setting: settingName,
+      description,
+      state,
+      stateType,
+      url,
+      clicks,
+      weight: calculateWeight(stateType, category, currentSizingMetric, clicks)
+    };
+  });
+}
+
+function loadPriorityCSV(pathIndex) {
+  if (pathIndex >= priorityCsvPaths.length) {
+    showLoadError("Could not find priority_privacy.csv", priorityCsvPaths);
+    return;
+  }
+  const csvPath = priorityCsvPaths[pathIndex];
+  console.log("Attempting to load priority CSV from:", csvPath);
+  d3.csv(csvPath).then(data => {
+    if (!data || data.length === 0) {
+      throw new Error("CSV file is empty");
+    }
+    allData = parsePriorityCSVData(data);
+    console.log("Priority CSV loaded:", allData.length, "rows (no deduplication)");
+    populatePlatformFilter();
+    populateCategoryFilter();
+    currentCategoryFilter = "guided";
+    guidedMode = true;
+    const cats = getSortedCategories();
+    revealedCategories = new Set(cats.length ? [cats[0]] : []);
+    const catSelect = document.getElementById("categoryFilter");
+    if (catSelect) catSelect.value = "guided";
+    const guidedEl = document.getElementById("guidedCategoryControls");
+    if (guidedEl) guidedEl.classList.remove("hidden");
+    buildHierarchy();
+    renderTreemap();
+  }).catch(err => {
+    console.error("Failed to load priority CSV from " + csvPath + ":", err);
+    loadPriorityCSV(pathIndex + 1);
+  });
+}
 
 /**
  * Parse CSV data and extract settings
@@ -338,8 +412,10 @@ function determineStateType(state) {
       stateLower === 'enabled' ||
       stateLower === 'disabled' ||
       stateLower === 'paused' ||
+      stateLower === 'active' ||
       stateLower.includes('enabled') ||
       stateLower.includes('disabled') ||
+      stateLower.includes('actionable') ||
       stateLower.match(/^(yes|no|true|false)$/i)) {
     return 'actionable';
   }
