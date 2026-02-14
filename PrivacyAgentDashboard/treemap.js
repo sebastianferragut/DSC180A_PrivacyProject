@@ -2127,7 +2127,7 @@ function renderAreaSharePieChart(viewData) {
   // Set up dimensions (height sized to fit pie + offset + legend rows)
   const containerWidth = container.node().getBoundingClientRect().width || 480;
   const width = containerWidth;
-  const height = 400;
+  const height = 350;
   const radius = Math.min(width, 320) / 2 - 20; // cap pie size so legend fits below
 
   // Create SVG
@@ -2250,7 +2250,7 @@ function renderStackedPlatformChart(filteredData) {
   // Set up dimensions
   const margin = { top: 20, right: 20, bottom: 60, left: 50 };
   const width = container.node().getBoundingClientRect().width || 600;
-  const height = 400;
+  const height = 425;
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
@@ -2377,27 +2377,15 @@ function renderStackedPlatformChart(filteredData) {
     .style("font-size", "12px")
     .text("Count of Settings");
 
-  // Legend
-  const legend = g.append("g")
-    .attr("transform", `translate(${innerWidth - 65}, -18)`);
-
-  const legendItems = legend.selectAll(".legend-item")
-    .data(stackKeys)
-    .enter()
-    .append("g")
-    .attr("class", "legend-item")
-    .attr("transform", (d, i) => `translate(0, ${i * 20})`);
-
-  legendItems.append("rect")
-    .attr("width", 12)
-    .attr("height", 12)
-    .attr("fill", d => colorScale(d));
-
-  legendItems.append("text")
-    .attr("x", 16)
-    .attr("y", 9)
-    .style("font-size", "11px")
-    .text(d => d.charAt(0).toUpperCase() + d.slice(1));
+  // Legend in chart panel (HTML, below the chart container)
+  const panel = d3.select(container.node().parentNode);
+  panel.selectAll(".stacked-chart-legend").remove();
+  const legendDiv = panel.append("div").attr("class", "stacked-chart-legend");
+  stackKeys.forEach(key => {
+    const item = legendDiv.append("div").attr("class", "stacked-chart-legend-item");
+    item.append("span").attr("class", "stacked-chart-legend-color").style("background-color", colorScale(key));
+    item.append("span").attr("class", "stacked-chart-legend-label").text(key.charAt(0).toUpperCase() + key.slice(1));
+  });
 }
 
 /**
