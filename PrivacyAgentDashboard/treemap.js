@@ -2124,19 +2124,20 @@ function renderAreaSharePieChart(viewData) {
   // Calculate total for percentages
   const total = d3.sum(pieData, d => d.value);
 
-  // Set up dimensions
+  // Set up dimensions (height sized to fit pie + offset + legend rows)
   const containerWidth = container.node().getBoundingClientRect().width || 480;
   const width = containerWidth;
-  const height = 340;
-  const radius = Math.min(width, height) / 2 - 20;
+  const height = 400;
+  const radius = Math.min(width, 320) / 2 - 20; // cap pie size so legend fits below
 
   // Create SVG
   const svg = container.append("svg")
     .attr("width", width)
     .attr("height", height);
 
+  const pieOffsetY = 28; // move pie and labels down
   const g = svg.append("g")
-    .attr("transform", `translate(${width / 2}, ${height / 2})`);
+    .attr("transform", `translate(${width / 2}, ${height / 2 + pieOffsetY})`);
 
   // Create pie generator
   const pie = d3.pie()
@@ -2191,47 +2192,6 @@ function renderAreaSharePieChart(viewData) {
     .text(d => {
       const percent = ((d.value / total) * 100).toFixed(1);
       return percent >= 5 ? percent + "%" : "";
-    });
-
-  // Create legend below the pie chart
-  const legend = svg.append("g")
-    .attr("class", "pie-legend")
-    .attr("transform", `translate(${width / 2}, ${height / 2 + radius + 40})`);
-
-  const legendItems = legend.selectAll(".legend-item")
-    .data(pieData)
-    .enter()
-    .append("g")
-    .attr("class", "legend-item")
-    .attr("transform", (d, i) => {
-      const itemsPerRow = Math.ceil(Math.sqrt(pieData.length));
-      const col = i % itemsPerRow;
-      const row = Math.floor(i / itemsPerRow);
-      const itemWidth = 150;
-      const itemHeight = 20;
-      const startX = -(itemsPerRow * itemWidth) / 2;
-      return `translate(${startX + col * itemWidth}, ${row * itemHeight})`;
-    });
-
-  legendItems.append("rect")
-    .attr("width", 14)
-    .attr("height", 14)
-    .attr("x", 0)
-    .attr("y", 3)
-    .attr("fill", d => PLATFORM_COLORS[d.platform] || PLATFORM_COLORS.unknown)
-    .attr("stroke", "#ccc")
-    .attr("stroke-width", 1)
-    .attr("border-radius", "2px");
-
-  legendItems.append("text")
-    .attr("x", 18)
-    .attr("y", 12)
-    .attr("font-size", "12px")
-    .attr("fill", "#333")
-    .text(d => {
-      const platformName = d.platform.charAt(0).toUpperCase() + d.platform.slice(1);
-      const percent = ((d.value / total) * 100).toFixed(1);
-      return `${platformName}: ${percent}%`;
     });
 }
 
