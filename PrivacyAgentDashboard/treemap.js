@@ -72,8 +72,6 @@ const jsonPaths = [
 ];
 
 const csvPaths = [
-  "all_platforms_classified_with_clicks.csv",
-  "all_platforms_classified.csv",
   "../database/data/all_platforms_classified.csv"
 ];
 
