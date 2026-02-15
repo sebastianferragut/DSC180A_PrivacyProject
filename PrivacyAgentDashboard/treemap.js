@@ -2127,7 +2127,7 @@ function renderAreaSharePieChart(viewData) {
   // Set up dimensions (height sized to fit pie + offset + legend rows)
   const containerWidth = container.node().getBoundingClientRect().width || 480;
   const width = containerWidth;
-  const height = 350;
+  const height = 400;
   const radius = Math.min(width, 320) / 2 - 20; // cap pie size so legend fits below
 
   // Create SVG
