@@ -16,14 +16,21 @@ def json_to_dataframe(json_data: list) -> pd.DataFrame:
     rows = []
 
     for entry in json_data:
-        rows.append({
-            "platform": entry.get("platform"),
-            "image": entry.get("image"),
-            "full_image_path": entry.get("full_image_path"),
-            "url": entry.get("url"),
-            "settings": entry.get("settings", []),
-            "category": entry.get("category")
-        })
+        platform = entry.get("platform")
+        category = entry.get("category", "")  # JSON may not have category
+        all_settings = entry.get("all_settings", [])
+
+        for setting in all_settings:
+            rows.append({
+                "platform": platform,
+                "toggle_name": setting.get("setting"),
+                "description": setting.get("description"),
+                "state": setting.get("state"),
+                "click_counts": setting.get("layer"),  # use layer as click_counts
+                "category": category,
+                "url": setting.get("url"),
+                "image_path": setting.get("image_path")
+            })
 
     return pd.DataFrame(rows)
 
@@ -40,7 +47,7 @@ def main():
     print(df.head())
     print(f"\nRows: {len(df)}")
 
-    # Optional: save
+    # Save to CSV
     df.to_csv(output_path, index=False)
     print(f"[DONE] Saved → {output_path}")
 
