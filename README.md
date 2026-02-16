@@ -121,8 +121,7 @@ python map_url.py
 python classify_categories.py
 ```
 
-The json files produced after each step are ```screenshot-classifier/extracted_settings.json```, ```/database/data/extracted_settings_with_urls_and_layers.json``` and the final file ```database/data/extracted_settings_with_urls_and_layers_classified```.
-
+The json files produced after each step are ```screenshot-classifier/extracted_settings.json```, ```/database/data/extracted_settings_with_urls_and_layers.json``` and the final file ```database/data/extracted_settings_with_urls_and_layers_classified```. For analysis, `database/convert_json_to_csv.py` converts the json files to csv for data exploration and manipulation.
 
 
 ## Running the Agent (agenticapp.py)
@@ -169,10 +168,16 @@ Mainly, the user is expected to navigate the agent with the provided UI to under
 DSC180A_PrivacyProject/
 |-- gemini-team/
 |   |-- save_state.py
+|   |-- picasso/
 |   |-- profiles/
 |   |   `-- storage/
+|   |-- settingsPageAgent.py
 |   `-- environment.yml
 |-- database/
+|   |-- map_url.py
+|   |-- convert_json_to_csv.py
+|   |-- classify_categories.py
+|   `-- data/
 `-- privacyagentapp/
     `-- agenticapp.py
 ```
