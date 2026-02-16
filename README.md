@@ -78,6 +78,30 @@ chainlit run privacyagentapp/agenticapp.py -w
 If a site logs you out or changes sessions, re-run `save_state.py` for that hostname.
 
 ---
+## Running Web Crawler
+
+### What it does
+`gemini-team/settingsPageAgent.py` contains a script that crawls a site's settings page to find pages that contain user-configurable toggles (privacy/data/security controls). It leverages Playwright for browser automation and Google Gemini to steer the discovery process. Along the navigation process, the script captures a full-page screenshot for each unique UI state encountered and records the traversal path.
+
+Flow:
+- Opens provided URL
+- Lets user log in and go to settings page
+- Iterate until queue is empty or iteration limit is hit:
+    - Finds and queue hyperlinks in DOM
+    - Dequeue link, ask Gemini if link is relevant
+        - If relevant, navigate to page
+        - If irrelevant, omit
+    - Take screenshot and log page link
+ 
+```bash
+cd gemini-team
+python settingsPageAgent.py
+cd picasso (to view captured screenshots and click counts)
+```
+
+The captured screenshots are saved in `gemini-team/picasso` based on platform and click counts JSON, which contain page links organized by depth from starting page. These results are subsequently processed below! 
+
+---
 ## Running screenshot processing
 
 ### What it does
