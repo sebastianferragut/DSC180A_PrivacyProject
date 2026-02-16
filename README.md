@@ -99,7 +99,7 @@ python settingsPageAgent.py
 cd picasso                  # to view captured screenshots and click counts
 ```
 
-The captured screenshots are saved in `gemini-team/picasso` based on platform and click counts json, which contain page links organized by depth from starting page. These results are subsequently processed below! 
+The captured screenshots are saved in `gemini-team/picasso`. Inside, you will find a folder for each platform and a `click_counts` json file containing page links organized by their depth from the starting page.
 
 ---
 ## Running screenshot processing
