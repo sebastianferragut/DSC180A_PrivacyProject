@@ -96,6 +96,7 @@ Flow:
 ```bash
 cd gemini-team
 python settingsPageAgent.py
+
 cd picasso                  # to view captured screenshots and click counts
 ```
 
