@@ -96,7 +96,7 @@ Flow:
 ```bash
 cd gemini-team
 python settingsPageAgent.py
-cd picasso (to view captured screenshots and click counts)
+cd picasso                  # to view captured screenshots and click counts
 ```
 
 The captured screenshots are saved in `gemini-team/picasso` based on platform and click counts JSON, which contain page links organized by depth from starting page. These results are subsequently processed below! 
