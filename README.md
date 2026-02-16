@@ -85,13 +85,13 @@ If a site logs you out or changes sessions, re-run `save_state.py` for that host
 
 Flow:
 - Opens provided URL
-- Lets user log in and go to settings page
+- Lets user log in and go to settings page (root)
 - Iterate until queue is empty or iteration limit is hit:
-    - Finds and queue hyperlinks in DOM
-    - Dequeue link, ask Gemini if link is relevant
+    - Finds and queues hyperlinks in DOM
+    - Dequeues link, asks Gemini if link is relevant to user settings
         - If relevant, navigate to page
         - If irrelevant, omit
-    - Take screenshot and log page link
+    - Takes screenshot and logs page link
  
 ```bash
 cd gemini-team
@@ -99,7 +99,7 @@ python settingsPageAgent.py
 cd picasso                  # to view captured screenshots and click counts
 ```
 
-The captured screenshots are saved in `gemini-team/picasso` based on platform and click counts JSON, which contain page links organized by depth from starting page. These results are subsequently processed below! 
+The captured screenshots are saved in `gemini-team/picasso` based on platform and click counts json, which contain page links organized by depth from starting page. These results are subsequently processed below! 
 
 ---
 ## Running screenshot processing
