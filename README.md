@@ -181,4 +181,6 @@ DSC180A_PrivacyProject/
 |   `-- data/
 `-- privacyagentapp/
     `-- agenticapp.py
+|-- screenshot-classifier/
+|   |-- screenshot_settings_extractor.py
 ```
