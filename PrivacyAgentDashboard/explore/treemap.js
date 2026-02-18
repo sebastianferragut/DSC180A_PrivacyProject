@@ -187,7 +187,8 @@ function loadCSV(pathIndex = 0) {
     showLoadError("Could not find CSV file", csvPaths);
     return;
   }
-  const csvPath = csvPaths[pathIndex];
+  const csvPath = "../" + csvPaths[pathIndex];
+  // const csvPath = csvPaths[pathIndex];
   console.log("Attempting to load CSV from:", csvPath);
   d3.csv(csvPath).then(data => {
     console.log("CSV loaded successfully from:", csvPath);

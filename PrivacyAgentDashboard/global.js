@@ -22,4 +22,7 @@ for (let p of pages) {
   if (a.host === location.host && a.pathname === location.pathname) {
     a.classList.add('current');
   }
+  if (a.href === "https://github.com/sebastianferragut/DSC180A_PrivacyProject") {
+    a.target='_blank';
+  }
 }
