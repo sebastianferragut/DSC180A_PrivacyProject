@@ -1,88 +1,44 @@
-function $$(selector, context = document) {
-  return Array.from(context.querySelectorAll(selector));
+function loadTreemap() {
+    return;
+}
+function loadAdditional() {
+    return;
 }
 
-// Sidebar behavior for the Explore dashboard.
-// On pages where both the intro/treemap and charts live together
-// (e.g., explore/index.html), the sidebar buttons act as view
-// toggles instead of page navigators:
-//
-// - "Your recommendations"  -> show category-intro + treemap-section
-// - "Cross-platform privacy" -> show only charts-section (pie + bar)
-//
-// On other pages that don't contain these sections, the links fall
-// back to their normal navigation behavior.
-
-const sidebar = document.querySelector('aside.sidebar');
-if (sidebar) {
-  const links = $$('a', sidebar);
-
-  const categoryIntro = document.querySelector('.category-intro');
-  const treemapSection = document.querySelector('.treemap-section');
-  const chartsSection = document.querySelector('.charts-section');
-
-  // We only do in-page toggling when all three sections exist.
-  const canToggleViews = !!(categoryIntro && treemapSection && chartsSection);
-
-  function setVisible(element, visible) {
-    if (!element) return;
-    element.style.display = visible ? '' : 'none';
-  }
-
-  function activateLink(targetLink) {
-    for (const link of links) {
-      if (link === targetLink) {
-        link.classList.add('current');
-      } else {
-        link.classList.remove('current');
-      }
+document.getElementById('recommendationsBtn').addEventListener('click', function() {
+    const additional = document.getElementById("additional");
+    const categoryIntro = document.getElementById("categoryIntro");
+    const treemap = document.getElementById("treemap");
+    
+    // Hide additional section
+    if (additional) {
+        additional.classList.add('hidden');
     }
-  }
-
-  function showRecommendationsView(triggerLink) {
-    activateLink(triggerLink);
-    setVisible(categoryIntro, true);
-    setVisible(treemapSection, true);
-    setVisible(chartsSection, false);
-  }
-
-  function showCrossPlatformView(triggerLink) {
-    activateLink(triggerLink);
-    setVisible(categoryIntro, false);
-    setVisible(treemapSection, false);
-    setVisible(chartsSection, true);
-  }
-
-  // Always prevent navigation for these two buttons so we don't
-  // leave the current directory; when the full set of sections
-  // is present we use them purely as in-page view toggles.
-  for (const link of links) {
-    const title = link.textContent.trim();
-
-    if (title === 'Your recommendations') {
-      link.addEventListener('click', (event) => {
-        event.preventDefault();
-        if (canToggleViews) {
-          showRecommendationsView(link);
-        }
-      });
-    } else if (title === 'Cross-platform privacy') {
-      link.addEventListener('click', (event) => {
-        event.preventDefault();
-        if (canToggleViews) {
-          showCrossPlatformView(link);
-        }
-      });
+    
+    // Show category intro and treemap if they exist
+    if (categoryIntro) {
+        categoryIntro.classList.remove('hidden');
     }
-  }
-
-  // Initial state: show recommendations by default if possible.
-  if (canToggleViews) {
-    const defaultLink = links.find(
-      (l) => l.textContent.trim() === 'Your recommendations'
-    );
-    if (defaultLink) {
-      showRecommendationsView(defaultLink);
+    if (treemap) {
+        treemap.classList.remove('hidden');
     }
-  }
-}
+});
+
+document.getElementById('crossPlatformBtn').addEventListener('click', function() {
+    const tutorial = document.getElementById("categoryIntro");
+    const treemap = document.getElementById("treemap");
+    const additional = document.getElementById("additional");
+    
+    // Hide category intro and treemap
+    if (tutorial) {
+        tutorial.classList.add('hidden');
+    }
+    if (treemap) {
+        treemap.classList.add('hidden');
+    }
+    
+    // Show additional section if it exists
+    if (additional) {
+        additional.classList.remove('hidden');
+    }
+});
