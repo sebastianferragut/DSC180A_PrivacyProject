@@ -43,11 +43,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- <meta http-equiv='refresh' content='0; URL=./view/'> -->
     <title>Privacy Agent Dashboard</title>
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../../style.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script type="module" src="../global.js"></script>
-    <script type="module" src="treemap.js"></script>
-    <script type="module" src="sidebar.js"></script>
+    <script type="module" src="../../global.js"></script>
+    <script type="module" src="../treemap.js"></script>
 </head>
 
 <body>
@@ -60,8 +59,8 @@
     <div class="container">
         <!-- Left Sidebar Navigation -->
         <aside class="sidebar">
-            <a href="#view" onclick="return false;" id="recommendationsBtn" class="sidebar-btn">Your recommendations</a>
-            <a href="#compare" onclick="return false;" id="crossPlatformBtn" class="sidebar-btn">Cross-platform privacy</a>
+            <a href="./view">Your recommendations</a>
+            <a href="./compare">Cross-platform privacy</a>
         </aside>
 
         <!-- Main Content -->
@@ -119,7 +118,7 @@
                 </div>
             </section>
             <!-- Treemap Visualization -->
-            <section class="panel treemap-section" id="treemap">
+            <section class="panel treemap-section">
             <div class="treemap-controls">
                 <div class="treemap-control-row">
                 <label>
@@ -210,7 +209,7 @@
             </section>
 
             <!-- Additional Charts Section -->
-            <section class="panel charts-section" id="additional">
+            <section class="panel charts-section">
             <div id="belowTreemapRow" class="charts-container">
                 <div class="chart-panel">
                 <h3>Settings by Platform and Type</h3>
