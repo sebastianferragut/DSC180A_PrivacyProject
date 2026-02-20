@@ -7,7 +7,7 @@ function loadAdditional() {
 
 document.getElementById('recommendationsBtn').addEventListener('click', function() {
     const categoryIntro = document.getElementById("categoryIntro");
-    const treemap = document.getElementById("treemap");
+    const treemap = document.getElementById("treemapContainer");
     
     // Hide additional section
     if (additional) {
@@ -21,7 +21,7 @@ document.getElementById('recommendationsBtn').addEventListener('click', function
 });
 
 document.getElementById('crossPlatformBtn').addEventListener('click', function() {
-    const treemap = document.getElementById("treemap");
+    const treemap = document.getElementById("treemapContainer");
     const additional = document.getElementById("additional");
     
     // Hide category intro and treemap
