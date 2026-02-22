@@ -65,8 +65,9 @@ let settingDetails, detailsTitle, detailsSubtitle, detailsDescription, detailsSt
 let areaEvidenceEl = null;
 
 // Data source paths (JSON first, then CSV fallback)
-// JSON: from explore/ use ../../database/data/..., from dashboard root use ../database/data/...
+// Paths: explore/view/ (3 levels up), explore/ (2 levels up), dashboard root (1 level up)
 const jsonPaths = [
+  "../../../database/data/extracted_settings_with_urls_and_layers_classified.json",
   "../../database/data/extracted_settings_with_urls_and_layers_classified.json",
   "../database/data/extracted_settings_with_urls_and_layers_classified.json"
 ];
@@ -76,7 +77,9 @@ const csvPaths = [
 ];
 
 // Priority privacy CSV (flat: platform, toggle_name, description, state, click_counts, category, url) — used by explore page
+// Paths: explore/view/ (3 levels up), explore/ (2 levels up), dashboard root (1 level up)
 const priorityCsvPaths = [
+  "../../../database/data/priority_privacy.csv",
   "../../database/data/priority_privacy.csv",
   "../database/data/priority_privacy.csv"
 ];
@@ -216,18 +219,30 @@ function loadCSV(pathIndex = 0) {
   });
 }
 
-// Start loading: explore page uses priority_privacy.csv; other pages use JSON then CSV fallback
-const isExplorePage = typeof window !== "undefined" && window.location.pathname.indexOf("explore") !== -1;
-if (isExplorePage) {
-  loadPriorityCSV(0);
-} else {
-  loadJSON();
+// Start loading: all pages use classified JSON first, then CSV fallback
+loadJSON(0);
+
+/**
+ * Infer category from description/setting when CSV category is empty.
+ * Uses keyword matching aligned with database/classify_categories.py.
+ */
+function inferCategoryFromText(description, settingName) {
+  const text = ((description || "") + " " + (settingName || "")).toLowerCase();
+  if (/\b(password|login|security|authentication|passkey|two-factor|2fa|session|sign.?in|account.?protection)\b/.test(text)) return "security_authentication";
+  if (/\b(profile|birthday|gender|demographic|phone|email|contact|identity|personal.?info)\b/.test(text)) return "identity_personal_info";
+  if (/\b(camera|microphone|sensor|audio|video|recording|screen.?shar)\b/.test(text)) return "device_sensor_access";
+  if (/\b(tracking|analytics|telemetry|ads?|advertising|personaliz|privacy.?choice|data.?download|history|inference|training.?data)\b/.test(text)) return "data_collection_tracking";
+  if (/\b(third.?party|partner|app.?access|connected.?app|cookie|api|sharing|integration)\b/.test(text)) return "data_sharing_third_parties";
+  if (/\b(visibility|audience|follower|profile.?view|discoverability|block|who.?can.?see)\b/.test(text)) return "visibility_audience";
+  if (/\b(notification|message|chat|comment|alert|communication)\b/.test(text)) return "communication_notifications";
+  return "unknown";
 }
 
 /**
  * Parse priority_privacy.csv (flat rows: platform, toggle_name, description, state, click_counts, category, url)
  * into the same allData shape as parseCSVData / parseJSONData.
  * No deduplication: every row becomes one entry so all rows are shown.
+ * When category is empty, infers from description/setting name.
  */
 function parsePriorityCSVData(csvData) {
   if (!Array.isArray(csvData)) return [];
@@ -238,7 +253,8 @@ function parsePriorityCSVData(csvData) {
     const settingName = (row.toggle_name || row.setting || "Unknown").trim();
     const description = (row.description || "").trim();
     const state = (row.state || "unknown").trim();
-    const category = (row.category || "unknown").trim();
+    let category = (row.category || "").trim();
+    if (!category) category = inferCategoryFromText(description, settingName);
     const url = (row.url || "").trim();
     const clicks = Math.max(0, parseInt(row.click_counts, 10) || 0);
     const stateType = determineStateType(state);
