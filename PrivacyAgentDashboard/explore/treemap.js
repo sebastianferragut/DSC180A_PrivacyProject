@@ -623,7 +623,7 @@ function buildHierarchy() {
   });
   
   currentRoot = d3.hierarchy(root)
-    .sum(d => (d.children && d.children.length) ? 0 : (Number(d.value) || 1))
+    .sum(sumAccessor)
     .sort((a, b) => (b.value || 0) - (a.value || 0));
   
   if (currentCategoryFilter === 'all') {
@@ -2699,23 +2699,81 @@ function renderCoverageHeatmap(filteredData) {
 }
 
 /**
+ * Safe clicks for layout: NaN/undefined become 0 so calculateWeight can return 1.
+ */
+function safeClicks(v) {
+  const n = Number(v);
+  return (typeof n === 'number' && !Number.isNaN(n) && n >= 0) ? n : 0;
+}
+
+/**
  * Clone a d3.hierarchy node into a plain object tree (so it can be re-passed to d3.hierarchy).
- * Preserves leaf metadata and ensures leaf value is numeric for layout.
+ * Preserves leaf metadata (clicks, platform, category, stateType, url, description, state) and
+ * ensures value is computed safely for the current metric so zoom state survives metric switch.
  */
 function cloneSubtree(hNode) {
   const isLeaf = !hNode.children || hNode.children.length === 0;
   if (isLeaf) {
-    const val = hNode.value != null ? hNode.value : (hNode.data.value != null ? hNode.data.value : 1);
-    return {
-      ...hNode.data,
-      name: hNode.data.name != null ? hNode.data.name : 'Setting',
-      value: typeof val === 'number' && val > 0 ? val : 1
+    const data = hNode.data || {};
+    const meta = data.meta || {};
+    const flat = { ...data, ...meta };
+    const name = flat.setting ?? flat.name ?? 'Setting';
+    const stateType = (flat.stateType || 'unknown').toLowerCase();
+    const category = (flat.category || 'unknown').trim();
+    const clicks = safeClicks(flat.clicks);
+    const weight = calculateWeight(stateType, category, currentSizingMetric, clicks);
+    const value = typeof weight === 'number' && weight > 0 ? weight : 1;
+    const leaf = {
+      name,
+      value,
+      setting: name,
+      description: flat.description ?? '',
+      state: flat.state ?? '',
+      stateType: flat.stateType ?? 'unknown',
+      platform: (flat.platform || 'unknown').toLowerCase(),
+      category,
+      url: flat.url ?? '',
+      clicks: clicks >= 0 ? clicks : 0,
+      weight
     };
+    leaf.meta = { ...leaf };
+    return leaf;
   }
   return {
     name: hNode.data.name != null ? hNode.data.name : 'Category',
     children: hNode.children.map(cloneSubtree)
   };
+}
+
+/**
+ * Recompute leaf data.value (and meta.weight) from currentSizingMetric without rebuilding hierarchy.
+ * Ensures value >= 1 (or small epsilon) for clicks so D3 treemap layout never gets 0/NaN.
+ */
+function recomputeLeafValuesFromMetric(rootHierarchy) {
+  if (!rootHierarchy || !rootHierarchy.leaves) return;
+  const leaves = rootHierarchy.leaves();
+  leaves.forEach(leaf => {
+    const data = leaf.data || {};
+    const meta = data.meta || {};
+    const flat = { ...data, ...meta };
+    const stateType = (flat.stateType || 'unknown').toLowerCase();
+    const category = (flat.category || 'unknown').trim();
+    const clicks = safeClicks(flat.clicks);
+    const w = calculateWeight(stateType, category, currentSizingMetric, clicks);
+    const value = typeof w === 'number' && w > 0 ? w : 1;
+    leaf.data.value = value;
+    if (leaf.data.meta) leaf.data.meta.weight = w;
+    if (leaf.data.meta) leaf.data.meta.value = value;
+  });
+}
+
+/**
+ * Sum accessor for hierarchy: non-leaves 0, leaves use data.value with guard (no NaN/0).
+ */
+function sumAccessor(d) {
+  if (d.children && d.children.length) return 0;
+  const v = Number(d.value);
+  return (typeof v === 'number' && !Number.isNaN(v) && v > 0) ? v : 1;
 }
 
 /**
@@ -2733,7 +2791,7 @@ function zoomInto(d) {
   }
   const cloned = cloneSubtree(d);
   currentRoot = d3.hierarchy(cloned)
-    .sum(x => (x.children && x.children.length) ? 0 : (Number(x.value) || 1))
+    .sum(sumAccessor)
     .sort((a, b) => (b.value || 0) - (a.value || 0));
   renderTreemap();
 }
@@ -3192,7 +3250,13 @@ function setupEventHandlers() {
     sizingMetricSelect.addEventListener("change", function() {
       currentSizingMetric = this.value;
       updateTreemapAreaCallout();
-      buildHierarchy();
+      if (currentRoot) {
+        recomputeLeafValuesFromMetric(currentRoot);
+        currentRoot.sum(sumAccessor);
+        currentRoot.sort((a, b) => (b.value || 0) - (a.value || 0));
+      } else {
+        buildHierarchy();
+      }
       renderTreemap();
     });
   } else {
