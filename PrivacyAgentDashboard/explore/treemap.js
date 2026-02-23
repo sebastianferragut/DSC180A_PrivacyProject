@@ -10,8 +10,8 @@
  * Hierarchy: Platform → Category → Setting (leaf nodes)
  */
 
-// Header height for category labels
-const CATEGORY_HEADER_HEIGHT = 32;
+// Header height for category labels (only at root; reduced for less bulk)
+const CATEGORY_HEADER_HEIGHT = 20;
 
 let allData = [];
 
@@ -1555,6 +1555,7 @@ function renderTreemap() {
   
     // Root state for this render pass
     const atRootNow = zoomStack.length === 0;
+    const showCategoryHeaders = zoomStack.length === 0;
     
     // Platform normalization helper
     function normalizePlatformKey(p) {
@@ -1765,6 +1766,7 @@ function renderTreemap() {
       .paddingInner(2)
       .paddingOuter(2)
       .paddingTop(d => {
+        if (!showCategoryHeaders) return 0;
         const isCategory = (atRootNow && d.depth === 1) || (!atRootNow && d.depth === 0);
         return isCategory ? CATEGORY_HEADER_HEIGHT : 0;
       })
@@ -1888,7 +1890,7 @@ function renderTreemap() {
     categoryCells.each(function(d) {
       const categoryGroup = d3.select(this);
   
-      // Click overlay (so clicking header area also zooms)
+      // Click overlay (so clicking category area zooms) — always present so zoom works
       categoryGroup.append("rect")
         .attr("class", "category-click-overlay")
         .attr("x", 0)
@@ -1913,46 +1915,46 @@ function renderTreemap() {
           d3.select(this).attr("fill", "transparent");
         });
   
-      // Header bar
-      categoryGroup.append("rect")
-        .attr("class", "category-header-bg")
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("width", d.x1 - d.x0)
-        .attr("height", CATEGORY_HEADER_HEIGHT)
-        .attr("fill", "#d4d4d4")
-        .attr("stroke", "#999")
-        .attr("stroke-width", 1)
-        .style("pointer-events", "none");
+      if (showCategoryHeaders) {
+        // Header bar (minimal, data-first: light fill, no border)
+        categoryGroup.append("rect")
+          .attr("class", "category-header-bg")
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("width", d.x1 - d.x0)
+          .attr("height", CATEGORY_HEADER_HEIGHT)
+          .attr("fill", "#f3f4f6")
+          .attr("stroke", "none")
+          .attr("stroke-width", 0)
+          .style("pointer-events", "none");
   
-      // Icon + label
-      const categoryKey = (d.data.name || "").toLowerCase();
-      const icon = categoryIcons[categoryKey] || categoryIcons.default;
+        const categoryKey = (d.data.name || "").toLowerCase();
+        const icon = categoryIcons[categoryKey] || categoryIcons.default;
   
-      categoryGroup.append("text")
-        .attr("class", "category-header-icon")
-        .attr("x", 8)
-        .attr("y", CATEGORY_HEADER_HEIGHT / 2)
-        .attr("dy", "0.35em")
-        .attr("font-size", "18px")
-        .style("pointer-events", "none")
-        .text(icon);
+        categoryGroup.append("text")
+          .attr("class", "category-header-icon")
+          .attr("x", 6)
+          .attr("y", CATEGORY_HEADER_HEIGHT / 2)
+          .attr("dy", "0.35em")
+          .attr("font-size", "15px")
+          .style("pointer-events", "none")
+          .text(icon);
   
-      categoryGroup.append("text")
-        .attr("class", "category-header-label")
-        .attr("x", 32)
-        .attr("y", CATEGORY_HEADER_HEIGHT / 2)
-        .attr("dy", "0.35em")
-        .attr("fill", "#333")
-        .style("font-size", "14px")
-        .style("font-weight", "600")
-        .style("pointer-events", "none")
-        .text((d.data.name || "").replace(/_/g, " "));
+        categoryGroup.append("text")
+          .attr("class", "category-header-label")
+          .attr("x", 24)
+          .attr("y", CATEGORY_HEADER_HEIGHT / 2)
+          .attr("dy", "0.35em")
+          .attr("fill", "#374151")
+          .style("font-size", "12px")
+          .style("font-weight", "500")
+          .style("pointer-events", "none")
+          .text((d.data.name || "").replace(/_/g, " "));
   
-      // Ensure header stays on top within this group
-      categoryGroup
-        .selectAll(".category-header-bg, .category-header-icon, .category-header-label")
-        .raise();
+        categoryGroup
+          .selectAll(".category-header-bg, .category-header-icon, .category-header-label")
+          .raise();
+      }
     });
   
     // ===============================
