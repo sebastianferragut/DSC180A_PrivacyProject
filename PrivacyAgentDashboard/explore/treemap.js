@@ -2049,6 +2049,20 @@ function renderLegend(platforms) {
 }
 
 /**
+ * Get chart container width for responsive SVGs. Returns null if container not yet laid out (caller should re-render on rAF).
+ */
+function getChartWidth(containerSel, min = 320) {
+  const node = containerSel.node();
+  if (!node) return null;
+  let w = node.clientWidth || node.getBoundingClientRect().width || 0;
+  if (!w && node.parentElement) {
+    w = node.parentElement.clientWidth || node.parentElement.getBoundingClientRect().width || 0;
+  }
+  if (!w || w < 10) return null;
+  return Math.max(min, Math.floor(w));
+}
+
+/**
  * Render charts below treemap (stacked bar and pie chart)
  */
 function renderBelowTreemapCharts() {
@@ -2143,16 +2157,25 @@ function renderAreaSharePieChart(viewData) {
   // Calculate total for percentages
   const total = d3.sum(pieData, d => d.value);
 
-  // Set up dimensions (height sized to fit pie + offset + legend rows)
-  const containerWidth = container.node().getBoundingClientRect().width || 480;
-  const width = containerWidth;
-  const height = 400;
-  const radius = Math.min(width, 320) / 2 - 20; // cap pie size so legend fits below
+  const width = getChartWidth(container, 320);
+  if (width == null) {
+    requestAnimationFrame(() => renderAreaSharePieChart(viewData));
+    return;
+  }
 
-  // Create SVG
+  const height = 400;
+  const padding = 36; // space from SVG edge so labels stay inside panel
+  const radius = Math.min(width, height - 80) / 2 - padding; // smaller radius so labels fit
+
+  // Create SVG (viewBox + CSS for responsive sizing, no overflow)
   const svg = container.append("svg")
+    .attr("viewBox", `0 0 ${width} ${height}`)
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height)
+    .style("width", "100%")
+    .style("height", "auto")
+    .style("max-width", "100%")
+    .style("display", "block");
 
   const pieOffsetY = 28; // move pie and labels down
   const g = svg.append("g")
@@ -2266,17 +2289,26 @@ function renderStackedPlatformChart(filteredData) {
     return;
   }
 
-  // Set up dimensions
-  const margin = { top: 20, right: 20, bottom: 60, left: 50 };
-  const width = container.node().getBoundingClientRect().width || 600;
+  const width = getChartWidth(container, 320);
+  if (width == null) {
+    requestAnimationFrame(() => renderStackedPlatformChart(filteredData));
+    return;
+  }
+
+  const margin = { top: 28, right: 24, bottom: 80, left: 62 };
   const height = 425;
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 
-  // Create SVG
+  // Create SVG (viewBox + CSS for responsive sizing, no overflow)
   const svg = container.append("svg")
+    .attr("viewBox", `0 0 ${width} ${height}`)
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height)
+    .style("width", "100%")
+    .style("height", "auto")
+    .style("max-width", "100%")
+    .style("display", "block");
 
   const g = svg.append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);

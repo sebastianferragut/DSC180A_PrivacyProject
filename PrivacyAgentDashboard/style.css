@@ -1011,6 +1011,7 @@ h2 {
   border-top: 1px solid #eee;
   font-size: 11px;
   color: #333;
+  width: 100%;
 }
 
 .stacked-chart-legend-item {
@@ -1156,6 +1157,20 @@ h2 {
 }
 
 #stackedPlatformChart,
+#pieAreaChart {
+  width: 100%;
+  overflow-x: hidden;
+  min-height: 400px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+#stackedPlatformChart svg,
+#pieAreaChart svg {
+  max-width: 100%;
+  display: block;
+}
+
 #categorySmallMultiples {
   min-height: 400px;
   max-height: 500px;
