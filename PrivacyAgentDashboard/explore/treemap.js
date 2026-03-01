@@ -101,12 +101,13 @@ function showLoadError(title, triedPaths) {
 /**
  * Parse classified JSON into the same allData shape as parseCSVData
  * JSON shape: array of { platform, all_settings: [ { setting, description, state, url, layer, category } ] }
+ * Includes every row from the JSON (no deduplication).
  */
 function parseJSONData(jsonArray) {
   if (!Array.isArray(jsonArray)) {
     return [];
   }
-  const settingsMap = new Map();
+  const rows = [];
   jsonArray.forEach(platformBlock => {
     let platform = (platformBlock.platform || "unknown").trim().toLowerCase();
     if (platform === "google") platform = "googleaccount";
@@ -120,27 +121,21 @@ function parseJSONData(jsonArray) {
       const category = (s.category || "unknown").trim();
       const url = s.url || "";
       const clicks = s.layer != null ? Number(s.layer) : 0; // layer = depth (equivalent to clicks)
-      const key = `${platform}::${category}::${settingName}`;
       const stateType = determineStateType(state);
-      if (!settingsMap.has(key)) {
-        settingsMap.set(key, {
-          platform,
-          category,
-          setting: settingName,
-          description,
-          state,
-          stateType,
-          url,
-          clicks,
-          weight: calculateWeight(stateType, category, currentSizingMetric, clicks)
-        });
-      } else {
-        const existing = settingsMap.get(key);
-        if (!existing.url && url) existing.url = url;
-      }
+      rows.push({
+        platform,
+        category,
+        setting: settingName,
+        description,
+        state,
+        stateType,
+        url,
+        clicks,
+        weight: calculateWeight(stateType, category, currentSizingMetric, clicks)
+      });
     });
   });
-  return Array.from(settingsMap.values());
+  return rows;
 }
 
 function loadJSON(pathIndex = 0) {
@@ -161,7 +156,7 @@ function loadJSON(pathIndex = 0) {
         throw new Error("JSON is empty");
       }
       allData = parseJSONData(data);
-      console.log("JSON loaded:", data.length, "platform blocks →", allData.length, "unique settings");
+      console.log("JSON loaded:", data.length, "platform blocks →", allData.length, "rows");
       populatePlatformFilter();
       populateCategoryFilter();
       currentCategoryFilter = 'guided';
