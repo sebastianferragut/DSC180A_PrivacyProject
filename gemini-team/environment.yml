@@ -26,3 +26,6 @@ dependencies:
 
       # Typing + helpers
       - typing-extensions>=4.9.0
+
+      # Testing
+      - pytest>=7.0.0

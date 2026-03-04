@@ -2,12 +2,18 @@
 % !BIB TS-program = bibtex
 \documentclass[12pt,letterpaper]{article}
 \usepackage{style/dsc180reportstyle} % import dsc180reportstyle.sty
+\usepackage{pdfpages}
+
+% TO EDIT packages can be removed for submission
+\usepackage{xcolor}
+\usepackage{soul} 
+\sethlcolor{red}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%% Title and Authors
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\title{Facilitating Privacy by Design through Agentic AI}
+\title{Protecting and Informing Users: The Agentic Privacy Control Center}
 
 \author{Sebastian Ferragut \\
   {\tt sferragut@ucsd.edu} \\\And
@@ -33,12 +39,18 @@
 
 
 
-\begin{abstract} 
-    Practitioners are increasingly integrating privacy principles into contemporary systems through privacy review processes—such as Privacy Impact Assessments and expert audits. However, these processes are labor-intensive, retrospective, and expensive, making it impractical to small or rapidly iterating teams. We propose the use of an agentic AI system to help practitioners observe, document, and analyze how their privacy designs compare to industry standards. Rather than avoiding privacy pitfalls later, our application aims help practitioners design systems that promote user privacy from the ground up. The can agent complement existing human-centered privacy design methodologies by offering continuous, data-driven visibility into evolving platform practices. Our application aims to leverage agentic AI to compile information on various digital platform structures and service usages as it relates to user privacy, facilitating a deeper understanding of effective user privacy design principles. We will discuss the implications for the future of automated privacy auditing and propose directions for integrating agentic feedback loops into participatory design workflows.
+\begin{abstract}
+
+Privacy by Design has become central to regulatory and design discourse, yet operationalizing privacy principles in practice remains labor-intensive, retrospective, and costly. Traditional privacy reviews—such as expert audits and impact assessments lack dynamism and do not scale well to rapidly evolving digital platforms. We present the \textbf{Agentic Privacy Control Center}, an end-to-end system that automatically discovers, structures, visualizes, and actuates privacy settings across online platforms.
+
+Our system integrates deterministic interface crawling, vision-based setting extraction, semantic classification, and a planner–executor–verifier browser agent powered by large language models. The pipeline produces a normalized cross-platform privacy settings database that supports interactive visualization and safe, centralized setting modification. 
+
+We demonstrate that agentic AI can reliably navigate heterogeneous privacy interfaces, detect confirmation flows, and modify settings across platforms without platform-specific hard-coding. Our results suggest that agentic systems can function as scalable intermediaries for privacy analysis and configuration, supporting both comparative research and practitioner-facing privacy design workflows.
 
 \end{abstract}
 
-% Website: \url{} \\
+
+Website: \url{https://sebastianferragut.github.io/DSC180-artifact-directory/} \\
 Code: \url{https://github.com/sebastianferragut/DSC180A_PrivacyProject}
 
 
@@ -49,26 +61,199 @@ Code: \url{https://github.com/sebastianferragut/DSC180A_PrivacyProject}
 %%%% Main Contents
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Introduction}
-    Privacy by Design has become a central principle in both regulatory and design discourse, emphasizing the integration of privacy considerations throughout the system development process. Yet, practitioners often struggle operationalizing these principles due to unclear lines of responsibility, limited institutional support, and the high costs associated with expert-led reviews. Recent advances in agentic AI—autonomous systems capable of multi-step reasoning and direct interaction with user interfaces—present new opportunities to scale and systematize privacy evaluation. In this work, we explore how such agents can function as design intermediaries, bridging the gap between the practical realities of interface implementation and the normative goals of privacy frameworks. Specifically, we examine whether agentic AI can systematically capture and interpret representations of privacy interfaces to help designers identify recurring interaction patterns that shape user understanding and control.
+\section{Introduction }
+    Privacy by Design has become a central principle in both regulatory and design discourse, emphasizing the integration of privacy considerations throughout the system development process. Yet, practitioners often struggle operationalizing these principles due to unclear lines of responsibility, limited institutional support, roll-back of regulations, and the high costs associated with expert-led reviews. Recent advances in agentic AI—autonomous systems capable of multi-step reasoning and direct interaction with user interfaces—present new opportunities to scale and systematize privacy evaluation. In this work, we explore how such agents can function as design intermediaries, bridging the gap between the practical realities of interface implementation and the normative goals of privacy frameworks. Specifically, we examine whether agentic AI can systematically capture and interpret representations of privacy interfaces to help designers identify recurring interaction patterns that shape user understanding and control.
     
-    Implementation of privacy by design can pose a challenge due to confusion of roles in development, limitations of tools, and high cost of formal reviews. Li et al. (2024) explored how user feedback shapes the redesign of privacy-related features in Redesigning Privacy with User Feedback: The Case of Zoom Attendee Attention Tracking. The research was conducted in the form of analysis of public forums and interviews with engineers. This paper identified challenges including: polarized feedback, confirmation bias, and blurred responsibility boundaries. Findings from this paper show a need for structured, repeatable mechanisms to gather and integrate user perspectives. Wen et al. (2023) also advanced this investigation in Teaching Data Science Students to Sketch Privacy Designs through Heuristics, investigating how designers integrate privacy reasoning through heuristic-based sketching techniques. Their study introduced three heuristics—device-based data flow, with stakeholder interaction, and multi-layered representation. These improved ability to interpret privacy sketches. This work demonstrates the value of lightweight scaffolds that guide designers in representing data relationships and accountability flows, a process that our agentic system seeks to automate at the interface level. Schaub et al. (2015) proposed A Design Space for Effective Privacy Notices, articulating a taxonomy of notice characteristics spanning timing, channel, modality, and control. By reframing privacy notices as dynamic, contextual design components rather than static policy artifacts, their framework offers perspective for evaluation of users interpretation of privacy information. We can take inspiration from this taxonomy for analyzing the interaction traces and screenshots collected by the agentic AI system. Finally, Jin et al. (2021) introduced Lean Privacy Review: Collecting Users’ Privacy Concerns of Data Practices at a Low Cost, presenting a scalable, crowdsourced alternative to formal privacy audits. Ultimately, a method that was efficient and comprehensive was eliciting privacy concerns through structured free-text. Our approach extends this trajectory by introducing automation into the review pipeline: instead of relying on crowdworkers to surface privacy concerns, agentic AI autonomously collects empirical data about privacy interfaces, generating a corpus to be annotated or analyzed. These works outline a research landscape that values human-centered interpretation but lacks scalable, data-driven mechanisms for continuous privacy evaluation.
+    Implementation of privacy by design can pose a challenge due to confusion of roles in development, limitations of tools, and high cost of formal reviews. Li et al. (2024) explored how user feedback shapes the redesign of privacy-related features in \textit{Redesigning Privacy with User Feedback: The Case of Zoom Attendee Attention Tracking}. The research was conducted in the form of analysis of public forums and interviews with engineers. This paper identified challenges including: polarized feedback, confirmation bias, and blurred responsibility boundaries. Findings from this paper show a need for structured, repeatable mechanisms to gather and integrate user perspectives. Wen et al. (2023) also advanced this investigation in \textit{Teaching Data Science Students to Sketch Privacy Designs through Heuristics}, investigating how designers integrate privacy reasoning through heuristic-based sketching techniques. Their study introduced three heuristics—device-based data flow, with-stakeholder interaction, and multi-layered representation, improving interpretability of privacy sketches. This work demonstrates the value of lightweight scaffolds that guide designers in representing data relationships and accountability flows, a process that our agentic system seeks to automate at the interface level. Schaub et al. (2015) proposed \textit{A Design Space for Effective Privacy Notices}, articulating a taxonomy of notice characteristics spanning timing, channel, modality, and control. By reframing privacy notices as dynamic, contextual design components rather than static policy artifacts, their framework offers perspective for evaluation of users' interpretation of privacy information. We can take inspiration from this taxonomy for analyzing the interaction traces and screenshots collected by the agentic AI system. Finally, Jin et al. (2021) introduced \textit{Lean Privacy Review: Collecting Users’ Privacy Concerns of Data Practices at a Low Cost}, presenting a scalable, crowdsourced alternative to formal privacy audits. Ultimately, a method that was efficient and comprehensive was eliciting privacy concerns through structured free-text. Our approach extends this trajectory by introducing automation into the review pipeline: instead of relying on crowdworkers to surface privacy concerns, agentic AI autonomously collects empirical data about privacy interfaces, generating a corpus to be annotated and analyzed. These works outline a research landscape that values human-centered interpretation but lacks scalable, data-driven mechanisms for continuous privacy evaluation.
     
-    Previous work on automation and privacy has primarily focused on textual artifacts, particularly privacy policies. For instance, Polisis: Automated Analysis and Presentation of Privacy Policies Using Deep Learning (Harkous et al., 2018) leverages large-scale policy text and deep learning techniques to automatically extract meaningful insights and interpretations from privacy policies. Our approach differs in our focus on real user capacity within interfaces, examining how accessible privacy settings are through a website’s UI. More recent research, such as A Privacy-Driven UI Exploration Framework for Mobile App Settings (PDUE) (2025), takes a step in this direction by investigating how mobile app interface elements relate to data collection behavior. Building on these ideas, our project aims to develop an automated method through agentic AI for discovering and analyzing privacy-related information embedded within user interfaces — such as settings pages and menus — and examining how these design choices compare across different online platforms.
+    Previous work on automation and privacy has primarily focused on textual artifacts, particularly privacy policies. For instance, \textit{Polisis: Automated Analysis and Presentation of Privacy Policies Using Deep Learning} (Harkous et al., 2018) leverages large-scale policy text and deep learning techniques to automatically extract meaningful insights and interpretations from privacy policies. Our approach differs in our focus on real user capacity within interfaces, examining how accessible privacy settings are through a website’s UI. More recent research, such as \textit{A Privacy-Driven UI Exploration Framework for Mobile App Settings} (PDUE) (2025), takes a step in this direction by investigating how mobile app interface elements relate to data collection behavior. Building on these ideas, our project aims to develop an automated method through agentic AI for discovering and analyzing privacy-related information embedded within user interfaces — such as settings pages and menus — and examining how these design choices compare across different online platforms.
     
     User privacy is increasingly recognized as a critical dimension of digital service design, yet the mechanisms by which it is implemented in practice remain inconsistent. Although regulations such as the GDPR and CCPA define formal requirements for data protection and consent, the translation of these frameworks into concrete software design often depends on the judgment of individual developers. Many software engineers lack formal training in privacy principles and security design, resulting in implementations that fall short in supporting meaningful user control. As a result, the technical and interaction layers of privacy remain fragmented, varying widely in visibility, accessibility, and effectiveness across websites.
     
-    This project aims to address the gap by developing an AI-driven framework for crawling and classifying privacy-related design elements across online platforms. Leveraging agentic AI, our system explores website structures, identifies privacy-related components, and classifies them based on their functionality and design characteristics. By aggregating these findings, we seek to uncover patterns that define effective, user-centered privacy design and highlight inconsistencies or usability issues across platforms.
+    This project aims to address the gap by developing an AI-driven framework for crawling and classifying privacy-related design elements across digital platforms. Leveraging agentic AI, our system explores website structures, identifies privacy-related components, and classifies them based on their functionality and design characteristics. By aggregating these findings, we seek to uncover patterns that define effective, user-centered privacy design and highlight inconsistencies or usability issues across platforms. We envision this AI-driven framework as a developer-facing tool that continuously updates to reflect the latest privacy setting changes across platforms. It allows software engineers to examine how privacy designs evolve across services and over time. By surfacing representative design patterns and historical trends, the system can help guide the development of more transparent and user-centered privacy mechanisms.
     
-    We envision this AI-driven framework as a developer-facing tool that continuously updates to reflect the latest privacy setting changes across platforms. It allows software engineers to examine how privacy designs evolve across services and over time. By surfacing representative design patterns and historical trends, the system can help guide the development of more transparent and user-centered privacy mechanisms.
+    Our dataset consists of screenshots and structured interaction logs generated by autonomous agents engaging with privacy and security settings across multiple platforms. The inclusion of screenshots serves to approximate real user behavior, capturing not only textual content but also the visual and spatial context through which privacy controls are presented. Our screenshot corpus provides concrete evidence of how privacy features are represented and accessed within diverse interface designs across platforms. Through iterative deployment across applications, the agent constructs a cross-platform privacy map that reveals how design conventions vary across ecosystems. These data form the empirical basis for our classification and comparative analysis of privacy mechanisms, enabling us to examine how privacy is operationalized in practice and how automated observation can inform future privacy-aware design. 
+
+     In this work, we present the \textbf{Agentic Privacy Control Center}, an end-to-end system that operationalizes this vision. Our framework combines deterministic interface crawling, vision-based setting extraction, semantic categorization, interactive visualization, and a planner–executor–verifier browser agent capable of modifying privacy settings in real time. Rather than focusing solely on policy text, our system captures privacy as operationalized in interface design—through toggles, dropdowns, modals, and navigation structures.
+
+    The contributions of this work are threefold:
     
-    Our dataset consists of screenshots and structured interaction logs generated by autonomous agents engaging with privacy and security settings across multiple platforms. The inclusion of screenshots serves to approximate real user behavior, capturing not only textual content but also the visual and spatial context through which privacy controls are presented. Our screenshot corpus provides concrete evidence of how privacy features are represented and accessed within diverse interface designs across platforms. Through iterative deployment across applications, the agent constructs a cross-platform privacy map that reveals how design conventions vary across ecosystems. These data form the empirical basis for our classification and comparative analysis of privacy mechanisms, enabling us to examine how privacy is operationalized in practice and how automated observation can inform future privacy-aware design.
+    \begin{enumerate}
+        \item We introduce a reproducible pipeline for transforming authenticated privacy interfaces into a structured cross-platform database of privacy settings.
+        \item We demonstrate a hybrid reliability architecture that combines LLM-based UI planning with deterministic safeguards for safe, generalized privacy setting modification.
+        \item We provide an interactive dashboard and centralized control interface that enables comparative exploration and actuation of privacy settings across platforms.
+    \end{enumerate}
+    
+    By bridging structured data collection with agentic interface manipulation, our system moves beyond passive privacy analysis toward active, scalable privacy configuration. This work contributes both an engineering framework and a research foundation for automated privacy interface auditing and comparison.
 
-\section{Methods}
-    Our prototype system operationalizes an agentic AI workflow by enabling privacy setting modifications across real web platforms. First, it begins by loading a structured database of harvested privacy sections and setting descriptors, which were harvested from our automated web crawler. These settings are accessible through a Chainlit command interface. Users can input a command prompt (e.g., "change Reddit allow\_people\_to\_follow\_you to off"). Subsequently, the system will search for the relevant settings by looking through screenshots in our database to find the exact URL. Then, the system will open a Playwright browser session using pre-saved storage states. Once the page has been loaded, the agent will send to Gemini a full-page screenshot, DOM text map, DOM outline, and an execution state describing the target setting and prior failures. With all of this information, the planner will generate a sequence of actionable UI operations, which includes clicks, text selections, and coordinate interactions, encoded as a strict JSON file. Afterwards, these actions are applied on the Playwright browser and returns structured feedback. When Gemini finishes its operation, a separate verifier model will analyze the UI screenshot to confirm whether the setting has reached the target state. This methodology integrates structured data, browser automation, and interactive agentic reasoning to achieve end-to-end, model-driven UI manipulation.
+\section{Methods }
+    
+    We designed the Agentic Privacy Control Center as a multi-stage pipeline that transforms authenticated privacy interfaces into a structured, explorable, and actionable privacy corpus. The system consists of four major components: (1) authentication bootstrap, (2) deterministic crawling, (3) vision-based setting extraction and (3) normalization, and (4) agentic actuation.
+    
+    \subsection{Authentication Bootstrap}
+    
+    Privacy settings are only accessible within authenticated sessions. We capture login state using a Playwright-based utility that records browser storage state after manual authentication. This produces host-specific storage-state JSON artifacts containing cookies and session data. These artifacts are reused by both the crawler and the actuation agent to ensure reproducible access to privacy pages without repeated manual login.
+    
+    \subsection{Deterministic Privacy Crawling}
 
-\section{Results \& Conclusion}
-    Our prototype system was able to demonstrate that agentic, model-driven UI interaction is a viable method for automatically navigating and modifying privacy controls across different web platforms, such as Reddit and Instagram. The agent was able to successfully locate and change specific settings requested by the user. It has also shown that it has been able to determine that the state has been saved to the desired state, indicating a successful setting change. One strength of our system is that it is able to navigate through noisy webpages and change settings through scrollable menus and pop-up confirmations. It also has a second layer of reliability when dealing with confirmation popups by sending Gemini an inspection screenshot to see if the setting was successfully changed. Our system was able to navigate through different platforms that have completely different UI layout proves that using agentic AI for scalable privacy-setting evaluation is viable. This method allows the agent to adapt to unfamiliar interfaces and learn in a generalizable manner. 
+    We found that privacy setting toggles are often abstracted away from the user through nested intermediate pages. Not only is this problematic for our purposes of recording the exhaustive set of privacy options available to users, but it also creates friction for users who seek to adjust the information collected about them (e.g. personalized ads, training generative AI models). To tackle this, we implemented a web crawler that performs structured traversal of privacy and security setting interfaces. The crawler first opens a platform's website via URL in a headful Chromium browser, loads in saved cookies from profiles/storage/, and prompts the user to navigate to the settings area. The latter is designed deliberately to ensure generalization due to the dynamic nature of websites.
+
+    The crawler proceeds to perform a breadth-first crawl: it collects all hypertext links on the current page, and for each link it refers to Google Gemini to determine whether that link is related to user-configurable privacy/data/security settings. Links Gemini marks as “no” or already visited are skipped; “yes” links are visited, a full-page screenshot is saved under picasso/, and all links on that new page are added to the queue at the next depth. The crawl stops when the queue is empty or after a predefined maximum iteration amount is reached. Finally, the visited URLs, the layer map, and per-layer link counts are outputted into a JSON file.
+
+    Our approach was guided by three priorities-generalizability, determinism, and reproducibility-achieved respectively through using Gemini to steer the crawler, setting a low LLM temperature, and enforcing a structure, level-by-level traversal. The crawler achieved roughly 90\% accuracy across five media platforms, which included Spotify, Meta (i.e. Facebook, Instagram), Reddit, Linkedin, and Twitter/X.
+    
+    \subsection{Vision-Based Setting Extraction}
+    
+    Screenshots are processed using a Gemini-powered extraction pipeline that converts visual interface content into structured setting-level records. Gemini is used because the UI across platforms can vary significantly, and its agentic reasoning allows the extraction to generalize across diverse layouts. For each screenshot, the system extracts:
+    
+    \begin{itemize}
+        \item Setting label
+        \item Description text (if present)
+        \item State type (e.g., toggle, dropdown, text field)
+    \end{itemize}
+    
+   To improve reliability on long pages, tall screenshots are automatically segmented before inference. Without segmentation, extremely long images would be too small for Gemini to accurately detect text and UI states. The extracted outputs are consolidated into a structured JSON database. Each record in this database contains the following fields:
+
+    \begin{itemize}
+        \item \textbf{setting}: the name of the interface setting (e.g., "Google")
+        \item \textbf{description}: descriptive text associated with the setting, if present
+        \item \textbf{state}: the current state of the setting (e.g., active, inactive, or selected value)
+        \item \textbf{image\_path}: local path to the source screenshot
+        \item \textbf{url}: the web page or screen context of the setting
+        \item \textbf{layer}: click-depth or hierarchical layer indicating the setting's position in the interface
+    \end{itemize}
+    
+    This structured format ensures that both the content and context of each setting are preserved, enabling downstream tasks such as URL normalization, hierarchical mapping, and semantic classification.
+    
+    
+    \subsection{URL Reconstruction and Click-Depth Mapping}
+    
+    We reconstruct URLs and attach click-depth layers using filename conventions and crawl metadata. Each setting is enriched with:
+    
+    \begin{itemize}
+        \item Platform identifier
+        \item URL
+        \item Click-depth (layer)
+    \end{itemize}
+
+    Many screenshots do not store the original URL directly. We recover URLs from the screenshot filenames using a custom parsing scheme that handles transformations such as underscores for slashes, triple underscores for the scheme, and URL decoding. Reconstructed URLs are normalized by removing query parameters, fragments, and trailing slashes to improve matching with crawler metadata.  
+
+    Each setting is thus enriched with the platform name, normalized URL, and click-depth (layer), producing a cross-platform, normalized dataset suitable for both visualization and automated actuation. This produces a normalized cross-platform dataset of privacy settings that serves as the shared input for both the dashboard and the actuation agent.
+    
+    \subsection{Semantic Category Classification}
+    
+    Extracted settings are embedded using Gemini embeddings and classified into one of seven privacy-relevant categories: \textit{security/authentication}, \textit{identity/personal information}, \textit{device/sensor access}, \textit{data collection/tracking}, \textit{data sharing with third parties}, \textit{visibility/audience}, and \textit{communication/notifications}. These seven categories were chosen to capture the common user privacy settings and controls across platforms. This framework provides broad coverage of the types of settings users encounter, ensuring that almost all extracted settings can be meaningfully classified. Embeddings are cached to reduce computational cost and latency during repeated access.  
+
+    This classification enables structured comparison across platforms and supports the creation of a unified privacy dashboard. The structured output can also be exported as a CSV with fields including platform, setting name, description, state, click-depth, category, URL, and image path. This format serves as a ground-truth dataset for downstream analyses such as cross-platform pattern detection, privacy audit evaluation, and automated interface understanding.
+
+    \subsection{Visualization Dashboard}
+    
+    In order to demystify privacy designs and bring understanding and informed cross-platform comparison within reach of ordinary users, we used the data gathered from the aforementioned website to create an array of visualizations. Altogether, the website has the following features:
+    
+    \begin{enumerate}
+        \item Personal privacy settings visualization
+        \item Cross-platform privacy comparison
+        \item Privacy modification control center demo
+    \end{enumerate}
+    
+    These features create dual function for our product as a centralized privacy "control center" as well as a comparative transparency tool. Users have the ability to look at their own privacy settings, potential modifications, and possible risks to their privacy. Navigating to another section of the dashboard, they can easily see information on how many popular platforms structure themselves with regard to user data, with data on ease of account deletion, number of settings that can be changed, and more.
+
+    Tree Map:\\
+    The main visualization is our interactive tree map. It gives us a 
+    hierarchical overview of privacy settings across platforms. The area of each rectangle directly encodes a metric (count, actionable-only, risk-weighted score, or click depth) that gives users deeper insight to the hierarchical structure. 
+
+    The color of each rectangle encodes the platform. There are category headers to distinguish between different types of settings and improve structural clarity. 
+
+    The tree map supports interactive zooming into categories, allowing users to inspect areas of interest. Clicking on individual settings provides users with the meta data, such as a description, risk level, and click depth. 
+
+    Additional interaction features include multi-program filtering, search functionality, and guided mode that progressively reveals category to avoid cognitive overload.
+
+    Cross platform privacy comparison:\\
+    The stacked bar chart and pie chart provide complementary summaries of the data. The pie chart shows each platform's proportional contribution under the selected sizing metric (count, actionable-only, risk-weighted score, or click depth). The stacked bar chart compares each platform's settings by type (actionable, navigational, or unknown), revealing structural differences in privacy controls. Additional visualizations in this section include comparison of interactions required for account deletion and distributions of how many clicks it takes to access certain settings on a given platform.
+
+    
+    
+    \subsection{Agentic Privacy Actuation}
+    
+    The actuation component is implemented as a planner–executor–verifier loop operating over Playwright browser sessions.
+    
+    Given a structured command (e.g., \texttt{change TwitterX Protect your posts to on}), or a UI-based selection the user can navigate to explore settings across platforms, the system:
+    
+    \begin{enumerate}
+        \item Loads the normalized settings database to resolve the target URL.
+        \item Launches a Playwright session using stored authentication state.
+        \item Invokes a Gemini-based planner to generate a strict JSON action plan containing UI selectors.
+        \item Executes selectors using multiple resolution strategies (role-based, text-based, CSS, coordinate fallback).
+        \item Verifies state changes deterministically when possible, or via visual inspection when necessary.
+    \end{enumerate}
+    
+    Execution proceeds in discrete turns, allowing multi-step navigation and modal handling.
+    
+    \subsection{Confirmation Handling and Reliability Mechanisms}
+    
+    Privacy interfaces frequently require confirmation dialogs. We detect modal contexts using accessible roles and visible button heuristics. A lightweight confirmation subplanner selects appropriate confirmation actions while explicitly avoiding cancel or close controls. If model output is truncated or empty, deterministic fallbacks select the most confirm-like visible button without platform-specific hardcoding.
+    
+    Additional reliability mechanisms include:
+    
+    \begin{itemize}
+        \item Strict JSON schema enforcement for planner outputs
+        \item Multi-turn retries
+        \item Deterministic label-to-control matching
+        \item Execution status triage: \texttt{success}, \texttt{uncertain}, \texttt{error}
+    \end{itemize}
+    
+
+
+\section{Results }
+We evaluated the system across multiple major platforms with heterogeneous privacy interface structures. The agent successfully located and modified requested privacy settings across platforms including Reddit, Twitter/X, LinkedIn, and Spotify.
+
+The planner–executor–verifier architecture demonstrated the ability to:
+
+\begin{itemize}
+    \item Navigate deeply nested privacy menus
+    \item Expand dynamic interface elements
+    \item Resolve label-to-control associations in visually complex layouts
+    \item Handle modal confirmation dialogs without platform-specific rules
+\end{itemize}
+
+In cases where model outputs were truncated or empty due to token limits, deterministic confirmation fallbacks prevented execution deadlocks and reduced failure cascades. Multi-turn retries improved robustness when initial plans were incomplete.
+
+Importantly, the system operated without hardcoded selectors tailored to specific platforms. This suggests that LLM-guided UI reasoning combined with deterministic safeguards can generalize across heterogeneous privacy interface designs.
+
+While occasional uncertain outcomes occurred when visual verification could not conclusively determine state changes, the majority of structured setting modifications completed successfully.
+
+
+\section{Discussion}
+Our findings suggest that agentic AI systems can function as scalable intermediaries for privacy interface analysis and configuration. By combining deterministic crawling with LLM-guided interaction, we bridge structured data extraction and real-time interface manipulation.
+
+Unlike prior work focused on textual privacy policies, our approach targets the interaction layer itself—the point at which users exercise privacy control. This enables comparative evaluation of privacy design patterns across platforms and supports centralized configuration workflows.
+
+The system illustrates a hybrid reliability model: LLM planning provides generalization across heterogeneous interfaces, while deterministic constraints mitigate risks of model hallucination or truncated outputs. This hybrid design is critical when deploying agentic systems in high-stakes contexts such as privacy modification.
+
+Building on this foundation, the system is capable of facilitating regulatory processes. For instance, in the \textit{Federal Trade Commission v. Amazon.com, Inc} case, section numbers 127 through 154 present a page by page case study of Amazon Prime's four-page, six-click, fifteen-option Iliad cancellation process using screenshots and textual analysis. With our agentic AI pipeline, we can reproduce the same results with less time and human effort. We acknowledge the importance of regulation as one of the primary drivers of privacy and hope that our work will aid government agencies in enforcing applicable regulations for the benefit of everyday users.
+
+A key insight from this work is that agentic AI can directly reduce user effort in navigating complex privacy interfaces. Many settings are difficult to locate or interpret, but by tuning a large language model to act on structured interface data, the system can retrieve and manipulate these settings with minimal prompting. The automated crawler and structured dataset processing pipeline provide the necessary foundation for this capability, enabling the LLM to operate reliably across heterogeneous platforms. This highlights a practical benefit of agentic systems: tasks that would otherwise require extensive user effort can now be assisted by AI.
+
+Limitations remain. The system depends on visual and structural cues that may change over time, and verification can be ambiguous when interfaces lack explicit state indicators. Future work could incorporate accessibility-tree reasoning, formal state modeling, and longitudinal tracking of privacy interface evolution.
+
+\section{Conclusion }
+We presented the Agentic Privacy Control Center, an end-to-end pipeline for automated privacy setting discovery, normalization, visualization, and actuation. Our system demonstrates that agentic AI can reliably interact with heterogeneous privacy interfaces without platform-specific hardcoding.
+
+By transforming privacy interfaces into a structured, explorable, and actionable corpus, the system supports both research and practitioner workflows. By combining structured data processing with LLM-guided interaction, the system demonstrates how agentic AI can transform tedious, error-prone privacy management into an automated, prompt-driven workflow. More broadly, our work illustrates how agentic AI can move beyond passive analysis of policy text to active engagement with real user control mechanisms.
+
+We envision future extensions that integrate longitudinal privacy tracking, cross-platform benchmarking, and participatory feedback loops to further advance automated privacy design support.
+
+\section{Contributions }
+Sebastian Ferragut led the development of the initial privacy crawler prototype and fully designed and implemented the agentic chatbot system, including the planner–executor–verifier architecture for automated setting modification. He contributed to overall system integration across the crawling, database, and actuation components. In addition, he supported project coordination by organizing meetings, maintaining documentation, tracking task progress, and facilitating team communication throughout the development process.
+ 
+Nian-Nian Wang worked on the database. She developed a Gemini-powered pipeline to convert raw screenshots into into analyzable, actionable information. She extracted text and UI element states from the images, reconstructed URLs, annotated click-depth layers, and semantically categorized settings to enable meaningful integration with the agentic chatbot system and the cross-platform dashboard. She coordinated with teammates to ensure the data supported chatbot usage and confirmed the dashboard captured important insights.
+
+Jesse Huang focused on the web crawler section of the data collection-to-agentic chatbot control center pipeline. Building off the initial privacy crawler by Sebastian, he improved the success rate at which the crawler reached setting toggle pages, robustness with Gemini API calls to steer the crawler away from unrelated pages (e.g. blogs, legal), and click count proxy feature that measures each page's depth from the starting page. Afterwards, he cleaned the captured screenshots for duplicate images and verified the page click counts for accuracy. The screenshots, associated URLs, and click counts were later processed to populate the database.
+
+Jimmy Huang took charge of creating the tree map and supporting visualizations. Worked with Arya to create the website format and fitting the tree map onto the website. Created all of the different interactions and cross-platform comparisons of the tree map. Helped brainstorm for different visualizations and dashboard formats. 
+
+Arya Verma worked with Jimmy to implement the visualization dashboard, primarily focusing on the website design as well as the compartmentalization of data. Reformatted the website in order to make the design of the website itself conducive to user understanding of our intentions as they relate to informing both technical and non-technical audiences about privacy designs.
+
 
 % \section{\LaTeX{} Typesetting Examples}
 
@@ -229,9 +414,13 @@ Code: \url{https://github.com/sebastianferragut/DSC180A_PrivacyProject}
 % %%%% Appendix
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% \clearpage
-% \makeappendix
+\clearpage
+\makeappendix
 
+\subsection{Project Proposal}
+The following appendix contains the original project proposal submitted at the start of this work.
+
+\includepdf[pages=-, pagecommand={}]{project_proposal.pdf}
 % \subsection{Training Details}
 
 % \subsection{Additional Figures}

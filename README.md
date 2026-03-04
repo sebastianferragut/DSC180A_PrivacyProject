@@ -46,6 +46,51 @@ conda activate agentic-ui
 playwright install
 ```
 
+### Reproducibility Quickstart
+```bash
+# 1) Environment
+conda env create -f gemini-team/environment.yml
+conda activate agentic-ui
+playwright install
+
+# 2) Capture authenticated profile cache (interactive)
+python gemini-team/save_state.py "https://www.linkedin.com/mypreferences/d/categories/account"
+
+# 3) Crawl settings pages (interactive/authenticated)
+cd gemini-team
+python settingsPageAgent.py
+
+# 4) Build classified settings dataset
+cd ../screenshot-classifier
+python screenshot_settings_extractor.py
+cd ../database
+python map_url.py
+python classify_categories.py
+cd ..
+
+# 5) Generate coverage metrics + run tests
+python scripts/evaluate_coverage.py
+pytest -q
+
+# 6) Run the agent app
+chainlit run privacyagentapp/agenticapp.py -w
+```
+
+### Dependencies (Pinned)
+- Canonical primary environment: `gemini-team/environment.yml`
+- Additional component-specific dependency files (used when working on the classifier component):
+  - `screenshot-classifier/requirements_clean.txt`
+  - `screenshot-classifier/environment.yml`
+- `pytest` is included in the canonical env for automated tests.
+
+### Dataset Access & Provenance
+- Generated artifacts (created by the pipeline):
+  - `database/data/extracted_settings_with_urls_and_layers_classified.json`
+  - `privacyagentapp/database/run_stats.json`
+  - `new_crawler/generaloutput/*/harvest_report.json`
+- Some artifacts in this repository are checked in for reference, but production runs regenerate them from crawler/classifier steps above.
+- Crawling/modification data collection requires authenticated browser/profile cache capture as described in the `save_state.py` section.
+
 ---
 
 ## Profile Cache and save_state.py
@@ -122,7 +167,7 @@ python map_url.py
 python classify_categories.py
 ```
 
-The json files produced after each step are ```screenshot-classifier/extracted_settings.json```, ```/database/data/extracted_settings_with_urls_and_layers.json``` and the final file ```database/data/extracted_settings_with_urls_and_layers_classified```. For analysis, `database/convert_json_to_csv.py` converts the json files to csv for data exploration and manipulation.
+The json files produced after each step are ```screenshot-classifier/extracted_settings.json```, ```/database/data/extracted_settings_with_urls_and_layers.json``` and the final file ```database/data/extracted_settings_with_urls_and_layers_classified.json```. For analysis, `database/convert_json_to_csv.py` converts the json files to csv for data exploration and manipulation.
 
 
 ## Running the Agent (agenticapp.py)
@@ -184,3 +229,27 @@ DSC180A_PrivacyProject/
 |-- screenshot-classifier/
 |   |-- screenshot_settings_extractor.py
 ```
+
+### Proposal Milestones Traceability
+- Milestone: Crawl and collect settings pages
+  - Code: `gemini-team/settingsPageAgent.py`, `new_crawler/crawlscrapingagent.py`
+  - Outputs: `new_crawler/generaloutput/*/harvest_report.json`, `gemini-team/generaloutput/*/harvest_report.json`
+- Milestone: Extract and classify settings
+  - Code: `screenshot-classifier/screenshot_settings_extractor.py`, `database/map_url.py`, `database/classify_categories.py`
+  - Output: `database/data/extracted_settings_with_urls_and_layers_classified.json`
+- Milestone: Agentic app and evaluation/logging
+  - Code: `privacyagentapp/agenticapp.py`, `scripts/evaluate_coverage.py`
+  - Outputs: `privacyagentapp/database/run_stats.json`, `reports/coverage_metrics.json`
+- Milestone: Checkpoint and final reporting
+  - Artifacts: `reports/checkpoint_report.tex`, `reports/final_report.tex`
+- Proposal context and milestone progression are tracked in the report sources above.
+
+### Roadmap / TODO
+- Expand platform coverage to additional privacy settings ecosystems.
+- Improve crawler robustness for dynamic/anti-bot UI flows.
+- Add deeper automated tests for planner/executor/verifier edge cases.
+- Strengthen schema checks for extracted settings across historical runs.
+- Expand dashboard views for cross-platform comparison and trends.
+- Add dataset/version provenance metadata for reproducible snapshots.
+- Improve repeated-run experiment tracking and summary comparisons.
+- Standardize collaboration workflow with PR and review checklists.
