@@ -33,7 +33,7 @@ body {
 
 /* Top Navigation Bar */
 .navbar {
-    background-color: #333;
+    background-color: #000000;
     padding: 2rem 3rem;
     display: flex;
     justify-content: space-between;
@@ -41,37 +41,71 @@ body {
     color: white;
 }
 
-.navbar h1 {
-    font-size: 1.5rem;
-    margin-right: 450px;
+.navbar {
+    h1 {
+        font-size: 2rem;
+        margin-right: 450px;
+    }
+    a {
+        font-size: 1.2rem;
+        color: white;
+        text-decoration: none;
+        margin-right: 4rem;
+    }
+    a:hover {
+        color: #ddd;
+    }
 }
-
-.navbar a {
-    color: white;
-    text-decoration: none;
-    margin-right: 4rem;
-}
-
-.navbar a:hover {
-    color: #ddd;
-}
-
 /* Container for sidebar and main content */
 .container {
     display: flex;
     height: calc(100vh - 70px);
     overflow: hidden;
+    position: relative; /* allow absolutely positioned sidebar-related elements */
 }
 
 /* Left Sidebar Navigation */
 .sidebar {
     width: 250px;
-    background-color: #f9f9f9;
+    flex: 0 0 250px;
+    min-width: 10px;
+    max-width: 275px;
+    position: relative; /* for resizer handle */
+    background-color: #ffffff;
     border-right: 1px solid #ddd;
     padding: 1rem 0;
+    overflow: hidden;
+    will-change: width;
+    transition: width 180ms ease, flex-basis 180ms ease, padding 180ms ease;
+}
+
+/* Visually collapsed state: keep only a thin rail to drag */
+.sidebar.sidebar-collapsed {
+    padding: 0;
+    border-right: none;
+}
+
+.sidebar.sidebar-collapsed > *:not(.sidebar-resizer) {
+    display: none;
+}
+
+/* Draggable edge for sidebar resize */
+.sidebar-resizer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10px;
+    height: 100%;
+    cursor: ew-resize;
+    background: transparent;
+}
+
+html.dark-mode .sidebar-toggle:hover {
+    background: #ffffff;
 }
 
 .sidebar a {
+  font-size: 1.15rem;
     display: block;
     padding: 0.75rem 1.5rem;
     color: #333;
@@ -161,7 +195,7 @@ body {
 
 .category-intro-header h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   color: #333;
 }
@@ -172,7 +206,7 @@ body {
   border: 1px solid #cbd5e1;
   background: #fff;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 16px;
 }
 
 #toggleCategoryIntro:hover {
@@ -181,6 +215,7 @@ body {
 
 .category-intro-body {
   margin-top: 12px;
+  font-size: 16px;
 }
 
 .category-intro-body.hidden {
@@ -189,26 +224,26 @@ body {
 
 .category-intro-body h3 {
   margin: 12px 0 8px 0;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
   color: #333;
 }
 
 .category-intro-lead {
-  font-size: 14px;
+  font-size: 16px;
   color: #555;
   margin: 8px 0 10px 0;
   line-height: 1.5;
 }
 
 .intro-divider {
-  margin: 14px 0;
+  margin: 16px 0;
   border: none;
   border-top: 1px solid #e5e7eb;
 }
 
 .tutorial-bullets {
-  font-size: 13px;
+  font-size: 16px;
   padding-left: 18px;
   margin: 0 0 12px 0;
   line-height: 1.5;
@@ -941,9 +976,14 @@ body {
   color: #666;
 }
 
-h2 {
-  margin-top: 0;
-  font-size: 1rem;
+.main-content {
+  h2 {
+    margin-top: 1;
+    font-size: 2rem;
+  }
+  p {
+    font-size: 1.3rem;
+  }
 }
 
 .settings ul,

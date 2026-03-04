@@ -11,18 +11,22 @@ let pages = [
 ];
 
 let nav = document.getElementById('navbar');
-for (let p of pages) {
-  let url = p.url;
-  let title = p.title;
-  url = !ARE_WE_HOME && !url.startsWith('http') ? '../' + url : url;
-  let a = document.createElement('a');
-  a.href = url;
-  a.textContent = title;
-  nav.append(a);
-  if (a.host === location.host && a.pathname === location.pathname) {
-    a.classList.add('current');
-  }
-  if (a.href === "https://github.com/sebastianferragut/DSC180A_PrivacyProject") {
-    a.target='_blank';
+
+if (nav) {
+  // Build navigation links
+  for (let p of pages) {
+    let url = p.url;
+    let title = p.title;
+    url = !ARE_WE_HOME && !url.startsWith('http') ? '../' + url : url;
+    let a = document.createElement('a');
+    a.href = url;
+    a.textContent = title;
+    nav.append(a);
+    if (a.host === location.host && a.pathname === location.pathname) {
+      a.classList.add('current');
+    }
+    if (a.href === "https://github.com/sebastianferragut/DSC180A_PrivacyProject") {
+      a.target = '_blank';
+    }
   }
 }
