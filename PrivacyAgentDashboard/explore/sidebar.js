@@ -1,3 +1,5 @@
+import { refreshTreemap } from "./treemap.js";
+
 function loadTreemap() {
     return;
 }
@@ -9,8 +11,11 @@ const treemap = document.getElementById("treemapContainer");
 const additional = document.getElementById("additional");
 
 document.getElementById('recommendationsBtn').addEventListener('click', function() {
-    if (additional) {additional.classList.add('hidden')};
-    if (treemap) {treemap.classList.remove('hidden')};
+    if (additional) { additional.classList.add('hidden'); }
+    if (treemap) {
+        treemap.classList.remove('hidden');
+        refreshTreemap();
+    }
 });
 
 document.getElementById('crossPlatformBtn').addEventListener('click', function() {  

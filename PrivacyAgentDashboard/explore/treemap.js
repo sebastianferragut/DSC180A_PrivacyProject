@@ -2661,6 +2661,20 @@ function setupEventHandlers() {
   });
 }
 
+/**
+ * Re-render the treemap after it becomes visible (e.g. when switching back from Cross-platform view).
+ * Use requestAnimationFrame so container dimensions are correct after layout.
+ */
+export function refreshTreemap() {
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      if (document.getElementById("treemapContainer") && !document.getElementById("treemapContainer").classList.contains("hidden")) {
+        renderTreemap();
+      }
+    });
+  });
+}
+
 // Setup event handlers when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', setupEventHandlers);
