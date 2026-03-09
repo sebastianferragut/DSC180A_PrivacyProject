@@ -1,0 +1,75 @@
+{
+  "status": "ok",
+  "missing_inputs": [],
+  "primary_source": "database/data/extracted_settings_with_urls_and_layers_classified.json",
+  "raw_total": 623,
+  "raw_source": "database/data/extracted_settings_with_urls_and_layers.json",
+  "total_records": 623,
+  "categorized_count": 623,
+  "uncategorized_count": 0,
+  "categorized_ratio": 1.0,
+  "missing_url_count": 4,
+  "missing_layer_count": 89,
+  "per_platform": {
+    "Facebook": {
+      "total_records": 91,
+      "categorized_count": 91,
+      "uncategorized_count": 0,
+      "missing_url_count": 0
+    },
+    "LinkedIn": {
+      "total_records": 320,
+      "categorized_count": 320,
+      "uncategorized_count": 0,
+      "missing_url_count": 0
+    },
+    "Reddit": {
+      "total_records": 50,
+      "categorized_count": 50,
+      "uncategorized_count": 0,
+      "missing_url_count": 0
+    },
+    "Spotify": {
+      "total_records": 49,
+      "categorized_count": 49,
+      "uncategorized_count": 0,
+      "missing_url_count": 0
+    },
+    "TwitterX": {
+      "total_records": 113,
+      "categorized_count": 113,
+      "uncategorized_count": 0,
+      "missing_url_count": 4
+    }
+  },
+  "top_categories": [
+    {
+      "category": "communication_notifications",
+      "count": 248
+    },
+    {
+      "category": "data_collection_tracking",
+      "count": 151
+    },
+    {
+      "category": "visibility_audience",
+      "count": 94
+    },
+    {
+      "category": "data_sharing_third_parties",
+      "count": 47
+    },
+    {
+      "category": "security_authentication",
+      "count": 45
+    },
+    {
+      "category": "identity_personal_info",
+      "count": 36
+    },
+    {
+      "category": "device_sensor_access",
+      "count": 2
+    }
+  ]
+}

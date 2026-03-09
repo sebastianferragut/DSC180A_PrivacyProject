@@ -41,11 +41,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <meta http-equiv='refresh' content='0; URL=./view/'> -->
     <title>Privacy Agent Dashboard</title>
-    <link rel="stylesheet" href="../style2.css">
+    <link rel="stylesheet" href="../style.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script type="module" src="../global.js"></script>
-    <script type="module" src="../treemap.js"></script>
+    <script type="module" src="treemap.js"></script>
+    <script type="module" src="sidebar.js"></script>
 </head>
 
 <body>
@@ -58,8 +60,8 @@
     <div class="container">
         <!-- Left Sidebar Navigation -->
         <aside class="sidebar">
-            <a href="#section1">Cross-platform privacy</a>
-            <a href="#section2">Your recommendations</a>
+            <a href="#view" onclick="return false;" id="recommendationsBtn" class="sidebar-btn">Your recommendations</a>
+            <a href="#compare" onclick="return false;" id="crossPlatformBtn" class="sidebar-btn">Cross-platform privacy</a>
         </aside>
 
         <!-- Main Content -->
@@ -71,13 +73,16 @@
                     <button id="toggleCategoryIntro" type="button">Hide guide</button>
                 </div>
                 <div class="category-intro-body" id="categoryIntroBody">
-                    <p class="category-intro-lead">This treemap visualizes privacy settings across platforms. Rectangle area reflects the selected sizing metric (count, actionable, risk, or clicks).</p>
+                    <p class="category-intro-lead">This treemap visualizes privacy settings across platforms. Rectangle area reflects the selected sizing metric (count, actionable, risk, or clicks). Data is loaded from <code>database/data/extracted_settings_with_urls_and_layers_classified.json</code>.</p>
                     <ul class="tutorial-bullets">
+                        <li><strong>Views:</strong> Use the sidebar to switch between "Your recommendations" (interactive treemap) and "Cross-platform privacy" (cross-platform comparison charts).</li>
                         <li><strong>Zoom:</strong> Click a category header to zoom in.</li>
                         <li><strong>Details:</strong> Click a setting rectangle to view details.</li>
                         <li><strong>Go back:</strong> Use breadcrumbs or the Back button.</li>
                         <li><strong>Filter:</strong> Use Category, Platform, State, and Search.</li>
-                        <li><strong>Linked charts:</strong> Bar and pie charts update with the treemap view.</li>
+                        <li><strong>Linked charts:</strong> In the Cross-platform privacy view, bar and pie charts update with the treemap view.</li>
+                        <li><strong>Settings by Platform and Type:</strong> Updates to match the current treemap view (zoom + filters).</li>
+                        <li><strong>Area Share (Current View):</strong> Shows platform share within the current view using the same sizing metric as the treemap.</li>
                     </ul>
                     <hr class="intro-divider" />
                     <h3>How settings are categorized</h3>
@@ -115,7 +120,7 @@
                 </div>
             </section>
             <!-- Treemap Visualization -->
-            <section class="panel treemap-section">
+            <section class="panel treemap-section" id="treemap">
             <div class="treemap-controls">
                 <div class="treemap-control-row">
                 <label>
@@ -206,16 +211,14 @@
             </section>
 
             <!-- Additional Charts Section -->
-            <section class="panel charts-section">
+            <section class="panel charts-section hidden" id="additional">
             <div id="belowTreemapRow" class="charts-container">
                 <div class="chart-panel">
                 <h3>Settings by Platform and Type</h3>
-                <p class="chart-subtitle">Updates to match the current treemap view (zoom + filters).</p>
                 <div id="stackedPlatformChart"></div>
                 </div>
                 <div class="chart-panel">
                 <h3>Area Share (Current View)</h3>
-                <p class="chart-subtitle">Shows platform share within the current view using the same sizing metric as the treemap.</p>
                 <div id="pieAreaChart"></div>
                 </div>
             </div>

@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 import math
 import time, random
+import uuid
 
 
 import chainlit as cl
@@ -28,6 +29,22 @@ from google.genai import types
 from google.genai.types import Content, Part
 
 from datetime import datetime
+
+# =========================
+# Logging
+# =========================
+
+LOG = True
+DEBUG = False
+RUN_ID = uuid.uuid4().hex[:8]
+
+def lprint(*args, **kwargs):
+    if LOG:
+        print(f"[{RUN_ID}]", *args, **kwargs)
+
+def dprint(*args, **kwargs):
+    if DEBUG:
+        print(f"[{RUN_ID}]", *args, **kwargs)
 
 # =========================
 # Paths & Config
@@ -50,19 +67,19 @@ try:
         / "extracted_settings_with_urls_and_layers_classified.json"
     )
 except Exception as e:
-    print(f"Warning: could not construct SETTINGS_JSON_PATH from REPO_ROOT ({REPO_ROOT}): {e}")
+    lprint(f"Warning: could not construct SETTINGS_JSON_PATH from REPO_ROOT ({REPO_ROOT}): {e}")
     SETTINGS_JSON_PATH = Path("extracted_settings_with_urls_and_layers_classified.json")
 
 try:
     GENERAL_OUTPUT_DIR = REPO_ROOT / "gemini-team" / "general_output"
 except Exception as e:
-    print(f"Warning: could not construct GENERAL_OUTPUT_DIR from REPO_ROOT ({REPO_ROOT}): {e}")
+    lprint(f"Warning: could not construct GENERAL_OUTPUT_DIR from REPO_ROOT ({REPO_ROOT}): {e}")
     GENERAL_OUTPUT_DIR = Path("general_output")
 
 try:
     STORAGE_STATE_DIR = REPO_ROOT / "gemini-team" / "profiles" / "storage"
 except Exception as e:
-    print(f"Warning: could not construct STORAGE_STATE_DIR from REPO_ROOT ({REPO_ROOT}): {e}")
+    lprint(f"Warning: could not construct STORAGE_STATE_DIR from REPO_ROOT ({REPO_ROOT}): {e}")
     STORAGE_STATE_DIR = Path("storage")
 
 SESSION_CHANGES_KEY = "changed_settings"
@@ -81,7 +98,7 @@ SESSION_SELECTED_SETTING_ID = "selected_setting_id"
 SESSION_SELECTED_PLATFORM = "selected_platform"
 
 
-ENABLE_NLP = False  
+ENABLE_NLP = False
 
 # Categories present in settings_snapshot.json (verified)
 CATEGORY_ORDER = [
@@ -128,7 +145,7 @@ SESSION_TIMEOUT_SECONDS = 10 * 60  # 10 minutes idle timeout
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
-    print("Warning: GEMINI_API_KEY not set. Setting changes will fail until it is provided.")
+    lprint("Warning: GEMINI_API_KEY not set. Setting changes will fail until it is provided.")
 
 MODEL_PLAN = os.environ.get("MODEL_PLAN", "gemini-2.5-pro")
 MODEL_NLP = os.environ.get("MODEL_NLP", "gemini-2.5-flash")
@@ -364,24 +381,6 @@ def load_settings_db() -> Dict[str, List[SettingEntry]]:
 # =========================
 # Utility functions
 # =========================
-def extract_json(resp, tag: str = "gemini") -> Optional[dict]:
-    """
-    Extract model text and parse as JSON dict. Returns dict or None.
-    """
-    raw = extract_model_text(resp)
-    if not raw:
-        print(f"[{tag}] extract_json: empty text")
-        return None
-    try:
-        data = json.loads(raw)
-        if not isinstance(data, dict):
-            print(f"[{tag}] extract_json: JSON is not an object (type={type(data)})")
-            return None
-        return data
-    except Exception as e:
-        print(f"[{tag}] extract_json: JSON parse error: {e}; raw head={raw[:200]!r}")
-        return None
-
 def extract_model_text(resp) -> str:
     """
     Robustly extract text from google-genai responses.
@@ -390,16 +389,8 @@ def extract_model_text(resp) -> str:
     if resp is None:
         return ""
 
-    # 1) SDK convenience accessor (often the best)
-    try:
-        t = getattr(resp, "text", None)
-        if isinstance(t, str) and t.strip():
-            return t.strip()
-    except Exception:
-        pass
-
-    # 2) Candidates -> content -> parts[*].text
-    out = ""
+    # 1) Candidates -> content -> parts[*].text (preferred)
+    out_parts: List[str] = []
     try:
         cands = getattr(resp, "candidates", None) or []
         for cand in cands[:1]:
@@ -409,43 +400,193 @@ def extract_model_text(resp) -> str:
                 for part in parts:
                     pt = getattr(part, "text", None)
                     if isinstance(pt, str) and pt:
-                        out += pt
-            # Some SDK versions also have cand.text
-            cand_text = getattr(cand, "text", None)
-            if isinstance(cand_text, str) and cand_text.strip() and not out.strip():
-                out = cand_text
+                        out_parts.append(pt)
+            if out_parts:
+                break
     except Exception:
         pass
 
-    return (out or "").strip()
+    if out_parts:
+        return "".join(out_parts).strip()
+
+    # 1b) Candidate-level text fallback (some SDKs populate cand.text but not parts)
+    try:
+        cands = getattr(resp, "candidates", None) or []
+        for cand in cands[:1]:
+            cand_text = getattr(cand, "text", None)
+            if isinstance(cand_text, str) and cand_text.strip():
+                return cand_text.strip()
+    except Exception:
+        pass
+
+    # 2) Function-call args (if no text)
+    try:
+        cands = getattr(resp, "candidates", None) or []
+        for cand in cands[:1]:
+            content = getattr(cand, "content", None)
+            parts = getattr(content, "parts", None) if content is not None else None
+            if parts:
+                for part in parts:
+                    fc = getattr(part, "function_call", None)
+                    if fc is not None:
+                        args = getattr(fc, "args", None)
+                        if args is not None:
+                            if isinstance(args, (dict, list)):
+                                return json.dumps(args, ensure_ascii=False)
+                            return str(args)
+    except Exception:
+        pass
+
+    # 3) SDK convenience accessor (fallback)
+    try:
+        t = getattr(resp, "text", None)
+        if isinstance(t, str) and t.strip():
+            return t.strip()
+    except Exception:
+        pass
+
+    # 4) to_dict() fallback: candidates[0].content.parts[*].text or function_call.args
+    try:
+        to_dict = getattr(resp, "to_dict", None)
+        if callable(to_dict):
+            d = to_dict() or {}
+            parts = (
+                d.get("candidates", [{}])[0]
+                .get("content", {})
+                .get("parts", [])
+            )
+            for p in parts:
+                if isinstance(p, dict):
+                    txt = p.get("text")
+                    if isinstance(txt, str) and txt.strip():
+                        return txt.strip()
+                    fc = p.get("function_call") or p.get("functionCall")
+                    if isinstance(fc, dict):
+                        args = fc.get("args")
+                        if args is not None:
+                            if isinstance(args, (dict, list)):
+                                return json.dumps(args, ensure_ascii=False)
+                            return str(args)
+    except Exception:
+        pass
+
+    if DEBUG:
+        try:
+            to_dict = getattr(resp, "to_dict", None)
+            if callable(to_dict):
+                try:
+                    dprint(
+                        "[extract_model_text] resp.to_dict:",
+                        json.dumps(to_dict(), ensure_ascii=False)[:2000],
+                    )
+                except Exception as e:
+                    dprint("[extract_model_text] resp.to_dict failed:", e)
+            else:
+                cands = getattr(resp, "candidates", None) or []
+                dprint(
+                    "[extract_model_text] no text; candidates type/len:",
+                    type(cands),
+                    len(cands) if cands else 0,
+                )
+                if cands:
+                    c0 = cands[0]
+                    dprint(
+                        "[extract_model_text] cand0 attrs:",
+                        [a for a in dir(c0) if not a.startswith("_")][:20],
+                    )
+                    content = getattr(c0, "content", None)
+                    parts = getattr(content, "parts", None) if content is not None else None
+                    dprint(
+                        "[extract_model_text] content/parts:",
+                        type(content),
+                        type(parts),
+                        len(parts) if parts else 0,
+                    )
+        except Exception as e:
+            dprint("[extract_model_text] debug introspection failed:", e)
+    # 5) Pydantic dumps fallback (google-genai objects often expose model_dump/model_dump_json)
+    try:
+        # Try response-level dump first
+        for obj in (resp, getattr(resp, "candidates", [None])[0]):
+            if obj is None:
+                continue
+            md = getattr(obj, "model_dump", None)
+            if callable(md):
+                d = md()
+            else:
+                mdj = getattr(obj, "model_dump_json", None)
+                if callable(mdj):
+                    d = json.loads(mdj())
+                else:
+                    d = None
+            if isinstance(d, dict):
+                # same lookup as to_dict path
+                parts = (
+                    d.get("candidates", [{}])[0]
+                    .get("content", {})
+                    .get("parts", [])
+                ) if "candidates" in d else d.get("content", {}).get("parts", [])
+                for p in parts or []:
+                    if isinstance(p, dict):
+                        txt = p.get("text")
+                        if isinstance(txt, str) and txt.strip():
+                            return txt.strip()
+                        fc = p.get("function_call") or p.get("functionCall")
+                        if isinstance(fc, dict):
+                            args = fc.get("args")
+                            if args is not None:
+                                if isinstance(args, (dict, list)):
+                                    return json.dumps(args, ensure_ascii=False)
+                                return str(args)
+    except Exception:
+        pass
+
+    return ""
 
 def debug_print_gemini_response(resp, tag="gemini"):
+    # Minimal operational summary
+    try:
+        cands = getattr(resp, "candidates", None) or []
+        fr = getattr(cands[0], "finish_reason", None) if cands else None
+    except Exception:
+        fr = None
+    try:
+        t = extract_model_text(resp)
+        text_present = isinstance(t, str) and bool(t.strip())
+        text_len = len(t) if isinstance(t, str) else 0
+    except Exception:
+        text_present = False
+        text_len = 0
+    lprint(f"[{tag}] finish_reason={fr!r} text_present={text_present} text_len={text_len}")
+
+    if not DEBUG:
+        return
     try:
         md = getattr(resp, "usage_metadata", None) or getattr(resp, "usage", None)
-        print(f"[{tag}] usage_metadata={md!r}")
+        dprint(f"[{tag}] usage_metadata={md!r}")
     except Exception:
         pass
 
     try:
         pf = getattr(resp, "prompt_feedback", None)
         if pf:
-            print(f"[{tag}] prompt_feedback={pf!r}")
+            dprint(f"[{tag}] prompt_feedback={pf!r}")
     except Exception:
         pass
 
     try:
         cands = getattr(resp, "candidates", None) or []
-        print(f"[{tag}] candidates={len(cands)}")
+        dprint(f"[{tag}] candidates={len(cands)}")
         if cands:
             c0 = cands[0]
-            print(f"[{tag}] finish_reason={getattr(c0,'finish_reason',None)!r}")
-            print(f"[{tag}] safety_ratings={getattr(c0,'safety_ratings',None)!r}")
+            dprint(f"[{tag}] finish_reason={getattr(c0,'finish_reason',None)!r}")
+            dprint(f"[{tag}] safety_ratings={getattr(c0,'safety_ratings',None)!r}")
     except Exception as e:
-        print(f"[{tag}] cand debug failed: {e!r}")
+        dprint(f"[{tag}] cand debug failed: {e!r}")
 
     try:
         t = getattr(resp, "text", None)
-        print(f"[{tag}] resp.text type={type(t)} len={len(t) if isinstance(t,str) else 'n/a'}")
+        dprint(f"[{tag}] resp.text type={type(t)} len={len(t) if isinstance(t,str) else 'n/a'}")
     except Exception:
         pass
 
@@ -755,46 +896,6 @@ def normalize_target_value(text: str) -> Optional[str]:
     return None
 
 
-def parse_nl_request(user_text: str) -> Dict[str, Optional[str]]:
-    """
-    Extract platform, target_value, setting_query from a natural language message.
-    """
-    text = (user_text or "").strip()
-    lower = text.lower()
-
-    # target_value: look for "to X", "set X", "enable/disable", etc.
-    target_value = None
-
-    m = re.search(r"\bto\s+(on|off|private|public|enabled|disabled)\b", lower)
-    if m:
-        target_value = normalize_target_value(m.group(1))
-        # remove the "to X" part from query
-        lower_wo = re.sub(r"\bto\s+" + re.escape(m.group(1)) + r"\b", " ", lower)
-    else:
-        lower_wo = lower
-
-    if not target_value:
-        target_value = infer_target_value_from_text(user_text)
-
-
-    # platform: if user types "on instagram", "for reddit", etc.
-    platform_hint = None
-    m2 = re.search(r"\b(on|in|for)\s+([a-zA-Z0-9_]+)\b", lower)
-    if m2:
-        platform_hint = m2.group(2)
-
-    # setting_query: remove leading verbs that are noise
-    setting_query = lower_wo
-    setting_query = re.sub(r"^(please\s+)?(change|set|turn|make|update|enable|disable)\s+", "", setting_query).strip()
-    setting_query = re.sub(r"\b(my|the)\b", " ", setting_query)
-    setting_query = re.sub(r"\s+", " ", setting_query).strip()
-
-    return {
-        "platform_hint": platform_hint,
-        "target_value": target_value,
-        "setting_query": setting_query or None,
-    }
-
 def score_setting_candidate(entry: SettingEntry, query: str) -> float:
     q = _norm(query)
     name = _norm(entry.name)
@@ -931,6 +1032,11 @@ async def present_candidates(platform: str, query: str, candidates: List[Setting
         SESSION_PENDING_KEY,
         {c.setting_id: {"name": c.name, "category": c.category, "description": c.description} for c in candidates}
     )
+    # Store deterministic leaf hints per setting (use DB setting name)
+    cl.user_session.set(
+        SESSION_INFERRED_BY_SETTING,
+        {c.setting_id: {"leaf_hint": c.name, "target_value": target_value} for c in candidates}
+    )
 
     actions = []
     for i, c in enumerate(candidates, start=1):
@@ -1045,15 +1151,16 @@ async def on_pick_setting(action: cl.Action):
         await cl.Message(content="Could not resolve that setting in the DB. Please try again.").send()
         return
     
-    infer_map = cl.user_session.get("inferred_by_setting") or {}
+    infer_map = cl.user_session.get(SESSION_INFERRED_BY_SETTING) or {}
     picked = infer_map.get(setting.setting_id) or {}
-    if picked.get("leaf_hint"):
-        cl.user_session.set("inferred_leaf_hint", picked["leaf_hint"])
+    picked_leaf = picked.get("leaf_hint") or setting.name
+    cl.user_session.set("inferred_leaf_hint", picked_leaf)
+    cl.user_session.set("last_leaf_hint_source", "setting_name")
     if picked.get("target_value"):
         cl.user_session.set("inferred_target_value", picked["target_value"])
 
-    print("[UI DEBUG] after pick_setting -> inferred_leaf_hint:", repr(cl.user_session.get("inferred_leaf_hint")))
-    print("[UI DEBUG] after pick_setting -> inferred_target_value:", repr(cl.user_session.get("inferred_target_value")))
+    dprint("[UI DEBUG] after pick_setting -> inferred_leaf_hint:", repr(cl.user_session.get("inferred_leaf_hint")))
+    dprint("[UI DEBUG] after pick_setting -> inferred_target_value:", repr(cl.user_session.get("inferred_target_value")))
 
     # Store pending confirmation (setting inferred from user intent)
     cl.user_session.set(SESSION_PENDING_CONFIRM, {"platform": platform, "setting_id": setting.setting_id})
@@ -1080,22 +1187,6 @@ async def on_pick_setting(action: cl.Action):
         actions=actions
     ).send()
 
-
-async def ask_for_platform(pending_query: str, pending_value: Optional[str]):
-    # Store pending intent
-    cl.user_session.set("pending_nl_query", {"setting_query": pending_query, "target_value": pending_value})
-
-    # Offer buttons for known platforms
-    plats = list_platforms()
-    actions = [
-        cl.Action(name="pick_platform", payload={"platform": p}, label=p)
-        for p in plats[:10]  # safety cap
-    ]
-
-    await cl.Message(
-        content="Which platform is this for?",
-        actions=actions
-    ).send()
 
 async def prompt_pick_platform():
     plats = list_platforms()
@@ -1188,8 +1279,8 @@ async def on_confirm_setting(action: cl.Action):
         return
 
     suggested_value = cl.user_session.get("inferred_target_value")
-    print("[UI DEBUG] inferred_target_value in session:", repr(suggested_value))
-    print("[UI DEBUG] inferred_leaf_hint in session:", repr(cl.user_session.get("inferred_leaf_hint")))
+    dprint("[UI DEBUG] inferred_target_value in session:", repr(suggested_value))
+    dprint("[UI DEBUG] inferred_leaf_hint in session:", repr(cl.user_session.get("inferred_leaf_hint")))
 
     # If Gemini inferred a target state, confirm it first
     if suggested_value in ("on", "off", "private", "public"):
@@ -1279,13 +1370,11 @@ async def on_confirm_value(action: cl.Action):
     ).send()
 
     
-    inferred_leaf_hint = sanitize_leaf_hint(cl.user_session.get("inferred_leaf_hint"), setting.name)
-
     result = await cl.make_async(apply_setting_change_sync)(
         platform,
         setting,
         suggested_value,
-        leaf_hint=inferred_leaf_hint
+        leaf_hint=setting.name
     )
     append_change(result)
 
@@ -1303,15 +1392,6 @@ async def on_confirm_value(action: cl.Action):
             actions=[set_gemini_key_action(), end_session_action(), change_platform_action()]
         ).send()
 
-
-ACTION_PHRASES = [
-    "turn on", "turn off", "switch on", "switch off",
-    "enable", "disable", "make", "set", "change", "stop",
-    "hide", "show", "allow", "disallow", "block", "unblock",
-    "mute", "unmute",
-]
-
-STATE_WORDS = {"on", "off", "private", "public", "enabled", "disabled", "yes", "no"}
 
 GENERIC_HINTS = {
     "account", "accounts", "settings", "privacy", "security",
@@ -1343,66 +1423,31 @@ def sanitize_leaf_hint(hint: Optional[str], fallback: str) -> str:
 def resolve_visible_leaf_label(page: Page, leaf_hint: Optional[str], fallback: str) -> str:
     """
     Try to map a leaf_hint to an actually visible label on the CURRENT page.
-    If not visible, return leaf_hint as-is (or fallback).
+    Exact match first; guarded fuzzy only if exact not found.
     """
     if not leaf_hint:
         return fallback
 
-    # Prefer actionable label match (toggle/checkbox nearby), else any label-like match
-    matched = (
-        best_actionable_label_match_on_page(page, leaf_hint)
-        or best_label_match_on_page(page, leaf_hint)
-    )
-    return matched or leaf_hint or fallback
+    leaf_hint = leaf_hint.strip()
+    if not leaf_hint:
+        return fallback
 
+    # 1) Exact visible match (preferred, since leaf_hint now comes from DB setting.name)
+    try:
+        loc = page.get_by_text(leaf_hint, exact=True)
+        if loc.count() > 0:
+            return leaf_hint
+    except Exception:
+        pass
 
-def derive_leaf_hint_from_text(user_text: str) -> Optional[str]:
-    """
-    Platform-agnostic: derive a *hint phrase* from user text.
-    This is NOT expected to exactly match a UI label.
-    """
-    if not user_text:
-        return None
+    # 2) Guarded fuzzy match (actionable first)
+    matched = best_actionable_label_match_on_page(page, leaf_hint) or best_label_match_on_page(page, leaf_hint)
+    if matched and _hint_candidate_ok(leaf_hint, matched, min_overlap=0.60):
+        return matched
 
-    t = user_text.strip()
+    # 3) If nothing safe, return the hint as-is (better to fail downstream than click wrong thing)
+    return leaf_hint or fallback
 
-    # Prefer quoted text if present: "Protect your posts"
-    m = re.search(r"['\"]([^'\"]{3,80})['\"]", t)
-    if m:
-        return m.group(1).strip()
-
-    low = t.lower()
-
-    # Remove common leading action phrases
-    for a in ACTION_PHRASES:
-        if low.startswith(a + " "):
-            t = t[len(a):].strip()
-            low = t.lower()
-            break
-
-    # Remove trailing "to <state>"
-    t = re.sub(r"\bto\s+(on|off|private|public|enabled|disabled)\b.*$", "", t, flags=re.I).strip()
-
-    # Token cleanup: drop platform-ish and state-ish words
-    toks = re.findall(r"[a-zA-Z0-9]+", t)
-    kept = []
-    for tok in toks:
-        tl = tok.lower()
-        if tl in STATE_WORDS:
-            continue
-        if tl in {"my", "the", "a", "an", "for", "on", "in", "at", "from", "of", "and", "or"}:
-            continue
-        kept.append(tok)
-
-    # Keep a short phrase (2–7 tokens) as the hint
-    if len(kept) >= 2:
-        phrase = " ".join(kept[:7]).strip()
-        return None if is_generic_hint(phrase) else phrase
-    if kept:
-        one = kept[0].strip()
-        return None if is_generic_hint(one) else one
-
-    return None
 
 def best_label_match_on_page(page: Page, hint: str, max_scan: int = 120) -> Optional[str]:
     """
@@ -1412,10 +1457,8 @@ def best_label_match_on_page(page: Page, hint: str, max_scan: int = 120) -> Opti
     hint_norm = _norm(hint)
     if not hint_norm:
         return None
-    hint_tokens = set(hint_norm.split())
+    hint_set = set(hint_norm.split())
 
-    # Scan likely label nodes (headings, labels, spans, divs with text)
-    # Keep it conservative to avoid massive DOM scanning.
     loc = page.locator("label,span,div,p,button,a,h1,h2,h3")
     n = min(loc.count(), max_scan)
 
@@ -1436,8 +1479,7 @@ def best_label_match_on_page(page: Page, hint: str, max_scan: int = 120) -> Opti
         if not tokens:
             continue
 
-        # Score by token overlap + substring bonus
-        overlap = len(tokens & hint_tokens) / max(1, len(hint_tokens))
+        overlap = len(tokens & hint_set) / max(1, len(hint_set))
         score = overlap
         if hint_norm in txt_norm or txt_norm in hint_norm:
             score += 0.5
@@ -1446,10 +1488,40 @@ def best_label_match_on_page(page: Page, hint: str, max_scan: int = 120) -> Opti
             best_score = score
             best = txt
 
-    # Require some minimum similarity so we don't click random labels
-    if best_score >= 0.25:
+    # Require a bit more similarity to avoid random matches
+    if best and best_score >= 0.35 and _hint_candidate_ok(hint, best, min_overlap=0.50):
         return best
     return None
+
+def _hint_candidate_ok(hint: str, candidate: str, *, min_overlap: float = 0.60) -> bool:
+    """
+    Guard against fuzzy 'hint collapse' like 'Protect your posts' -> 'Post'.
+    """
+    hn = _norm(hint)
+    cn = _norm(candidate)
+    if not hn or not cn:
+        return False
+
+    hn_words = hn.split()
+    cn_words = cn.split()
+
+    # Multi-word hint should not collapse to 1-word candidate
+    if len(hn_words) >= 2 and len(cn_words) == 1:
+        return False
+
+    hs = set(hn_words)
+    cs = set(cn_words)
+    overlap = len(hs & cs) / max(1, len(hs))
+
+    # Allow strong substring containment, otherwise require overlap threshold
+    if not (hn in cn or cn in hn) and overlap < min_overlap:
+        return False
+
+    # Avoid drastic shortening
+    if len(cn) < max(4, int(0.60 * len(hn))):
+        return False
+
+    return True
 
 
 def prefilter_platform_settings(platform: str, user_text: str, k: int = 50) -> List[SettingEntry]:
@@ -1508,7 +1580,6 @@ def gemini_pick_candidates_for_platform(platform: str, user_text: str, candidate
         "JSON schema:\n"
         "{\n"
         '  "setting_ids": ["id1","id2","id3"],\n'
-        '  "leaf_hint": string|null,\n'
         '  "target_value": "on"|"off"|"private"|"public"|null,\n'
         '  "reason": "<short>"\n'
         "}\n"
@@ -1545,7 +1616,7 @@ def gemini_pick_candidates_for_platform(platform: str, user_text: str, candidate
             debug_print_gemini_response(resp, tag="gemini_pick_candidates")
         except Exception as e:
             last_err = e
-            print(f"[gemini_pick_candidates] model error attempt {attempt+1}: {e}")
+            lprint(f"[gemini_pick_candidates] model error attempt {attempt+1}: {e}")
             sleep_with_jitter(attempt)
             continue
 
@@ -1553,7 +1624,7 @@ def gemini_pick_candidates_for_platform(platform: str, user_text: str, candidate
         last_raw = raw
 
         if not raw:
-            print(f"[gemini_pick_candidates] empty output attempt {attempt+1}; backing off")
+            lprint(f"[gemini_pick_candidates] empty output attempt {attempt+1}; backing off")
             last_err = "empty_output"
             sleep_with_jitter(attempt)
             continue
@@ -1564,19 +1635,18 @@ def gemini_pick_candidates_for_platform(platform: str, user_text: str, candidate
             data = json.loads(raw)
         except Exception as e:
             last_err = e
-            print(f"[gemini_pick_candidates] JSON parse failed attempt {attempt+1}: {e}; raw head={raw[:200]!r}")
+            lprint(f"[gemini_pick_candidates] JSON parse failed attempt {attempt+1}: {e}; raw head={raw[:200]!r}")
             sleep_with_jitter(attempt)
             continue
 
         if not isinstance(data, dict):
             last_err = "non_dict_json"
-            print(f"[gemini_pick_candidates] non-dict JSON attempt {attempt+1}: type={type(data)}")
+            lprint(f"[gemini_pick_candidates] non-dict JSON attempt {attempt+1}: type={type(data)}")
             sleep_with_jitter(attempt)
             continue
 
         setting_ids = data.get("setting_ids") or []
         target_value = data.get("target_value")
-        leaf_hint = data.get("leaf_hint")
 
         # Validate IDs against candidates
         valid_ids = {c["setting_id"] for c in cand_payload}
@@ -1585,10 +1655,10 @@ def gemini_pick_candidates_for_platform(platform: str, user_text: str, candidate
             if sid in valid_ids and sid not in cleaned:
                 cleaned.append(sid)
 
-        return {"setting_ids": cleaned[:3], "leaf_hint": leaf_hint, "target_value": target_value}
+        return {"setting_ids": cleaned[:3], "target_value": target_value}
 
     # Exhausted retries
-    print("[gemini_pick_candidates] exhausted retries; last_err:", last_err)
+    lprint("[gemini_pick_candidates] exhausted retries; last_err:", last_err)
 
     # Minimal salvage: if output is truncated but contains a setting_ids array
     raw = (last_raw or "").strip()
@@ -1600,11 +1670,11 @@ def gemini_pick_candidates_for_platform(platform: str, user_text: str, candidate
                 ids = re.findall(r'"([^"]+)"', inside)
                 valid_ids = {c["setting_id"] for c in cand_payload}
                 cleaned = [sid for sid in ids if sid in valid_ids]
-                return {"setting_ids": cleaned[:3], "leaf_hint": None, "target_value": None}
+                return {"setting_ids": cleaned[:3], "target_value": None}
         except Exception:
             pass
 
-    return {"setting_ids": [], "leaf_hint": None, "target_value": None}
+    return {"setting_ids": [], "target_value": None}
     
 async def handle_platform_scoped_nl(platform: str, user_text: str):
     # Path tracking metadata for run logs
@@ -1622,36 +1692,19 @@ async def handle_platform_scoped_nl(platform: str, user_text: str):
     if not target_value:
         target_value = infer_target_value_from_text(user_text)
 
-    inferred_leaf_hint = pick.get("leaf_hint") or derive_leaf_hint_from_text(user_text)
-    cl.user_session.set("last_leaf_hint_source", "gemini" if pick.get("leaf_hint") else "derived")
-
-    if not inferred_leaf_hint:
-        inferred_leaf_hint = (pre[0].name if pre else None) or user_text
-        cl.user_session.set("last_leaf_hint_source", "setting_name" if pre else "derived")
+    # Leaf hints are deterministic: always use the DB setting name.
+    cl.user_session.set("last_leaf_hint_source", "setting_name")
 
 
-    print("\n[NLP DEBUG]")
-    print("  platform:", platform)
-    print("  user_text:", repr(user_text))
-    print("  gemini_setting_ids:", setting_ids)
-    print("  gemini_leaf_hint:", repr(pick.get("leaf_hint")))
-    print("  derived_leaf_hint:", repr(inferred_leaf_hint))
-    print("  gemini_target_value:", repr(pick.get("target_value")))
-    print("  derived_target_value:", repr(target_value))
-    print("[/NLP DEBUG]\n")
+    dprint("\n[NLP DEBUG]")
+    dprint("  platform:", platform)
+    dprint("  user_text:", repr(user_text))
+    dprint("  gemini_setting_ids:", setting_ids)
+    dprint("  gemini_target_value:", repr(pick.get("target_value")))
+    dprint("  derived_target_value:", repr(target_value))
+    dprint("[/NLP DEBUG]\n")
 
-    cl.user_session.set("inferred_leaf_hint", inferred_leaf_hint)
     cl.user_session.set("inferred_target_value", target_value)
-
-
-    # Store inferred hints per returned setting_id so selection can pick the right one
-    infer_map = {}
-    for sid in setting_ids:
-        infer_map[sid] = {
-            "leaf_hint": inferred_leaf_hint,
-            "target_value": target_value
-        }
-    cl.user_session.set("inferred_by_setting", infer_map)
 
 
     if not setting_ids:
@@ -1741,7 +1794,7 @@ async def on_pick_value(action: cl.Action):
         platform,
         setting,
         target_value,
-        leaf_hint=sanitize_leaf_hint(cl.user_session.get("inferred_leaf_hint"), setting.name)
+        leaf_hint=setting.name
     )
     append_change(result)
 
@@ -1908,140 +1961,6 @@ def resolve_setting(platform: str, setting_id_or_name: str) -> Optional[SettingE
 
     return None
 
-def gemini_interpret_request(user_text: str, known_platforms: List[str]) -> Dict[str, Optional[str]]:
-    """
-    Use Gemini to extract platform, setting_query (normalized), and target_value from natural language.
-    Returns dict with keys: platform_hint, setting_query, target_value.
-    """
-    client = get_gemini_client()
-    if not client:
-        return {"platform_hint": None, "setting_query": None, "target_value": None}
-
-    system_instruction = (
-        "You are a parser for natural-language requests about changing privacy/account settings.\n"
-        "Return ONLY JSON (no markdown/fences/extra text):\n"
-        "{\n"
-        '  "platform_hint": string|null,\n'
-        '  "setting_query": string|null,\n'
-        '  "target_value": "on"|"off"|"private"|"public"|null\n'
-        "}\n"
-        "Rules:\n"
-        "- platform_hint must be one of KNOWN_PLATFORMS if present; else null.\n"
-        "- setting_query should remove platform phrases like 'on twitter'.\n"
-        "- No extra keys.\n"
-    )
-
-    prompt = (
-        "KNOWN_PLATFORMS:\n" + json.dumps(known_platforms, ensure_ascii=False) + "\n\n"
-        "USER_TEXT:\n" + user_text
-    )
-
-    config = types.GenerateContentConfig(
-        system_instruction=system_instruction,
-        temperature=0.0,
-        max_output_tokens=400,
-        response_mime_type="application/json",
-    )
-
-    try:
-        resp = client.models.generate_content(
-            model=MODEL_NLP,
-            contents=[Content(role="user", parts=[Part(text=prompt)])],
-            config=config,
-        )
-    except Exception as e:
-        return {"platform_hint": None, "setting_query": None, "target_value": None, "error": str(e)}
-
-    out = (extract_model_text(resp) or "").strip()
-    if not out:
-        return {"platform_hint": None, "setting_query": None, "target_value": None}
-
-    try:
-        data = json.loads(out)
-        if not isinstance(data, dict):
-            raise ValueError("json_not_object")
-        return {
-            "platform_hint": data.get("platform_hint"),
-            "setting_query": data.get("setting_query"),
-            "target_value": data.get("target_value"),
-        }
-    except Exception:
-        return {"platform_hint": None, "setting_query": None, "target_value": None}
-
-
-def choose_setting_with_gemini(platform: str, user_query: str) -> Optional[SettingEntry]:
-    """
-    If the user mentions a leaf-level setting that doesn't exist in our DB,
-    ask Gemini which *section* (SettingEntry) is the best starting point.
-    """
-    client = get_gemini_client()
-    if not client:
-        return None
-
-    settings = list_settings_for_platform(platform)
-    if not settings:
-        return None
-
-    candidates = [
-        {"setting_id": s.setting_id, "name": s.name, "category": s.category, "description": s.description}
-        for s in settings
-    ]
-
-    system_instruction = (
-        "You are a routing assistant for privacy settings.\n"
-        "Return ONLY JSON:\n"
-        "{\n"
-        '  "setting_id": "<best candidate setting_id>",\n'
-        '  "reason": "<short>"\n'
-        "}\n"
-        "Rules:\n"
-        "- setting_id MUST be one of the provided candidates.\n"
-        "- No extra keys.\n"
-    )
-
-    user_prompt = (
-        f"PLATFORM: {platform}\n"
-        f"USER_QUERY: {user_query}\n\n"
-        "CANDIDATE_SECTIONS:\n"
-        + json.dumps(candidates, ensure_ascii=False)
-        + "\n\nPick the single best setting_id."
-    )
-
-    config = types.GenerateContentConfig(
-        system_instruction=system_instruction,
-        temperature=0.0,
-        max_output_tokens=400,
-        response_mime_type="application/json",
-    )
-
-    try:
-        resp = client.models.generate_content(
-            model=MODEL_NLP,
-            contents=[Content(role="user", parts=[Part(text=user_prompt)])],
-            config=config,
-        )
-    except Exception:
-        return None
-
-    text = (extract_model_text(resp) or "").strip()
-    if not text:
-        return None
-
-    try:
-        data = json.loads(text)
-        if not isinstance(data, dict):
-            return None
-        sid = data.get("setting_id")
-        if not sid:
-            return None
-        for s in settings:
-            if s.setting_id == sid:
-                return s
-    except Exception:
-        return None
-
-    return None
-
 def now_ts() -> float:
     return time.time()
 
@@ -2137,7 +2056,7 @@ def resolve_setting_flexible(platform: str, section_query: str, leaf_hint: str |
     # If nothing really matches and we DO have a leaf_hint, bail out.
     # For section-only queries (no leaf_hint), still pick the best candidate even if the score is small.
     if best_score < 0.5 and lh is not None:
-        print(
+        dprint(
             f"[resolver] Low best_score={best_score:.3f} for platform={platform}, "
             f"section_query={sq!r}, leaf_hint={lh!r}"
         )
@@ -2145,7 +2064,7 @@ def resolve_setting_flexible(platform: str, section_query: str, leaf_hint: str |
 
     # Debug: see what URL we picked
     try:
-        print(
+        dprint(
             f"[resolver] platform={platform} section_query={sq!r} leaf_hint={lh!r} "
             f"-> best_score={best_score:.3f}, url={_entry_url(best_entry)}"
         )
@@ -2153,18 +2072,6 @@ def resolve_setting_flexible(platform: str, section_query: str, leaf_hint: str |
         pass
 
     return best_entry, lh
-
-def load_harvest_report_for_platform(platform: str) -> Optional[Dict[str, Any]]:
-    plat_dir = GENERAL_OUTPUT_DIR / platform
-    hr_path = plat_dir / "harvest_report.json"
-    if not hr_path.exists():
-        return None
-    try:
-        with hr_path.open("r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
-        return None
-
 
 def get_changes_log() -> List[Dict[str, Any]]:
     return cl.user_session.get(SESSION_CHANGES_KEY, [])
@@ -2193,6 +2100,30 @@ def build_session_report_md(changes: List[Dict[str, Any]]) -> str:
 # =========================
 # Playwright / DOM helpers
 # =========================
+def choose_confirm_button_fallback(buttons: List[str], target_value: str) -> Optional[str]:
+    tv = (target_value or "").strip().lower()
+    want_on = tv in {"on","enable","enabled","true","yes","1","allow"}
+    want_off = tv in {"off","disable","disabled","false","no","0","remove","stop"}
+
+    cancel_like = {"cancel","close","back"}
+    btn_norm = [(b, re.sub(r"\s+", " ", b.strip().lower())) for b in buttons]
+    candidates = [(b, n) for (b, n) in btn_norm if n not in cancel_like]
+    if not candidates:
+        return None
+
+    on_pref = ["enable","turn on","allow","yes","confirm","save","apply","done","continue","proceed","protect"]
+    off_pref = ["disable","turn off","remove","stop","confirm","save","apply","done","continue","proceed"]
+
+    prefs = on_pref if want_on else off_pref if want_off else ["confirm","save","apply","done","continue","proceed"]
+
+    for p in prefs:
+        for (b, n) in candidates:
+            if p in n:
+                return b
+
+    # fallback: first non-cancel button
+    return candidates[0][0]
+
 def resolve_label_text_anywhere(page: Page, hint: str) -> Optional[str]:
     """
     Deterministic deep fallback: use Playwright's text engine to find the hint anywhere.
@@ -2336,6 +2267,65 @@ def dom_outline_targeted(page: Page, leaf_hint: Optional[str], max_nodes: int = 
     except Exception:
         return "[]"
 
+def detect_confirm_context(page: Page) -> Dict[str, Any]:
+    """
+    Lightweight confirm-dialog detector based on visible buttons.
+    """
+    buttons: List[str] = []
+    dialog_loc = None
+    try:
+        dialog_loc = page.locator("[role='dialog'],[aria-modal='true']")
+    except Exception:
+        dialog_loc = None
+
+    try:
+        if dialog_loc and dialog_loc.count() > 0:
+            loc = dialog_loc.first.get_by_role("button")
+        else:
+            loc = page.get_by_role("button")
+        n = min(loc.count(), 50)
+        for i in range(n):
+            try:
+                el = loc.nth(i)
+                if not el.is_visible():
+                    continue
+                txt = (el.inner_text() or el.text_content() or "").strip()
+            except Exception:
+                continue
+            if not txt:
+                continue
+            txt = re.sub(r"\s+", " ", txt)
+            buttons.append(txt)
+            if len(buttons) >= 12:
+                break
+    except Exception:
+        pass
+
+    cancel_tokens = {"cancel", "close", "back"}
+    confirm_tokens = {
+        "ok", "confirm", "save", "apply", "done", "enable", "turn on", "allow",
+        "yes", "update", "continue", "proceed", "protect", "disable", "remove",
+        "turn off", "accept", "agree"
+    }
+    norm_buttons = [re.sub(r"\s+", " ", b.strip().lower()) for b in buttons]
+    has_cancel_like = any(nb in cancel_tokens for nb in norm_buttons)
+    has_confirm_like = any(any(tok in nb for tok in confirm_tokens) for nb in norm_buttons)
+
+    has_dialog = False
+    try:
+        has_dialog = (dialog_loc.count() > 0) if dialog_loc else False
+    except Exception:
+        has_dialog = False
+    maybe_modal = 2 <= len(buttons) <= 6 and has_cancel_like and (has_confirm_like or has_dialog)
+
+    return {
+        "buttons": buttons,
+        "has_cancel_like": has_cancel_like,
+        "has_confirm_like": has_confirm_like,
+        "has_dialog": has_dialog,
+        "maybe_modal": maybe_modal,
+    }
+
 
 def read_control_state_by_label(page: Page, label_text: str) -> Optional[bool]:
     """
@@ -2445,7 +2435,10 @@ def best_actionable_label_match_on_page(page: Page, hint: str, max_scan: int = 1
     hint_norm = _norm(hint)
     if not hint_norm:
         return None
-    hint_tokens = set(hint_norm.split())
+
+    # Keep BOTH: ordered words for anchoring + set for overlap
+    hint_words = [t for t in hint_norm.split() if t not in {"and", "or", "to", "of", "in", "my"}]
+    hint_set = set(hint_words)
 
     # likely "labels"
     loc = page.locator("label,span,div,p,h1,h2,h3,button,a")
@@ -2454,9 +2447,7 @@ def best_actionable_label_match_on_page(page: Page, hint: str, max_scan: int = 1
     best_text = None
     best_score = 0.0
 
-    hint_tokens = [t for t in hint_norm.split() if t not in {"and", "or", "to", "of", "in", "my"}]
-    anchor = set(hint_tokens[:2]) if len(hint_tokens) >= 2 else set(hint_tokens)
-
+    anchor = set(hint_words[:2]) if len(hint_words) >= 2 else set(hint_words)
 
     for i in range(n):
         try:
@@ -2477,59 +2468,92 @@ def best_actionable_label_match_on_page(page: Page, hint: str, max_scan: int = 1
         if not tokens:
             continue
 
-        if anchor and not (anchor & set(txt_norm.split())):
+        # Anchor filter: require at least one anchor token in candidate
+        if anchor and not (anchor & tokens):
             continue
 
-
         # similarity score (token overlap)
-        overlap = len(tokens & hint_tokens) / max(1, len(hint_tokens))
+        overlap = len(tokens & hint_set) / max(1, len(hint_set))
         score = overlap
 
         # Prefer header-ish elements (often the setting label)
         try:
             tag = loc.nth(i).evaluate("el => el.tagName.toLowerCase()")
-            if tag in ("h1", "h2", "h3", "h4", "label"):
-                score += 0.15
         except Exception:
-            pass
+            tag = ""
+        if tag in {"h1", "h2", "h3"}:
+            score += 0.15
+        elif tag == "label":
+            score += 0.10
 
-        # modest bonus for substring relationship
+        # Prefer close containment
         if hint_norm in txt_norm or txt_norm in hint_norm:
             score += 0.25
 
-        # Now: must have a nearby actionable control (container search)
+        # ---- nearby control check (keep your existing logic) ----
+        # (Your existing code below this point should remain the same)
         try:
-            el = loc.nth(i)
-            container = el.locator("xpath=ancestor::*[self::li or self::section or self::div][1]")
-            if not container.count():
-                container = el
-
-            ctrl = container.locator(
-                "[role='switch'],"
-                "input[type='checkbox'],"
-                "[aria-checked],"
-                "button[aria-pressed],"
-                "[role='checkbox'],"
-                "[role='radio']"
-            )
-
-            if not ctrl.count():
-                # no control nearby -> not actionable, skip
-                continue
-
-            # bonus for being actionable
-            score += 0.5
-
+            node = loc.nth(i)
+            row = node.locator("xpath=ancestor-or-self::*[self::div or self::li or self::label][1]")
+            if row.count() == 0:
+                row = node.locator("xpath=ancestor::*[self::div or self::li][1]")
         except Exception:
+            row = None
+
+        has_control = False
+        try:
+            if row and row.count() > 0:
+                # switches / checkboxes / buttons
+                if row.locator('input[type="checkbox"], [role="switch"], button').count() > 0:
+                    has_control = True
+        except Exception:
+            has_control = False
+
+        if not has_control:
             continue
 
         if score > best_score:
             best_score = score
             best_text = txt
 
-    # Require at least some match strength
-    if best_text and best_score >= 0.35:
+    # tighten threshold slightly since we're using this for actionable matches
+    if best_score >= 0.35:
         return best_text
+    return None
+
+def _parse_role_selector(sel: str) -> Optional[Dict[str, Any]]:
+    """
+    Parse role selector formats:
+    - "checkbox, name: Protect your posts, exact: true"
+    - "button[name='Protect']" / "checkbox[name=\"Protect your posts\"]"
+    """
+    s = (sel or "").strip()
+    if not s:
+        return None
+
+    m = re.match(
+        r"^(?P<role>[a-zA-Z_][a-zA-Z0-9_-]*)\s*,\s*name\s*:\s*(?P<name>.+?)"
+        r"(?:\s*,\s*exact\s*:\s*(?P<exact>true|false))?\s*$",
+        s,
+        flags=re.I,
+    )
+    if m:
+        role = m.group("role").strip().lower()
+        name = m.group("name").strip()
+        if (name.startswith("'") and name.endswith("'")) or (name.startswith('"') and name.endswith('"')):
+            name = name[1:-1]
+        exact = (m.group("exact") or "").lower() == "true"
+        return {"role": role, "name": name, "exact": exact}
+
+    m = re.match(
+        r"^(?P<role>[a-zA-Z_][a-zA-Z0-9_-]*)\s*\[\s*name\s*=\s*(['\"])(?P<name>.*?)\2\s*\]\s*$",
+        s,
+        flags=re.I,
+    )
+    if m:
+        role = m.group("role").strip().lower()
+        name = m.group("name").strip()
+        return {"role": role, "name": name, "exact": True}
 
     return None
 
@@ -2544,13 +2568,13 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
         if stype == "css":
             loc = page.locator(sval)
             count = loc.count()
-            print(f"[apply_selector] CSS '{sval}' -> {count} matches")
+            lprint(f"[apply_selector] CSS '{sval}' -> {count} matches")
             if count:
                 loc.first.click(timeout=3500)
                 return True
 
         elif stype == "text":
-            print(f"[apply_selector] Trying stype='text' {sval!r}")
+            lprint(f"[apply_selector] Trying stype='text' {sval!r}")
 
             # If we have a desired value, prefer coord hint-mode so we toggle the associated control,
             # not just click the label text.
@@ -2569,7 +2593,7 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                 label_loc = page.get_by_text(sval, exact=False)
 
             count = label_loc.count()
-            print(f"[apply_selector] text locator matched {count} element(s)")
+            lprint(f"[apply_selector] text locator matched {count} element(s)")
 
             if count:
                 label_loc.first.click(timeout=3500)
@@ -2578,6 +2602,18 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
 
         elif stype == "role":
             role_sel = sval.strip()
+            parsed = _parse_role_selector(role_sel)
+            if parsed:
+                loc = page.get_by_role(
+                    parsed["role"],
+                    name=parsed["name"],
+                    exact=bool(parsed.get("exact")),
+                )
+                count = loc.count()
+                lprint(f"[apply_selector] role '{role_sel}' -> {count} matches")
+                if count:
+                    loc.first.click(timeout=3500)
+                    return True
 
             # If it looks like a simple role name, use [role='...']
             simple_role = re.fullmatch(r"[a-zA-Z_][a-zA-Z0-9_-]*", role_sel or "") is not None
@@ -2592,7 +2628,7 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                 loc = page.locator(role_sel)
 
             count = loc.count()
-            print(f"[apply_selector] role '{role_sel}' -> {count} matches")
+            lprint(f"[apply_selector] role '{role_sel}' -> {count} matches")
             if count:
                 loc.first.click(timeout=3500)
                 return True
@@ -2600,7 +2636,7 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
         elif stype == "coord":
             if sval.startswith("hint:"):
                 hint = sval[len("hint:"):].strip()
-                print(f"[apply_selector] coord hint-mode for {hint!r}")
+                lprint(f"[apply_selector] coord hint-mode for {hint!r}")
 
                 # Prefer labels that have an actual control near them
                 matched = best_actionable_label_match_on_page(page, hint)
@@ -2610,15 +2646,15 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                 if not matched:
                     matched = resolve_label_text_anywhere(page, hint)
                 if not matched:
-                    print(f"[apply_selector] No good label match found for hint {hint!r}")
+                    lprint(f"[apply_selector] No good label match found for hint {hint!r}")
                     return False
 
                 sval = f"label:{matched}"
-                print(f"[apply_selector] hint resolved to label {matched!r}")
+                lprint(f"[apply_selector] hint resolved to label {matched!r}")
 
             if sval.startswith("label:"):
                 label_text = sval[len("label:"):].strip()
-                print(f"[apply_selector] coord label-mode for {label_text!r}")
+                lprint(f"[apply_selector] coord label-mode for {label_text!r}")
 
                 # Always define label_loc so we never hit "referenced before assignment"
                 label_loc = None
@@ -2667,7 +2703,7 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                         break
 
                 if not label_loc or not label_loc.count():
-                    print(f"[apply_selector] No label found for any variant of {variants!r}")
+                    lprint(f"[apply_selector] No label found for any variant of {variants!r}")
                     return False
 
                 # Use the matched label element
@@ -2699,7 +2735,7 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                                     # already correct
                                     return True
                                 except Exception as e:
-                                    print("[apply_selector] set_checked failed, falling back to click:", e)
+                                    lprint("[apply_selector] set_checked failed, falling back to click:", e)
                                     # fall through
 
                             # Fallback: toggle if we don't know desired state (or set_checked failed)
@@ -2721,11 +2757,11 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                             ctrl.first.click(timeout=3500, force=True)
                             return True
                 except Exception as e:
-                    print("[apply_selector] container-control search failed:", e)
+                    lprint("[apply_selector] container-control search failed:", e)
 
 
                 if not label_box:
-                    print("[apply_selector] No bounding_box for label")
+                    lprint("[apply_selector] No bounding_box for label")
                     return False
 
                 label_right = label_box["x"] + label_box["width"]
@@ -2739,7 +2775,7 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                 )
                 cand_loc = page.locator(candidates_selector)
                 total = cand_loc.count()
-                print(f"[apply_selector] searching {total} candidate controls near label {matched_text!r}")
+                lprint(f"[apply_selector] searching {total} candidate controls near label {matched_text!r}")
 
                 best_box = None
                 best_dx = float("inf")
@@ -2771,20 +2807,26 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                         best_box = box
 
                 if not best_box:
+                    # If the label looks like a dialog title, avoid clicking it.
+                    # confirm-only planner keeps prompts small to reduce MAX_TOKENS/bad JSON.
+                    title_text = (matched_text or label_text or "").strip()
+                    if title_text.endswith("?"):
+                        lprint("[apply_selector] Label looks like dialog title; refusing to click title.")
+                        return False
                     # Very common: the label itself is the control (opens modal / navigates),
                     # and there is no right-side toggle. Click the label as a safe fallback.
                     try:
-                        print("[apply_selector] No nearby toggle found; clicking the label itself.")
+                        lprint("[apply_selector] No nearby toggle found; clicking the label itself.")
                         label.click(timeout=3500)
                         return True
                     except Exception as e:
-                        print("[apply_selector] Could not click label fallback:", e)
+                        lprint("[apply_selector] Could not click label fallback:", e)
                         return False
 
 
                 cx = best_box["x"] + best_box["width"] / 2.0
                 cy = best_box["y"] + best_box["height"] / 2.0
-                print(f"[apply_selector] Clicking center of nearest control at ({cx}, {cy})")
+                lprint(f"[apply_selector] Clicking center of nearest control at ({cx}, {cy})")
                 page.mouse.click(cx, cy)
                 return True
 
@@ -2794,49 +2836,113 @@ def apply_selector(page: Page, sel: Dict[str, Any]) -> bool:
                     x_str, y_str = sval.split(",", 1)
                     x = float(x_str.strip())
                     y = float(y_str.strip())
-                    print(f"[apply_selector] Clicking raw coordinates ({x}, {y})")
+                    lprint(f"[apply_selector] Clicking raw coordinates ({x}, {y})")
                     page.mouse.click(x, y)
                     return True
                 except Exception as e:
-                    print(f"[apply_selector] coord parse failed for {sval!r}: {e}")
+                    lprint(f"[apply_selector] coord parse failed for {sval!r}: {e}")
                     return False
 
 
 
     except PwTimeout:
-        print(f"[apply_selector] Timeout while applying selector {stype!r} {sval!r}")
+        lprint(f"[apply_selector] Timeout while applying selector {stype!r} {sval!r}")
         return False
     except Exception as e:
-        print(f"[apply_selector] Error while applying selector {stype!r} {sval!r}: {e}")
+        lprint(f"[apply_selector] Error while applying selector {stype!r} {sval!r}: {e}")
         return False
 
     return False
 
-
-
-def try_click_leaf_hint(page: Page, leaf_hint: Optional[str]) -> bool:
-    """
-    Fallback: try to click the leaf setting by its visible text label.
-    For example, if leaf_hint is 'Protect your posts', we attempt to click that text.
-    """
-    if not leaf_hint:
-        return False
-
-    try:
-        # Use Playwright's text-based locator; exact=False allows partial matches.
-        loc = page.get_by_text(leaf_hint, exact=False)
-        if loc.count():
-            loc.first.click(timeout=4000)
-            return True
-    except Exception:
-        pass
-
-    return False
 
 
 # =========================
 # Gemini planner for setting change
 # =========================
+
+def planner_confirm_only(
+    platform: str,
+    setting_name: str,
+    target_value: str,
+    buttons: List[str],
+) -> Dict[str, Any]:
+    """
+    Minimal confirm-only planner used when a modal is detected.
+    """
+    client = get_gemini_client()
+    if not client or not buttons:
+        return {"selectors": [], "done": False, "notes": "no_buttons_or_client"}
+
+    system_instruction = (
+        "Select a confirm button in a modal dialog.\n"
+        "Output MUST be a single JSON object with keys: selectors, done, notes.\n"
+        "selectors must be [] OR a single selector with selector: "
+        "\"button, name: <one of VISIBLE_BUTTONS>, exact: true\".\n"
+        "Never choose cancel/close/back.\n"
+        "If TARGET_VALUE implies ON/ENABLE, prefer enable/turn on/allow/yes/save/apply.\n"
+        "If TARGET_VALUE implies OFF/DISABLE, prefer disable/turn off/remove/stop/save/apply.\n"
+        "If no safe confirm button exists, return selectors: [] and done:false.\n"
+    )
+
+    user_prompt = (
+        f"PLATFORM: {platform}\n"
+        f"SETTING_NAME: {setting_name}\n"
+        f"TARGET_VALUE: {target_value}\n"
+        "VISIBLE_BUTTONS: "
+        + json.dumps(buttons, ensure_ascii=False)
+    )
+
+    config = types.GenerateContentConfig(
+        system_instruction=system_instruction,
+        temperature=0.0,
+        max_output_tokens=120,
+        response_mime_type="application/json",
+    )
+
+    try:
+        resp = client.models.generate_content(
+            model=MODEL_PLAN,
+            contents=[Content(role="user", parts=[Part(text=user_prompt)])],
+            config=config,
+        )
+    except Exception as e:
+        lprint("[planner_confirm_only] Gemini error:", e)
+        return {"selectors": [], "done": False, "notes": "model_error"}
+
+    debug_print_gemini_response(resp, tag="planner_confirm_only")
+
+    raw = (extract_model_text(resp) or "").strip()
+    if not raw:
+        lprint("[planner_confirm_only] Empty model output; using fallback button chooser.")
+        choice = choose_confirm_button_fallback(buttons, target_value)
+        if not choice:
+            return {"selectors": [], "done": False, "notes": "no_safe_confirm"}
+        return {
+            "selectors": [{
+                "purpose": "confirm",
+                "type": "role",
+                "selector": f"button, name: {choice}, exact: true",
+            }],
+            "done": True,
+            "notes": "confirm_fallback",
+        }
+
+    try:
+        data = json.loads(raw)
+    except Exception as e:
+        lprint("[planner_confirm_only] JSON parse error:", e, "raw head:", raw[:200])
+        return {"selectors": [], "done": False, "notes": "model_bad_json"}
+
+    if not isinstance(data, dict):
+        return {"selectors": [], "done": False, "notes": "model_json_not_object"}
+
+    selectors = data.get("selectors") if isinstance(data.get("selectors"), list) else []
+    selectors = selectors[:1]
+
+    if not selectors:
+        return {"selectors": [], "done": False, "notes": "no_safe_confirm"}
+
+    return {"selectors": selectors, "done": True, "notes": "confirm_only"}
 
 def planner_setting_change(
     page: Page,
@@ -2932,7 +3038,7 @@ def planner_setting_change(
     )
 
     try:
-        print("[planner_setting_change] Calling Gemini planner...")
+        lprint("[planner_setting_change] Calling Gemini planner...")
         resp = client.models.generate_content(
             model=MODEL_PLAN,
             contents=[Content(role="user", parts=[
@@ -2944,7 +3050,7 @@ def planner_setting_change(
             config=config,
         )
     except Exception as e:
-        print("[planner_setting_change] Gemini error:", e)
+        lprint("[planner_setting_change] Gemini error:", e)
         if leaf_hint:
             return {
                 "selectors": [{
@@ -2992,7 +3098,7 @@ def planner_setting_change(
 
     raw = (extract_model_text(resp) or "").strip()
     if not raw:
-        print("[planner_setting_change] Empty model output.")
+        lprint("[planner_setting_change] Empty model output.")
         if leaf_hint:
             return {
                 "selectors": [{
@@ -3009,7 +3115,7 @@ def planner_setting_change(
     try:
         data = json.loads(raw)
     except Exception as e:
-        print("[planner_setting_change] JSON parse error:", e, "raw head:", raw[:200])
+        lprint("[planner_setting_change] JSON parse error:", e, "raw head:", raw[:200])
         if leaf_hint:
             return {
                 "selectors": [{
@@ -3174,6 +3280,8 @@ def apply_setting_change_sync(
     - Uses Playwright + Gemini planner to attempt to change the setting
     - Returns a result dict for logging in the session
     """
+    leaf_hint = (leaf_hint or "").strip() or setting.name
+
     result: Dict[str, Any] = {
         "platform": platform,
         "setting_id": setting.setting_id,
@@ -3310,7 +3418,7 @@ def apply_setting_change_sync(
 
             for turn in range(1, max_turns + 1):
                 executor_state["attempts"] = turn
-                print(f"[executor] TURN {turn}: starting planner for {platform} / {setting.name!r}")
+                lprint(f"[TURN {turn}] [executor] starting planner for {platform} / {setting.name!r}")
 
                 page.wait_for_timeout(1000)
 
@@ -3330,21 +3438,49 @@ def apply_setting_change_sync(
                 verify_label = executor_state["verify_label"] or setting.name
                 verify_ready = _label_is_actionably_visible(page, verify_label)
 
-                plan = planner_setting_change(
-                    page,
-                    platform,
-                    setting,
-                    target_value,
-                    executor_state,
-                    leaf_hint=leaf_hint_for_ui,
-                )
+                confirm_ctx = detect_confirm_context(page)
+                confirm_plan = None
+                if confirm_ctx.get("maybe_modal"):
+                    confirm_plan = planner_confirm_only(
+                        platform=platform,
+                        setting_name=setting.name,
+                        target_value=target_value,
+                        buttons=confirm_ctx.get("buttons") or [],
+                    )
 
-                selectors = plan.get("selectors") or []
-                done = bool(plan.get("done"))
-                last_notes = str(plan.get("notes") or "")
+                if confirm_ctx.get("maybe_modal"):
+                    if confirm_plan and confirm_plan.get("selectors"):
+                        selectors = confirm_plan.get("selectors") or []
+                        done = bool(confirm_plan.get("done"))
+                        last_notes = confirm_plan.get("notes") or "confirm_handled"
+                    else:
+                        selectors = []
+                        done = False
+                        last_notes = "confirm_only_no_selectors"
+                        lprint(f"[TURN {turn}] [executor] confirm-only returned no selectors; deferring heavy planner")
+                        lprint(f"[TURN {turn}] [executor] confirm-only returned no selectors; buttons={confirm_ctx.get('buttons')}")
+                        try:
+                            page.wait_for_timeout(250)
+                        except Exception:
+                            pass
 
-                print(
-                    f"[executor] TURN {turn}: planner returned {len(selectors)} selectors, "
+                        continue
+                else:
+                    plan = planner_setting_change(
+                        page,
+                        platform,
+                        setting,
+                        target_value,
+                        executor_state,
+                        leaf_hint=leaf_hint_for_ui,
+                    )
+
+                    selectors = plan.get("selectors") or []
+                    done = bool(plan.get("done"))
+                    last_notes = str(plan.get("notes") or "")
+
+                lprint(
+                    f"[TURN {turn}] [executor] planner returned {len(selectors)} selectors, "
                     f"done={done}, notes={last_notes[:120]!r}"
                 )
 
@@ -3365,7 +3501,7 @@ def apply_setting_change_sync(
                     )
 
                     if has_model_issue and not selectors:
-                        print(f"[executor] TURN {turn}: planner reported `{last_notes}` with NO selectors.")
+                        lprint(f"[TURN {turn}] [executor] planner reported `{last_notes}` with NO selectors.")
                         if turn < max_turns:
                             executor_state["feedback"] = (
                                 "Last planner produced no usable selectors. "
@@ -3632,7 +3768,7 @@ def apply_setting_change_sync(
             path_log=result.get("path_log"),
         )
     except Exception as e:
-        print("[stats] Failed to record run stats:", e)
+        lprint("[stats] Failed to record run stats:", e)
 
     return result
 
@@ -3926,10 +4062,10 @@ async def on_set_value_ui(action: cl.Action):
     append_change(result)
 
     await cl.Message(
-        content=active_platform_banner() + f"Result: status = `{result.get('status')}`\nDetails: {result.get('details')}",
+        content=active_platform_banner() + f"Result: status = `{result.get('status')}`",
         actions=[browse_settings_action(), change_platform_action(), set_gemini_key_action(), end_session_action()],
     ).send()
-
+    lprint(f"\nDetails: {result.get('details')}")
 
 @cl.on_chat_start
 async def on_chat_start():
@@ -3969,7 +4105,7 @@ async def on_chat_start():
             summaries = build_platform_summaries(SETTINGS_BY_PLATFORM, RUN_STATS_PATH)
             cache_write_json_if_changed(PLATFORM_SUMMARIES_PATH, summaries)
     except Exception as e:
-        print("[cache] Failed to update settings snapshot/summaries:", e)
+        lprint("[cache] Failed to update settings snapshot/summaries:", e)
 
 
     plats = list_platforms()
@@ -4097,7 +4233,7 @@ async def on_message(message: cl.Message):
 
         await cl.Message(content=f"Ok — changing **{setting.name}** on `{platform}` to `{target_value}`…").send()
         result = await cl.make_async(apply_setting_change_sync)(
-            platform, setting, target_value, leaf_hint=cl.user_session.get("inferred_leaf_hint") or setting.name
+            platform, setting, target_value, leaf_hint=setting.name
         )
         append_change(result)
         await cl.Message(
@@ -4200,13 +4336,13 @@ async def on_message(message: cl.Message):
 
             cl.user_session.set("last_entrypoint", "command")
             cl.user_session.set("last_candidate_source", "deterministic")
-            cl.user_session.set("last_leaf_hint_source", "derived" if leaf_hint else "setting_name")
+            cl.user_session.set("last_leaf_hint_source", "explicit" if leaf_hint else "setting_name")
 
             result = await cl.make_async(apply_setting_change_sync)(
                 plat_alias,
                 setting,
                 target_value,
-                leaf_hint=leaf_hint,
+                leaf_hint=leaf_hint or setting.name,
             )
             append_change(result)
 
@@ -4261,9 +4397,9 @@ async def on_message(message: cl.Message):
 async def on_chat_end():
     # Best-effort wipe on chat end
     wipe_session_gemini()
-    print("[session] Wiped Gemini API key/client on chat end.")
+    dprint("[session] Wiped Gemini API key/client on chat end.")
 
 @cl.on_app_shutdown
 async def on_app_shutdown():
     wipe_session_gemini()
-    print("[session] Wiped Gemini API key/client on app shutdown.")
+    dprint("[session] Wiped Gemini API key/client on app shutdown.")

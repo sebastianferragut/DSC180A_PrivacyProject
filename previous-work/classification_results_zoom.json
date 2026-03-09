@@ -1,0 +1,365 @@
+{
+  "status": "success",
+  "total_images": 13,
+  "classifications": [
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\after_click__Data_Privacy_20251111T172742Z.png",
+      "detected_categories": [
+        "data_collection",
+        "personal_information"
+      ],
+      "confidence": 1.0,
+      "page_type": "Data settings",
+      "detected_settings": [
+        "Optional Diagnostic Data"
+      ],
+      "reasoning": "data_collection: The page provides a user-configurable toggle to allow or disallow the collection of \"Optional Diagnostic Data\" for product improvement.\npersonal_information: The settings control the collection of service-generated diagnostic data, which is information related to the user's interaction with the service and is thus considered personal information."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z.png",
+      "detected_categories": [],
+      "confidence": 0.0,
+      "page_type": "",
+      "detected_settings": [],
+      "reasoning": ""
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_0.png",
+      "detected_categories": [
+        "sharing_settings",
+        "location_privacy",
+        "communication_privacy",
+        "account_security"
+      ],
+      "confidence": 1.0,
+      "page_type": "Specific category",
+      "detected_settings": [
+        "Enable auto-calling",
+        "Require that all meetings are secured with one security option",
+        "Enable waiting room",
+        "Meeting Passcode",
+        "Require a passcode for meetings which have already been scheduled",
+        "Personal Meeting ID (PMI) Passcode",
+        "Require passcode for participants joining by phone",
+        "Embed passcode in invite link for one-click join",
+        "Allow Zoom Rooms to become the host if they join before meeting host and other participants",
+        "Only authenticated users can join meetings from Web client",
+        "Approve or block entry for users from specific countries/regions"
+      ],
+      "reasoning": "sharing_settings: The page includes multiple options like passcodes and waiting rooms that control who can access and join a meeting, thereby managing the sharing of the meeting space.\nlocation_privacy: The setting 'Approve or block entry for users from specific countries/regions' directly uses location information to grant or deny access to a meeting.\ncommunication_privacy: The settings are designed to secure the meeting environment (e.g., passcodes, authenticated users) to ensure that communications remain private to the intended participants.\naccount_security: Features like requiring passcodes and authenticating users are fundamental security measures to protect meetings associated with the user's account from unauthorized access."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_11000.png",
+      "detected_categories": [],
+      "confidence": 0.0,
+      "page_type": "",
+      "detected_settings": [],
+      "reasoning": ""
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_13200.png",
+      "detected_categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "notification_privacy",
+        "data_collection",
+        "account_security"
+      ],
+      "confidence": 1.0,
+      "page_type": "Meeting settings",
+      "detected_settings": [
+        "On desktop browser",
+        "On mobile browser",
+        "Show \"Always join from browser\" option when joining from join.zoom.us",
+        "Show a custom disclaimer when starting or joining a meeting",
+        "Request permission to unmute",
+        "Far end audio control",
+        "Auto-accept far end audio control",
+        "Enable \"Stop incoming video\" feature",
+        "When attendees join meeting before host",
+        "When a meeting is cancelled",
+        "Schedule Privilege"
+      ],
+      "reasoning": "The \"Far end audio control\" and \"Request permission to unmute\" settings grant or request control over a user's microphone and audio hardware, which falls under access_to_device. The \"Schedule Privilege\" setting allows one user to manage another's meeting schedule, which is considered personal_information and also an aspect of account_security. Settings like \"Enable 'Stop incoming video' feature\" and audio controls are sharing_settings that manage the flow of data between participants. The core purpose of these options is to manage communication_privacy within a meeting. The \"Email Notification\" section explicitly controls notifications, making it notification_privacy. The \"Show a custom disclaimer\" setting can be used to inform users about data_collection practices like meeting recordings."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_2200.png",
+      "detected_categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "notification_privacy",
+        "third_party_sharing",
+        "data_collection",
+        "account_security"
+      ],
+      "confidence": 1.0,
+      "page_type": "Meeting Settings",
+      "detected_settings": [
+        "Default encryption type (Enhanced encryption, End-to-end encryption)",
+        "Host video",
+        "Participants video",
+        "Audio Type (Computer Audio)",
+        "Allow participants to join before host",
+        "Participants can join [x] minutes before start time",
+        "Enable Personal Meeting ID",
+        "Use Personal Meeting ID (PMI) when scheduling a meeting",
+        "Use Personal Meeting ID (PMI) when starting an instant meeting",
+        "Mute all participants when they join a meeting",
+        "Upcoming meeting reminder",
+        "Don't allow agendas to be shared with external users",
+        "Require media encryption for 3rd party endpoints (SIP/H.323)",
+        "Chat",
+        "By default, allow participants to chat with: Everyone and anyone directly"
+      ],
+      "reasoning": "access_to_device: Settings control default access to the user's and participants' cameras and microphones.\npersonal_information: The page includes settings for a \"Personal Meeting ID,\" which is a persistent identifier assigned to the user's account.\nsharing_settings: Options exist to control the sharing of meeting agendas with external users and to define who participants can chat with.\ncommunication_privacy: The user can set the level of encryption for meetings and control communication channels like video, audio, and chat.\nnotification_privacy: A setting is available to enable or disable desktop notifications for upcoming meetings.\nthird_party_sharing: There is a specific setting to enforce encryption for third-party endpoints connecting to the meeting.\ndata_collection: Toggles for video, audio, and chat directly determine what types of data are collected during a meeting.\naccount_security: The \"Default encryption type\" setting directly impacts the security and confidentiality of all meetings associated with the account."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_4400.png",
+      "detected_categories": [
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "notification_privacy",
+        "data_collection",
+        "data_retention"
+      ],
+      "confidence": 1.0,
+      "page_type": "Specific category",
+      "detected_settings": [
+        "Allow users to copy or save chats from the meeting",
+        "Host",
+        "Everyone",
+        "Only users in your account",
+        "Only users in your account can chat",
+        "Enable continuous meeting chat",
+        "Default enabled Continuous Meeting Chat for \"Schedule meetings\"",
+        "Enable Continuous Meeting Chat for \"Instant meetings\"",
+        "Allow participants to delete messages in meeting chat",
+        "Allow participants to edit messages in meeting chat",
+        "Enable the Screenshot feature in meeting chat",
+        "Allow participants to use emojis in meeting chat",
+        "All emojis",
+        "Selected emojis",
+        "Private chat",
+        "Auto saving chats",
+        "Allow hyperlinks in Meeting and Webinar Chat",
+        "Send files via meeting chat",
+        "Only allow specified file types",
+        "Maximum file size",
+        "Sound notification when someone joins or leaves",
+        "Announce number of participants for dial-in participants"
+      ],
+      "reasoning": "The screenshot displays a detailed settings page for in-meeting chat functionalities, which directly impacts user privacy.\n- personal_information: Settings control the management (editing, deleting, saving) of chat messages, which are a form of personal information.\n- sharing_settings: The page includes multiple options for controlling how information like messages, files, and screenshots are shared among meeting participants.\n- communication_privacy: Options like \"Private chat\" and who can save chats directly manage the privacy and confidentiality of communications between users.\n- notification_privacy: The settings for sound notifications and participant announcements control what information about user activity is broadcast to others.\n- data_collection: The \"Auto saving chats\" feature is a direct form of data collection, as it automatically gathers and stores the entire chat log.\n- data_retention: The \"Enable continuous meeting chat\" setting determines if chat data is retained and accessible after the meeting has concluded."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_6600.png",
+      "detected_categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "data_collection"
+      ],
+      "confidence": 1.0,
+      "page_type": "Meeting settings",
+      "detected_settings": [
+        "Display end-of-meeting experience feedback survey",
+        "Display for every meeting",
+        "Display for meetings randomly",
+        "Display when quality issues are detected",
+        "Show Zoom windows during screen share",
+        "Screen sharing",
+        "How many participants can share at the same time?",
+        "Who can share?",
+        "Who can start sharing when someone else is sharing?",
+        "Screen Sharing Presenter View",
+        "Disable desktop screen sharing for meetings you host",
+        "Disable screen sharing when guests are in the meeting",
+        "Restrict external users from using remote control and remote support in a meeting",
+        "Prevent my screen from being controlled by an external user",
+        "Prevent guest user's screen from being controlled in your meeting",
+        "Annotation",
+        "Allow saving of shared screens with annotations",
+        "Only the user who is sharing can annotate",
+        "Enable Clips in meetings",
+        "Whiteboard (Classic)",
+        "Use Whiteboard by default if available",
+        "Allow to save the whiteboard content",
+        "Automatically create local export when sharing is stopped",
+        "Remote control",
+        "Allow remote controlling user to share clipboard",
+        "Slide Control",
+        "Meeting reactions"
+      ],
+      "reasoning": "The page contains numerous settings that control how users interact and share information within a meeting. 'Remote control' and 'Slide Control' settings grant other users control over a user's device, falling under access_to_device. Screen sharing can expose sensitive data on a user's screen, making it a personal_information concern. The majority of the page is dedicated to who can share content and when, which are explicit sharing_settings. These controls over information flow between participants are a form of communication_privacy. Finally, options like saving whiteboard content, annotations, and displaying feedback surveys are direct forms of data_collection."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\after_click__Meeting_20251111T172739Z_slice_8800.png",
+      "detected_categories": [
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "notification_privacy",
+        "third_party_sharing",
+        "data_collection",
+        "account_security",
+        "access_to_device"
+      ],
+      "confidence": 1.0,
+      "page_type": "Meeting settings",
+      "detected_settings": [
+        "Meeting reactions (All emojis / Selected emojis)",
+        "Allow removed participants to rejoin",
+        "Show invitee list in the Participants panel",
+        "Allow users to change their name when joining a meeting",
+        "Allow participants to rename themselves",
+        "Allow host or co-host to rename participants in the waiting room",
+        "Hide participant profile pictures in a meeting",
+        "Meeting timers",
+        "Default meeting wallpaper",
+        "Allow users to join external meetings, webinars and events through mesh in the local area network",
+        "Report to Zoom",
+        "Breakout room - Meetings",
+        "Assign participants to breakout rooms when scheduling",
+        "Broadcast message to participants",
+        "Broadcast voice to breakout rooms",
+        "Allow host to view activity statuses of participants in breakout rooms",
+        "Set default breakout room behaviors",
+        "Remote support",
+        "Manual captions",
+        "Automated captions"
+      ],
+      "reasoning": "personal_information: Settings directly control the display and modification of user identifiers like names and profile pictures.\nsharing_settings: Options control the visibility of information like the invitee list and participant profile pictures among attendees.\ncommunication_privacy: Features like breakout rooms, captions, and reactions manage how participants communicate with each other during a meeting.\nnotification_privacy: The setting to rename participants explicitly states that users will be notified, informing them of a change to their personal data.\nthird_party_sharing: The manual captions setting mentions the ability to assign a third-party service to provide captions.\ndata_collection: The 'Report to Zoom' feature initiates data collection for review, and hosts can be allowed to view participant activity statuses.\naccount_security: Settings like allowing removed participants to rejoin and reporting users for inappropriate behavior directly affect meeting security and integrity.\naccess_to_device: The 'Remote support' feature allows a meeting host to provide 1:1 remote support, which implies accessing another participant's device."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\after_click__Recording_20251111T172741Z.png",
+      "detected_categories": [
+        "access_to_device",
+        "personal_information",
+        "sharing_settings",
+        "communication_privacy",
+        "notification_privacy",
+        "data_collection"
+      ],
+      "confidence": 1.0,
+      "page_type": "Specific category",
+      "detected_settings": [
+        "Record to computer files",
+        "Who can request host permission to record?",
+        "Internal meeting participants",
+        "Auto approve their permission requests (for internal participants)",
+        "External meeting participants",
+        "Auto approve their permission requests (for external participants)",
+        "Meeting participants with specified domains",
+        "Automatic recording",
+        "Play voice prompt for All participants",
+        "Play voice prompt for Guest only",
+        "Ask host to confirm before starting a recording",
+        "Multiple notifications for phone users"
+      ],
+      "reasoning": "The page is a dedicated 'Recording' settings page within Zoom, providing granular control over how meeting data is captured and how participants are notified. The 'Record to computer files' setting requires access to the user's device storage. The settings control the recording of meetings, which inherently captures personal information like video and audio. The options under 'Who can request host permission to record?' manage which participants can initiate the recording and sharing of the meeting content. The settings directly manage whether and how communications within a meeting are recorded, impacting the privacy of the conversation. The 'Notification' section provides explicit controls for how users are informed that a recording is taking place. The 'Automatic recording' and 'Record to computer files' toggles are direct controls over the collection of meeting data."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\after_click__Settings_20251111T172904Z.png",
+      "detected_categories": [
+        "personal_information",
+        "data_collection"
+      ],
+      "confidence": 1.0,
+      "page_type": "Specific category",
+      "detected_settings": [
+        "Use full display names for meeting assets generated by AI Companion",
+        "Create with avatars",
+        "Create custom avatars"
+      ],
+      "reasoning": "The settings control the use of a user's display name and avatar, which are forms of personal information, in AI-generated content. Enabling these toggles permits the AI Companion feature to collect and process user data, such as their avatar choice or display name, to generate assets."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\initial_load_20251111T172703Z_slice_0.png",
+      "detected_categories": [
+        "data_collection",
+        "sharing_settings",
+        "personal_information",
+        "access_to_device",
+        "notification_privacy"
+      ],
+      "confidence": 1.0,
+      "page_type": "General settings",
+      "detected_settings": [
+        "Detailed crash dumps (Windows)",
+        "Feedback to Zoom",
+        "Allow users to send text feedback",
+        "Show \"Join from a room\" feature on Zoom meetings in the Zoom client meeting list",
+        "Allow automatic direct sharing and pairing to Zoom Rooms using ultrasonic proximity signal",
+        "Hide potentially sensitive information on mobile task switcher",
+        "Change my status to away when screen saver begins",
+        "Track billable hours",
+        "Enable manual control to start and stop billable hours tracking for calls and meetings.",
+        "Enable automatic tracking of billable hours for calls and meetings.",
+        "Show educational onboarding assistant for new features"
+      ],
+      "reasoning": "data_collection: The page includes options to enable the collection of crash dumps, user feedback, and activity data for billable hours.\nsharing_settings: Settings allow users to share feedback with Zoom and to share their screen with Zoom Rooms.\npersonal_information: A setting controls the user's presence status, which is personal information about their availability.\naccess_to_device: A setting enables the use of ultrasonic signals, which requires access to the device's microphone/speaker for proximity detection.\nnotification_privacy: A setting controls whether the user sees educational pop-up notifications for new features."
+    },
+    {
+      "status": "success",
+      "image_path": "screenshots\\zoom\\safety_capture_20251111T172904Z.png",
+      "detected_categories": [
+        "personal_information",
+        "data_collection"
+      ],
+      "confidence": 1,
+      "page_type": "Specific category",
+      "detected_settings": [
+        "Use full display names for meeting assets generated by AI Companion",
+        "Create with avatars",
+        "Create custom avatars"
+      ],
+      "reasoning": "The settings control the use of personal identifiers like 'full display names' and 'avatars', which falls under personal_information. These options are for an 'AI Companion' feature, which inherently collects user data to generate assets, making data_collection relevant."
+    }
+  ],
+  "summary": {
+    "category_distribution_counts": {
+      "data_collection": 10,
+      "personal_information": 10,
+      "sharing_settings": 8,
+      "location_privacy": 1,
+      "communication_privacy": 7,
+      "account_security": 4,
+      "access_to_device": 6,
+      "notification_privacy": 6,
+      "third_party_sharing": 2,
+      "data_retention": 1
+    },
+    "category_distribution": {
+      "data_collection": 0.1818,
+      "personal_information": 0.1818,
+      "sharing_settings": 0.1455,
+      "location_privacy": 0.0182,
+      "communication_privacy": 0.1273,
+      "account_security": 0.0727,
+      "access_to_device": 0.1091,
+      "notification_privacy": 0.1091,
+      "third_party_sharing": 0.0364,
+      "data_retention": 0.0182
+    },
+    "successful_classifications": 13,
+    "failed_classifications": 0
+  },
+  "timestamp": "2025-11-23T13:34:30.844605"
+}

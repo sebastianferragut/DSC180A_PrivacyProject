@@ -1,317 +1,255 @@
-# Agentic AI: Generalized Privacy/Data Settings Scraping & Automation  
+# Agentic Privacy Control Center: Generalized Privacy/Data Settings Scraping & Automation
+
 ## Overview
+This repository builds an end-to-end pipeline that captures privacy/data settings from web platforms, normalizes them into a settings database, and drives an agentic UI that can change settings on a user's behalf. It solves the "every platform has a different UI" problem by combining Playwright automation with Gemini planning/verification and a reusable authenticated profile cache.
 
-This repository contains multiple components for a multi-agent system designed to:
-
-1. **Capture privacy and data-related settings across multiple web platforms**  
-   using a combined DOM-scraping + Gemini Computer Vision approach.
-2. **Store cross-platform authenticated sessions**  
-   to enable repeated scraping without re-authenticating.
-3. **Provide a Chainlit-based agentic interface**  
-   allowing users to automate changing their privacy/data settings across supported platforms.
-
-The following are relevant scripts:
-
-- `gemini-team/generalssagent.py`  
-- `gemini-team/save_state.py`  
-- `privacyagentapp/agenticapp.py`  
+## Script Overview
+- Authenticated profile cache capture via `gemini-team/save_state.py`.
+- Screenshot extraction and classification pipeline that produces `database/data/extracted_settings_with_urls_and_layers_classified.json` used by the app and dashboard.
+- Chainlit app `privacyagentapp/agenticapp.py` that loads the settings DB and safely attempts setting changes with a planner -> executor -> verifier loop.
 
 ---
 
-## 1. Accessing and Storing Data  
+## Getting Started
 
-### 1.1 Output Data
+### Prerequisites
+- Python 3.11 (conda recommended)
+- Playwright browsers installed
+- macOS or Windows with Accessibility/Screen Recording permissions (for UI automation)
+- Gemini API key from [AI Studio API keys](https://aistudio.google.com/app/api-keys)
 
-#### **save_state.py**
-Stores browser authentication state per platform:
-
-gemini-team/profiles/storage/<hostname>.json
-
-Each JSON file contains cookies, localStorage, and sessionStorage. These are reused by the scraping agent to avoid repeated logins.
-
----
-
-#### **generalssagent.py**
-Produces:
-
-- `harvest_report.json` per platform  
-- Full-page and section-level screenshots
-
-Location:
-
-gemini-team/generaloutput/<platform_name>/
-
-│── harvest_report.json
-
-└── screenshots/
-└── sections/
-
-
----
-
-### 1.2 Input Data / Credentials
-
-Both scraping scripts require at least:
-
-- A Gemini API key  
-- A URL to begin scraping (`START_URL`)  
-- A platform name (`PLATFORM_NAME`) to label output folders  
-
-(Note: the Chainlit app requires only the Gemini API key.)
-
----
-
-## 2. Software Dependencies  
-
-Install via `gemini-team/environment.yml`:
-
-conda env create -f environment.yml
-conda activate agentic-ui
-
-Install Playwright browser drivers:
-
-playwright install
-
-### System Requirements
-
-- Python 3.11+  
-- macOS (with Accessibility + Screen Recording permissions) or Windows 11 with permissions 
-- Chromium (auto-installed via Playwright)
-
----
-
-## 3. Script-Level Environment Variables  
-Environment variables differ per script; therefore, they are documented **under the relevant sections**.
-
----
-
-## 4. Running the Agents  
-
----
-
-## 4.1 Authentication State Capture  
-**File:** `gemini-team/save_state.py`
-
-This script launches a visible Chromium window, navigates to the provided `START_URL`, and allows the user to manually complete login.  
-After the user presses Enter in the terminal, the browser context’s storage state is saved to:
-
-`profiles/storage/<hostname>.json`
-
-### Run Command
-
-python save_state.py <START_URL>
-
-
-### Required Environment Variables (for save_state.py)
-
-(be sure to change GEMINI_API_KEY to the one you get from https://aistudio.google.com/app/api-keys)
+### API Credentials and Environment
+Core variable (can be set either in environment before running Chainlit or in-app as prompted):
+- `GEMINI_API_KEY`
 
 macOS/Linux:
-export GEMINI_API_KEY="your_api_key_here"
+```bash
+# Optional for Chainlit app (otherwise will be prompted for it in-app)
+export GEMINI_API_KEY="your_api_key_here" 
+
+# For save_state.py
 export START_URL="https://example.com/path/to/settings"
-
-
+export PLATFORM_NAME="example"
+```
 
 Windows PowerShell:
+```powershell
 $env:GEMINI_API_KEY="your_api_key_here"
 $env:START_URL="https://example.com/path/to/settings"
-
-
-Behavior:
-
-- Opens Chromium  
-- User signs in manually  
-- Press Enter in terminal  
-- Storage state is saved  
-- Must be run **once per site** before using `generalssagent.py` and `agenticapp.py`
-
----
-
-## 4.2 Generalized Scraping Agent  
-**File:** `gemini-team/generalssagent.py`
-
-python generalssagent.py
-
-
-This agent:
-
-- Loads saved storage state (created via `save_state.py`)  
-- Uses Gemini Planner to determine navigation/capture steps  
-- Clicks through privacy/data settings  
-- Captures full-page and element-level screenshots  
-- Writes `harvest_report.json`
-
-This script **does not** perform login.  
-`save_state.py` must be run first.
-
-### Required Environment Variables (for generalssagent.py)
-(be sure to change GEMINI_API_KEY to the one you get from https://aistudio.google.com/app/api-keys)
-
-Example exports for macOS/Linux :
-export GEMINI_API_KEY="your_api_key_here"
-export START_URL="https://zoom.us/profile/setting?tab=general"
-export PLATFORM_NAME="zoom"
-
-
-Example exports for Windows PowerShell:
-$env:GEMINI_API_KEY="your_api_key_here"
-$env:START_URL="https://zoom.us/profile/setting?tab=general"
-$env:PLATFORM_NAME="zoom"
-
-
-### Example START_URLs
-
-- https://zoom.us/profile/setting?tab=general  
-- https://www.linkedin.com/mypreferences/d/categories/account  
-- https://accountscenter.facebook.com/password_and_security  
-
----
-
-## 4.3 Generalized Privacy Setting Classification
-
-This stage extracts structured text from screenshots, merges it with harvesting metadata, and classifies each screenshot into a privacy-setting category.
-
----
-
-## 4.3.1 Screenshot Settings Extraction  
-**File:** `screenshot-classifier/screenshot_settings_extractor.py`
-
-This script processes all screenshots captured by the scraping agent and uses Gemini to extract:  
-- setting names  
-- descriptions  
-- current states (if visible)
-
-The extracted output is saved to:  
-`screenshot-classifier/extracted_settings.json`
-
-### Run Command
-```bash
-python screenshot-classifier/screenshot_settings_extractor.py
+$env:PLATFORM_NAME="example"
 ```
 
-**Behavior:**
-- Loads all screenshots from the platform folders  
-- Sends each image to Gemini for OCR + semantic parsing  
-- Saves structured setting objects
-
----
-
-## 4.3.2 Merge Harvest Metadata + Extracted Text  
-**File:** `database/merge_harvest_text.py`
-
-This script merges:  
-- `harvest_report.json` (from each platform’s crawling run)  
-- `screenshot-classifier/extracted_settings.json`
-
-It links each screenshot to:  
-- the URL where it was captured  
-- extracted setting text  
-- metadata recorded during navigation (DOM node, screenshot type, etc.)
-
-### Run Command
+### Install Dependencies
 ```bash
-python database/merge_harvest_text.py
+conda env create -f gemini-team/environment.yml
+conda activate agentic-ui
+playwright install
 ```
 
-**Output:**  
-`database/data/all_platforms_images.json`
-
-**Behavior:**  
-Produces a unified mapping of each screenshot → URL → extracted text.
-
----
-
-## 4.3.3 Category Classification  
-**File:** `database/classify_categories.py`
-
-This script classifies each screenshot entry into a high-level privacy-setting category (e.g., Account Security, Data Sharing, Visibility, Ads/Personalization, Location, etc.).  
-A `category` field is added to each screenshot entry.
-
-### Run Command
+### Reproducibility Quickstart
 ```bash
-python database/classify_categories.py
-```
+# 1) Environment
+conda env create -f gemini-team/environment.yml
+conda activate agentic-ui
+playwright install
 
-**Input:**  
-`database/data/all_platforms_images.json`
+# 2) Capture authenticated profile cache (interactive)
+python gemini-team/save_state.py "https://www.linkedin.com/mypreferences/d/categories/account"
 
-**Output:**  
-`database/data/all_platforms_classified.json`
+# 3) Crawl settings pages (interactive/authenticated)
+cd gemini-team
+python settingsPageAgent.py
 
-**Behavior:**  
-Each screenshot entry now contains:  
-- platform  
-- image
-- full_image_path
-- url  
-- **category**
+# 4) Build classified settings dataset
+cd ../screenshot-classifier
+python screenshot_settings_extractor.py
+cd ../database
+python map_url.py
+python classify_categories.py
+cd ..
 
----
+# 5) Generate coverage metrics + run tests
+python scripts/evaluate_coverage.py
+pytest -q
 
-## 4.3 Chainlit Privacy Automation App  
-**File:** `privacyagentapp/agenticapp.py`
-
-Run with (be sure to change GEMINI_API_KEY to the one you get from https://aistudio.google.com/app/api-keys):
-
-export GEMINI_API_KEY="your_key_here"
+# 6) Run the agent app
 chainlit run privacyagentapp/agenticapp.py -w
+```
 
+### Dependencies (Pinned)
+- Canonical primary environment: `gemini-team/environment.yml`
+- Additional component-specific dependency files (used when working on the classifier component):
+  - `screenshot-classifier/requirements_clean.txt`
+  - `screenshot-classifier/environment.yml`
+- `pytest` is included in the canonical env for automated tests.
 
-Capabilities:
-
-- Loads the curated multi-platform privacy settings database  
-- Automates changing privacy settings on supported platforms  
-- Verifies operations with Playwright + Gemini  
-- Reports on changes
-
-### Required Environment Variables (for agenticapp.py)
-
-Only (be sure to change GEMINI_API_KEY to the one you get from https://aistudio.google.com/app/api-keys):
-
-export GEMINI_API_KEY="your_key_here"
-
-### Example Supported Commands
-
-- `change twitterX audience__media_and_tagging::Protect your posts to on`
-- `change instagram account_privacy::Private account to on`
-- `change reddit allow_people_to_follow_you to on`
+### Dataset Access & Provenance
+- Generated artifacts (created by the pipeline):
+  - `database/data/extracted_settings_with_urls_and_layers_classified.json`
+  - `privacyagentapp/database/run_stats.json`
+  - `new_crawler/generaloutput/*/harvest_report.json`
+- Some artifacts in this repository are checked in for reference, but production runs regenerate them from crawler/classifier steps above.
+- Crawling/modification data collection requires authenticated browser/profile cache capture as described in the `save_state.py` section.
 
 ---
 
-## 5. Folder Structure 
+## Profile Cache and save_state.py
+
+### What the profile cache is
+The profile cache is a Playwright storage state file (cookies, localStorage, sessionStorage) saved per hostname. It lets the crawler and agent reuse authenticated sessions without repeated logins.
+
+Location:
+- `gemini-team/profiles/storage/<hostname>.json`
+
+### How save_state.py works
+`gemini-team/save_state.py` launches a visible Chromium window, navigates to the URL you provide, and waits for you to log in. When you press Enter in the terminal, it saves the browser context storage state to the cache path above.
+
+### Generate a profile cache
+```bash
+python gemini-team/save_state.py "https://www.linkedin.com/mypreferences/d/categories/account"
+```
+
+### Load and use a profile cache
+`agenticapp.py` derives the hostname from the target URL and load the matching cache file.
+
+Example: run the agent (must have a cache and have run the scraping/categorization for the target host)
+```bash
+# Optional export, can be done in the terminal or in-app as prompted
+export GEMINI_API_KEY="your_api_key_here"
+
+chainlit run privacyagentapp/agenticapp.py -w
+```
+
+If a site logs you out or changes sessions, re-run `save_state.py` for that hostname.
+
+---
+## Running Web Crawler
+
+### What it does
+`gemini-team/settingsPageAgent.py` contains a script that crawls a site's settings page to find pages that contain user-configurable toggles (privacy/data/security controls). It leverages Playwright for browser automation and Google Gemini to steer the discovery process. Along the navigation process, the script captures a full-page screenshot for each unique UI state encountered and records the traversal path.
+
+Flow:
+- Opens provided URL
+- Lets user log in and go to settings page (root)
+- Iterate until queue is empty or iteration limit is hit:
+    - Finds and queues hyperlinks in DOM
+    - Dequeues link, asks Gemini if link is relevant to user settings
+        - If relevant, navigate to page
+        - If irrelevant, omit
+    - Takes screenshot and logs page link
+ 
+```bash
+cd gemini-team
+python settingsPageAgent.py
+
+cd picasso                  # to view captured screenshots and click counts
+```
+
+The captured screenshots are saved in `gemini-team/picasso`. Inside, you will find a folder for each platform and a `click_counts` json file containing page links organized by their depth from the starting page.
+
+---
+## Running screenshot processing
+
+### What it does
+This process is to process the screenshots captured by the web crawler and build into json and csv file for supporting the Chainlit app and the dashboard view.
+
+Flow:
+- Extract text from screenshots
+- Parse and map url to the respective screenshots
+- Classify screenshot settings
+
+### Run command
+```bash
+cd screenshot-classifier
+python screenshot_settings_extractor.py
+cd ../database
+python map_url.py
+python classify_categories.py
+```
+
+The json files produced after each step are ```screenshot-classifier/extracted_settings.json```, ```/database/data/extracted_settings_with_urls_and_layers.json``` and the final file ```database/data/extracted_settings_with_urls_and_layers_classified.json```. For analysis, `database/convert_json_to_csv.py` converts the json files to csv for data exploration and manipulation.
+
+
+## Running the Agent (agenticapp.py)
+
+### What it does
+`privacyagentapp/agenticapp.py` is a Chainlit app that loads the settings database and attempts setting changes on real sites.
+
+Flow:
+- Planner: Gemini proposes selectors and intent (`change_value`, `confirm`, `scroll`, etc.).
+- Executor: Playwright applies selectors and navigates the UI.
+- Verifier: deterministic checks when possible, otherwise Gemini visual verification.
+
+### Run command
+```bash
+# # Optional export, can be done in the terminal or in-app as prompted
+export GEMINI_API_KEY="your_api_key_here"
+
+chainlit run privacyagentapp/agenticapp.py -w
+```
+
+### Example in-app commands
+```text
+settings <platform>
+change <platform> <setting_id_or_name> to <value>
+change <platform> <section_id_or_name>::<leaf_setting_name> to <value>
+report
+```
+Mainly, the user is expected to navigate the agent with the provided UI to understand the categories of settings for each platform and select a setting and target value. The advanced commands as shown above are also available. 
+```
+
+### Log meanings
+- `TURN N`: executor attempt number (max 6 per change).
+- `[planner_setting_change]` and `[planner_confirm_only]`: Gemini planner calls.
+- `selectors`: actions returned by the planner; `[apply_selector]` shows how they were matched.
+- `done=true`: planner claims it completed the change; executor still verifies.
+- `status=success|uncertain|error`: final outcome reported to the UI.
+- `notes=...`: short planner notes or error tags like `model_bad_json` or `confirm_only_no_selectors`.
+```
+---
+
+
+## Repo Structure
 ```
 DSC180A_PrivacyProject/
-├── gemini-team/
-│   ├── generalssagent.py
-│   ├── save_state.py
-│   ├── generaloutput/
-│   ├── profiles/
-│   │   └── storage/
-│   └── environment.yml
-│
-├── screenshot-classifier/
-│   ├── screenshot_settings_extractor.py
-│   └── extracted_settings.json
-│
-├── database/
-│   ├── merge_harvest_text.py
-│   ├── classify_categories.py
-│   └── data/
-│       ├── all_platforms_images.json
-│       └── all_platforms_classified.json
-│
-├── privacyagentapp/
-│   ├── agenticapp.py
-│   └── database/
-│
-└── ANY OTHER FILES/FOLDERS
+|-- gemini-team/
+|   |-- save_state.py
+|   |-- picasso/
+|   |-- profiles/
+|   |   `-- storage/
+|   |-- settingsPageAgent.py
+|   `-- environment.yml
+|-- database/
+|   |-- map_url.py
+|   |-- convert_json_to_csv.py
+|   |-- classify_categories.py
+|   `-- data/
+`-- privacyagentapp/
+    `-- agenticapp.py
+|-- screenshot-classifier/
+|   |-- screenshot_settings_extractor.py
 ```
----
 
-## 6. Runtime Behavior Notes
+### Proposal Milestones Traceability
+- Milestone: Crawl and collect settings pages
+  - Code: `gemini-team/settingsPageAgent.py`, `new_crawler/crawlscrapingagent.py`
+  - Outputs: `new_crawler/generaloutput/*/harvest_report.json`, `gemini-team/generaloutput/*/harvest_report.json`
+- Milestone: Extract and classify settings
+  - Code: `screenshot-classifier/screenshot_settings_extractor.py`, `database/map_url.py`, `database/classify_categories.py`
+  - Output: `database/data/extracted_settings_with_urls_and_layers_classified.json`
+- Milestone: Agentic app and evaluation/logging
+  - Code: `privacyagentapp/agenticapp.py`, `scripts/evaluate_coverage.py`
+  - Outputs: `privacyagentapp/database/run_stats.json`, `reports/coverage_metrics.json`
+- Milestone: Checkpoint and final reporting
+  - Artifacts: `reports/checkpoint_report.tex`, `reports/final_report.tex`
+- Proposal context and milestone progression are tracked in the report sources above.
 
-- If you encounter a Gemini 400 error, re-run the script.  
-- macOS may require re-granting screen recording permissions.  
-- Ensure a storageState JSON exists before running `generalssagent.py`.
-- If encountering many Gemini 503 errors, run the script at a later time.
----
+### Roadmap / TODO
+- Expand platform coverage to additional privacy settings ecosystems.
+- Improve crawler robustness for dynamic/anti-bot UI flows.
+- Add deeper automated tests for planner/executor/verifier edge cases.
+- Strengthen schema checks for extracted settings across historical runs.
+- Expand dashboard views for cross-platform comparison and trends.
+- Add dataset/version provenance metadata for reproducible snapshots.
+- Improve repeated-run experiment tracking and summary comparisons.
+- Standardize collaboration workflow with PR and review checklists.
