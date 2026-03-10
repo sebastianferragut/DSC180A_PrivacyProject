@@ -66,33 +66,31 @@ let detailNode = null;
 // Area evidence panel state
 let areaEvidenceEl = null;
 
-// Site base path for data fetches.
-// On GitHub Pages this project is served from /DSC180A_PrivacyProject, while locally it's served from the web server root.
-// Using SITE_BASE makes all data URLs work in both environments without juggling relative ../../../ paths.
-const SITE_BASE = (window.location && window.location.hostname && window.location.hostname.includes("github.io"))
-  ? "/DSC180A_PrivacyProject"
+// Site base path for data fetches (JSON only).
+// On GitHub Pages this project is served from /<repo-name>, while locally it's served from the web server root.
+// Using SITE_BASE makes the JSON URL work in both environments without juggling relative ../../../ paths.
+const pathParts = window.location.pathname.split("/").filter(Boolean);
+const SITE_BASE = window.location.hostname.includes("github.io")
+  ? `/${pathParts[0]}`
   : "";
 
-// Data source paths (JSON first, then CSV fallback). Use repo-root-style paths via SITE_BASE.
-const jsonPaths = [`${SITE_BASE}/database/data/extracted_settings_with_urls_and_layers_classified.json`];
-const csvPaths = [`${SITE_BASE}/database/data/all_platforms_classified.csv`];
-
-// Priority privacy CSV (flat: platform, toggle_name, description, state, click_counts, category, url) — used by explore page
-const priorityCsvPaths = [`${SITE_BASE}/database/data/priority_privacy.csv`];
+// JSON data source path (single dataset, no CSV fallback).
+const jsonPaths = [
+  `${SITE_BASE}/database/data/extracted_settings_with_urls_and_layers_classified.json`
+];
 
 function showLoadError(title, triedPaths) {
   const container = d3.select("#treemapContainer");
   container.html(`
     <div style='padding: 20px; color: #d32f2f;'>
-      <p><strong>Error loading data:</strong> ${title}</p>
+      <p><strong>Error loading data:</strong> JSON dataset could not be found.</p>
       <p style='margin-top: 10px; font-size: 13px; color: #666;'>
-        <strong>Solution:</strong> This visualization requires a web server due to browser security restrictions.<br>
-        Run from the project root: <code>python -m http.server 8000</code><br>
-        Then open the explore or dashboard page.
+        Make sure the file exists at:<br>
+        <code>database/data/extracted_settings_with_urls_and_layers_classified.json</code>
       </p>
-      <p style='margin-top: 10px; font-size: 12px; color: #666;'>
-        Tried paths:<br>
-        ${(triedPaths || []).map((p, i) => `${i + 1}. ${p}`).join('<br>')}
+      <p style='margin-top: 10px; font-size: 13px; color: #666;'>
+        If running locally, start a local server (from the project root):<br>
+        <code>python -m http.server 8000</code>
       </p>
     </div>
   `);
@@ -140,8 +138,7 @@ function parseJSONData(jsonArray) {
 
 function loadJSON(pathIndex = 0) {
   if (pathIndex >= jsonPaths.length) {
-    console.warn("All JSON paths failed, falling back to CSV");
-    loadCSV(0);
+    showLoadError("Could not find JSON file", jsonPaths);
     return;
   }
   const jsonPath = jsonPaths[pathIndex];
@@ -176,39 +173,6 @@ function loadJSON(pathIndex = 0) {
     });
 }
 
-function loadCSV(pathIndex = 0) {
-  if (pathIndex >= csvPaths.length) {
-    showLoadError("Could not find CSV file", csvPaths);
-    return;
-  }
-  const csvPath = csvPaths[pathIndex];
-  console.log("Attempting to load CSV from:", csvPath);
-  d3.csv(csvPath).then(data => {
-    console.log("CSV loaded successfully from:", csvPath);
-    console.log("CSV rows:", data.length);
-    if (!data || data.length === 0) {
-      throw new Error("CSV file is empty");
-    }
-    allData = parseCSVData(data);
-    console.log("Parsed data:", allData.length, "unique settings");
-    populatePlatformFilter();
-    populateCategoryFilter();
-    currentCategoryFilter = 'guided';
-    guidedMode = true;
-    const cats = getSortedCategories();
-    revealedCategories = new Set(cats.length ? [cats[0]] : []);
-    const catSelect = document.getElementById('categoryFilter');
-    if (catSelect) catSelect.value = 'guided';
-    const guidedEl = document.getElementById('guidedCategoryControls');
-    if (guidedEl) guidedEl.classList.remove('hidden');
-    buildHierarchy();
-    renderTreemap();
-  }).catch(err => {
-    console.error("Failed to load from " + csvPath + ":", err);
-    loadCSV(pathIndex + 1);
-  });
-}
-
 // Start loading: all pages use classified JSON first, then CSV fallback
 loadJSON(0);
 
@@ -228,139 +192,7 @@ function inferCategoryFromText(description, settingName) {
   return "unknown";
 }
 
-/**
- * Parse priority_privacy.csv (flat rows: platform, toggle_name, description, state, click_counts, category, url)
- * into the same allData shape as parseCSVData / parseJSONData.
- * No deduplication: every row becomes one entry so all rows are shown.
- * When category is empty, infers from description/setting name.
- */
-function parsePriorityCSVData(csvData) {
-  if (!Array.isArray(csvData)) return [];
-  return csvData.map(row => {
-    let platform = (row.platform || "unknown").trim().toLowerCase();
-    if (platform === "google") platform = "googleaccount";
-    if (platform === "twitter") platform = "twitterx";
-    const settingName = (row.toggle_name || row.setting || "Unknown").trim();
-    const description = (row.description || "").trim();
-    const state = (row.state || "unknown").trim();
-    let category = (row.category || "").trim();
-    if (!category) category = inferCategoryFromText(description, settingName);
-    const url = (row.url || "").trim();
-    const clicks = Math.max(0, parseInt(row.click_counts, 10) || 0);
-    const stateType = determineStateType(state);
-    return {
-      platform,
-      category,
-      setting: settingName,
-      description,
-      state,
-      stateType,
-      url,
-      clicks,
-      weight: calculateWeight(stateType, category, currentSizingMetric, clicks)
-    };
-  });
-}
-
-function loadPriorityCSV(pathIndex) {
-  if (pathIndex >= priorityCsvPaths.length) {
-    showLoadError("Could not find priority_privacy.csv", priorityCsvPaths);
-    return;
-  }
-  const csvPath = priorityCsvPaths[pathIndex];
-  console.log("Attempting to load priority CSV from:", csvPath);
-  d3.csv(csvPath).then(data => {
-    if (!data || data.length === 0) {
-      throw new Error("CSV file is empty");
-    }
-    allData = parsePriorityCSVData(data);
-    console.log("Priority CSV loaded:", allData.length, "rows (no deduplication)");
-    populatePlatformFilter();
-    populateCategoryFilter();
-    currentCategoryFilter = "guided";
-    guidedMode = true;
-    const cats = getSortedCategories();
-    revealedCategories = new Set(cats.length ? [cats[0]] : []);
-    const catSelect = document.getElementById("categoryFilter");
-    if (catSelect) catSelect.value = "guided";
-    const guidedEl = document.getElementById("guidedCategoryControls");
-    if (guidedEl) guidedEl.classList.remove("hidden");
-    buildHierarchy();
-    renderTreemap();
-  }).catch(err => {
-    console.error("Failed to load priority CSV from " + csvPath + ":", err);
-    loadPriorityCSV(pathIndex + 1);
-  });
-}
-
-/**
- * Parse CSV data and extract settings
- * Handles Python dict format in settings column
- */
-function parseCSVData(csvData) {
-  const settingsMap = new Map(); // Deduplicate: platform + category + setting name
-  
-  csvData.forEach(row => {
-    try {
-    const platform = (row.platform || "unknown").trim().toLowerCase();
-
-      const url = row.url || '';
-      const category = row.category || 'unknown';
-      
-    // Parse settings field (Python dict string) - robust conversion
-    let settings = [];
-    try {
-    const settingsStr = row.settings || "[]";
-    settings = parsePythonDictList(settingsStr);
-    } catch (e) {
-      console.warn("Failed to parse settings for row:", e, row);
-      return;
-    }
-
-      
-      settings.forEach(setting => {
-        const settingName = setting.setting || 'Unknown';
-        const description = setting.description || '';
-        const state = setting.state || 'unknown';
-        const clicks = setting.clicks ? parseInt(setting.clicks, 10) : 0; // Extract clicks, default to 0
-        
-        // Create unique key for deduplication
-        const key = `${platform}::${category}::${settingName}`;
-        
-        // Determine state_type
-        const stateType = determineStateType(state);
-        
-        if (!settingsMap.has(key)) {
-          settingsMap.set(key, {
-            platform: platform,
-            category: category,
-            setting: settingName,
-            description: description,
-            state: state,
-            stateType: stateType,
-            url: url,
-            clicks: clicks, // Store clicks value
-            weight: calculateWeight(stateType, category, currentSizingMetric, clicks)
-          });
-        } else {
-          // Update URL if different (keep the first one found)
-          const existing = settingsMap.get(key);
-          if (!existing.url && url) {
-            existing.url = url;
-          }
-          // Update clicks if available (use max or latest)
-          if (clicks > 0) {
-            existing.clicks = Math.max(existing.clicks || 0, clicks);
-          }
-        }
-      });
-    } catch (e) {
-      console.warn("Error parsing row:", e, row);
-    }
-  });
-  
-  return Array.from(settingsMap.values());
-}
+// (CSV-based loaders and parsers removed — JSON is the single source of truth.)
 
 function parsePythonDictList(pyStr) {
     if (!pyStr || pyStr.trim() === "") return [];
