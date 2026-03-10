@@ -39,7 +39,13 @@ const PLATFORM_COLORS = {
     twitterx: "#111111",
     unknown: "#9E9E9E"
   };
-  
+
+function normalizePlatformKey(platform) {
+  const key = (platform || "unknown").trim().toLowerCase();
+  if (key === "twitter") return "twitterx";
+  if (key === "google") return "googleaccount";
+  return key;
+}
 
 let currentRoot = null;
 let zoomStack = [];
@@ -60,25 +66,19 @@ let detailNode = null;
 // Area evidence panel state
 let areaEvidenceEl = null;
 
-// Data source paths (JSON first, then CSV fallback)
-// Paths: explore/view/ (3 levels up), explore/ (2 levels up), dashboard root (1 level up)
-const jsonPaths = [
-  "../../../database/data/extracted_settings_with_urls_and_layers_classified.json",
-  "../../database/data/extracted_settings_with_urls_and_layers_classified.json",
-  "../database/data/extracted_settings_with_urls_and_layers_classified.json"
-];
+// Site base path for data fetches.
+// On GitHub Pages this project is served from /DSC180A_PrivacyProject, while locally it's served from the web server root.
+// Using SITE_BASE makes all data URLs work in both environments without juggling relative ../../../ paths.
+const SITE_BASE = (window.location && window.location.hostname && window.location.hostname.includes("github.io"))
+  ? "/DSC180A_PrivacyProject"
+  : "";
 
-const csvPaths = [
-  "../database/data/all_platforms_classified.csv"
-];
+// Data source paths (JSON first, then CSV fallback). Use repo-root-style paths via SITE_BASE.
+const jsonPaths = [`${SITE_BASE}/database/data/extracted_settings_with_urls_and_layers_classified.json`];
+const csvPaths = [`${SITE_BASE}/database/data/all_platforms_classified.csv`];
 
 // Priority privacy CSV (flat: platform, toggle_name, description, state, click_counts, category, url) — used by explore page
-// Paths: explore/view/ (3 levels up), explore/ (2 levels up), dashboard root (1 level up)
-const priorityCsvPaths = [
-  "../../../database/data/priority_privacy.csv",
-  "../../database/data/priority_privacy.csv",
-  "../database/data/priority_privacy.csv"
-];
+const priorityCsvPaths = [`${SITE_BASE}/database/data/priority_privacy.csv`];
 
 function showLoadError(title, triedPaths) {
   const container = d3.select("#treemapContainer");
@@ -181,8 +181,7 @@ function loadCSV(pathIndex = 0) {
     showLoadError("Could not find CSV file", csvPaths);
     return;
   }
-  const csvPath = "../" + csvPaths[pathIndex];
-  // const csvPath = csvPaths[pathIndex];
+  const csvPath = csvPaths[pathIndex];
   console.log("Attempting to load CSV from:", csvPath);
   d3.csv(csvPath).then(data => {
     console.log("CSV loaded successfully from:", csvPath);
@@ -1793,27 +1792,42 @@ function renderAreaSharePieChart(viewData) {
     return;
   }
 
-  // Aggregate contributions by platform
+  // Aggregate contributions by platform (normalized keys for stable colors/order)
   const platformMap = new Map();
-  
   viewData.forEach(row => {
-    const platform = (row.platform || row.meta?.platform || "unknown").toLowerCase();
+    const platform = normalizePlatformKey(row.platform || row.meta?.platform || "unknown");
     const contribution = calculateContribution(row);
-    
     if (!platformMap.has(platform)) {
       platformMap.set(platform, 0);
     }
     platformMap.set(platform, platformMap.get(platform) + contribution);
   });
 
-  // Convert to array and sort by value descending
+  // Stable platform order so slice position does not change when metric changes
+  const platformOrder = [
+    "facebook",
+    "googleaccount",
+    "instagram",
+    "linkedin",
+    "reddit",
+    "spotify",
+    "twitterx",
+    "zoom",
+    "unknown"
+  ];
   const pieData = Array.from(platformMap.entries())
     .map(([platform, value]) => ({
-      platform: platform,
-      value: value
+      platform,
+      value
     }))
     .filter(d => d.value > 0)
-    .sort((a, b) => b.value - a.value);
+    .sort((a, b) => {
+      const ai = platformOrder.indexOf(a.platform);
+      const bi = platformOrder.indexOf(b.platform);
+      const aIndex = ai === -1 ? Number.MAX_SAFE_INTEGER : ai;
+      const bIndex = bi === -1 ? Number.MAX_SAFE_INTEGER : bi;
+      return aIndex - bIndex || a.platform.localeCompare(b.platform);
+    });
 
   if (pieData.length === 0) {
     container.append("p")
