@@ -844,11 +844,9 @@ function renderDetailView(svg, width, height, payload, breadcrumb) {
   const footerHeight = 56; // Buttons + spacing
   const DETAIL_CARD_Y_OFFSET = 110; // Fixed upward offset for card position
   
-  // Calculate card dimensions - make it smaller and more compact
-  const cardWidth = Math.min(420, width * 0.60);
-  // Ensure card height leaves room for buttons at the bottom
-  const maxCardHeight = Math.min(380, height * 0.55);
-  const cardHeight = maxCardHeight;
+  // Stable responsive card size so the card does not grow with description length
+  const cardWidth = Math.min(560, width * 0.5);
+  const cardHeight = Math.min(460, height * 0.68);
   
   // Center the card in the viewport, independent of click location
   const cardX = Math.max(
@@ -862,14 +860,11 @@ function renderDetailView(svg, width, height, payload, breadcrumb) {
     Math.round((height - cardHeight) / 2) - DETAIL_CARD_Y_OFFSET
   );
   
-  // Reserve a guaranteed footer area and compute buttonY BEFORE rendering content
+  // Footer: reserve space and anchor button position before rendering content
   const buttonHeight = 30;
   const buttonWidth = 120;
   const buttonSpacing = 12;
-  const buttonY = cardY + cardHeight - padding - buttonHeight;
-  
-  // Calculate available content height (subtract title, subtitle, buttons, padding)
-  const availableContentHeight = cardHeight - headerHeight - footerHeight - padding * 2;
+  const buttonY = cardY + cardHeight - padding - buttonHeight - 6;
   
   // Card background
   const card = svg.append("g")
@@ -1021,9 +1016,8 @@ function renderDetailView(svg, width, height, payload, breadcrumb) {
     currentY += lineSpacing;
   }
   
-  // Description
+  // Description: label + scrollable region (fixed height so card stays stable)
   currentY += 10;
-  const descLabelY = currentY;
   card.append("text")
     .attr("x", cardX + padding)
     .attr("y", currentY)
@@ -1033,32 +1027,34 @@ function renderDetailView(svg, width, height, payload, breadcrumb) {
     .text("Description:");
   currentY += 20;
   
-  // Calculate max height for description - clamp so it NEVER overlaps the footer/buttons
-  const maxDescHeight = Math.max(
-    40,
-    (buttonY - 10) - currentY
+  const descBoxY = currentY;
+  const descBoxHeight = Math.min(
+    120,
+    Math.max(60, buttonY - descBoxY - 18)
   );
-  const descriptionText = (payload.description || "No description available.");
+  const descBoxWidth = cardWidth - padding * 2;
   
-  // Create a clipping path for the description area
-  const descClipId = "desc-clip-" + Date.now();
-  const descClip = svg.append("defs").append("clipPath")
-    .attr("id", descClipId)
-    .attr("clipPathUnits", "userSpaceOnUse");
-  descClip.append("rect")
+  // Scrollable description area via foreignObject (fits above footer, never overlaps)
+  const fo = card.append("foreignObject")
     .attr("x", cardX + padding)
-    .attr("y", currentY - 15)
-    .attr("width", cardWidth - padding * 2)
-    .attr("height", maxDescHeight);
+    .attr("y", descBoxY)
+    .attr("width", descBoxWidth)
+    .attr("height", descBoxHeight);
   
-  const descText = card.append("text")
-    .attr("x", cardX + padding)
-    .attr("y", currentY)
-    .attr("font-size", "13px")
-    .attr("fill", "#333")
-    .attr("dy", "0em")
-    .attr("clip-path", `url(#${descClipId})`);
-  wrapText(descText, descriptionText, cardWidth - padding * 2, maxDescHeight);
+  fo.append("xhtml:div")
+    .attr("xmlns", "http://www.w3.org/1999/xhtml")
+    .style("width", "100%")
+    .style("height", "100%")
+    .style("overflow-y", "auto")
+    .style("font-size", "13px")
+    .style("line-height", "1.4")
+    .style("color", "#333")
+    .style("box-sizing", "border-box")
+    .style("padding-right", "8px")
+    .style("border", "1px solid #e8e8e8")
+    .style("border-radius", "4px")
+    .style("padding", "8px")
+    .text(payload.description || "No description available.");
   
   // Add a footer background strip to make buttons pop
   card.append("rect")
