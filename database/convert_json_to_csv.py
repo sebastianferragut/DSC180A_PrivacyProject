@@ -17,7 +17,7 @@ def json_to_dataframe(json_data: list) -> pd.DataFrame:
 
     for entry in json_data:
         platform = entry.get("platform")
-        category = entry.get("category", "")  # JSON may not have category
+        entry_category = entry.get("category", "")
         all_settings = entry.get("all_settings", [])
 
         for setting in all_settings:
@@ -27,7 +27,7 @@ def json_to_dataframe(json_data: list) -> pd.DataFrame:
                 "description": setting.get("description"),
                 "state": setting.get("state"),
                 "click_counts": setting.get("layer"),  # use layer as click_counts
-                "category": category,
+                "category": setting.get("category", entry_category),
                 "url": setting.get("url"),
                 "image_path": setting.get("image_path")
             })
@@ -38,8 +38,9 @@ def json_to_dataframe(json_data: list) -> pd.DataFrame:
 # MAIN
 # -----------------------------
 def main():
-    input_path = Path("data/extracted_settings_with_urls_and_layers_classified.json")
-    output_path = Path("data/priority_privacy.csv")
+    data_dir = Path(__file__).resolve().parent / "data"
+    input_path = data_dir / "extracted_settings_with_urls_and_layers_classified.json"
+    output_path = data_dir / "screenshot_crawler_extracted_settings.csv"
 
     data = load_json(input_path)
     df = json_to_dataframe(data)
