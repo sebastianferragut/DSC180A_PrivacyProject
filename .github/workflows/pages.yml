@@ -29,10 +29,22 @@ jobs:
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
 
+      - name: Prepare publish folder
+        run: |
+          rm -rf _site
+          mkdir -p _site
+
+          # Copy the dashboard contents so index.html is at the site root
+          cp -R PrivacyAgentDashboard/* _site/
+
+          # Copy the JSON/data folders your JS expects
+          mkdir -p _site/database
+          cp -R database/data _site/database/
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./PrivacyAgentDashboard
+          path: ./_site
 
       - name: Deploy to GitHub Pages
         id: deployment
