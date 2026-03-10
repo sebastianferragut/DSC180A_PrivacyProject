@@ -6,7 +6,6 @@ const ARE_WE_HOME = document.documentElement.classList.contains('home');
 let pages = [
   { url: '', title: 'About'},
   { url: 'explore/', title: 'Explore'},
-  { url: 'modify/', title: 'Modify'},
   { url: 'https://github.com/sebastianferragut/DSC180A_PrivacyProject', title: 'GitHub'}
 ];
 
