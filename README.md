@@ -7,8 +7,7 @@ This repository builds an end-to-end pipeline that captures privacy/data setting
 - Authenticated profile cache capture via `gemini-team/save_state.py`.
 - Screenshot extraction and classification pipeline that produces `database/data/extracted_settings_with_urls_and_layers_classified.json` used by the app and dashboard.
 - Chainlit app `privacyagentapp/agenticapp.py` that loads the settings DB and safely attempts setting changes with a planner -> executor -> verifier loop.
-- Interactive visualization dashboard that visualizes the hierarchical structure of privacy settings and compares the distribution of privacy settings across platforms.
-
+- Interactive visualization dashboard (`PrivacyAgentDashboard/explore/index.html`) that uses a treemap to visualize the hierarchical structure of privacy settings and compare how privacy controls are distributed across platforms.
 ---
 
 ## Getting Started
