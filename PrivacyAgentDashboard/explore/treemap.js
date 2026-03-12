@@ -845,7 +845,7 @@ function renderDetailView(svg, width, height, payload, breadcrumb) {
   const DETAIL_CARD_Y_OFFSET = 110; // Fixed upward offset for card position
   
   // Stable responsive card size so the card does not grow with description length
-  const cardWidth = Math.min(560, width * 0.5);
+  const cardWidth = Math.min(560, width * 0.38);
   const cardHeight = Math.min(460, height * 0.68);
   
   // Center the card in the viewport, independent of click location
